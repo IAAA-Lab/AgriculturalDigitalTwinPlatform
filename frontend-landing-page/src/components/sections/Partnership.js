@@ -19,13 +19,16 @@ export const Partnership = ({ className, ...props }) => {
   };
 
   const logosPath = [
-    "virtalis-logo.png",
-    "7edata-logo.png",
-    "agrointelligent-logo.webp",
-    "campg-logo.png",
-    "geoslab-logo.png",
-    "pystacil-logo.png",
-    "cetemet-logo.jpg",
+    { path: "virtalis-logo.png", link: "https://www.vitartis.es/" },
+    { path: "7edata-logo.png", link: "https://www.7edata.com/" },
+    {
+      path: "agrointelligent-logo.webp",
+      link: "https://www.agrointelligent.com/",
+    },
+    { path: "campg-logo.png", link: "https://campag.es/" },
+    { path: "geoslab-logo.png", link: "https://www.geoslab.com/" },
+    { path: "pystacil-logo.png", link: "https://pistacyl.com/" },
+    { path: "cetemet-logo.jpg", link: "https://cetemet.es/" },
   ];
 
   return (
@@ -34,20 +37,21 @@ export const Partnership = ({ className, ...props }) => {
         <div className={innerClasses}>
           <SectionHeader data={sectionHeader} className="center-content" />
           <div className={tilesClasses}>
-            {logosPath.map((logo, i) => (
-              <div
+            {logosPath.map(({ path, link }, i) => (
+              <a
                 className="tiles-item reveal-from-bottom"
                 data-reveal-delay={`${i * 50}`}
                 key={i}
+                href={link}
               >
                 <div className="tiles-item-inner">
                   <Image
-                    src={require(`../../assets/images/${logo}`)}
+                    src={require(`../../assets/images/${path}`)}
                     width={200}
                     height={200}
                   />
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </div>
