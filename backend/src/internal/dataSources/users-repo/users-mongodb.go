@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
@@ -54,16 +55,26 @@ func (mc *mongodbConn) PostNewUser(user domain.User) error {
 	return nil
 }
 
-func (mc *mongodbConn) FetchAllUsers() ([]domain.User, error) {
+func (mc *mongodbConn) DeleteUser(id primitive.ObjectID) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
+	defer cancel()
+	_, err := mc.db.Collection("User").DeleteOne(ctx, bson.M{"_id": id})
+	if err != nil {
+		return apperrors.ErrInternal
+	}
+	return nil
+}
+
+func (mc *mongodbConn) FetchAllUsers() ([]domain.UserNoPasswd, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
 	defer cancel()
 	cursor, err := mc.db.Collection("User").Find(ctx, bson.D{})
 	if err != nil {
-		return []domain.User{}, apperrors.ErrNotFound
+		return []domain.UserNoPasswd{}, apperrors.ErrNotFound
 	}
-	var results []domain.User
+	var results []domain.UserNoPasswd
 	if err = cursor.All(context.TODO(), &results); err != nil {
-		return []domain.User{}, apperrors.ErrInternal
+		return []domain.UserNoPasswd{}, apperrors.ErrInternal
 	}
 	return results, nil
 }

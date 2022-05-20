@@ -1,4 +1,4 @@
-import { API_URL } from "../config/api";
+import { API_URL, NEWS_UPLOAD_URL } from "../config/api";
 
 const fetchAllNews = async (numPage) => {
   const response = await fetch(API_URL + "/news?numPage=" + numPage).catch(
@@ -21,6 +21,17 @@ const fetchOneNew = async (id) => {
   if (!response || !response.ok) return null;
   const data = await response.json();
   return data;
+};
+
+const uploadImage = async (image) => {
+  const formData = new FormData();
+  formData.append("image", image);
+  const response = await fetch(NEWS_UPLOAD_URL + "/upload", {
+    method: "POST",
+    body: formData,
+  }).catch((_) => null);
+  if (!response || !response.ok) return null;
+  return await response.json();
 };
 
 const postNewNews = async (
@@ -54,4 +65,5 @@ export const newsService = {
   fetchNumberOfNews,
   fetchOneNew,
   postNewNews,
+  uploadImage,
 };

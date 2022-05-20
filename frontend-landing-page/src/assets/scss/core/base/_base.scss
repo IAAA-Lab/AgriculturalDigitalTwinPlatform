@@ -105,9 +105,16 @@ th {
   text-align: left;
 }
 
+.table-wrap {
+  overflow-x: auto;
+  display: block;
+  width: 100%;
+}
+
 th,
 td {
   padding: $spacing--table-cell-v $spacing--table-cell-h;
+  white-space: wrap;
 
   &:first-child {
     padding-left: 0;

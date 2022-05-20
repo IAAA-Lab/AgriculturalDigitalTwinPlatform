@@ -6,6 +6,7 @@ import (
 	authsrv "prakticas/backend-gpsoft/src/internal/core/services/auth-srv"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type HTTPHandler struct {
@@ -39,6 +40,20 @@ func (hdl *HTTPHandler) CreateNewUser(c *gin.Context) {
 		return
 	}
 	c.JSON(201, nil)
+}
+
+func (hdl *HTTPHandler) DeleteUser(c *gin.Context) {
+	id, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	err = hdl.usersService.DeleteUser(id)
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(204, nil)
 }
 
 func (hdl *HTTPHandler) FetchAllUsers(c *gin.Context) {

@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import { Editor, EditorState } from "draft-js";
 import { newsService } from "../api/news";
 import classNames from "classnames";
+import { SpinnerDotted } from "spinners-react";
+import { DraftailEditor, BLOCK_TYPE, INLINE_STYLE } from "draftail";
+import createImagePlugin from "draft-js-image-plugin";
+
+const imagePlugin = createImagePlugin();
 
 export const NewsPanel = () => {
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
-  );
   const [show, setShow] = useState(false);
   const [postError, setPostError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const notificationClassnames = classNames(
     "text-xs fw-500 m-16",
     postError ? "notification-error" : "notification-success"
@@ -16,28 +19,43 @@ export const NewsPanel = () => {
 
   const postNewNews = async (e) => {
     e.preventDefault();
-    const { title, description, author } = e.target;
+    const { title, description, author, image } = e.target;
+    if (image.files[0].size > 4096000) {
+      showNotification(true);
+      return;
+    }
+    setIsLoading(true);
+    const filename = await newsService.uploadImage(image.files[0]);
+    if (filename === null) {
+      showNotification(true);
+      return;
+    }
     const err = await newsService.postNewNews(
       title.value,
       description.value,
       author.value,
-      "https://previews.123rf.com/images/alhovik/alhovik1709/alhovik170900031/86481591-breaking-news-background-world-global-tv-news-banner-design.jpg",
+      filename.path,
       ""
     );
     if (err) {
-      setPostError(true);
-      showNotification();
+      showNotification(true);
       return;
     }
-    setPostError(false);
-    showNotification();
+    showNotification(false);
   };
 
-  const showNotification = () => {
+  const showNotification = (error) => {
+    setIsLoading(false);
+    setPostError(error);
     setShow(true);
     setTimeout(() => {
       setShow(false);
     }, 5000);
+  };
+
+  const onSave = (content) => {
+    console.log("saving", content);
+    sessionStorage.setItem("draftail:content", JSON.stringify(content));
   };
 
   return (
@@ -71,19 +89,39 @@ export const NewsPanel = () => {
               style={{ resize: "none", height: "100px" }}
             />
             <label className="form-label">Imagen</label>
-            <input type="file" name="image" />
+            <input required type="file" name="image" className="mb-8" />
+            <img src="#" alt="news main image" onChange={() => {}} />
             <label className="form-label">Contenido</label>
-            <Editor
-              editorState={editorState}
-              onChange={setEditorState}
-              wrapperClassName="wrapper-class"
-              editorClassName="editor-class"
-              toolbarClassName="toolbar-class"
+            <DraftailEditor
+              rawContentState={null}
+              onSave={onSave}
+              blockTypes={[
+                { type: BLOCK_TYPE.HEADER_FIVE },
+                { type: BLOCK_TYPE.CODE },
+                { type: BLOCK_TYPE.BLOCKQUOTE },
+                { type: BLOCK_TYPE.UNORDERED_LIST_ITEM },
+                { type: BLOCK_TYPE.ORDERED_LIST_ITEM },
+                { type: BLOCK_TYPE.ATOMIC },
+              ]}
+              inlineStyles={[
+                { type: INLINE_STYLE.BOLD },
+                { type: INLINE_STYLE.ITALIC },
+                { type: INLINE_STYLE.UNDERLINE },
+                { type: INLINE_STYLE.SMALL },
+              ]}
+              plugins={[imagePlugin]}
             />
             <button
               type="submit"
-              className="button button-wide-mobile button-sm button-primary"
+              className="button button-primary mt-32"
+              disabled={isLoading}
             >
+              <SpinnerDotted
+                size={20}
+                enabled={isLoading}
+                className="mr-16"
+                color="white"
+              />
               Nueva noticia
             </button>
           </form>

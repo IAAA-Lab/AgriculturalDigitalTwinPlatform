@@ -1,3 +1,4 @@
+import { Roles } from "../config/roles";
 import LayoutAdmin from "../layouts/LayoutAdmin";
 import LayoutAgrarian from "../layouts/LayoutAgrarian";
 import LayoutDefault from "../layouts/LayoutDefault";
@@ -6,6 +7,7 @@ import { Blog } from "../pages/Blog";
 import Home from "../pages/Home";
 import { NewsPanel } from "../pages/NewsPanel";
 import { SingleNew } from "../pages/SingleNew";
+import { UsersTable } from "../pages/UsersTable";
 
 const getRoutes = (role, logged) => {
   if (!logged)
@@ -30,7 +32,7 @@ const getRoutes = (role, logged) => {
       },
     ];
   switch (role) {
-    case "admin":
+    case Roles.ADMIN:
       return [
         {
           exact: true,
@@ -53,6 +55,14 @@ const getRoutes = (role, logged) => {
         },
         {
           exact: true,
+          path: "/users",
+          protected: true,
+          name: "Usuarios",
+          component: UsersTable,
+          layout: LayoutAdmin,
+        },
+        {
+          exact: true,
           path: "https://draftjs.org",
           name: "Panel agrario",
           protected: true,
@@ -67,7 +77,7 @@ const getRoutes = (role, logged) => {
           layout: LayoutAdmin,
         },
       ];
-    case "news-editor":
+    case Roles.NEWS_ADMIN:
       return [
         {
           exact: true,
@@ -97,7 +107,7 @@ const getRoutes = (role, logged) => {
         },
       ];
 
-    case "user-agrarian":
+    case Roles.AGRARIAN_USER:
       return [
         {
           exact: true,

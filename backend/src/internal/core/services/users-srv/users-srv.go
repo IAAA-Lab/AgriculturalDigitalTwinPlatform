@@ -6,6 +6,8 @@ import (
 	"prakticas/backend-gpsoft/src/internal/core/ports"
 	"prakticas/backend-gpsoft/src/pkg/apperrors"
 	"prakticas/backend-gpsoft/src/pkg/utils"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type service struct {
@@ -36,12 +38,20 @@ func (srv *service) CheckLogin(username string, password string) (domain.User, e
 	return user, nil
 }
 
-func (srv *service) FetchAllUsers() ([]domain.User, error) {
+func (srv *service) FetchAllUsers() ([]domain.UserNoPasswd, error) {
 	users, err := srv.usersrepository.FetchAllUsers()
 	if err != nil {
-		return []domain.User{}, apperrors.ErrNotFound
+		return []domain.UserNoPasswd{}, apperrors.ErrNotFound
 	}
 	return users, nil
+}
+
+func (srv *service) DeleteUser(id primitive.ObjectID) error {
+	err := srv.usersrepository.DeleteUser(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (srv *service) PostNewUser(user domain.User) error {

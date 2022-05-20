@@ -10,6 +10,12 @@ type User struct {
 	Password string `bson:"passwd,omitempty"`
 	Role     string `bson:"role"`
 }
+
+type UserNoPasswd struct {
+	ID       primitive.ObjectID `bson:"_id"`
+	Username string             `bson:"username,omitempty"`
+	Role     string             `bson:"role"`
+}
 type New struct {
 	ID                primitive.ObjectID `bson:"_id,omitempty"`
 	Title             string             `bson:"title,omitempty"`

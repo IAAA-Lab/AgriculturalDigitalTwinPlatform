@@ -8,7 +8,7 @@ import { newsService } from "../api/news";
 import { useLocation } from "react-router-dom";
 import { getFormattedDate } from "../utils/functions";
 
-export const SingleNew = (...props) => {
+export const SingleNew = ({ ...props }) => {
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
@@ -43,7 +43,16 @@ export const SingleNew = (...props) => {
           <h3 className="mt-0 mb-8">{title}</h3>
           <p className="text-xs">{littleDescription}</p>
           <div>
-            <Image src={image} alt="new image" width="100%" />
+            <img
+              src={image}
+              alt="new image"
+              width="100%"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src =
+                  "https://previews.123rf.com/images/alhovik/alhovik1709/alhovik170900031/86481591-breaking-news-background-world-global-tv-news-banner-design.jpg";
+              }}
+            />
             <figcaption>Foto por Giovanni Giorgio</figcaption>
           </div>
           <div className="mt-32 text-sm">{HTMLReactParser(description)}</div>

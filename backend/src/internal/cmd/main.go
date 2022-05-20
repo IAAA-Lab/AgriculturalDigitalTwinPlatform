@@ -12,39 +12,6 @@ package main
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:8080
-// @BasePath /api/v1
-// @query.collection.format multi
-
-// @securityDefinitions.basic BasicAuth
-
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
-
-// @securitydefinitions.oauth2.application OAuth2Application
-// @tokenUrl https://example.com/oauth/token
-// @scope.write Grants write access
-// @scope.admin Grants read and write access to administrative information
-
-// @securitydefinitions.oauth2.implicit OAuth2Implicit
-// @authorizationurl https://example.com/oauth/authorize
-// @scope.write Grants write access
-// @scope.admin Grants read and write access to administrative information
-
-// @securitydefinitions.oauth2.password OAuth2Password
-// @tokenUrl https://example.com/oauth/token
-// @scope.read Grants read access
-// @scope.write Grants write access
-// @scope.admin Grants read and write access to administrative information
-
-// @securitydefinitions.oauth2.accessCode OAuth2AccessCode
-// @tokenUrl https://example.com/oauth/token
-// @authorizationurl https://example.com/oauth/authorize
-// @scope.admin Grants read and write access to administrative information
-
-// @x-extension-openapi {"example": "value on a json format"}
-
 import (
 	"log"
 	"os"
@@ -78,7 +45,6 @@ func CorsConfig() gin.HandlerFunc {
 			c.AbortWithStatus(204)
 			return
 		}
-
 		c.Next()
 	}
 }
@@ -112,6 +78,7 @@ func setupRouter() *gin.Engine {
 	r.POST("/login", usersHandler.CheckLogin)
 	r.POST("/users", middleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.CreateNewUser)
 	r.GET("/users", middleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.FetchAllUsers)
+	r.DELETE("/users/:id", middleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.DeleteUser)
 	r.GET("/news/number", newsHandler.GetNumber)
 	r.GET("/news", newsHandler.Get)
 	r.POST("/news", middleware.AuthorizeJWT([]string{domain.Admin, domain.Editor}), newsHandler.PostNewNews)

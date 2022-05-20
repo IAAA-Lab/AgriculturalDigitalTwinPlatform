@@ -16,7 +16,8 @@ type NewsService interface {
 
 type UsersService interface {
 	CheckLogin(username string, password string) (domain.User, error)
-	FetchAllUsers() ([]domain.User, error)
+	FetchAllUsers() ([]domain.UserNoPasswd, error)
+	DeleteUser(id primitive.ObjectID) error
 	PostNewUser(user domain.User) error
 }
 

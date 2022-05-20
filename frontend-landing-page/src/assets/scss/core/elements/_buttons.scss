@@ -136,6 +136,23 @@
   }
 }
 
+.button-delete {
+  color: color(button-secondary);
+  background-color: color-bg(button-delete);
+  border-color: color-border(button-secondary);
+
+  &:hover {
+    background-color: color-bg(button-secondary-hover);
+    border-color: color-border(button-secondary-hover);
+  }
+
+  &.is-loading {
+    &::after {
+      border-color: color(button-secondary);
+    }
+  }
+}
+
 .button-block {
   display: flex;
   width: 100%;
