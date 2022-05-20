@@ -2,8 +2,10 @@ package usersrepo
 
 import (
 	"context"
+	"os"
 	"prakticas/backend-gpsoft/src/internal/core/domain"
 	"prakticas/backend-gpsoft/src/pkg/apperrors"
+	"prakticas/backend-gpsoft/src/pkg/utils"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -46,9 +48,17 @@ func (mc *mongodbConn) CheckLogin(username string, password []byte) (domain.User
 }
 
 func (mc *mongodbConn) PostNewUser(user domain.User) error {
+	key := os.Getenv("KEY_DECRYPT_PASSWD")
+	iv := os.Getenv("IV_BLOCK_PASSWD")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
 	defer cancel()
-	_, err := mc.db.Collection("User").InsertOne(ctx, user)
+	decodedPasswd := utils.Ase256Decode(user.Password, key, iv)
+	encryptedPasswd, err := bcrypt.GenerateFromPassword(decodedPasswd, bcrypt.DefaultCost)
+	if err != nil {
+		return apperrors.ErrInternal
+	}
+	user.Password = string(encryptedPasswd)
+	_, err = mc.db.Collection("User").InsertOne(ctx, user)
 	if err != nil {
 		return apperrors.ErrInternal
 	}

@@ -1,14 +1,28 @@
 import React from "react";
+import { usersService } from "../../api/users";
 import { Roles } from "../../config/roles";
 import Modal from "../elements/Modal";
 
 export const CreateUser = ({ show = false }) => {
+  const createUser = async (e) => {
+    e.preventDefault();
+    const { name, password, role } = e.target;
+    const response = await usersService.createUser(
+      name.value,
+      password.value,
+      role.value
+    );
+    if (response) {
+      console.log(response);
+    }
+  };
+
   return (
     <Modal show={show}>
       <section>
         <div className="container-sm mb-16">
           <h4>Nuevo usuario</h4>
-          <form className="tiles-col" onSubmit={(e) => e.preventDefault()}>
+          <form className="tiles-col" onSubmit={createUser}>
             <label className="text-xs" htmlFor="name">
               Nombre
             </label>

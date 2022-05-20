@@ -1,6 +1,7 @@
 package usershdl
 
 import (
+	"fmt"
 	"prakticas/backend-gpsoft/src/internal/core/domain"
 	"prakticas/backend-gpsoft/src/internal/core/ports"
 	authsrv "prakticas/backend-gpsoft/src/internal/core/services/auth-srv"
@@ -33,8 +34,13 @@ func (hdl *HTTPHandler) CheckLogin(c *gin.Context) {
 
 func (hdl *HTTPHandler) CreateNewUser(c *gin.Context) {
 	var user domain.User
-	c.BindJSON(&user)
-	err := hdl.usersService.PostNewUser(user)
+	fmt.Println(c.Request.Body)
+	err := c.BindJSON(&user)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{"message": err.Error()})
+		return
+	}
+	err = hdl.usersService.PostNewUser(user)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
