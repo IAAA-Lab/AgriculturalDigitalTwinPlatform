@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+
+  frontend-landing-page:
+    container_name: landing-page
+    build: frontend-landing-page
+    volumes:
+      - ./frontend-landing-page:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    env_file:
+      - frontend-landing-page/.env.local
+      # The Go App
+  backend:
+    build: backend
+    container_name: gin-server
+    env_file:
+      - backend/secrets/.env.production
+    environment:
+      - ENV_MODE=DOCKER
+    ports:
+        - "8080:8080"
+    volumes:
+        - ./backend:/gin-server
+    command: go run ./src/internal/cmd/main.go

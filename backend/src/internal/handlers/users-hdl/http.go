@@ -1,0 +1,51 @@
+package usershdl
+
+import (
+	"prakticas/backend-gpsoft/src/internal/core/domain"
+	"prakticas/backend-gpsoft/src/internal/core/ports"
+	authsrv "prakticas/backend-gpsoft/src/internal/core/services/auth-srv"
+
+	"github.com/gin-gonic/gin"
+)
+
+type HTTPHandler struct {
+	usersService ports.UsersService
+}
+
+func NewHTTPHandler(usersService ports.UsersService) *HTTPHandler {
+	return &HTTPHandler{
+		usersService: usersService,
+	}
+}
+
+func (hdl *HTTPHandler) CheckLogin(c *gin.Context) {
+	var user domain.User
+	c.BindJSON(&user)
+	user, err := hdl.usersService.CheckLogin(user.Username, user.Password)
+	token := authsrv.JWTAuthService().GenerateToken(user.Username, user.Role)
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(200, token)
+}
+
+func (hdl *HTTPHandler) CreateNewUser(c *gin.Context) {
+	var user domain.User
+	c.BindJSON(&user)
+	err := hdl.usersService.PostNewUser(user)
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(201, nil)
+}
+
+func (hdl *HTTPHandler) FetchAllUsers(c *gin.Context) {
+	users, err := hdl.usersService.FetchAllUsers()
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(200, users)
+}
