@@ -13,7 +13,6 @@ package main
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 import (
-	"log"
 	"os"
 
 	"github.com/dvwright/xss-mw"
@@ -100,7 +99,7 @@ func setUpEnv() {
 		err = godotenv.Load("../../../secrets/.env.local")
 	}
 	if err != nil {
-		log.Fatal("Error loading .env file")
+
 	}
 }
 
