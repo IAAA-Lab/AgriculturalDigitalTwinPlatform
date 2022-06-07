@@ -1,0 +1,36 @@
+.badge-wrapper {
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+}
+
+.badge-notification {
+  @extend .badge;
+  right: 4px;
+  top: -8px;
+  background: color(badge-notification);
+  text-align: center;
+  border-radius: 30px;
+  padding: 0px 5px 0px 5px;
+
+  p {
+    color: white;
+  }
+
+  @include media(">small") {
+    right: 17px;
+  }
+}
+
+.badge-image-field {
+  @extend .badge;
+  top: 10px;
+  right: 10px;
+  background: rgb(235, 235, 235);
+  border-radius: 5px;
+  padding: 5px 5px 0px 5px;
+  border: 1px solid rgb(106, 106, 106);
+  cursor: pointer;
+}

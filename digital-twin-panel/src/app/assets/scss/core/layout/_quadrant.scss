@@ -1,0 +1,25 @@
+.site-quadrant-left {
+  flex: 1;
+  overflow: hidden;
+  overflow-y: scroll;
+  height: 100%;
+}
+
+.site-quadrant-right {
+  flex: 1;
+  overflow: hidden;
+  overflow-y: scroll;
+  height: 100%;
+}
+
+.vertical-site-separator {
+  border: 1px solid rgba(162, 162, 162, 0.506);
+  margin: 0px 15px 0px 15px;
+}
+
+@include media("<medium") {
+  .vertical-site-separator {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+}

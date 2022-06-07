@@ -1,0 +1,51 @@
+html,
+body {
+  margin: 0;
+}
+
+svg {
+  fill: color-icon(social);
+  transition: fill 0.15s ease;
+
+  .invert-color & {
+    fill: color-icon(social-inverse);
+  }
+}
+
+img {
+  border-radius: $img-radius;
+  object-fit: cover;
+  aspect-ratio: 4 / 3;
+}
+
+.bordered {
+  border: 2px solid color(primary);
+}
+
+.leaflet-container {
+  border: 2px solid color(primary);
+  border-radius: 5px;
+  aspect-ratio: 4 / 3;
+}
+
+.leaflet-bottom,
+.leaflet-right {
+  visibility: hidden;
+}
+
+.leaflet-popup-content {
+  padding-top: 15px;
+  cursor: pointer;
+  margin: 6px 8px 6px 6px !important;
+
+  p {
+    margin: 0 !important;
+  }
+}
+
+@include media(">small") {
+  .leaflet-popup-content {
+    min-width: 150px !important;
+    margin: 8px 13px 8px 8px !important;
+  }
+}

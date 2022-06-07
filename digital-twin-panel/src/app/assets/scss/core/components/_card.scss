@@ -1,0 +1,46 @@
+.card-features {
+  background: color(card);
+  border: 1px solid #d8dae5;
+  padding: 10px;
+  box-shadow: 0px 4px 8px rgba(16, 24, 64, 0.08);
+  border-radius: 8px;
+  display: flex;
+  overflow: hidden;
+  max-height: 100px;
+  text-size-adjust: "80%";
+}
+
+.card-plants {
+  @extend .card-features;
+  flex: 1;
+  min-height: 65px;
+  background: color(primary);
+}
+
+.card-analysis {
+  background: color(card);
+  border: 1px solid #d8dae5;
+  padding: 10px;
+  box-shadow: 0px 4px 8px rgba(16, 24, 64, 0.08);
+  border-radius: 8px;
+  min-height: 200px;
+
+  .invert-color & {
+    background: color(card-inverse);
+  }
+
+  @include media("<medium") {
+    width: 1000px;
+    display: flex;
+    overflow: hidden;
+    overflow-x: scroll;
+  }
+}
+
+.notifications-card {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #d8dae5;
+  padding: 10px;
+  box-shadow: 0px 4px 8px rgba(16, 24, 64, 0.08);
+  border-radius: 8px;
+}

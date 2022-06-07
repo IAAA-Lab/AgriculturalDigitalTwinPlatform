@@ -1,0 +1,20 @@
+.card-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+
+  @include media("<medium") {
+    justify-content: center;
+  }
+}
+
+.card-tiles-item {
+  min-width: 160px;
+  max-width: 200px;
+  padding: 8px 5px 8px 5px;
+
+  @include media("<small") {
+    flex: 1;
+    max-width: none;
+  }
+}
