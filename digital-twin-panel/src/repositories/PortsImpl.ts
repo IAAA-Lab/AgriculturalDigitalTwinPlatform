@@ -7,7 +7,7 @@ class FieldService implements IFieldService {
   constructor(fieldRepository: IFieldRepository) {
     this.fieldRepository = fieldRepository;
   }
-  getFieldsInArea(areaId: string): Promise<FieldProfile[]> {
+  getFieldsInArea(areaId: string): Promise<FieldsPerArea> {
     return this.fieldRepository.getFieldsInArea(areaId);
   }
   getField(fieldId: string): Promise<Field> {
@@ -22,7 +22,7 @@ class AreaService implements IAreaService {
     this.fieldRepository = fieldRepository;
   }
 
-  getAreasByUser(userId: string): Promise<Area[]> {
+  getAreasByUser(userId: string): Promise<AreasPerUser> {
     return this.fieldRepository.getAreasByUser(userId);
   }
 }

@@ -1,16 +1,17 @@
 import classNames from "classnames";
-import React from "react";
+import { doToggleNotifications } from "../../../../../app/config/context/redux/app-actions";
+import { useTypedDispatch } from "../../../../../app/config/context/redux/app-store";
 
 type Props = {
   show: boolean;
-  setShow: (show: boolean) => void;
 };
 
-export const NotificationsLayer = ({ show = false, setShow }: Props) => {
+export const NotificationsLayer = ({ show = false }: Props) => {
   const classes = classNames("notifications-wrapper", show && "off-is-active");
+  const dispatch = useTypedDispatch();
 
   return (
-    <div className={classes} onClick={() => setShow(false)}>
+    <div className={classes} onClick={() => dispatch(doToggleNotifications())}>
       <div className="notifications-inner">
         <div className="notifications-card">
           <h3>Fire!</h3>

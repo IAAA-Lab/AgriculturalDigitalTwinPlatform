@@ -1,0 +1,63 @@
+.weather-wrapper {
+  opacity: 0;
+  background: rgba(106, 106, 106, 0.715);
+  position: fixed;
+  height: 0;
+  width: 100vw;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 2000;
+  transform: translateY(-999px);
+  animation: fadeOutFromBlock 0.25s ease-in;
+  will-change: opacity, transform;
+
+  &.off-is-active {
+    opacity: 1;
+    height: 100vh;
+    transform: translateY(0px);
+    animation: fadeInFromNone 0.25s ease-in;
+    will-change: opacity, transform;
+  }
+}
+
+.weather-inner {
+  top: 0;
+  margin: 10px;
+  width: 90%;
+}
+
+@keyframes fadeOutFromBlock {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  90% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-999px);
+  }
+}
+
+@keyframes fadeInFromNone {
+  0% {
+    opacity: 0;
+    transform: translateY(-999px);
+  }
+
+  1% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

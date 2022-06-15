@@ -1,3 +1,4 @@
+import { ReactNode, useEffect, useRef } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { getRoutes } from "./app/config/routes/routes";
 import { Page404 } from "./infraestructure/delivery/presentation/pages/Page404";

@@ -1,3 +1,3 @@
 export const PlantList = () => {
-  return <div className="card-plants"></div>;
+  return <div className="card-plants "></div>;
 };

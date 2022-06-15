@@ -26,4 +26,8 @@ const getRandomColor = () => {
   return result;
 };
 
-export { getRandomColor };
+const numberWithCommas = (num?: number) => {
+  return num?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
+export { getRandomColor, numberWithCommas };

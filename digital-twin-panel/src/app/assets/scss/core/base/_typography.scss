@@ -31,6 +31,7 @@ h6,
   @include font-family(heading);
   @include font-weight(heading);
   clear: both;
+  letter-spacing: 1px !important;
   color: color(heading);
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -74,6 +75,15 @@ small,
 
 .text-xxs {
   @include font-size(xxs);
+  color: color(low-contrast);
+}
+
+.text-xs-caps {
+  color: color(mid-contrast);
+  @include font-size(xs);
+  text-transform: uppercase;
+  @include font-weight(heading);
+  letter-spacing: 0.3px;
 }
 
 figcaption {
@@ -330,16 +340,15 @@ strong {
   small,
   .text-sm {
     @include font-size(sm-desktop);
+    letter-spacing: 0.25px;
   }
 
   .text-xs {
     @include font-size(xs-desktop);
-    letter-spacing: 1px;
+    letter-spacing: 0.25px;
   }
 
   .text-xxs {
-    letter-spacing: 1px;
-    color: color(mid-contrast);
     @include font-size(xxs-desktop);
   }
 
@@ -350,4 +359,8 @@ strong {
   blockquote {
     @include font-size(bquote-desktop);
   }
+}
+
+.recharts-legend-wrapper {
+  @include font-size(xs);
 }

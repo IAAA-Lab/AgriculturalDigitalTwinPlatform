@@ -7,7 +7,7 @@ class AreaUseCases {
     this.areaService = areaService;
   }
 
-  async getAreasByUser(userId: string): Promise<Area[]> {
+  async getAreasByUser(userId: string): Promise<AreasPerUser> {
     return this.areaService.getAreasByUser(userId);
   }
 }

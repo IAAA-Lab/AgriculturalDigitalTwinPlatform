@@ -4,13 +4,13 @@
 $palette: (
   light: (
     1: #ffffff,
-    2: #424f58,
+    2: #2f485a,
     3: #717d86,
   ),
   dark: (
-    1: #151719,
-    2: #25282c,
-    3: #33363a,
+    1: #232d36,
+    2: #354051,
+    3: #3e4752,
   ),
   primary: (
     1: #82b33c,
@@ -25,15 +25,15 @@ $palette: (
     4: #d2f9ee,
   ),
   alert: (
-    error: #de4151,
-    warning: #ffa173,
+    error: #eb5b6a,
+    warning: #fcc07c,
     success: #b6e573,
   ),
 );
 
 // Base typography: color
 $color: (
-  heading: get-color(dark, 1),
+  heading: get-color(dark, 2),
   card: rgba(get-color(light, 1), 0.5),
   badge-notification: get-color(alert, error),
   base: get-color(dark, 2),
@@ -43,8 +43,11 @@ $color: (
   primary: get-color(primary, 3),
   secondary: get-color(secondary, 1),
   error: get-color(alert, error),
+  error-text: darken(get-color(alert, error), 40%),
   warning: get-color(alert, warning),
+  warning-text: darken(get-color(alert, warning), 45%),
   success: get-color(alert, success),
+  success-text: darken(get-color(alert, success), 45%),
   // ↓ Inverted colors
   heading-inverse: get-color(dark, 1),
   card-inverse: rgba(get-color(light, 1), 0.5),
@@ -56,7 +59,7 @@ $color: (
 
 // Borders and dividers: color
 $border--color: (
-  divider: get-color(dark, 2),
+  divider: get-color(light, 3),
   divider-inverse: get-color(light, 1),
 );
 
@@ -86,7 +89,7 @@ $icon--color: (
   social-inverse: null,
   // social icons
   social-hover-inverse: null
-    // social icons (:hover),,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    // social icons (:hover),,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 // Misc elements: background color

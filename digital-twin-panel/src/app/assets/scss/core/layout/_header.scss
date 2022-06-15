@@ -41,25 +41,11 @@
   }
 
   li {
+    cursor: pointer;
+    margin: 0 $header-nav--padding-h;
     + .header-button {
       margin-left: $header-nav--padding-h;
     }
-  }
-
-  a:not(.button) {
-    display: block;
-    @include anchor-aspect(header);
-    @include font-weight(header-link);
-    text-transform: $link-header--transform;
-    margin: 0 $header-nav--padding-h;
-
-    .invert-color & {
-      @include anchor-aspect(header, inverse);
-    }
-  }
-
-  a.button {
-    margin-left: $header-nav--padding-h;
   }
 }
 
@@ -89,7 +75,7 @@
     }
 
     ul {
-      a:not(.button) {
+      li {
         margin: 0 $header-nav--padding-h * 0.4;
       }
     }

@@ -1,12 +1,12 @@
 import FieldRestAPI from "./data-sources/rest-api/FieldsData";
 
 interface IFieldRepository {
-  getFieldsInArea(areaId: string): Promise<FieldProfile[]>;
+  getFieldsInArea(areaId: string): Promise<FieldsPerArea>;
   getField(fieldId: string): Promise<Field>;
 }
 
 interface IAreaRepository {
-  getAreasByUser(userId: string): Promise<Area[]>;
+  getAreasByUser(userId: string): Promise<AreasPerUser>;
 }
 
 class FieldRepository implements IFieldRepository {
@@ -16,7 +16,7 @@ class FieldRepository implements IFieldRepository {
     this.data = data;
   }
 
-  async getFieldsInArea(areaId: string): Promise<FieldProfile[]> {
+  async getFieldsInArea(areaId: string): Promise<FieldsPerArea> {
     return this.data.getFieldsInArea(areaId);
   }
   async getField(fieldId: string): Promise<Field> {
@@ -31,7 +31,7 @@ class AreaRepository implements IAreaRepository {
     this.data = data;
   }
 
-  async getAreasByUser(userId: string): Promise<Area[]> {
+  async getAreasByUser(userId: string): Promise<AreasPerUser> {
     return this.data.getAreasByUser(userId);
   }
 }

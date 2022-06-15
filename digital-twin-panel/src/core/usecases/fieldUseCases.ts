@@ -7,7 +7,7 @@ class FieldUseCases {
     this.fieldService = fieldService;
   }
 
-  async getAllFieldsInArea(areaId: string): Promise<FieldProfile[]> {
+  async getAllFieldsInArea(areaId: string): Promise<FieldsPerArea> {
     return this.fieldService.getFieldsInArea(areaId);
   }
 

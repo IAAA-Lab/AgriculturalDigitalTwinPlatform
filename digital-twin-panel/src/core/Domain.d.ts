@@ -12,7 +12,7 @@ type GeoLocation = {
 
 type FieldCharacteristics = {
   name: string;
-  value: string;
+  value: number;
   unit?: string;
   state?: CharacteristicState;
 };
@@ -34,10 +34,26 @@ type FieldProfile = {
   imageUrl: string;
 };
 
+type FieldsPerArea = {
+  fields: Field[];
+  features: {
+    characteristics: FieldCharacteristics[];
+    distinctCharacteristics: string[];
+  };
+};
+
 type Field = {
   fieldProfile: FieldProfile;
   characteristics: FieldCharacteristics[];
   diseases: Disease[];
+};
+
+type AreasPerUser = {
+  areas: Area[];
+  features: {
+    characteristics: FieldCharacteristics[];
+    distinctCharacteristics: string[];
+  };
 };
 
 type Area = {

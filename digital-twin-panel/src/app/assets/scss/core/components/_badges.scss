@@ -3,29 +3,51 @@
 }
 
 .badge {
-  position: absolute;
+  text-align: center;
+  border-radius: 8px;
+  padding: 0px 5px 0px 5px;
 }
 
 .badge-notification {
+  position: absolute;
   @extend .badge;
-  right: 4px;
+  border-radius: 30px;
+  right: -2px;
   top: -8px;
   background: color(badge-notification);
-  text-align: center;
-  border-radius: 30px;
-  padding: 0px 5px 0px 5px;
 
   p {
     color: white;
   }
+}
 
-  @include media(">small") {
-    right: 17px;
-  }
+.badge-state-BIEN {
+  @extend .badge;
+  background: color(success);
+  color: color(success-text);
+}
+
+.badge-state-MEDIO {
+  @extend .badge;
+  background: color(warning);
+  color: color(warning-text);
+}
+
+.badge-state-MAL {
+  @extend .badge;
+  background: color(error);
+  color: color(error-text);
+}
+
+.badge-state-NA {
+  @extend .badge;
+  background: color(low-contrast);
+  color: color(low-contrast-text);
 }
 
 .badge-image-field {
   @extend .badge;
+  position: absolute;
   top: 10px;
   right: 10px;
   background: rgb(235, 235, 235);

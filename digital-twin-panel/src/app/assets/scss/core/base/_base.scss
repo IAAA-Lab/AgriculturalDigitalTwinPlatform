@@ -1,6 +1,13 @@
 html,
 body {
   margin: 0;
+  z-index: 0;
+}
+
+select {
+  padding: 2px 5px 2px 5px;
+  // appearance: none;
+  // -webkit-appearance: none;
 }
 
 svg {
@@ -22,30 +29,7 @@ img {
   border: 2px solid color(primary);
 }
 
-.leaflet-container {
-  border: 2px solid color(primary);
-  border-radius: 5px;
-  aspect-ratio: 4 / 3;
-}
-
-.leaflet-bottom,
-.leaflet-right {
-  visibility: hidden;
-}
-
-.leaflet-popup-content {
-  padding-top: 15px;
-  cursor: pointer;
-  margin: 6px 8px 6px 6px !important;
-
-  p {
-    margin: 0 !important;
-  }
-}
-
-@include media(">small") {
-  .leaflet-popup-content {
-    min-width: 150px !important;
-    margin: 8px 13px 8px 8px !important;
-  }
+.illustration-background::after {
+  z-index: -2;
+  @include illustration("illustration-background-2.svg", 100%, 120%, top);
 }

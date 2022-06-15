@@ -1,30 +1,28 @@
 import { useEffect, useState } from "react";
-import { areaUseCases } from "../../../../app/config/configuration";
-import { AnalysisCards } from "../sections/AnalysisCards";
-import { AreaMap } from "../sections/AreaMap";
+import { fieldUseCases } from "../../../../app/config/configuration";
+import { HomeAnalysisCards } from "../sections/HomeAnalysisCards";
+import { AreaMap } from "../sections/Area/AreaMap";
 import { FeaturesSection } from "../sections/FeaturesSection";
 import { PlantList } from "../sections/PlantList";
 
 export const Area = () => {
-  const [areas, setAreas] = useState<Area[]>([]);
+  const [fields, setFields] = useState<FieldsPerArea>();
 
   useEffect(() => {
-    areaUseCases.getAreasByUser("userId").then((data) => {
-      setAreas(data);
-    });
+    fieldUseCases.getAllFieldsInArea("1").then((data) => setFields(data));
   }, []);
 
   return (
     <div className="site-inner-content">
       <div className="site-quadrant-left">
-        <AreaMap />
-        <FeaturesSection features={[]} />
+        <AreaMap fieldProfileList={fields?.fields} />
+        <FeaturesSection features={fields?.features.characteristics} />
         <PlantList />
         <br />
       </div>
       <div className="vertical-site-separator" />
       <div className="site-quadrant-right">
-        <AnalysisCards />
+        <HomeAnalysisCards />
       </div>
     </div>
   );

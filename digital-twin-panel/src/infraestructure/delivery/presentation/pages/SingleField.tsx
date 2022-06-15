@@ -1,4 +1,4 @@
-import { AnalysisCards } from "../sections/AnalysisCards";
+import { HomeAnalysisCards } from "../sections/HomeAnalysisCards";
 import { PlantList } from "../sections/PlantList";
 
 export const SingleField = () => {
@@ -33,7 +33,7 @@ export const SingleField = () => {
       </div>
       <div className="vertical-site-separator" />
       <div className="site-quadrant-right">
-        <AnalysisCards />
+        <HomeAnalysisCards />
       </div>
     </div>
   );

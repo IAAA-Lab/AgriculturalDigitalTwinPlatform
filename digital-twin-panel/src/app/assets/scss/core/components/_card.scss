@@ -23,17 +23,17 @@
   padding: 10px;
   box-shadow: 0px 4px 8px rgba(16, 24, 64, 0.08);
   border-radius: 8px;
-  min-height: 200px;
+  display: flex;
+  align-items: center;
+  height: 210px;
+
+  @include media("<medium") {
+    width: 400px;
+    flex: none;
+  }
 
   .invert-color & {
     background: color(card-inverse);
-  }
-
-  @include media("<medium") {
-    width: 1000px;
-    display: flex;
-    overflow: hidden;
-    overflow-x: scroll;
   }
 }
 
