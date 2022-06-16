@@ -18,16 +18,6 @@ func New(usersrepository ports.UsersRepository) *service {
 	return &service{usersrepository: usersrepository}
 }
 
-// Checks if login is ok
-// @Summary Returns all
-// @Description get string by ID
-// @ID get-string-by-string
-// @Accept  json
-// @Produce  json
-// @Param id path int true "Account ID"
-// @Success 200 {object} domain.User
-// @Failure 400 Not found
-// @Router /news/number [get]
 func (srv *service) CheckLogin(username string, password string) (domain.User, error) {
 	key := os.Getenv("KEY_DECRYPT_PASSWD")
 	iv := os.Getenv("IV_BLOCK_PASSWD")
@@ -44,6 +34,14 @@ func (srv *service) FetchAllUsers() ([]domain.UserNoPasswd, error) {
 		return []domain.UserNoPasswd{}, apperrors.ErrNotFound
 	}
 	return users, nil
+}
+
+func (srv *service) FetchUser(id primitive.ObjectID) (domain.UserNoPasswd, error) {
+	user, err := srv.usersrepository.FetchUser(id)
+	if err != nil {
+		return domain.UserNoPasswd{}, err
+	}
+	return user, nil
 }
 
 func (srv *service) DeleteUser(id primitive.ObjectID) error {

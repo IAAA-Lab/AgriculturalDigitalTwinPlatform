@@ -26,6 +26,7 @@ import (
 
 	"prakticas/backend-gpsoft/docs"
 	"prakticas/backend-gpsoft/src/internal/core/domain"
+	authsrv "prakticas/backend-gpsoft/src/internal/core/services/auth-srv"
 	newssrv "prakticas/backend-gpsoft/src/internal/core/services/news-srv"
 	userssrv "prakticas/backend-gpsoft/src/internal/core/services/users-srv"
 	newsrepo "prakticas/backend-gpsoft/src/internal/dataSources/news-repo"
@@ -62,26 +63,27 @@ func setupRouter() *gin.Engine {
 	usersService := userssrv.New(usersrespository)
 	usersHandler := usershdl.NewHTTPHandler(usersService)
 
+	redisClient := middleware.SetUpRedisClient()
+	authService := authsrv.JWTAuthService(redisClient)
+	authMiddleware := middleware.Init(authService, usersService)
+
 	r := gin.Default()
 	r.Use(CorsConfig())
 	var xssMdlwr xss.XssMw
 	r.Use(xssMdlwr.RemoveXss())
-	// @Success 200 {string} string	"ok"
-	// @failure 400 {string} string	"error"
-	// @response default {string} string	"other error"
-	// @Header 200 {string} Location "/entity/1"
-	// @Header 200,400,default {string} Token "token"
-	// @Header all {string} Token2 "token2"
+
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(200, "pong")
 	})
-	r.POST("/login", usersHandler.CheckLogin)
-	r.POST("/users", middleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.CreateNewUser)
-	r.GET("/users", middleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.FetchAllUsers)
-	r.DELETE("/users/:id", middleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.DeleteUser)
+	r.POST("/login", usersHandler.CheckLogin, authMiddleware.ReturnJWT)
+	r.POST("/logout", authMiddleware.RevokeJWT)
+	r.POST("/refresh", authMiddleware.RefreshJWT)
+	r.POST("/users", authMiddleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.CreateNewUser)
+	r.GET("/users", authMiddleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.FetchAllUsers)
+	r.DELETE("/users/:id", authMiddleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.DeleteUser)
 	r.GET("/news/number", newsHandler.GetNumber)
 	r.GET("/news", newsHandler.Get)
-	r.POST("/news", middleware.AuthorizeJWT([]string{domain.Admin, domain.Editor}), newsHandler.PostNewNews)
+	r.POST("/news", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.Editor}), newsHandler.PostNewNews)
 	r.GET("/news/:id", newsHandler.GetDesc)
 
 	return r

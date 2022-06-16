@@ -2,6 +2,7 @@ import React from "react";
 import classNames from "classnames";
 import { SectionTilesProps } from "../../utils/SectionProps";
 import SectionHeader from "./partials/SectionHeader";
+import { TwitterTweetEmbed } from "react-twitter-embed";
 
 const propTypes = {
   ...SectionTilesProps.types,
@@ -40,9 +41,9 @@ const Testimonial = ({
   const tilesClasses = classNames("tiles-wrap", pushLeft && "push-left");
 
   const sectionHeader = {
-    title: "Customer testimonials",
+    title: "Conócenos",
     paragraph:
-      "Vitae aliquet nec ullamcorper sit amet risus nullam eget felis semper quis lectus nulla at volutpat diam ut venenatis tellus—in ornare.",
+      "El grupo IAAA Lab está detrás del proyecto GEDEFEC con el objetivo de ayudar a la digitalización del sector agropecuario.",
   };
 
   return (
@@ -56,45 +57,15 @@ const Testimonial = ({
               data-reveal-delay="200"
             >
               <div className="tiles-item-inner">
-                <div className="testimonial-item-content">
-                  <p className="text-sm mb-0">
-                    — Duis aute irure dolor in reprehenderit in voluptate velit
-                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                    occaecat cupidatat non proident, sunt in culpa qui officia
-                    deserunt mollit anim id est laborum cillum dolore eu fugiat.
-                  </p>
-                </div>
-                <div className="testimonial-item-footer text-xs mt-32 mb-0 has-top-divider">
-                  <span className="testimonial-item-name text-color-high">
-                    Roman Level
-                  </span>
-                  <span className="text-color-low"> / </span>
-                  <span className="testimonial-item-link">
-                    <a href="#0">AppName</a>
-                  </span>
-                </div>
+                <TwitterTweetEmbed tweetId="1536101242832822272" />
+                <div className="testimonial-item-footer text-xs mt-16 mb-0 has-top-divider" />
               </div>
             </div>
 
             <div className="tiles-item reveal-from-bottom">
               <div className="tiles-item-inner">
-                <div className="testimonial-item-content">
-                  <p className="text-sm mb-0">
-                    — Duis aute irure dolor in reprehenderit in voluptate velit
-                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                    occaecat cupidatat non proident, sunt in culpa qui officia
-                    deserunt mollit anim id est laborum cillum dolore eu fugiat.
-                  </p>
-                </div>
-                <div className="testimonial-item-footer text-xs mt-32 mb-0 has-top-divider">
-                  <span className="testimonial-item-name text-color-high">
-                    Diana Rynzhuk
-                  </span>
-                  <span className="text-color-low"> / </span>
-                  <span className="testimonial-item-link">
-                    <a href="#0">AppName</a>
-                  </span>
-                </div>
+                <TwitterTweetEmbed tweetId={"1529155977748135937"} />
+                <div className="testimonial-item-footer text-xs mt-16 mb-0 has-top-divider" />
               </div>
             </div>
 
@@ -103,23 +74,8 @@ const Testimonial = ({
               data-reveal-delay="200"
             >
               <div className="tiles-item-inner">
-                <div className="testimonial-item-content">
-                  <p className="text-sm mb-0">
-                    — Duis aute irure dolor in reprehenderit in voluptate velit
-                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                    occaecat cupidatat non proident, sunt in culpa qui officia
-                    deserunt mollit anim id est laborum cillum dolore eu fugiat.
-                  </p>
-                </div>
-                <div className="testimonial-item-footer text-xs mt-32 mb-0 has-top-divider">
-                  <span className="testimonial-item-name text-color-high">
-                    Ben Stafford
-                  </span>
-                  <span className="text-color-low"> / </span>
-                  <span className="testimonial-item-link">
-                    <a href="#0">AppName</a>
-                  </span>
-                </div>
+                <TwitterTweetEmbed tweetId={"1508717443082035203"} />
+                <div className="testimonial-item-footer text-xs mt-16 mb-0 has-top-divider" />
               </div>
             </div>
           </div>

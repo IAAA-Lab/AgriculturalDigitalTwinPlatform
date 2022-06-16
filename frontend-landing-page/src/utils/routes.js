@@ -63,7 +63,7 @@ const getRoutes = (role, logged) => {
         },
         {
           exact: true,
-          path: "https://draftjs.org",
+          path: "/",
           name: "Panel agrario",
           protected: true,
           component: NewsPanel,
@@ -122,7 +122,7 @@ const getRoutes = (role, logged) => {
         },
         {
           exact: true,
-          path: "https://draftjs.org",
+          path: "/",
           name: "Panel agrario",
           protected: true,
           component: NewsPanel,

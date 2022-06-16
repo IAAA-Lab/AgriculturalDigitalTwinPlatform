@@ -1,11 +1,26 @@
 import { Icon } from "leaflet";
-import { useState } from "react";
-import { MapContainer, TileLayer, Popup, Marker } from "react-leaflet";
+import { ReactNode, useEffect, useRef, useState } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Popup,
+  Marker,
+  CircleMarker,
+  useMap,
+} from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import { GeoList } from "./AreaGeoList";
 
 type Props = {
   areaList?: Area[];
+};
+
+const MyMarker = (props: any) => {
+  const leafletRef = useRef<any>();
+  useEffect(() => {
+    leafletRef.current.openPopup();
+  }, []);
+  return <Marker ref={leafletRef} {...props} />;
 };
 
 export const HomeMap = ({ areaList }: Props) => {
@@ -23,7 +38,7 @@ export const HomeMap = ({ areaList }: Props) => {
               ? [41.442, -0.5432]
               : areaList!![0].geoLocation
           }
-          zoom={13}
+          zoom={11}
           scrollWheelZoom={false}
         >
           <TileLayer
@@ -31,13 +46,12 @@ export const HomeMap = ({ areaList }: Props) => {
             minZoom={7}
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           />
+
           {areaList?.map((area) => (
-            <Marker
+            <MyMarker
               key={area.id}
               eventHandlers={{
-                mouseover: (e) => e.target.openPopup(),
-                mouseout: (e) => e.target.closePopup(),
-                click: (_) => navigation("/area"),
+                click: () => navigation("/area"),
               }}
               icon={
                 new Icon({
@@ -48,10 +62,10 @@ export const HomeMap = ({ areaList }: Props) => {
               }
               position={area.geoLocation}
             >
-              <Popup>
+              <Popup autoClose={false} keepInView>
                 <p>{area.name}</p>
               </Popup>
-            </Marker>
+            </MyMarker>
           ))}
         </MapContainer>
         <GeoList areaList={areaList} />

@@ -16,6 +16,7 @@ type NewsRepository interface {
 type UsersRepository interface {
 	CheckLogin(username string, password []byte) (domain.User, error)
 	FetchAllUsers() ([]domain.UserNoPasswd, error)
+	FetchUser(id primitive.ObjectID) (domain.UserNoPasswd, error)
 	DeleteUser(id primitive.ObjectID) error
 	PostNewUser(user domain.User) error
 }

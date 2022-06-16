@@ -17,11 +17,15 @@ type NewsService interface {
 type UsersService interface {
 	CheckLogin(username string, password string) (domain.User, error)
 	FetchAllUsers() ([]domain.UserNoPasswd, error)
+	FetchUser(id primitive.ObjectID) (domain.UserNoPasswd, error)
 	DeleteUser(id primitive.ObjectID) error
 	PostNewUser(user domain.User) error
 }
 
 type JWTService interface {
-	GenerateToken(user string, role string) string
+	GenerateAccessToken(user domain.User) string
+	GenerateRefreshToken(user domain.User) string
 	ValidateToken(token string) (*jwt.Token, error)
+	DeleteRefreshToken(userId string)
+	GetRefreshToken(userId string) (string, error)
 }

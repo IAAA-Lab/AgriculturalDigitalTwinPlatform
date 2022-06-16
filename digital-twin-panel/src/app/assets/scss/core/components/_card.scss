@@ -27,7 +27,7 @@
   align-items: center;
   height: 210px;
 
-  @include media("<medium") {
+  @include media("<small") {
     width: 400px;
     flex: none;
   }

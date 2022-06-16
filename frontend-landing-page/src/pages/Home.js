@@ -5,6 +5,7 @@ import FeaturesTiles from "../components/sections/FeaturesTiles";
 import FeaturesSplit from "../components/sections/FeaturesSplit";
 import { Financing } from "../components/sections/Financing";
 import { Partnership } from "../components/sections/Partnership";
+import Testimonial from "../components/sections/Testimonial";
 
 const Home = () => {
   return (
@@ -19,7 +20,7 @@ const Home = () => {
       />
       <Partnership />
       <Financing />
-      {/*<Testimonial topDivider /> */}
+      <Testimonial topDivider />
     </>
   );
 };

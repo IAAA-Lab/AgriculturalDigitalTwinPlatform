@@ -6,11 +6,11 @@ import (
 )
 
 type User struct {
-	Username string `bson:"username,omitempty"`
-	Password string `bson:"passwd,omitempty"`
-	Role     string `bson:"role"`
+	ID       primitive.ObjectID `bson:"_id,omitempty"`
+	Username string             `bson:"username,omitempty"`
+	Password string             `bson:"passwd,omitempty"`
+	Role     string             `bson:"role"`
 }
-
 type UserNoPasswd struct {
 	ID       primitive.ObjectID `bson:"_id"`
 	Username string             `bson:"username,omitempty"`
@@ -39,8 +39,9 @@ type Description struct {
 }
 
 type AuthCustomClaims struct {
-	User string `json:"user"`
-	Role string `json:"role"`
+	User_id string `json:"user_id"`
+	User    string `json:"user"`
+	Role    string `json:"role"`
 	jwt.StandardClaims
 }
 

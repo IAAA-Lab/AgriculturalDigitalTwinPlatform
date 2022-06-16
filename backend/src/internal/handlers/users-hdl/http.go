@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"prakticas/backend-gpsoft/src/internal/core/domain"
 	"prakticas/backend-gpsoft/src/internal/core/ports"
-	authsrv "prakticas/backend-gpsoft/src/internal/core/services/auth-srv"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -24,12 +23,12 @@ func (hdl *HTTPHandler) CheckLogin(c *gin.Context) {
 	var user domain.User
 	c.BindJSON(&user)
 	user, err := hdl.usersService.CheckLogin(user.Username, user.Password)
-	token := authsrv.JWTAuthService().GenerateToken(user.Username, user.Role)
+
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(200, token)
+	c.Set("user", user)
 }
 
 func (hdl *HTTPHandler) CreateNewUser(c *gin.Context) {

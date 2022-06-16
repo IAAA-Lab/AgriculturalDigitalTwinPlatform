@@ -43,7 +43,8 @@
   flex-wrap: wrap;
   flex-direction: column;
   height: 100%;
-  padding: $tiles-item--inner-padding-v $tiles-item--inner-padding-h;
+  overflow: hidden;
+  overflow-x: scroll;
 }
 
 @if ($tiles-items--padding__desktop != null) {
@@ -114,4 +115,13 @@
   .tiles-col {
     width: 100%;
   }
+}
+
+.twitter-tweet,
+.twitter-tweet-rendered {
+  height: 350px !important;
+  overflow: hidden;
+  overflow-x: scroll;
+  width: 100% !important;
+  overflow-y: scroll;
 }

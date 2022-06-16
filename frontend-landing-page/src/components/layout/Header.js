@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import Logo from "./partials/Logo";
 import Button from "../elements/Button";
 import AuthContext from "../../context/contexts";
+import { authService } from "../../api/auth";
 
 const propTypes = {
   navPosition: PropTypes.string,
@@ -146,11 +147,15 @@ const Header = ({
                       <li>
                         <Button
                           className={loginButtonClasses}
-                          onClick={(e) => {
-                            auth.usr.logged
-                              ? auth.actions.logout()
-                              : handleOpen(e);
-                            closeMenu(e);
+                          onClick={async (e) => {
+                            if (auth.usr.logged) {
+                              await authService.logout();
+                              auth.actions.logout();
+                              closeMenu();
+                            } else {
+                              handleOpen(e);
+                              closeMenu();
+                            }
                           }}
                         >
                           {auth.usr.logged ? "Salir" : "Acceder"}

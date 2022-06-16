@@ -88,3 +88,15 @@ func (mc *mongodbConn) FetchAllUsers() ([]domain.UserNoPasswd, error) {
 	}
 	return results, nil
 }
+
+func (mc *mongodbConn) FetchUser(id primitive.ObjectID) (domain.UserNoPasswd, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
+	defer cancel()
+	filter := bson.M{"_id": bson.M{"$eq": id}}
+	var user domain.UserNoPasswd
+	err := mc.db.Collection("User").FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return domain.UserNoPasswd{}, apperrors.ErrNotFound
+	}
+	return user, nil
+}
