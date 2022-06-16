@@ -70,6 +70,9 @@ dd {
 
 img {
   border-radius: $img-radius;
+  &.bordered {
+    border: 2px solid rgb(103, 101, 117);
+  }
 }
 
 img,

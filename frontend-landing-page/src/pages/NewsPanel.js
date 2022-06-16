@@ -100,7 +100,7 @@ export const NewsPanel = () => {
               name="image"
               className="mb-8"
             />
-            <img src="#" alt="news main image" onChange={() => {}} />
+            {/* <img src="#" alt="news main image" onChange={() => {}} /> */}
             <label className="form-label">Contenido</label>
             <DraftailEditor
               rawContentState={initial || null}

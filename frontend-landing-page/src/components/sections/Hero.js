@@ -46,7 +46,7 @@ const Hero = ({
               data-reveal-delay="50"
             >
               <span className="text-color-primary">GE</span>melo{" "}
-              <span className="text-color-primary">D</span>igital para
+              <span className="text-color-primary">D</span>igital para{" "}
               <span className="text-color-primary">E</span>xplotaciones de{" "}
               <span className="text-color-primary">F</span>rutos s
               <span className="text-color-primary">E</span>cos de{" "}
