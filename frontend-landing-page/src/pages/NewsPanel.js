@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { newsService } from "../api/news";
 import classNames from "classnames";
 import { SpinnerDotted } from "spinners-react";
 import { DraftailEditor, BLOCK_TYPE, INLINE_STYLE } from "draftail";
 import createImagePlugin from "draft-js-image-plugin";
+import { convertToHTML } from "draft-convert";
+import { EditorState } from "draft-js";
 
 const imagePlugin = createImagePlugin();
 
@@ -11,6 +13,7 @@ export const NewsPanel = () => {
   const [show, setShow] = useState(false);
   const [postError, setPostError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [content, setContent] = useState(EditorState.createEmpty());
 
   const notificationClassnames = classNames(
     "text-xs fw-500 m-16",
@@ -35,7 +38,7 @@ export const NewsPanel = () => {
       description.value,
       author.value,
       filename.path,
-      ""
+      convertToHTML(content.getCurrentContent())
     );
     if (err) {
       showNotification(true);
@@ -54,8 +57,17 @@ export const NewsPanel = () => {
   };
 
   const onSave = (content) => {
-    console.log("saving", content);
-    sessionStorage.setItem("draftail:content", JSON.stringify(content));
+    // sessionStorage.setItem(
+    //   "newsContent",
+    //   convertToHTML(content.getCurrentContent())
+    // );
+  };
+
+  const onChange = (content) => {
+    if (content) {
+      setContent(content);
+      console.log(convertToHTML(content.getCurrentContent()));
+    }
   };
 
   return (
@@ -89,14 +101,21 @@ export const NewsPanel = () => {
               style={{ resize: "none", height: "100px" }}
             />
             <label className="form-label">Imagen</label>
-            <input required type="file" name="image" className="mb-8" />
+            <input
+              required
+              type="file"
+              accept="image/*"
+              name="image"
+              className="mb-8"
+            />
             <img src="#" alt="news main image" onChange={() => {}} />
             <label className="form-label">Contenido</label>
             <DraftailEditor
-              rawContentState={null}
+              editorState={content}
               onSave={onSave}
+              onChange={onChange}
               blockTypes={[
-                { type: BLOCK_TYPE.HEADER_FIVE },
+                { type: BLOCK_TYPE.HEADER_FOUR },
                 { type: BLOCK_TYPE.CODE },
                 { type: BLOCK_TYPE.BLOCKQUOTE },
                 { type: BLOCK_TYPE.UNORDERED_LIST_ITEM },

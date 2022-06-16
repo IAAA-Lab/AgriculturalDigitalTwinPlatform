@@ -1,8 +1,10 @@
 package newshdl
 
 import (
+	"fmt"
 	"prakticas/backend-gpsoft/src/internal/core/domain"
 	"prakticas/backend-gpsoft/src/internal/core/ports"
+	"prakticas/backend-gpsoft/src/pkg/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -40,6 +42,7 @@ func (hdl *HTTPHandler) GetDesc(c *gin.Context) {
 		return
 	}
 	desc, err := hdl.newsService.Fetch(id)
+	fmt.Println(desc)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
@@ -59,6 +62,7 @@ func (hdl *HTTPHandler) GetNumber(c *gin.Context) {
 func (hdl *HTTPHandler) PostNewNews(c *gin.Context) {
 	var news domain.PostNew
 	c.BindJSON(&news)
+	news.Content = utils.EscapeHTMLBack(news.Content)
 	err := hdl.newsService.PostNewNews(news)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})

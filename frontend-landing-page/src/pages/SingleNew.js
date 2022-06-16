@@ -26,7 +26,7 @@ export const SingleNew = ({ ...props }) => {
     setDate(getFormattedDate(new URLSearchParams(params).get("date")));
     setImage(new URLSearchParams(params).get("image"));
     newsService.fetchOneNew(id).then((data) => {
-      setDescription(data === null ? "" : data.Description);
+      setDescription(data === null ? "" : data.Content);
     });
   }, [id, params]);
 

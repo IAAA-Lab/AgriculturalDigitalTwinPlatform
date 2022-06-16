@@ -1,4 +1,5 @@
 import { API_URL, NEWS_UPLOAD_URL } from "../config/api";
+import { escapeHtml } from "../utils/functions";
 
 const fetchAllNews = async (numPage) => {
   const response = await fetch(API_URL + "/news?numPage=" + numPage).catch(
@@ -48,7 +49,7 @@ const postNewNews = async (
       little_description,
       author,
       image,
-      content,
+      content: escapeHtml(content),
       date: new Date().toISOString(),
     }),
     headers: {

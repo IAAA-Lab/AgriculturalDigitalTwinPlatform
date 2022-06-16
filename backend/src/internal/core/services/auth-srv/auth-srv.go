@@ -57,13 +57,13 @@ func (service *jwtServices) generateToken(user domain.User, timeExp time.Duratio
 
 func (service *jwtServices) GenerateRefreshToken(user domain.User) string {
 	service.DeleteRefreshToken(user.ID.String())
-	rt := service.generateToken(user, time.Hour*2)
-	service.rc.Set(user.ID.String(), rt, time.Hour*2)
+	rt := service.generateToken(user, time.Hour*24*3)
+	service.rc.Set(user.ID.String(), rt, time.Hour*24*3)
 	return rt
 }
 
 func (service *jwtServices) GenerateAccessToken(user domain.User) string {
-	return service.generateToken(user, time.Hour)
+	return service.generateToken(user, time.Hour*2)
 }
 
 func (service *jwtServices) DeleteRefreshToken(userId string) {

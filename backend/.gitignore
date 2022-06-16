@@ -4,7 +4,7 @@
 *.dll
 *.so
 *.dylib
-
+redis/**
 # Test binary, built with `go test -c`
 *.test
 

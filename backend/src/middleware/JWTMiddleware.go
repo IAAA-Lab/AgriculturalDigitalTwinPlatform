@@ -55,7 +55,7 @@ func (srv *service) ReturnJWT(c *gin.Context) {
 	}
 	accesstoken := srv.authsrv.GenerateAccessToken(user)
 	refreshtoken := srv.authsrv.GenerateRefreshToken(user)
-	c.SetCookie("refreshtoken", refreshtoken, int(time.Hour.Seconds()*2), "/", "", false, true)
+	c.SetCookie("refreshtoken", refreshtoken, int(time.Hour.Seconds()*24*3), "/", "", false, true)
 	c.JSON(200, gin.H{"accesstoken": accesstoken})
 }
 

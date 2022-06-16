@@ -35,7 +35,7 @@ type PostNew struct {
 }
 
 type Description struct {
-	Description string `bson:"description,omitempty"`
+	Content string `bson:"content,omitempty"`
 }
 
 type AuthCustomClaims struct {
