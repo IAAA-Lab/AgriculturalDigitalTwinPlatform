@@ -7,10 +7,16 @@ export const UsersTable = () => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [isCreateUserModalActive, setIsCreateUserModalActive] = useState(false);
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  const closeModal = (e) => {
+    e.preventDefault();
+    setIsCreateUserModalActive(false);
+  };
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -42,10 +48,10 @@ export const UsersTable = () => {
         <>
           <h3 className="text-2xl font-bold">Panel de usuarios</h3>
           <button
-            onClick={() => {
-              window.location.href = "/users/new";
-            }}
             className="button button-primary button-wide-mobile"
+            onClick={() => {
+              setIsCreateUserModalActive(true);
+            }}
           >
             Añadir usuario
           </button>
@@ -60,13 +66,14 @@ export const UsersTable = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map(({ _id, Role, Username }) => (
-                <tr key={_id}>
+              {users.map(({ ID, Role, Username }) => (
+                <tr key={ID}>
                   <td>{Username}</td>
                   <td>{Role}</td>
                   <td>
                     <div className="button-group">
                       <button
+                        style={{ cursor: "pointer" }}
                         className="button-secondary"
                         onClick={() => {
                           //window.location.href = `/users/${user.id}`;
@@ -76,9 +83,10 @@ export const UsersTable = () => {
                       </button>
                       <button
                         className="button-delete"
+                        style={{ cursor: "pointer" }}
                         onClick={async () => {
-                          //await usersService.deleteUser(_id);
-                          //setUsers(users.filter((u) => u._id !== _id));
+                          await usersService.deleteUser(ID);
+                          setUsers(users.filter((u) => u.ID !== ID));
                         }}
                       >
                         Borrar
@@ -91,7 +99,7 @@ export const UsersTable = () => {
           </table>
         </div>
       </div>
-      <CreateUser />
+      <CreateUser show={isCreateUserModalActive} closeModal={closeModal} />
     </section>
   );
 };

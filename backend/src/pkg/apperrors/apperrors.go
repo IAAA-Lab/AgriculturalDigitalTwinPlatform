@@ -9,4 +9,5 @@ var (
 	ErrInternal         = errors.New("internal")
 	ErrLoginFailed      = errors.New("login_failed")
 	ErrUnauthorized     = errors.New("unauthorized")
+	ErrUserExists       = errors.New("user_exists")
 )

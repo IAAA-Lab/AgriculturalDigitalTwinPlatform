@@ -48,6 +48,10 @@ func (mc *mongodbConn) CheckLogin(username string, password []byte) (domain.User
 }
 
 func (mc *mongodbConn) PostNewUser(user domain.User) error {
+	err := mc.fetctUserByName(user.Username)
+	if err == nil {
+		return apperrors.ErrUserExists
+	}
 	key := os.Getenv("KEY_DECRYPT_PASSWD")
 	iv := os.Getenv("IV_BLOCK_PASSWD")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
@@ -61,6 +65,18 @@ func (mc *mongodbConn) PostNewUser(user domain.User) error {
 	_, err = mc.db.Collection("User").InsertOne(ctx, user)
 	if err != nil {
 		return apperrors.ErrInternal
+	}
+	return nil
+}
+
+func (mc *mongodbConn) fetctUserByName(name string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
+	defer cancel()
+	filter := bson.M{"username": bson.M{"$eq": name}}
+	var user domain.UserNoPasswd
+	err := mc.db.Collection("User").FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return apperrors.ErrNotFound
 	}
 	return nil
 }

@@ -12,7 +12,7 @@ export const AuthContextWrapper = ({ children }) => {
     if (token) {
       const decodedToken = decodeToken(token);
       const logged = isExpired(token);
-      if (logged) {
+      if (!logged) {
         setUsr({
           role: decodedToken === null ? DEFAULT_USER.role : decodedToken.role,
           logged: true,

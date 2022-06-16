@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { usersService } from "../../api/users";
 import { Roles } from "../../config/roles";
 import Modal from "../elements/Modal";
 
-export const CreateUser = ({ show = false }) => {
+export const CreateUser = ({ show = false, closeModal }) => {
+  const [postError, setPostError] = useState(false);
   const createUser = async (e) => {
     e.preventDefault();
     const { name, password, role } = e.target;
@@ -12,13 +13,24 @@ export const CreateUser = ({ show = false }) => {
       password.value,
       role.value
     );
-    if (response) {
-      console.log(response);
+    if (!response) {
+      setPostError(true);
+      showNotificationError();
+    } else {
+      setPostError(false);
+      closeModal(e);
     }
   };
 
+  const showNotificationError = () => {
+    setPostError(true);
+    setTimeout(() => {
+      setPostError(false);
+    }, 5000);
+  };
+
   return (
-    <Modal show={show}>
+    <Modal show={show} handleClose={closeModal}>
       <section>
         <div className="container-sm mb-16">
           <h4>Nuevo usuario</h4>
@@ -49,6 +61,11 @@ export const CreateUser = ({ show = false }) => {
           </form>
         </div>
       </section>
+      {postError && (
+        <div className="notification-error text-xs fw-500 m-16">
+          Error al crear usuario
+        </div>
+      )}
     </Modal>
   );
 };

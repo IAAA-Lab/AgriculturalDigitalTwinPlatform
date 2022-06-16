@@ -18,8 +18,8 @@ const deleteUser = async (id) => {
       Authorization: "Bearer " + localStorage.getItem("jwtToken"),
     },
   }).catch(() => null);
-  if (!response || !response.ok) return null;
-  return await response.json();
+  if (!response || !response.ok) return false;
+  return true;
 };
 
 const createUser = async (username, password, role) => {
@@ -36,8 +36,8 @@ const createUser = async (username, password, role) => {
       Authorization: "Bearer " + localStorage.getItem("jwtToken"),
     },
   }).catch(() => null);
-  if (!response || !response) return null;
-  return await response.json();
+  if (!response || !response.ok) return false;
+  return true;
 };
 
 export const usersService = {
