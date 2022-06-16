@@ -56,18 +56,10 @@ export const NewsPanel = () => {
     }, 5000);
   };
 
-  const onSave = (content) => {
-    // sessionStorage.setItem(
-    //   "newsContent",
-    //   convertToHTML(content.getCurrentContent())
-    // );
-  };
+  const initial = JSON.parse(sessionStorage.getItem("draftail:content"));
 
-  const onChange = (content) => {
-    if (content) {
-      setContent(content);
-      console.log(convertToHTML(content.getCurrentContent()));
-    }
+  const onSave = (content) => {
+    sessionStorage.setItem("draftail:content", JSON.stringify(content));
   };
 
   return (
@@ -111,16 +103,14 @@ export const NewsPanel = () => {
             <img src="#" alt="news main image" onChange={() => {}} />
             <label className="form-label">Contenido</label>
             <DraftailEditor
-              editorState={content}
+              rawContentState={initial || null}
               onSave={onSave}
-              onChange={onChange}
               blockTypes={[
                 { type: BLOCK_TYPE.HEADER_FOUR },
                 { type: BLOCK_TYPE.CODE },
                 { type: BLOCK_TYPE.BLOCKQUOTE },
                 { type: BLOCK_TYPE.UNORDERED_LIST_ITEM },
                 { type: BLOCK_TYPE.ORDERED_LIST_ITEM },
-                { type: BLOCK_TYPE.ATOMIC },
               ]}
               inlineStyles={[
                 { type: INLINE_STYLE.BOLD },
