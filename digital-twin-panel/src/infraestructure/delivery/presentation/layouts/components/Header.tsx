@@ -30,8 +30,8 @@ export const Header = () => {
                   </div>
                 </li>
                 <li>
-                  <div className="badge-wrapper">
-                    <div onClick={() => dispatch(doToggleNotifications())}>
+                  <div onClick={() => dispatch(doToggleNotifications())}>
+                    <div className="badge-wrapper">
                       <span className="badge-notification">
                         <p className="text-xxs m-0">1</p>
                       </span>

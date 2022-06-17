@@ -5,7 +5,7 @@ export const SingleField = () => {
   return (
     <div className="site-inner-content">
       <div className="site-quadrant-left">
-        <div className="badge-wrapper">
+        <div className="badge-wrapper" style={{ overflow: "hidden" }}>
           <img
             className="bordered"
             width={"100%"}
@@ -27,7 +27,7 @@ export const SingleField = () => {
             </svg>
           </div>
         </div>
-
+        <br />
         <PlantList />
         <br />
       </div>

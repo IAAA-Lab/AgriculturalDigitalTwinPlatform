@@ -2,20 +2,31 @@
   background: rgba(0, 0, 0, 0.715);
   position: fixed;
   height: 100vh;
-  width: 0;
+  width: 100vw;
   display: flex;
   justify-content: flex-end;
-  overflow: hidden;
   z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.1s ease-in;
 
   &.off-is-active {
-    width: 100vw;
+    opacity: 1;
+    visibility: visible;
+    .notifications-inner {
+      transform: translateX(0px);
+    }
   }
-}
 
-.notifications-inner {
-  top: 0;
-  right: 0;
-  margin: 10px;
-  width: 30%;
+  .notifications-inner {
+    transition: transform 0.25s ease-in-out 0.3s;
+    transform: translateX(500px);
+    top: 0;
+    right: 0;
+    margin: 10px;
+    width: 30%;
+    @include media("<medium") {
+      width: 100%;
+    }
+  }
 }

@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -32,16 +33,21 @@ export const LayoutDefault = ({ children }: Props) => {
 
   const toggleWeather = useSelector((state: RootState) => state.toggleWeather);
 
+  const classes = classNames(
+    "site-content",
+    (toggleNotifications || toggleWeather) && "on-drawer-active"
+  );
+
   return (
     <ScrollReveal
       ref={childRef}
       children={() => (
         <>
           <Header />
-          <main className="site-content">{children}</main>
+          <main className={classes}>{children}</main>
           {/* <Footer /> */}
-          <NotificationsLayer show={toggleNotifications} />
           <WeatherLayout show={toggleWeather} />
+          <NotificationsLayer show={toggleNotifications} />
         </>
       )}
     />
