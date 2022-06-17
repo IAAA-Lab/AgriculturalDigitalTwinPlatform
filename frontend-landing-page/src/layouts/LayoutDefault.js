@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import Modal from "../components/elements/Modal";
 import { Login } from "../components/sections/Login";
 import getRoutes from "../utils/routes";
+import AuthContext from "../context/contexts";
 
 const LayoutDefault = ({ children }) => {
   const [videoModalActive, setVideomodalactive] = useState(false);
+  const user = useContext(AuthContext).usr;
 
   const openModal = (e) => {
     e.preventDefault();
@@ -24,7 +26,7 @@ const LayoutDefault = ({ children }) => {
         navPosition="right"
         className="reveal-from-bottom"
         handleOpen={openModal}
-        buttonList={getRoutes("default", false)}
+        buttonList={getRoutes(user)}
       />
       <main className="site-content">{children}</main>
       <Footer />

@@ -9,7 +9,7 @@ import { NewsPanel } from "../pages/NewsPanel";
 import { SingleNew } from "../pages/SingleNew";
 import { UsersTable } from "../pages/UsersTable";
 
-const getRoutes = (role, logged) => {
+const getRoutes = ({ role, logged }) => {
   if (!logged)
     return [
       {

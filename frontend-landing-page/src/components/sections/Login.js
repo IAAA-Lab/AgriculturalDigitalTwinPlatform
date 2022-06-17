@@ -11,8 +11,10 @@ export const Login = ({ closeModal }) => {
 
   useEffect(() => {
     setTimeout(() => {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
-    }, 50);
+      if (bottomRef) {
+        bottomRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 25);
   }, []);
 
   const onSubmit = (e) => {

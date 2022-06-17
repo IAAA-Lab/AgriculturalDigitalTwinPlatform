@@ -16,6 +16,7 @@ export const UsersTable = () => {
   const closeModal = (e) => {
     e.preventDefault();
     setIsCreateUserModalActive(false);
+    fetchData();
   };
 
   const fetchData = async () => {

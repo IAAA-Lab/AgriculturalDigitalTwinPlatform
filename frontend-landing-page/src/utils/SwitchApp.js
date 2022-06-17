@@ -7,16 +7,16 @@ import { Page404 } from "../pages/404";
 import { PrivateRoute } from "./PrivateAppRoute";
 
 export const SwitchApp = ({ initScroll }) => {
-  const { usr } = useContext(AuthContext);
+  const user = useContext(AuthContext).usr;
 
   useEffect(() => {
     // For replaying the scroll animation
     initScroll();
-  }, [initScroll, usr]);
+  }, [initScroll, user]);
 
   return (
     <Switch>
-      {getRoutes(usr.role, usr.logged).map((props) =>
+      {getRoutes(user).map((props) =>
         props.protected ? (
           <PrivateRoute {...props} key={props.path} />
         ) : (
