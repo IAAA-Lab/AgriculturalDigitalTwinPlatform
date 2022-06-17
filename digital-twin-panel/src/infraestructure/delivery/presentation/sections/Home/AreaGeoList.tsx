@@ -1,11 +1,15 @@
+import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
 
 type Props = {
   areaList?: Area[];
+  showList: boolean;
 };
 
-export const GeoList = ({ areaList }: Props) => {
+export const GeoList = ({ areaList, showList = false }: Props) => {
   const navigation = useNavigate();
+
+  const className = classNames("geo-list", showList && "is-closed");
 
   const _areaList = areaList?.map((area: Area, i: number) => {
     const mapIcon = document
@@ -37,5 +41,5 @@ export const GeoList = ({ areaList }: Props) => {
     );
   });
 
-  return <div className="geo-list">{_areaList}</div>;
+  return <div className={className}>{_areaList}</div>;
 };

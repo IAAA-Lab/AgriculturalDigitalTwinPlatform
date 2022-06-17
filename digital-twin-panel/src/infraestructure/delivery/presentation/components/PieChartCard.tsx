@@ -6,7 +6,6 @@ import {
   Label,
   Cell,
   PieChart,
-  Customized,
 } from "recharts";
 import { numberWithCommas } from "../../PortsImpl";
 

@@ -234,10 +234,6 @@ class FieldRestAPI {
           },
           characteristics: [
             {
-              name: "Zonas activas",
-              value: 4,
-            },
-            {
               name: "Campos activos",
               value: 23,
             },
@@ -262,10 +258,6 @@ class FieldRestAPI {
             lng: -0.52192,
           },
           characteristics: [
-            {
-              name: "Campos activos",
-              value: 4,
-            },
             {
               name: "Área total",
               value: 1234,
@@ -306,7 +298,6 @@ class FieldRestAPI {
         distinctCharacteristics: [
           "Área total",
           "Campos activos",
-          "Zonas activas",
           "Plantas en buen estado",
         ],
       },

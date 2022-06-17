@@ -1,3 +1,6 @@
+import classNames from "classnames";
+import { useState } from "react";
+import { LineChartCard } from "../components/LineChartCard";
 import { PieChartCard } from "../components/PieChartCard";
 
 type Props = {
@@ -5,25 +8,58 @@ type Props = {
 };
 
 export const HomeAnalysisCards = ({ data }: Props) => {
+  const [openSummary, setOpenSummary] = useState(false);
+  const [openHistoric, setOpenHistoric] = useState(false);
+
+  const classesSummary = classNames(
+    "dropdown-content",
+    openSummary && "off-is-active"
+  );
+
+  const classHistoric = classNames(
+    "dropdown-content",
+    openHistoric && "off-is-active"
+  );
+
   return (
     <>
-      <h3 className="m-0">Resumen actual</h3>
-      <p className="text-sm mb-8">
-        Actualizaciones al momento del estado de los campos
-      </p>
-      <PieChartCard data={data} />
-      <div
-        className="card-analysis reveal-from-bottom mb-16"
-        data-reveal-delay={100}
-      ></div>
-      <div
-        className="card-analysis reveal-from-bottom mb-16"
-        data-reveal-delay={200}
-      ></div>
-      <div className="card-analysis mb-16"></div>
-      <div className="card-analysis mb-16"></div>
-      <div className="card-analysis mb-16"></div>
-      <div className="card-analysis mb-16"></div>
+      <div className="dropdown-analysis">
+        <div
+          className="dropdown-header"
+          onClick={() => setOpenSummary(!openSummary)}
+        >
+          <div className="row space-between">
+            <div className="col">
+              <h3 className="m-0">Resumen actual</h3>
+              <p className="text-sm mb-8">
+                Actualizaciones al momento del estado de los campos
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className={classesSummary}>
+          <PieChartCard data={data} />
+          <LineChartCard data={data} />
+        </div>
+      </div>
+      <div className="dropdown-analysis">
+        <div
+          className="dropdown-header"
+          onClick={() => setOpenHistoric(!openHistoric)}
+        >
+          <div className="row space-between">
+            <div className="col">
+              <h3 className="m-0">Histórico</h3>
+              <p className="text-sm mb-8">Datos históricos de los campos</p>
+            </div>
+          </div>
+        </div>
+        <div className={classHistoric}>
+          <div className="card-analysis mb-16"></div>
+          <div className="card-analysis mb-16"></div>
+          <div className="card-analysis mb-16"></div>
+        </div>
+      </div>
     </>
   );
 };
