@@ -2,9 +2,14 @@ package middleware
 
 import "github.com/go-redis/redis"
 
-func SetUpRedisClient() *redis.Client {
+func SetUpRedisClient(redisUri string) *redis.Client {
+
+	if redisUri == "" {
+		redisUri = "http://localhost:6379"
+	}
+
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     redisUri,
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})

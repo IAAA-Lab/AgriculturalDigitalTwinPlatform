@@ -54,6 +54,7 @@ func setupRouter() *gin.Engine {
 
 	mongoUri := os.Getenv("MONGO_URI")
 	mongoDb := os.Getenv("MONGO_DB")
+	redisUri := os.Getenv("REDIS_URI")
 
 	newsrepository := newsrepo.NewMongodbConn(mongoUri, mongoDb, 15)
 	newsService := newssrv.New(newsrepository)
@@ -63,7 +64,7 @@ func setupRouter() *gin.Engine {
 	usersService := userssrv.New(usersrespository)
 	usersHandler := usershdl.NewHTTPHandler(usersService)
 
-	redisClient := middleware.SetUpRedisClient()
+	redisClient := middleware.SetUpRedisClient(redisUri)
 	authService := authsrv.JWTAuthService(redisClient)
 	authMiddleware := middleware.Init(authService, usersService)
 

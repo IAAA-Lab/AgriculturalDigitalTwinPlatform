@@ -62,6 +62,10 @@ export const NewsPanel = () => {
     sessionStorage.setItem("draftail:content", JSON.stringify(content));
   };
 
+  const onChange = (content) => {
+    setContent(content);
+  };
+
   return (
     <section className="hero section">
       <div className="hero-content mb-16">
@@ -105,6 +109,8 @@ export const NewsPanel = () => {
             <DraftailEditor
               rawContentState={initial || null}
               onSave={onSave}
+              onChange={onChange}
+              editorState={content}
               blockTypes={[
                 { type: BLOCK_TYPE.HEADER_FOUR },
                 { type: BLOCK_TYPE.CODE },

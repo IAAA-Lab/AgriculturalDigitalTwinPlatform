@@ -32,7 +32,7 @@ export const UsersTable = () => {
   };
 
   if (isError) {
-    return <p>Algo fue mal...</p>;
+    return <div className="notification-error">Algo fue mal...</div>;
   }
 
   if (isLoading) {

@@ -1,2 +1,2 @@
-mongodata
+mongodata/**
 .DS_Store

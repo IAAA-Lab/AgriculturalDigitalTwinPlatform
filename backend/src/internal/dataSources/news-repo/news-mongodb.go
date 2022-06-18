@@ -2,7 +2,6 @@ package newsrepo
 
 import (
 	"context"
-	"fmt"
 	"prakticas/backend-gpsoft/src/internal/core/domain"
 	"prakticas/backend-gpsoft/src/pkg/apperrors"
 	"time"
@@ -71,7 +70,6 @@ func (mc *mongodbConn) FetchNumber() (int64, error) {
 func (mc *mongodbConn) PostNewNews(news domain.PostNew) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
 	defer cancel()
-	fmt.Println(news)
 	_, err := mc.db.Collection("News").InsertOne(ctx, news)
 	if err != nil {
 		return apperrors.ErrNotFound

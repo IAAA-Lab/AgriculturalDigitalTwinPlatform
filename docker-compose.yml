@@ -29,14 +29,30 @@ services:
     restart: always
     depends_on:
         - 'mongo'
+        - 'redis'
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    ports:
+        - "6379:6379"
+    volumes:
+        - ./backend:/redis
+    command: redis-server
   mongo:
-      image: 'mongo'
+      build: ./mongodb
       container_name: mongo
       ports:
           - '27018:27017'
       volumes:
           - ./mongodata:/data/db
       restart: always
+      environment:
+        MONGODB_ROOT_USER: "${MONGODB_ROOT_USER}"
+        MONGODB_ROOT_PASSWORD: "${MONGODB_ROOT_PASSWORD}"
+        MONGODB_USER: "${MONGODB_USER}"
+        MONGODB_PASSWORD: "${MONGODB_PASSWORD}"
+        MONGODB_DATABASE: "${MONGODB_DATABASE}"
   # Mongo Express Web-based MongoDB admin interface
   mongo_express:
       image: mongo-express
