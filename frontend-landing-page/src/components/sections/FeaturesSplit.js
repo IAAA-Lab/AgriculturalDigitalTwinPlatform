@@ -50,7 +50,7 @@ const FeaturesSplit = ({
   const sectionHeader = {
     title: "Conociendo la tecnología",
     paragraph:
-      "El concepto de gemelo digital en agricultura está muy poco consolidado debido, especialmente, a la gran complejidad de discretizar una realidad basada en “elementos” vivos (una planta o un animal o un conjunto de ellos…) y con unos ámbitos temporales (plantas con periodos de vida de un año frente a plantas con periodos de vida de cientos de años…)s y espaciales (pequeña explotaciones frente a otras de mayor tamaño), tan heterogéneos y complejos.",
+      "El concepto de gemelo digital en agricultura está muy poco consolidado debido, especialmente, a la gran complejidad de discretizar una realidad basada en “elementos” vivos (una planta o un animal o un conjunto de ellos…) y con unos ámbitos temporales (plantas con periodos de vida de un año frente a plantas con periodos de vida de cientos de años …) y espaciales (pequeña explotaciones frente a otras de mayor tamaño), tan heterogéneos y complejos.",
   };
 
   return (

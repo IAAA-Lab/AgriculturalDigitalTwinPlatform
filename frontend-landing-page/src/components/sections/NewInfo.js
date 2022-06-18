@@ -1,13 +1,13 @@
 import React from "react";
 import { copy } from "../../utils/functions";
 
-export const NewInfo = ({ author, date }) => {
+export const NewInfo = ({ author, date, readMin }) => {
   return (
     <div className="tiles-row-wrap">
       <div className="container">
         <span className="text-xxs">{author}</span>
         <div className="text-xxs text-color-primary fw-500 mb-8">
-          {date} · 2 min lectura
+          {date} · {readMin} min lectura
         </div>
       </div>
       <div style={{ cursor: "pointer" }} onClick={copy}>

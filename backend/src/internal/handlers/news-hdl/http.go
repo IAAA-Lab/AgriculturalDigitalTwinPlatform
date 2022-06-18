@@ -60,8 +60,10 @@ func (hdl *HTTPHandler) GetNumber(c *gin.Context) {
 }
 
 func (hdl *HTTPHandler) PostNewNews(c *gin.Context) {
-	var news domain.PostNew
+	var news domain.PostNews
+	fmt.Println(c.Request.Body)
 	c.BindJSON(&news)
+	fmt.Println(news)
 	news.Content = utils.EscapeHTMLBack(news.Content)
 	err := hdl.newsService.PostNewNews(news)
 	if err != nil {

@@ -15,6 +15,7 @@ export const SingleNew = ({ ...props }) => {
   const [image, setImage] = useState("");
   const [littleDescription, setLittleDescription] = useState("");
   const [author, setAuthor] = useState("");
+  const [readMin, setReadMin] = useState("");
 
   let { id } = useParams();
   const params = useLocation().search;
@@ -25,6 +26,7 @@ export const SingleNew = ({ ...props }) => {
     setAuthor(new URLSearchParams(params).get("author"));
     setDate(getFormattedDate(new URLSearchParams(params).get("date")));
     setImage(new URLSearchParams(params).get("image"));
+    setReadMin(new URLSearchParams(params).get("readMin"));
     newsService.fetchOneNew(id).then((data) => {
       setDescription(data === null ? "" : data.Content);
     });
@@ -39,7 +41,7 @@ export const SingleNew = ({ ...props }) => {
     <section {...props} className={outerClasses}>
       <div className="container-sm">
         <div className={innerClasses} data-reveal-delay="50">
-          <NewInfo author={author} date={date} />
+          <NewInfo author={author} date={date} readMin={readMin} />
           <h3 className="mt-0 mb-8">{title}</h3>
           <p className="text-xs">{littleDescription}</p>
           <div>
@@ -53,7 +55,6 @@ export const SingleNew = ({ ...props }) => {
                   "https://previews.123rf.com/images/alhovik/alhovik1709/alhovik170900031/86481591-breaking-news-background-world-global-tv-news-banner-design.jpg";
               }}
             />
-            <figcaption>Foto por Giovanni Giorgio</figcaption>
           </div>
           <div className="mt-32 text-sm">{HTMLReactParser(description)}</div>
         </div>

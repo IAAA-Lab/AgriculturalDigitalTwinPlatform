@@ -27,7 +27,7 @@ func NewMongodbConn(dbUrl string, dbName string, timeout int) *mongodbConn {
 	return &mongodbConn{*mongoClient, *mongoDb, timeout}
 }
 
-func (mc *mongodbConn) FetchAll(numPage int64) ([]domain.New, error) {
+func (mc *mongodbConn) FetchAll(numPage int64) ([]domain.News, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
 	defer cancel()
 	findOptions := options.Find()
@@ -36,11 +36,11 @@ func (mc *mongodbConn) FetchAll(numPage int64) ([]domain.New, error) {
 	findOptions.SetSkip(6 * numPage)
 	cursor, err := mc.db.Collection("News").Find(ctx, bson.D{}, findOptions)
 	if err != nil {
-		return []domain.New{}, apperrors.ErrNotFound
+		return []domain.News{}, apperrors.ErrNotFound
 	}
-	var results []domain.New
+	var results []domain.News
 	if err = cursor.All(context.TODO(), &results); err != nil {
-		return []domain.New{}, apperrors.ErrInternal
+		return []domain.News{}, apperrors.ErrInternal
 	}
 	return results, nil
 }
@@ -67,7 +67,7 @@ func (mc *mongodbConn) FetchNumber() (int64, error) {
 	return number, nil
 }
 
-func (mc *mongodbConn) PostNewNews(news domain.PostNew) error {
+func (mc *mongodbConn) PostNewNews(news domain.PostNews) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
 	defer cancel()
 	_, err := mc.db.Collection("News").InsertOne(ctx, news)

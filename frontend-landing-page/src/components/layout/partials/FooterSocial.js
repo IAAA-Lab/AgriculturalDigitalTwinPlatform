@@ -23,8 +23,8 @@ const FooterSocial = ({ className, ...props }) => {
         <li>
           <a href="https://twitter.com/iaaa_lab?lang=es">
             <svg
-              width="16"
-              height="16"
+              width="32"
+              height="32"
               viewBox="0 0 16 16"
               xmlns="http://www.w3.org/2000/svg"
             >

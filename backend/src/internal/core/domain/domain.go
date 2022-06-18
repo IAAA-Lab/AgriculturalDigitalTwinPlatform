@@ -6,36 +6,38 @@ import (
 )
 
 type User struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty"`
-	Username string             `bson:"username,omitempty"`
-	Password string             `bson:"passwd,omitempty"`
+	ID       primitive.ObjectID `bson:"_id"`
+	Username string             `bson:"username"`
+	Password string             `bson:"passwd"`
 	Role     string             `bson:"role"`
 }
 type UserNoPasswd struct {
 	ID       primitive.ObjectID `bson:"_id"`
-	Username string             `bson:"username,omitempty"`
+	Username string             `bson:"username"`
 	Role     string             `bson:"role"`
 }
-type New struct {
-	ID                primitive.ObjectID `bson:"_id,omitempty"`
-	Title             string             `bson:"title,omitempty"`
-	LittleDescription string             `bson:"little_description,omitempty"`
-	Author            string             `bson:"author,omitempty"`
-	Date              primitive.DateTime `bson:"date,omitempty"`
+type News struct {
+	ID                primitive.ObjectID `bson:"_id"`
+	Title             string             `bson:"title"`
+	LittleDescription string             `json:"little_description"`
+	Author            string             `bson:"author"`
+	Date              primitive.DateTime `bson:"date"`
+	ReadMin           uint8              `json:"read_min"`
 	Image             string             `bson:"image"`
 }
 
-type PostNew struct {
-	Title             string             `bson:"title,omitempty"`
-	LittleDescription string             `bson:"little_description,omitempty"`
-	Author            string             `bson:"author,omitempty"`
-	Date              primitive.DateTime `bson:"date,omitempty"`
+type PostNews struct {
+	Title             string             `bson:"title"`
+	LittleDescription string             `json:"little_description"`
+	Author            string             `bson:"author"`
+	Date              primitive.DateTime `bson:"date"`
 	Image             string             `bson:"image"`
+	ReadMin           uint8              `json:"read_min"`
 	Content           string             `bson:"content"`
 }
 
 type Description struct {
-	Content string `bson:"content,omitempty"`
+	Content string `bson:"content"`
 }
 
 type AuthCustomClaims struct {

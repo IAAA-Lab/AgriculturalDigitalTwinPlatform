@@ -13,6 +13,7 @@ export const NewsPanel = () => {
   const [show, setShow] = useState(false);
   const [postError, setPostError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  // const loadedContent = JSON.parse(sessionStorage.getItem("draftail:content"));
   const [content, setContent] = useState(EditorState.createEmpty());
 
   const notificationClassnames = classNames(
@@ -22,7 +23,8 @@ export const NewsPanel = () => {
 
   const postNewNews = async (e) => {
     e.preventDefault();
-    const { title, description, author, image } = e.target;
+    const { title, description, author, image, minRead } = e.target;
+    console.log(minRead.value);
     if (image.files[0].size > 4096000) {
       showNotification(true);
       return;
@@ -38,6 +40,7 @@ export const NewsPanel = () => {
       description.value,
       author.value,
       filename.path,
+      parseInt(minRead.value),
       convertToHTML(content.getCurrentContent())
     );
     if (err) {
@@ -56,13 +59,8 @@ export const NewsPanel = () => {
     }, 5000);
   };
 
-  const initial = JSON.parse(sessionStorage.getItem("draftail:content"));
-
-  const onSave = (content) => {
-    sessionStorage.setItem("draftail:content", JSON.stringify(content));
-  };
-
   const onChange = (content) => {
+    // sessionStorage.setItem("draftail:content", JSON.stringify(content));
     setContent(content);
   };
 
@@ -107,8 +105,6 @@ export const NewsPanel = () => {
             {/* <img src="#" alt="news main image" onChange={() => {}} /> */}
             <label className="form-label">Contenido</label>
             <DraftailEditor
-              rawContentState={initial || null}
-              onSave={onSave}
               onChange={onChange}
               editorState={content}
               blockTypes={[
@@ -125,6 +121,15 @@ export const NewsPanel = () => {
                 { type: INLINE_STYLE.SMALL },
               ]}
               plugins={[imagePlugin]}
+            />
+            <label className="form-label">Minutos de lectura</label>
+            <input
+              className="text-xxs form-input-sm p-8"
+              style={{ maxWidth: 100 }}
+              type="number"
+              name="minRead"
+              max={30}
+              min={0}
             />
             <button
               type="submit"

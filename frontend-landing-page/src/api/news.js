@@ -40,6 +40,7 @@ const postNewNews = async (
   little_description,
   author,
   image,
+  read_min,
   content
 ) => {
   const response = await fetch(API_URL + "/news", {
@@ -50,6 +51,7 @@ const postNewNews = async (
       author,
       image,
       content: escapeHtml(content),
+      read_min,
       date: new Date().toISOString(),
     }),
     headers: {

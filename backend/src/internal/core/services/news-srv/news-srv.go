@@ -26,10 +26,10 @@ func New(newsRepository ports.NewsRepository) *service {
 // @Success 200 {object} domain.New
 // @Failure 400 Not found
 // @Router /news/{id} [get]
-func (srv *service) FetchAll(numPage int64) ([]domain.New, error) {
+func (srv *service) FetchAll(numPage int64) ([]domain.News, error) {
 	new, err := srv.newsrepository.FetchAll(numPage)
 	if err != nil {
-		return []domain.New{}, apperrors.ErrNotFound
+		return []domain.News{}, apperrors.ErrNotFound
 	}
 
 	return new, nil
@@ -83,7 +83,7 @@ func (srv *service) FetchNumber() (int64, error) {
 // @Success 200 {object} nill
 // @Failure 400 Not found
 // @Router /news [post]
-func (srv *service) PostNewNews(news domain.PostNew) error {
+func (srv *service) PostNewNews(news domain.PostNews) error {
 	err := srv.newsrepository.PostNewNews(news)
 	if err != nil {
 		return err

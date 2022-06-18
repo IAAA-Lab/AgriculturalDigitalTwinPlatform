@@ -8,9 +8,9 @@ import (
 
 type NewsRepository interface {
 	FetchNumber() (int64, error)
-	FetchAll(numPage int64) ([]domain.New, error)
+	FetchAll(numPage int64) ([]domain.News, error)
 	Fetch(id primitive.ObjectID) (domain.Description, error)
-	PostNewNews(news domain.PostNew) error
+	PostNewNews(news domain.PostNews) error
 }
 
 type UsersRepository interface {
