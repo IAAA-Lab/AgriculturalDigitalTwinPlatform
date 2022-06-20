@@ -8,17 +8,13 @@ import (
 
 func SetUpRedisClient(redisUri string) *redis.Client {
 
-	fmt.Println("redisUri: ", redisUri)
 	if redisUri == "" {
-		redisUri = "localhost:6379"
+		redisUri = "redis://localhost:6379"
 	}
 
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-	_, err := redisClient.Ping().Result()
+	redisParsedUri, err := redis.ParseURL(redisUri)
+	redisClient := redis.NewClient(redisParsedUri)
+	fmt.Println(redisClient)
 	if err != nil {
 		panic(err)
 	}

@@ -1,18 +1,30 @@
 import { useEffect, useState } from "react";
+import { Line } from "react-chartjs-2";
 import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
+  Chart as ChartJS,
+  CategoryScale,
+  Title,
   Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+  Legend,
+  LinearScale,
+  PointElement,
+  LineElement,
+} from "chart.js";
+import { CardAnalysisSkeleton } from "./CardAnalysisSkeleton";
 
 type Props = {
   data?: AreasPerUser;
 };
+
+ChartJS.register(
+  CategoryScale,
+  Title,
+  Tooltip,
+  Legend,
+  LinearScale,
+  PointElement,
+  LineElement
+);
 
 export const LineChartCard = ({ data }: Props) => {
   const [selectedOption, setSelectedOption] = useState<string>();
@@ -20,6 +32,10 @@ export const LineChartCard = ({ data }: Props) => {
   useEffect(() => {
     setSelectedOption(data?.features.distinctCharacteristics[0]);
   }, [data]);
+
+  if (!data) {
+    return <CardAnalysisSkeleton />;
+  }
 
   const dataChart = data?.areas.flatMap((area) =>
     area.characteristics.flatMap((feature) => {
@@ -33,7 +49,7 @@ export const LineChartCard = ({ data }: Props) => {
   );
 
   return (
-    <div className="card-analysis reveal-from-bottom mb-16 col">
+    <div className="card-analysis reveal-from-right mb-16 col">
       <select
         onChange={(e) => setSelectedOption(e.currentTarget.value)}
         value={selectedOption}
@@ -44,40 +60,61 @@ export const LineChartCard = ({ data }: Props) => {
           </option>
         ))}
       </select>
-      <ResponsiveContainer width={"100%"} height={"100%"}>
-        <LineChart
-          data={dataChart}
-          margin={{
-            top: 5,
-            right: 20,
-            left: 0,
-            bottom: 5,
-          }}
-        >
-          <XAxis dataKey="name" fontSize={14} />
-          <YAxis fontSize={14} />
-          <Tooltip
-            labelStyle={{
-              fontSize: 16,
-            }}
-            itemStyle={{
-              fontSize: 14,
-              padding: "0px",
-            }}
-            contentStyle={{
-              padding: "0px 10px 0px 10px",
-              borderRadius: "10px",
-            }}
-          />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="value"
-            stroke="#8884d8"
-            activeDot={{ r: 8 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+      <Line
+        data={{
+          labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+          datasets: [
+            {
+              label: "First dataset",
+              data: [33, 53, 85, 41, 44, 65],
+              fill: true,
+              backgroundColor: "rgba(75,192,192,0.2)",
+              borderColor: "rgba(75,192,192,1)",
+            },
+            {
+              label: "Second dataset",
+              data: [33, 25, 35, 51, 54, 76],
+              fill: true,
+              backgroundColor: "rgba(255,99,132,0.2)",
+              borderColor: "#742774",
+            },
+            {
+              label: "Third dataset",
+              data: [45, 25, 102, 51, 23, 7],
+              fill: false,
+              borderColor: "#4D4D4D",
+            },
+            {
+              label: "Third dataset",
+              data: [2, 4, 345, 23, 76, 92],
+              fill: false,
+              borderColor: "#1F1F1F",
+            },
+          ],
+        }}
+        style={{
+          maxHeight: "300px",
+        }}
+        options={{
+          aspectRatio: 4 / 3,
+          plugins: {
+            legend: {
+              display: window.innerWidth > 400,
+              position: "right",
+              labels: {
+                usePointStyle: true,
+                pointStyle: "rectRounded",
+                boxWidth: 10,
+              },
+            },
+          },
+          scales: {
+            x: {
+              ticks: {},
+            },
+          },
+        }}
+      />
     </div>
   );
 };

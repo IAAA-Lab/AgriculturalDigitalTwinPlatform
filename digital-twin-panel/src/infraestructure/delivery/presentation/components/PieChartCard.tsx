@@ -1,19 +1,19 @@
+import { ChartDataset, TooltipItem, TooltipModel } from "chart.js";
 import { useState, useEffect } from "react";
-import {
-  ResponsiveContainer,
-  Legend,
-  Pie,
-  Label,
-  Cell,
-  PieChart,
-} from "recharts";
+import { Doughnut } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { numberWithCommas } from "../../PortsImpl";
+import Skeleton from "react-loading-skeleton";
+import ChartDeferred from "chartjs-plugin-deferred";
+import { CardAnalysisSkeleton } from "./CardAnalysisSkeleton";
 
 type Props = {
   data?: AreasPerUser;
 };
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 export const PieChartCard = ({ data }: Props) => {
   const [selectedOption, setSelectedOption] = useState<string>();
@@ -22,79 +22,88 @@ export const PieChartCard = ({ data }: Props) => {
     setSelectedOption(data?.features.distinctCharacteristics[0]);
   }, [data]);
 
-  const areaData = data?.areas.flatMap((area) =>
-    area.characteristics.flatMap((feature) => {
-      return feature.name === selectedOption
-        ? {
-            name: area.name,
-            value: feature.value,
-            unit: feature.unit,
-          }
-        : [];
-    })
-  );
+  if (!data) {
+    return <CardAnalysisSkeleton />;
+  }
 
-  const currentCommonInfo = data?.features.characteristics.find(
-    (e) => e.name === selectedOption
-  );
+  var labels: string[] = [];
+  var dataset: ChartDataset<"doughnut", number[]>[] = [];
+
+  dataset = [
+    {
+      label: "",
+      borderRadius: 6,
+      spacing: 2,
+      backgroundColor: COLORS,
+      data: data!.areas.flatMap((area) => {
+        return area.characteristics
+          .filter((feature) => {
+            return feature.name === selectedOption;
+          })
+          .map((feature) => {
+            labels = [
+              ...labels,
+              `${area.name} - ${numberWithCommas(feature.value)} ${
+                feature.unit ?? ""
+              }`,
+            ];
+            return feature.value;
+          });
+      }),
+    },
+  ];
+
+  console.log(dataset);
 
   return (
-    <div className="card-analysis reveal-from-bottom mb-16 col">
+    <div className="card-analysis reveal-from-right mb-16 col">
       <select
         onChange={(e) => setSelectedOption(e.currentTarget.value)}
         value={selectedOption}
       >
-        {data?.features.distinctCharacteristics.map((e, i) => (
+        {data!.features.distinctCharacteristics.map((e, i) => (
           <option key={i} value={e}>
             {e}
           </option>
         ))}
       </select>
-      <ResponsiveContainer width={"100%"} height={"100%"}>
-        <PieChart>
-          <Legend
-            layout="vertical"
-            verticalAlign="middle"
-            iconType="circle"
-            iconSize={5}
-            align="right"
-            payload={areaData?.map((item, index) => ({
-              id: item.name,
-              type: "circle",
-              value: `${item.name} - ${numberWithCommas(item.value)} ${
-                item.unit ?? ""
-              }`,
-              color: COLORS[index % COLORS.length],
-            }))}
-          />
-          <Pie
-            data={areaData}
-            paddingAngle={3}
-            dataKey="value"
-            cx={"50%"}
-            cy={"50%"}
-            cornerRadius={3}
-            innerRadius={"70%"}
-            outerRadius={"80%"}
-            animationDuration={400}
-          >
-            <Label
-              fill="#232d36"
-              value={`${numberWithCommas(currentCommonInfo?.value)} ${
-                currentCommonInfo?.unit ?? ""
-              }`}
-              position="center"
-            />
-            {areaData?.map((entry, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={COLORS[index % COLORS.length]}
-                stroke="0"
-              />
-            ))}
-          </Pie>
-        </PieChart>
-      </ResponsiveContainer>
+      <Doughnut
+        style={{
+          maxHeight: "200px",
+        }}
+        plugins={[ChartDeferred]}
+        options={{
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function (tooltipItem: TooltipItem<"doughnut">) {
+                  return tooltipItem.label;
+                },
+              },
+            },
+            legend: {
+              labels: {
+                usePointStyle: true,
+                pointStyle: "rectRounded",
+                boxWidth: 10,
+                font: {
+                  size: 14,
+                },
+              },
+              position: "right",
+            },
+            deferred: {
+              xOffset: 100,
+              yOffset: "40%",
+              delay: 200,
+            },
+          },
+        }}
+        data={{
+          labels: labels,
+          datasets: dataset,
+        }}
+      />
     </div>
   );
 };

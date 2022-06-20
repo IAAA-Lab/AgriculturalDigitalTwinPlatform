@@ -8,6 +8,7 @@ import {
   CircleMarker,
   useMap,
 } from "react-leaflet";
+import Skeleton from "react-loading-skeleton";
 import { useNavigate } from "react-router-dom";
 import { GeoList } from "./AreaGeoList";
 
@@ -27,7 +28,13 @@ export const HomeMap = ({ areaList }: Props) => {
   const navigation = useNavigate();
   const [showList, setShowList] = useState(false);
 
-  if (areaList === undefined) return null;
+  if (!areaList) {
+    return (
+      <div className="leaflet-wrapper mb-8">
+        <Skeleton height={"100%"} width={1000} />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -63,7 +70,7 @@ export const HomeMap = ({ areaList }: Props) => {
                 }
                 position={area.geoLocation}
               >
-                <Popup autoClose={false} keepInView>
+                <Popup autoClose={false}>
                   <p>{area.name}</p>
                 </Popup>
               </MyMarker>

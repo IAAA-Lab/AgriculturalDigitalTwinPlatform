@@ -9,9 +9,11 @@ export const Home = () => {
   const [areaList, setAreaList] = useState<AreasPerUser>();
 
   useEffect(() => {
-    areaUseCases.getAreasByUser("1").then((areas) => {
-      setAreaList(areas);
-    });
+    setTimeout(() => {
+      areaUseCases.getAreasByUser("1").then((areas) => {
+        setAreaList(areas);
+      });
+    }, 2000);
   }, []);
 
   return (

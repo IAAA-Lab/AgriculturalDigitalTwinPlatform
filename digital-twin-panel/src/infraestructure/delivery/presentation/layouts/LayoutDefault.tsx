@@ -3,7 +3,6 @@ import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { RootState } from "../../../../app/config/context/redux/app-store";
-import ScrollReveal from "../components/ScrollReveal";
 import { Header } from "./components/Header";
 import { NotificationsLayer } from "./components/NotificationsLayer";
 import { WeatherLayout } from "./components/WeatherLayout";
@@ -13,19 +12,9 @@ type Props = {
 };
 
 export const LayoutDefault = ({ children }: Props) => {
-  const childRef = useRef<any>();
-  let location = useLocation();
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const initScroll = () => {
-    document.body.classList.add("is-loaded");
-    childRef.current.init();
-  };
-
   useEffect(() => {
-    initScroll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location]);
+    document.body.classList.add("is-loaded");
+  }, []);
 
   const toggleNotifications = useSelector(
     (state: RootState) => state.toggleNotifications
@@ -39,17 +28,12 @@ export const LayoutDefault = ({ children }: Props) => {
   );
 
   return (
-    <ScrollReveal
-      ref={childRef}
-      children={() => (
-        <>
-          <Header />
-          <main className={classes}>{children}</main>
-          {/* <Footer /> */}
-          <WeatherLayout show={toggleWeather} />
-          <NotificationsLayer show={toggleNotifications} />
-        </>
-      )}
-    />
+    <>
+      <Header />
+      <main className={classes}>{children}</main>
+      {/* <Footer /> */}
+      <WeatherLayout show={toggleWeather} />
+      <NotificationsLayer show={toggleNotifications} />
+    </>
   );
 };

@@ -44,11 +44,8 @@
           $scroll-reveal--transition-timing,
         transform $scroll-reveal--transition-duration
           $scroll-reveal--transition-timing;
-
-      &.is-revealed {
-        opacity: 1;
-        transform: translate(0);
-      }
+      opacity: 1;
+      transform: translate(0);
     }
   }
 }

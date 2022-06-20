@@ -17,6 +17,20 @@
   background: color(primary);
 }
 
+.notifications-card {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #d8dae5;
+  padding: 10px;
+  box-shadow: 0px 4px 8px rgba(16, 24, 64, 0.08);
+  border-radius: 8px;
+}
+
+.card-analysis-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+}
+
 .card-analysis {
   background: color(card);
   border: 1px solid #d8dae5;
@@ -24,23 +38,12 @@
   box-shadow: 0px 4px 8px rgba(16, 24, 64, 0.08);
   border-radius: 8px;
   display: flex;
-  align-items: center;
-  height: 210px;
-
-  @include media("<small") {
-    width: 400px;
-    flex: none;
-  }
+  flex-direction: column;
+  align-items: flex-end;
+  flex: 1;
+  overflow: hidden;
 
   .invert-color & {
     background: color(card-inverse);
   }
-}
-
-.notifications-card {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid #d8dae5;
-  padding: 10px;
-  box-shadow: 0px 4px 8px rgba(16, 24, 64, 0.08);
-  border-radius: 8px;
 }

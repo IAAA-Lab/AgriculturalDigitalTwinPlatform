@@ -78,14 +78,6 @@ small,
   color: color(low-contrast);
 }
 
-.text-xs-caps {
-  color: color(mid-contrast);
-  @include font-size(xs);
-  text-transform: uppercase;
-  @include font-weight(heading);
-  letter-spacing: 0.3px;
-}
-
 figcaption {
   @include font-size(figcap);
   @include font-weight(figcap);

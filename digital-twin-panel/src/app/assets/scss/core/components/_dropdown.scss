@@ -5,7 +5,6 @@
   .dropdown-content {
     overflow: hidden;
     transition: all 0.4s ease-in-out;
-    height: auto;
     max-height: 800px;
     overflow-x: scroll;
     &.off-is-active {

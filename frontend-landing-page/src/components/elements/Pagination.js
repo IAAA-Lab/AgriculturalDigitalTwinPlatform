@@ -81,7 +81,7 @@ export const PaginatedItems = ({ itemsPerPage }) => {
               <h4 className="mt-0 mb-0">{e.Title}</h4>
               <p className="m-0 text-xxs">{e.Author}</p>
               <div className="text-xxs text-color-primary fw-600 mb-8">
-                {getFormattedDate(e.Date)} · {e.read_min} min read
+                {getFormattedDate(e.Date)} · {e.read_min} min lectura
               </div>
               <p className="m-0 text-sm">{e.little_description}</p>
             </div>

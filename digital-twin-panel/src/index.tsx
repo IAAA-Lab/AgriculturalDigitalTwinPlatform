@@ -6,7 +6,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import { store } from "./app/config/context/redux/app-store";
-
+import "react-loading-skeleton/dist/skeleton.css";
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );

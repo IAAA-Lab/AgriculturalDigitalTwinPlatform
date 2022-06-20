@@ -53,3 +53,8 @@
   display: flex;
   flex-direction: column;
 }
+
+.react-loading-skeleton {
+  --base-color: #d5d4d4 !important;
+  --highlight-color: #91bd53 !important;
+}

@@ -28,7 +28,7 @@ export const HomeAnalysisCards = ({ data }: Props) => {
           className="dropdown-header"
           onClick={() => setOpenSummary(!openSummary)}
         >
-          <div className="row space-between">
+          <div className="row space-between reveal-from-left">
             <div className="col">
               <h3 className="m-0">Resumen actual</h3>
               <p className="text-sm mb-8">
@@ -38,8 +38,9 @@ export const HomeAnalysisCards = ({ data }: Props) => {
           </div>
         </div>
         <div className={classesSummary}>
-          <PieChartCard data={data} />
-          <LineChartCard data={data} />
+          <div className="card-analysis-wrapper">
+            <PieChartCard data={data} />
+          </div>
         </div>
       </div>
       <div className="dropdown-analysis">
@@ -47,7 +48,7 @@ export const HomeAnalysisCards = ({ data }: Props) => {
           className="dropdown-header"
           onClick={() => setOpenHistoric(!openHistoric)}
         >
-          <div className="row space-between">
+          <div className="row space-between reveal-from-left">
             <div className="col">
               <h3 className="m-0">Histórico</h3>
               <p className="text-sm mb-8">Datos históricos de los campos</p>
@@ -55,9 +56,8 @@ export const HomeAnalysisCards = ({ data }: Props) => {
           </div>
         </div>
         <div className={classHistoric}>
-          <div className="card-analysis mb-16"></div>
-          <div className="card-analysis mb-16"></div>
-          <div className="card-analysis mb-16"></div>
+          <LineChartCard data={data} />
+          <PieChartCard data={data} />
         </div>
       </div>
     </>
