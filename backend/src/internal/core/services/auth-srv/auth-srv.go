@@ -8,21 +8,20 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/go-redis/redis"
 )
 
 type jwtServices struct {
 	secretKey string
 	issure    string
-	rc        *redis.Client
+	cache     ports.CacheService
 }
 
 //auth-jwt
-func JWTAuthService(rc *redis.Client) ports.JWTService {
+func JWTAuthService(cache ports.CacheService) ports.JWTService {
 	return &jwtServices{
 		secretKey: getSecretKey(),
 		issure:    "Agrarian",
-		rc:        rc,
+		cache:     cache,
 	}
 }
 
@@ -58,7 +57,7 @@ func (service *jwtServices) generateToken(user domain.User, timeExp time.Duratio
 func (service *jwtServices) GenerateRefreshToken(user domain.User) string {
 	service.DeleteRefreshToken(user.ID.String())
 	rt := service.generateToken(user, time.Hour*24*3)
-	service.rc.Set(user.ID.String(), rt, time.Hour*24*3)
+	service.cache.Set(user.ID.String(), rt, time.Hour*24*3)
 	return rt
 }
 
@@ -67,11 +66,11 @@ func (service *jwtServices) GenerateAccessToken(user domain.User) string {
 }
 
 func (service *jwtServices) DeleteRefreshToken(userId string) {
-	service.rc.Del(userId)
+	service.cache.Delete(userId)
 }
 
 func (service *jwtServices) GetRefreshToken(userId string) (string, error) {
-	return service.rc.Get(userId).Result()
+	return service.cache.Get(userId)
 }
 
 func (service *jwtServices) ValidateToken(encodedToken string) (*jwt.Token, error) {

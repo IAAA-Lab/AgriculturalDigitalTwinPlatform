@@ -2,10 +2,8 @@ package usersrepo
 
 import (
 	"context"
-	"os"
 	"prakticas/backend-gpsoft/src/internal/core/domain"
 	"prakticas/backend-gpsoft/src/pkg/apperrors"
-	"prakticas/backend-gpsoft/src/pkg/utils"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -16,7 +14,7 @@ import (
 )
 
 type mongodbConn struct {
-	client  mongo.Client
+	// client  mongo.Client
 	db      mongo.Database
 	timeout int
 }
@@ -27,7 +25,7 @@ func NewMongodbConn(dbUrl string, dbName string, timeout int) *mongodbConn {
 	if err != nil {
 		panic(err)
 	}
-	return &mongodbConn{*mongoClient, *mongoDb, timeout}
+	return &mongodbConn{*mongoDb, timeout}
 }
 
 func (mc *mongodbConn) CheckLogin(username string, password []byte) (domain.User, error) {
@@ -52,12 +50,9 @@ func (mc *mongodbConn) PostNewUser(user domain.User) error {
 	if err == nil {
 		return apperrors.ErrUserExists
 	}
-	key := os.Getenv("KEY_DECRYPT_PASSWD")
-	iv := os.Getenv("IV_BLOCK_PASSWD")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
 	defer cancel()
-	decodedPasswd := utils.Ase256Decode(user.Password, key, iv)
-	encryptedPasswd, err := bcrypt.GenerateFromPassword(decodedPasswd, bcrypt.DefaultCost)
+	encryptedPasswd, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return apperrors.ErrInternal
 	}

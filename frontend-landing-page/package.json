@@ -31,8 +31,8 @@
     "url": "https://github.com/cruip/open-react-template.git"
   },
   "scripts": {
-    "start-docker": "react-scripts start react-scripts start",
-    "start": "env-cmd -f secrets/.env.local react-scripts start react-scripts start",
+    "start-docker": "react-scripts start",
+    "start": "env-cmd -f secrets/.env.local react-scripts start",
     "start-dev": "env-cmd -f secrets/.env.development react-scripts start",
     "start-prod": "env-cmd -f secrets/.env.production react-scripts start",
     "start-local": "env-cmd -f secrets/.env.local react-scripts start",

@@ -13,6 +13,17 @@ services:
     stdin_open: true
     env_file:
       - frontend-landing-page/secrets/.env.local
+  digital-twin-panel:
+    container_name: digital-twin-panel
+    build: digital-twin-panel
+    volumes:
+      - ./digital-twin-panel:/app
+      - /app/node_modules
+    ports:
+      - "3001:3001"
+    stdin_open: true
+    env_file:
+      - digital-twin-panel/secrets/.env.local
       # The Go App
   backend:
     build: backend

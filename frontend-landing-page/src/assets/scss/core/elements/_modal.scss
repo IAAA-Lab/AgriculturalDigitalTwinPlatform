@@ -53,9 +53,10 @@
 
 .modal-inner {
   border-radius: 10px;
-  max-height: calc(100vh - #{$modal--outer-padding-v__mobile} * 2);
   overflow: auto;
   position: relative;
+  height: 80vh;
+  overflow-y: scroll;
   width: 100vw;
   min-width: $modal--min-width;
   max-width: $modal--max-width;

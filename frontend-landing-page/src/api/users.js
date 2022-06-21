@@ -1,5 +1,5 @@
 import { API_URL } from "../config/api";
-import encrypt from "../middleware/auth";
+import encrypt from "../middleware/encryption";
 
 const fetchAllUsers = async () => {
   const response = await fetch(API_URL + "/users", {
@@ -23,14 +23,12 @@ const deleteUser = async (id) => {
 };
 
 const createUser = async (username, password, role) => {
-  const encrypted_passwd = await encrypt(password);
+  const encryptedMsg = await encrypt(
+    JSON.stringify({ username, password, role })
+  );
   const response = await fetch(API_URL + "/users", {
     method: "POST",
-    body: JSON.stringify({
-      username,
-      password: encrypted_passwd,
-      role,
-    }),
+    body: JSON.stringify({ data: encryptedMsg }),
     headers: {
       "Content-Type": "application/json",
       Authorization: "Bearer " + localStorage.getItem("jwtToken"),

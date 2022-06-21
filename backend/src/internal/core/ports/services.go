@@ -2,6 +2,7 @@ package ports
 
 import (
 	"prakticas/backend-gpsoft/src/internal/core/domain"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -28,4 +29,15 @@ type JWTService interface {
 	ValidateToken(token string) (*jwt.Token, error)
 	DeleteRefreshToken(userId string)
 	GetRefreshToken(userId string) (string, error)
+}
+
+type EncryptionService interface {
+	EncryptData(data string) (string, error)
+	DecryptData(data string) (string, error)
+}
+
+type CacheService interface {
+	Get(key string) (string, error)
+	Set(key string, value string, exp time.Duration) error
+	Delete(key string) error
 }

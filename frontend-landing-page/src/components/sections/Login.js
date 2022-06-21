@@ -23,7 +23,7 @@ export const Login = ({ closeModal }) => {
     setIsLoading(true);
     authService.login(username.value, password.value).then((token) => {
       if (!token) {
-        alert("Wrong username or password");
+        alert("Contraseña o usuario incorrectos");
       } else {
         closeModal(e);
         const decodedToken = decodeToken(token);

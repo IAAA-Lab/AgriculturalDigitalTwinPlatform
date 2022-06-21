@@ -49,47 +49,42 @@ export const PaginatedItems = ({ itemsPerPage }) => {
     }, 5000);
   };
 
-  const listOfitems = currentItems.map(
-    (e) => (
-      console.log(e),
-      (
-        <div key={e.ID} className="tiles-item">
-          <div className="tiles-item-inner">
-            <Link
-              to={`/blog/${e.ID}?title=${e.Title}&littleDescription=${e.little_description}&date=${e.Date}&author=${e.Author}&image=${NEWS_UPLOAD_URL}/${e.Image}&readMin=${e.read_min}`}
-            >
-              <div className="features-tiles-item-header center-content">
-                <div className="features-tiles-item-image-no-bg mb-16">
-                  <Image
-                    src={`${NEWS_UPLOAD_URL}/${e.Image}`}
-                    alt="Features tile icon 01"
-                    style={{
-                      objectFit: "cover",
-                      width: "350px",
-                      height: "200px",
-                    }}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src =
-                        "https://previews.123rf.com/images/alhovik/alhovik1709/alhovik170900031/86481591-breaking-news-background-world-global-tv-news-banner-design.jpg";
-                    }}
-                  />
-                </div>
-              </div>
-            </Link>
-            <div className="features-tiles-item-content">
-              <h4 className="mt-0 mb-0">{e.Title}</h4>
-              <p className="m-0 text-xxs">{e.Author}</p>
-              <div className="text-xxs text-color-primary fw-600 mb-8">
-                {getFormattedDate(e.Date)} · {e.read_min} min lectura
-              </div>
-              <p className="m-0 text-sm">{e.little_description}</p>
+  const listOfitems = currentItems.map((e) => (
+    <div key={e.ID} className="tiles-item">
+      <div className="tiles-item-inner">
+        <Link
+          to={`/blog/${e.ID}?title=${e.Title}&littleDescription=${e.little_description}&date=${e.Date}&author=${e.Author}&image=${NEWS_UPLOAD_URL}/${e.Image}&readMin=${e.read_min}`}
+        >
+          <div className="features-tiles-item-header center-content">
+            <div className="features-tiles-item-image-no-bg mb-16">
+              <Image
+                src={`${NEWS_UPLOAD_URL}/${e.Image}`}
+                alt="Features tile icon 01"
+                style={{
+                  objectFit: "cover",
+                  width: "350px",
+                  height: "200px",
+                }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src =
+                    "https://previews.123rf.com/images/alhovik/alhovik1709/alhovik170900031/86481591-breaking-news-background-world-global-tv-news-banner-design.jpg";
+                }}
+              />
             </div>
           </div>
+        </Link>
+        <div className="features-tiles-item-content">
+          <h4 className="mt-0 mb-0">{e.Title}</h4>
+          <p className="m-0 text-xxs">{e.Author}</p>
+          <div className="text-xxs text-color-primary fw-600 mb-8">
+            {getFormattedDate(e.Date)} · {e.read_min} min lectura
+          </div>
+          <p className="m-0 text-sm">{e.little_description}</p>
         </div>
-      )
-    )
-  );
+      </div>
+    </div>
+  ));
 
   // Invoke when user click to request another page.
   const handlePageClick = (event) => {

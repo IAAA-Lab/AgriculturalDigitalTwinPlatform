@@ -9,7 +9,7 @@
   align-items: center;
   text-align: center;
   border-radius: 8px;
-  padding: 0px 5px 0px 5px;
+  padding: 0px 8px 0px 8px;
   z-index: 2000;
 }
 
@@ -17,7 +17,7 @@
   position: absolute;
   @extend .badge;
   border-radius: 30px;
-  right: -2px;
+  right: -10px;
   top: -8px;
   background: color(badge-notification);
 

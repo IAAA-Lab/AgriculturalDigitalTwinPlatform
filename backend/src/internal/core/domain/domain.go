@@ -47,9 +47,13 @@ type AuthCustomClaims struct {
 	jwt.StandardClaims
 }
 
+type EncrytedData struct {
+	Data string `bson:"data"`
+}
+
 const (
-	Admin    = "admin"
-	Editor   = "editor"
-	Plain    = "user"
-	Agrarian = "agrarian"
+	Admin      = "admin"
+	NewsEditor = "newsEditor"
+	Plain      = "user"
+	Agrarian   = "agrarian"
 )

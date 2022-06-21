@@ -24,7 +24,6 @@ export const NewsPanel = () => {
   const postNewNews = async (e) => {
     e.preventDefault();
     const { title, description, author, image, minRead } = e.target;
-    console.log(minRead.value);
     if (image.files[0].size > 4096000) {
       showNotification(true);
       return;

@@ -71,6 +71,7 @@ export const PieChartCard = ({ data }: Props) => {
         style={{
           maxHeight: "200px",
         }}
+        className="mt-8"
         plugins={[ChartDeferred]}
         options={{
           plugins: {
@@ -82,6 +83,8 @@ export const PieChartCard = ({ data }: Props) => {
               },
             },
             legend: {
+              display: window.innerWidth > 400,
+              position: "right",
               labels: {
                 usePointStyle: true,
                 pointStyle: "rectRounded",
@@ -90,7 +93,6 @@ export const PieChartCard = ({ data }: Props) => {
                   size: 14,
                 },
               },
-              position: "right",
             },
             deferred: {
               xOffset: 100,

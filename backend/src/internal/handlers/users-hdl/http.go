@@ -32,12 +32,8 @@ func (hdl *HTTPHandler) CheckLogin(c *gin.Context) {
 
 func (hdl *HTTPHandler) CreateNewUser(c *gin.Context) {
 	var user domain.User
-	err := c.BindJSON(&user)
-	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{"message": err.Error()})
-		return
-	}
-	err = hdl.usersService.PostNewUser(user)
+	c.BindJSON(&user)
+	err := hdl.usersService.PostNewUser(user)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return

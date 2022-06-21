@@ -20,6 +20,7 @@ services:
     env_file:
       - backend/secrets/.env.development
     environment:
+      - GIN_MODE=release
       - ENV_MODE=DOCKER
     ports:
         - "8080:8080"

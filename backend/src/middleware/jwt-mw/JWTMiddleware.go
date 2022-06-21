@@ -1,4 +1,4 @@
-package middleware
+package jwtmw
 
 import (
 	"prakticas/backend-gpsoft/src/internal/core/domain"

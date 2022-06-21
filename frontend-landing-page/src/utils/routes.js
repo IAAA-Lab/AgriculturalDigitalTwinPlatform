@@ -1,3 +1,4 @@
+import { DIGITAL_TWIN_PANEL_URL } from "../config/api";
 import { Roles } from "../config/roles";
 import LayoutAdmin from "../layouts/LayoutAdmin";
 import LayoutAgrarian from "../layouts/LayoutAgrarian";
@@ -63,7 +64,7 @@ const getRoutes = ({ role, logged }) => {
         },
         {
           exact: true,
-          path: "/",
+          path: DIGITAL_TWIN_PANEL_URL,
           name: "Panel agrario",
           protected: true,
           component: NewsPanel,
@@ -122,7 +123,7 @@ const getRoutes = ({ role, logged }) => {
         },
         {
           exact: true,
-          path: "/",
+          path: DIGITAL_TWIN_PANEL_URL,
           name: "Panel agrario",
           protected: true,
           component: NewsPanel,
