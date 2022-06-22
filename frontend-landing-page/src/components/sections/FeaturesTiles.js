@@ -38,7 +38,7 @@ const FeaturesTiles = ({
   );
 
   const tilesClasses = classNames(
-    "tiles-wrap center-content",
+    "tiles-wrap center center-content",
     pushLeft && "push-left"
   );
 

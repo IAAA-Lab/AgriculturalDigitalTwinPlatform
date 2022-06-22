@@ -28,7 +28,7 @@ export const Partnership = ({ className, ...props }) => {
     { path: "campg-logo.png", link: "https://campag.es/" },
     { path: "geoslab-logo.png", link: "https://www.geoslab.com/" },
     { path: "pystacil-logo.png", link: "https://pistacyl.com/" },
-    { path: "cetemet-logo.jpg", link: "https://cetemet.es/" },
+    { path: "cetemet-logo.png", link: "https://cetemet.es/" },
   ];
 
   return (
@@ -45,7 +45,8 @@ export const Partnership = ({ className, ...props }) => {
                 href={link}
               >
                 <div className="tiles-item-inner">
-                  <Image
+                  <img
+                    style={{ objectFit: "contain" }}
                     src={require(`../../assets/images/${path}`)}
                     width={200}
                     height={200}

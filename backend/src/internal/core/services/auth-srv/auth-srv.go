@@ -27,9 +27,6 @@ func JWTAuthService(cache ports.CacheService) ports.JWTService {
 
 func getSecretKey() string {
 	secret := os.Getenv("JWT_SECRET")
-	if secret == "" {
-		secret = "secsjdhf8,/f*eDjh3uyDBHDJBret"
-	}
 	return secret
 }
 
@@ -45,8 +42,6 @@ func (service *jwtServices) generateToken(user domain.User, timeExp time.Duratio
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	//encoded string
 	t, err := token.SignedString([]byte(service.secretKey))
 	if err != nil {
 		panic(err)

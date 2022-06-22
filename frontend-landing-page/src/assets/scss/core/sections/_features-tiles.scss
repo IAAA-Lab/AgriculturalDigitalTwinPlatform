@@ -9,6 +9,9 @@
   }
 
   .tiles-wrap {
+    &.center {
+      justify-content: center;
+    }
     @if ($features-tiles-items--padding__mobile != null) {
       margin-right: -($features-tiles-items--padding__mobile * 0.5);
       margin-left: -($features-tiles-items--padding__mobile * 0.5);
