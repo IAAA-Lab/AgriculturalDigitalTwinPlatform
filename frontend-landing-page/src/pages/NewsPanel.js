@@ -77,7 +77,7 @@ export const NewsPanel = () => {
               maxLength={60}
               className="text-xxs form-input-sm"
             />
-            <label className="form-label">Autor</label>
+            <label className="form-label mt-8">Autor</label>
             <input
               required
               name="author"
@@ -85,7 +85,7 @@ export const NewsPanel = () => {
               className="text-xxs form-input-sm"
               style={{ resize: "none" }}
             />
-            <label className="form-label">Descripción</label>
+            <label className="form-label mt-8">Descripción</label>
             <textarea
               required
               name="description"
@@ -93,7 +93,7 @@ export const NewsPanel = () => {
               className="text-xxs form-input-sm"
               style={{ resize: "none", height: "100px" }}
             />
-            <label className="form-label">Imagen</label>
+            <label className="form-label mt-8">Imagen</label>
             <input
               required
               type="file"
@@ -102,7 +102,7 @@ export const NewsPanel = () => {
               className="mb-8"
             />
             {/* <img src="#" alt="news main image" onChange={() => {}} /> */}
-            <label className="form-label">Contenido</label>
+            <label className="form-label mt-8">Contenido</label>
             <DraftailEditor
               onChange={onChange}
               editorState={content}
@@ -121,14 +121,15 @@ export const NewsPanel = () => {
               ]}
               plugins={[imagePlugin]}
             />
-            <label className="form-label">Minutos de lectura</label>
+            <label className="form-label mt-8">Minutos de lectura</label>
             <input
               className="text-xxs form-input-sm p-8"
               style={{ maxWidth: 100 }}
               type="number"
               name="minRead"
               max={30}
-              min={0}
+              min={1}
+              defaultValue={1}
             />
             <button
               type="submit"

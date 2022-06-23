@@ -88,7 +88,7 @@ func setupRouter() *gin.Engine {
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(200, "pong")
 	})
-	// v1 := r.Group("/v1")
+	// v1 := r.Group("/")
 	// {
 	// 	authGroup := v1.Group("/auth")
 	// 	{
@@ -125,9 +125,9 @@ func setupRouter() *gin.Engine {
 	// 		}
 	// 	}
 	// }
-	r.POST("/login", encryptionMiddleware.DecryptData, usersHandler.CheckLogin, authMiddleware.ReturnJWT)
-	r.POST("/logout", authMiddleware.RevokeJWT)
-	r.POST("/refresh", authMiddleware.RefreshJWT)
+	r.POST("/auth/login", encryptionMiddleware.DecryptData, usersHandler.CheckLogin, authMiddleware.ReturnJWT)
+	r.POST("/auth/logout", authMiddleware.RevokeJWT)
+	r.POST("/auth/refresh", authMiddleware.RefreshJWT)
 	r.POST("/users", authMiddleware.AuthorizeJWT([]string{domain.Admin}), encryptionMiddleware.DecryptData, usersHandler.CreateNewUser)
 	r.GET("/users", authMiddleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.FetchAllUsers)
 	r.DELETE("/users/:id", authMiddleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.DeleteUser)

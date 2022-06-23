@@ -53,8 +53,6 @@ export const PieChartCard = ({ data }: Props) => {
     },
   ];
 
-  console.log(dataset);
-
   return (
     <div className="card-analysis reveal-from-right mb-16 col">
       <select

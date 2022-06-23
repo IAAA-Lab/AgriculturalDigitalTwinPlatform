@@ -13,6 +13,19 @@ services:
     stdin_open: true
     env_file:
       - frontend-landing-page/secrets/.env.local
+    depends_on:
+      - digital-twin-panel
+  images-server:
+    container_name: images-server
+    build: images-server
+    volumes:
+      - ./images-server:/app
+      - /app/node_modules
+    ports:
+      - "3500:3500"
+    stdin_open: true
+    env_file:
+      - images-server/.env
   digital-twin-panel:
     container_name: digital-twin-panel
     build: digital-twin-panel
@@ -24,7 +37,9 @@ services:
     stdin_open: true
     env_file:
       - digital-twin-panel/secrets/.env.local
-      # The Go App
+    depends_on:
+      - images-server
+      - backend
   backend:
     build: backend
     container_name: gin-server
@@ -58,13 +73,12 @@ services:
       volumes:
           - ./mongodata:/data/db
       restart: always
-      environment:
-        MONGODB_ROOT_USER: "${MONGODB_ROOT_USER}"
-        MONGODB_ROOT_PASSWORD: "${MONGODB_ROOT_PASSWORD}"
-        MONGODB_USER: "${MONGODB_USER}"
-        MONGODB_PASSWORD: "${MONGODB_PASSWORD}"
-        MONGODB_DATABASE: "${MONGODB_DATABASE}"
-  # Mongo Express Web-based MongoDB admin interface
+      # environment:
+      #   MONGODB_ROOT_USER: "${MONGODB_ROOT_USER}"
+      #   MONGODB_ROOT_PASSWORD: "${MONGODB_ROOT_PASSWORD}"
+      #   MONGODB_USER: "${MONGODB_USER}"
+      #   MONGODB_PASSWORD: "${MONGODB_PASSWORD}"
+      #   MONGODB_DATABASE: "${MONGODB_DATABASE}"
   mongo_express:
       image: mongo-express
       container_name: mongo_express

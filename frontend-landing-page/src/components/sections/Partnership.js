@@ -25,8 +25,8 @@ export const Partnership = ({ className, ...props }) => {
       path: "agrointelligent-logo.webp",
       link: "https://www.agrointelligent.com/",
     },
-    { path: "campg-logo.png", link: "https://campag.es/" },
     { path: "geoslab-logo.png", link: "https://www.geoslab.com/" },
+    { path: "campg-logo.png", link: "https://campag.es/" },
     { path: "pystacil-logo.png", link: "https://pistacyl.com/" },
     { path: "cetemet-logo.png", link: "https://cetemet.es/" },
   ];

@@ -96,9 +96,9 @@
   }
 
   .geo-list {
-    padding-left: 10px;
     width: 0;
     &.is-closed {
+      padding-left: 10px;
       width: 300px;
     }
   }

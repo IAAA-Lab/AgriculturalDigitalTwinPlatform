@@ -12,8 +12,34 @@ services:
       - "3000:3000"
     stdin_open: true
     env_file:
-      - frontend-landing-page/.env.local
-      # The Go App
+      - frontend-landing-page/.env.production
+    depends_on:
+      - digital-twin-panel
+  images-server:
+    container_name: images-server
+    build: images-server
+    volumes:
+      - ./images-server:/app
+      - /app/node_modules
+    ports:
+      - "3500:3500"
+    stdin_open: true
+    env_file:
+      - images-server/.env
+  digital-twin-panel:
+    container_name: digital-twin-panel
+    build: digital-twin-panel
+    volumes:
+      - ./digital-twin-panel:/app
+      - /app/node_modules
+    ports:
+      - "3001:3001"
+    stdin_open: true
+    env_file:
+      - digital-twin-panel/secrets/.env.development
+    depends_on:
+      - images-server
+      - backend
   backend:
     build: backend
     container_name: gin-server

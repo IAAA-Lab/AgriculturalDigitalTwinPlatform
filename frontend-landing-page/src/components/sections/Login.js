@@ -7,15 +7,6 @@ import { decodeToken } from "react-jwt";
 export const Login = ({ closeModal }) => {
   const auth = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
-  const bottomRef = useRef(null);
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (bottomRef) {
-        bottomRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 25);
-  }, []);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -34,50 +25,44 @@ export const Login = ({ closeModal }) => {
   };
 
   return (
-    <section className="hero section">
-      <div className="tiles-row">
+    <section className="login-section">
+      <div className="login-section-image">
         <img
-          style={{ maxWidth: 380 }}
           src={require("./../../assets/images/plant-login.jpg")}
           alt="plant-login"
-          width="100%"
-          height="100%"
         />
-        <div className="hero-content m-16">
-          <h4 style={{ position: "absolute", top: -10, left: 20 }}>Acceso</h4>
-          <form onSubmit={onSubmit}>
-            <label className="text-xs">Usuario</label>
-            <input
-              name="username"
-              className="text-xxs form-input-sm"
-              type="text"
-              style={{ width: "100%" }}
-              required
+      </div>
+      <h4 style={{ position: "absolute", top: -10, left: 20 }}>Acceso</h4>
+      <div className="login-section-content">
+        <form onSubmit={onSubmit}>
+          <label className="text-xs">Usuario</label>
+          <input
+            name="username"
+            className="text-xxs form-input-sm"
+            type="text"
+            required
+          />
+          <label className="text-xs">Contraseña</label>
+          <input
+            name="password"
+            className="text-xxs form-input-sm"
+            type="password"
+            required
+          />
+          <button
+            className="button button-primary button-sm mt-16"
+            type="submit"
+            disabled={isLoading}
+          >
+            <SpinnerDotted
+              size={20}
+              enabled={isLoading}
+              className="mr-16"
+              color="white"
             />
-            <label className="text-xs">Contraseña</label>
-            <input
-              name="password"
-              className="text-xxs form-input-sm"
-              type="password"
-              style={{ width: "100%" }}
-              required
-              ref={bottomRef}
-            />
-            <button
-              className="button button-primary button-wide-mobile button-sm mt-16"
-              type="submit"
-              disabled={isLoading}
-            >
-              <SpinnerDotted
-                size={20}
-                enabled={isLoading}
-                className="mr-16"
-                color="white"
-              />
-              Entrar
-            </button>
-          </form>
-        </div>
+            Entrar
+          </button>
+        </form>
       </div>
     </section>
   );

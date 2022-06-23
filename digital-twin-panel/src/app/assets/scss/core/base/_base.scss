@@ -21,7 +21,13 @@ svg {
 
 img {
   border-radius: $img-radius;
-  object-fit: fill;
+  object-fit: cover;
+
+  &.maintain-ratio {
+    height: auto;
+    width: auto;
+    aspect-ratio: 4 / 3;
+  }
 }
 
 .bordered {

@@ -3,7 +3,7 @@ import encrypt from "../middleware/encryption";
 
 const login = async (username, password) => {
   const encryptedMsg = await encrypt(JSON.stringify({ username, password }));
-  const response = await fetch(`${API_URL}/login`, {
+  const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     body: JSON.stringify({
       data: encryptedMsg,
@@ -19,14 +19,14 @@ const login = async (username, password) => {
 };
 
 const logout = async () => {
-  const response = await fetch(`${API_URL}/logout`, {
+  const response = await fetch(`${API_URL}/auth/logout`, {
     method: "POST",
     credentials: "include",
   }).catch((_) => null);
 };
 
 const refreshLogin = async () => {
-  const response = await fetch(`${API_URL}/refresh`, {
+  const response = await fetch(`${API_URL}/auth/refresh`, {
     method: "POST",
     credentials: "include",
   }).catch((_) => null);

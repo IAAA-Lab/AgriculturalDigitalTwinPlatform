@@ -69,12 +69,10 @@ const Hero = ({
             data-reveal-value="20px"
             data-reveal-delay="200"
           >
-            <Image
-              className="has-shadow"
+            <img
+              className="has-shadow maintain-ratio"
               src={require("./../../assets/images/hero-image-initial.jpg")}
               alt="Hero"
-              width={896}
-              height={504}
             />
           </div>
         </div>

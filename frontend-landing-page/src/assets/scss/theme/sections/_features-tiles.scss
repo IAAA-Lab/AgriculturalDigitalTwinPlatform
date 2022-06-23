@@ -7,4 +7,10 @@
 .features-tiles-item-image-no-bg {
   display: inline-flex;
   border-radius: 50%;
+  transition: 0.25s ease-in-out;
+  will-change: scale opacity;
+  &:hover {
+    scale: 1.05;
+    opacity: 0.85;
+  }
 }

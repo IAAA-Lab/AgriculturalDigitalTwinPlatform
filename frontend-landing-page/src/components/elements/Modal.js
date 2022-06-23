@@ -7,16 +7,12 @@ const propTypes = {
   handleClose: PropTypes.func.isRequired,
   show: PropTypes.bool.isRequired,
   closeHidden: PropTypes.bool,
-  video: PropTypes.string,
-  videoTag: PropTypes.oneOf(["iframe", "video"]),
 };
 
 const defaultProps = {
   children: null,
   show: false,
   closeHidden: false,
-  video: "",
-  videoTag: "iframe",
 };
 
 const Modal = ({
@@ -25,19 +21,8 @@ const Modal = ({
   handleClose,
   show,
   closeHidden,
-  video,
-  videoTag,
   ...props
 }) => {
-  useEffect(() => {
-    document.addEventListener("keydown", keyPress);
-    document.addEventListener("click", stopProgagation);
-    return () => {
-      document.removeEventListener("keydown", keyPress);
-      document.removeEventListener("click", stopProgagation);
-    };
-  });
-
   useEffect(() => {
     handleBodyClass();
   }, [props.show]);
@@ -50,51 +35,23 @@ const Modal = ({
     }
   };
 
-  const keyPress = (e) => {
-    e.keyCode === 27 && handleClose(e);
-  };
-
   const stopProgagation = (e) => {
     e.stopPropagation();
   };
 
-  const classes = classNames(
-    "modal",
-    show && "is-active",
-    video && "modal-video",
-    className
-  );
+  const classes = classNames("modal", show && "is-active", className);
 
   return (
     <>
       {show && (
         <div {...props} className={classes} onClick={handleClose}>
           <div className="modal-inner" onClick={stopProgagation}>
-            {video ? (
-              <div className="responsive-video">
-                {videoTag === "iframe" ? (
-                  <iframe
-                    title="video"
-                    src={video}
-                    frameBorder="0"
-                    allowFullScreen
-                  ></iframe>
-                ) : (
-                  <video v-else controls src={video}></video>
-                )}
-              </div>
-            ) : (
-              <>
-                {!closeHidden && (
-                  <button
-                    className="modal-close"
-                    aria-label="close"
-                    onClick={handleClose}
-                  ></button>
-                )}
-                {children}
-              </>
-            )}
+            <button
+              className="modal-close"
+              aria-label="close"
+              onClick={handleClose}
+            />
+            {children}
           </div>
         </div>
       )}

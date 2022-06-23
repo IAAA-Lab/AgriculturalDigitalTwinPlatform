@@ -8,21 +8,15 @@ const Logo = ({ className, light = false, ...props }) => {
 
   return (
     <Link to="/">
-      <div
-        {...props}
-        className={classes}
-        style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
-      >
-        <h1 className="m-0">
-          <Image
-            src={require(light
-              ? "./../../../assets/images/logo-light.svg"
-              : "./../../../assets/images/logo.svg")}
-            alt="Open"
-            width={75}
-            height={75}
-          />
-        </h1>
+      <div {...props} className={classes}>
+        <Image
+          src={require(light
+            ? "./../../../assets/images/logo-light.svg"
+            : "./../../../assets/images/logo.svg")}
+          alt="Open"
+          width={75}
+          height={75}
+        />
         <h5>GEDEFEC</h5>
       </div>
     </Link>
