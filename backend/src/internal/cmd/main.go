@@ -15,6 +15,7 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/dvwright/xss-mw"
 	"github.com/gin-gonic/gin"
@@ -39,6 +40,9 @@ import (
 	usershdl "prakticas/backend-gpsoft/src/internal/handlers/users-hdl"
 	encryptionmw "prakticas/backend-gpsoft/src/middleware/encryption-mw"
 	jwtmw "prakticas/backend-gpsoft/src/middleware/jwt-mw"
+
+	cache "github.com/chenyahui/gin-cache"
+	"github.com/chenyahui/gin-cache/persist"
 )
 
 func CorsConfig() gin.HandlerFunc {
@@ -80,6 +84,8 @@ func setupRouter() *gin.Engine {
 	authService := authsrv.JWTAuthService(cacheService)
 	authMiddleware := jwtmw.Init(authService, usersService)
 
+	cacheMiddleware := cache.CacheByRequestURI(persist.NewRedisStore(cacherepository.GetClient()), 10*time.Minute)
+
 	r := gin.Default()
 	r.Use(CorsConfig())
 	var xssMdlwr xss.XssMw
@@ -88,53 +94,17 @@ func setupRouter() *gin.Engine {
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(200, "pong")
 	})
-	// v1 := r.Group("/")
-	// {
-	// 	authGroup := v1.Group("/auth")
-	// 	{
-	// 		authGroup.POST("/login", usersHandler.CheckLogin, authMiddleware.ReturnJWT)
-	// 		authGroup.POST("/logout", authMiddleware.RevokeJWT)
-	// 		authGroup.POST("/refresh", authMiddleware.RefreshJWT)
-	// 	}
-	// 	usersGroup := v1.Group("/users").Use(authMiddleware.AuthorizeJWT([]string{domain.Admin}))
-	// 	{
-	// 		usersGroup.POST("/users", usersHandler.CreateNewUser)
-	// 		usersGroup.GET("/users", usersHandler.FetchAllUsers)
-	// 		usersGroup.DELETE("/users/:id", usersHandler.DeleteUser)
-	// 	}
-	// 	newsGroup := v1.Group("/news")
-	// 	{
-	// 		newsGroup.GET("/", newsHandler.Get)
-	// 		newsGroup.POST("/", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.NewsEditor}), newsHandler.PostNewNews)
-	// 		newsGroup.GET("/:id", newsHandler.GetDesc)
-	// 		newsGroup.GET("/news/number", newsHandler.GetNumber)
-	// 	}
-	// 	agrarianGroup := v1.Group("/agrarian").Use(authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.Agrarian}))
-	// 	{
-	// 		areas := agrarianGroup.Group("/areas")
-	// 		{
-	// 			areas.GET("/areas", agrarianHandler.GetAreasByUser)
-	// 		}
-	// 		fields := agrarianGroup.Group("/fields")
-	// 		{
 
-	// 		}
-	// 		singleField := agrarianGroup.Group("/singleField")
-	// 		{
-
-	// 		}
-	// 	}
-	// }
 	r.POST("/auth/login", encryptionMiddleware.DecryptData, usersHandler.CheckLogin, authMiddleware.ReturnJWT)
 	r.POST("/auth/logout", authMiddleware.RevokeJWT)
 	r.POST("/auth/refresh", authMiddleware.RefreshJWT)
 	r.POST("/users", authMiddleware.AuthorizeJWT([]string{domain.Admin}), encryptionMiddleware.DecryptData, usersHandler.CreateNewUser)
 	r.GET("/users", authMiddleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.FetchAllUsers)
 	r.DELETE("/users/:id", authMiddleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.DeleteUser)
-	r.GET("/news/number", newsHandler.GetNumber)
-	r.GET("/news", newsHandler.Get)
+	r.GET("/news/number", cacheMiddleware, newsHandler.GetNumber)
+	r.GET("/news", cacheMiddleware, newsHandler.Get)
 	r.POST("/news", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.NewsEditor}), newsHandler.PostNewNews)
-	r.GET("/news/:id", newsHandler.GetDesc)
+	r.GET("/news/:id", cacheMiddleware, newsHandler.GetDesc)
 
 	return r
 }

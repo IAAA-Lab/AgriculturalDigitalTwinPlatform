@@ -1,9 +1,10 @@
 package cacherepo
 
 import (
+	"context"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 )
 
 type redissrv struct {
@@ -24,8 +25,12 @@ func NewRedisConn(redisUri string) *redissrv {
 	return &redissrv{client: redisClient}
 }
 
+func (srv *redissrv) GetClient() *redis.Client {
+	return srv.client
+}
+
 func (srv *redissrv) Set(key string, value string, exp time.Duration) error {
-	err := srv.client.Set(key, value, exp).Err()
+	err := srv.client.Set(context.Background(), key, value, exp).Err()
 	if err != nil {
 		return err
 	}
@@ -33,7 +38,7 @@ func (srv *redissrv) Set(key string, value string, exp time.Duration) error {
 }
 
 func (srv *redissrv) Get(key string) (string, error) {
-	value, err := srv.client.Get(key).Result()
+	value, err := srv.client.Get(context.Background(), key).Result()
 	if err != nil {
 		return "", err
 	}
@@ -41,7 +46,7 @@ func (srv *redissrv) Get(key string) (string, error) {
 }
 
 func (srv *redissrv) Delete(key string) error {
-	err := srv.client.Del(key).Err()
+	err := srv.client.Del(context.Background(), key).Err()
 	if err != nil {
 		return err
 	}
