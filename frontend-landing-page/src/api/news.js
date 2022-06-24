@@ -7,6 +7,7 @@ const fetchAllNews = async (numPage) => {
   );
   if (!response || !response.ok) return null;
   const data = await response.json();
+  if (data === null) return [];
   return data;
 };
 
