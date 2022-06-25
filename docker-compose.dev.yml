@@ -55,6 +55,20 @@ services:
     command: go run ./src/internal/cmd/main.go
     depends_on:
       - redis
+  # mongo:
+  #   build: ./mongodb
+  #   container_name: mongo
+  #   ports:
+  #       - '27018:27017'
+  #   volumes:
+  #       - ./mongodb/mongodata:/data/db
+  #   restart: always
+    # environment:
+    #   MONGODB_ROOT_USER: "${MONGODB_ROOT_USER}"
+    #   MONGODB_ROOT_PASSWORD: "${MONGODB_ROOT_PASSWORD}"
+    #   MONGODB_USER: "${MONGODB_USER}"
+    #   MONGODB_PASSWORD: "${MONGODB_PASSWORD}"
+    #   MONGODB_DATABASE: "${MONGODB_DATABASE}"
   redis:
     image: redis
     container_name: redis
@@ -62,5 +76,5 @@ services:
     ports:
         - "6379:6379"
     volumes:
-        - ./backend:/redis
+        - ./redis/redisdata:/data
     command: redis-server
