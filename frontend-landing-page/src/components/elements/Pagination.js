@@ -60,11 +60,6 @@ export const PaginatedItems = ({ itemsPerPage }) => {
               <Image
                 src={`${NEWS_UPLOAD_URL}/${e.Image}`}
                 alt="Features tile icon 01"
-                style={{
-                  objectFit: "cover",
-                  width: "350px",
-                  height: "200px",
-                }}
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src =

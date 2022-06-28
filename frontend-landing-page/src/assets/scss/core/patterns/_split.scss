@@ -17,23 +17,15 @@
 
     .split-item-image {
       position: relative;
-      width: 100%;
 
       img,
       svg,
       video {
-        width: auto;
         object-fit: cover;
         max-width: 100%;
+        width: 528px;
+        height: 350px;
         overflow: visible;
-      }
-
-      &.split-item-image-fill {
-        img,
-        svg,
-        video {
-          width: 100%;
-        }
       }
     }
   }
@@ -56,6 +48,10 @@
 
         .split-item-image {
           margin-bottom: $split-item--inner-padding-v_mobile;
+          img {
+            height: auto;
+            aspect-ratio: 4 / 3;
+          }
         }
       }
     }

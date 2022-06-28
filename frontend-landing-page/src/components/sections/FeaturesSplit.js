@@ -85,9 +85,7 @@ const FeaturesSplit = ({
                 <Image
                   src={require("./../../assets/images/fase_1_1.jpg")}
                   alt="Features split 01"
-                  width={528}
                   className="bordered"
-                  height={350}
                 />
               </div>
             </div>
@@ -116,9 +114,7 @@ const FeaturesSplit = ({
                 <img
                   src={require("./../../assets/images/fase_1_2.jpg")}
                   alt="Features split 02"
-                  width={528}
                   className="bordered"
-                  height={350}
                 />
               </div>
             </div>
@@ -152,9 +148,7 @@ const FeaturesSplit = ({
                 <Image
                   src={require("./../../assets/images/fase_1_3.jpg")}
                   alt="Features split 03"
-                  width={528}
                   className="bordered"
-                  height={350}
                 />
               </div>
             </div>
