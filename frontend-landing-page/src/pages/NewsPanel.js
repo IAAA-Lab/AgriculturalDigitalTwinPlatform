@@ -8,11 +8,12 @@ import Image from "../components/elements/Image";
 import { NEWS_UPLOAD_URL } from "../config/api";
 import { getFormattedDate } from "../utils/functions";
 
-export const NewsPanel = ({ itemsPerPage = 10 }) => {
+export const NewsPanel = ({ itemsPerPage = 6 }) => {
   const [news, setNews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const [pageCount, setPageCount] = useState(1);
+  const [pageCount, setPageCount] = useState(0);
+  const [selectedPage, setSelectedPage] = useState(0);
 
   useEffect(() => {
     newsService.fetchNumberOfNews().then((number) => {
@@ -21,11 +22,19 @@ export const NewsPanel = ({ itemsPerPage = 10 }) => {
   }, []);
 
   useEffect(() => {
-    newsService.fetchAllNews(pageCount - 1).then((news) => {
+    setIsLoading(true);
+    newsService.fetchAllNews(selectedPage).then((news) => {
       setNews(news ?? []);
       setIsLoading(false);
     });
-  }, [pageCount]);
+  }, [selectedPage]);
+
+  const handlePageChange = (event) => {
+    setSelectedPage(event.selected);
+    newsService.fetchNumberOfNews().then((number) => {
+      setPageCount(Math.ceil(number / itemsPerPage));
+    });
+  };
 
   if (isError) {
     return <div className="notification-error">Algo fue mal...</div>;
@@ -75,7 +84,7 @@ export const NewsPanel = ({ itemsPerPage = 10 }) => {
                           style={{ display: "flex", flexWrap: "wrap" }}
                         >
                           <img
-                            src={`${NEWS_UPLOAD_URL}/${Image}.png`}
+                            src={`${NEWS_UPLOAD_URL}/${Image}`}
                             style={{
                               objectFit: "cover",
                               width: "70px",
@@ -133,6 +142,7 @@ export const NewsPanel = ({ itemsPerPage = 10 }) => {
               }
               pageRangeDisplayed={3}
               pageCount={pageCount}
+              onPageChange={handlePageChange}
               previousLabel={
                 <strong className="text-sm text-color-primary">{"<"}</strong>
               }
