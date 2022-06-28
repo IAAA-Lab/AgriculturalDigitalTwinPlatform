@@ -2,25 +2,6 @@ version: "3.9"
 
 services:
 
-  # frontend-landing-page:
-  #   build: 
-  #     context: frontend-landing-page
-  #     dockerfile: dev.Dockerfile
-  #   stdin_open: true
-  #   env_file:
-  #     - frontend-landing-page/secrets/.env.development
-  #   depends_on:
-  #     - digital-twin-panel
-  # digital-twin-panel:
-  #   build:
-  #     context: digital-twin-panel
-  #     dockerfile: dev.Dockerfile
-  #   stdin_open: true
-  #   env_file:
-  #     - digital-twin-panel/secrets/.env.development
-  #   depends_on:
-  #     - images-server
-  #     - backend
   images-server:
     build: images-server
     volumes:

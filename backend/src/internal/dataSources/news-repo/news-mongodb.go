@@ -80,10 +80,12 @@ func (mc *mongodbConn) PostNewNews(news domain.PostNews) error {
 func (mc *mongodbConn) UpdateNews(id primitive.ObjectID, news domain.PostNews) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
 	defer cancel()
-	filter := bson.M{"_id": bson.M{"$eq": id}}
-	_, err := mc.db.Collection("News").ReplaceOne(ctx, filter, news)
+	update := bson.D{{
+		"$set", news,
+	}}
+	_, err := mc.db.Collection("News").UpdateByID(ctx, id, update)
 	if err != nil {
-		return apperrors.ErrNotFound
+		return apperrors.ErrInternal
 	}
 	return nil
 }

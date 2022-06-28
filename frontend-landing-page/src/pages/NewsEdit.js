@@ -40,12 +40,15 @@ export const NewsEdit = () => {
   const postNewNews = async (e) => {
     e.preventDefault();
     const { title, description, author, image, minRead } = e.target;
-    if (image.files[0].size > 4096000) {
+    if (image.files[0]?.size > 4096000) {
       showNotification(true);
       return;
     }
     setIsLoading(true);
-    const filename = await newsService.uploadImage(image.files[0]);
+    var filename;
+    if (image.files[0]) {
+      filename = await newsService.uploadImage(image.files[0]);
+    }
     if (filename === null) {
       showNotification(true);
       return;
@@ -56,7 +59,7 @@ export const NewsEdit = () => {
           title.value,
           description.value,
           author.value,
-          filename.path,
+          filename?.path,
           parseInt(minRead.value),
           convertToHTML(content.getCurrentContent())
         )
@@ -68,7 +71,7 @@ export const NewsEdit = () => {
           parseInt(minRead.value),
           convertToHTML(content.getCurrentContent())
         );
-    if (err) {
+    if (!err) {
       showNotification(true);
       return;
     }
@@ -125,7 +128,7 @@ export const NewsEdit = () => {
             />
             <label className="form-label mt-8">Imagen</label>
             <input
-              required
+              required={!id}
               type="file"
               accept="image/*"
               name="image"

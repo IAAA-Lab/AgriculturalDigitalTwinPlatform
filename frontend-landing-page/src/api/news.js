@@ -89,8 +89,8 @@ const updateNews = async (
       Authorization: "Bearer " + localStorage.getItem("jwtToken"),
     },
   }).catch((_) => null);
-  if (!response || !response.ok) return true;
-  return false;
+  if (!response || !response.ok) return false;
+  return true;
 };
 
 const deleteNews = async (id) => {
