@@ -62,7 +62,6 @@ func (hdl *HTTPHandler) GetNumber(c *gin.Context) {
 func (hdl *HTTPHandler) PostNewNews(c *gin.Context) {
 	var news domain.PostNews
 	c.BindJSON(&news)
-	fmt.Println(news)
 	news.Content = utils.EscapeHTMLBack(news.Content)
 	err := hdl.newsService.PostNewNews(news)
 	if err != nil {
@@ -70,4 +69,27 @@ func (hdl *HTTPHandler) PostNewNews(c *gin.Context) {
 		return
 	}
 	c.JSON(201, nil)
+}
+
+func (hdl *HTTPHandler) UpdateNews(c *gin.Context) {
+	id, err := primitive.ObjectIDFromHex(c.Param("id"))
+	var news domain.PostNews
+	c.BindJSON(&news)
+	news.Content = utils.EscapeHTMLBack(news.Content)
+	err = hdl.newsService.UpdateNews(id, news)
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(204, nil)
+}
+
+func (hdl *HTTPHandler) DeleteNews(c *gin.Context) {
+	id, err := primitive.ObjectIDFromHex(c.Param("id"))
+	err = hdl.newsService.DeleteNews(id)
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(204, nil)
 }

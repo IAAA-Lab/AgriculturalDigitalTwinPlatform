@@ -13,6 +13,8 @@ type NewsService interface {
 	FetchAll(numPage int64) ([]domain.News, error)
 	Fetch(id primitive.ObjectID) (domain.Description, error)
 	PostNewNews(news domain.PostNews) error
+	UpdateNews(id primitive.ObjectID, news domain.PostNews) error
+	DeleteNews(id primitive.ObjectID) error
 }
 
 type UsersService interface {

@@ -1,68 +1,64 @@
-version: "3.8"
+version: "3.9"
 
 services:
 
-  frontend-landing-page:
-    container_name: landing-page
-    build: frontend-landing-page
-    volumes:
-      - ./frontend-landing-page:/app
-      - /app/node_modules
-    ports:
-      - "3000:3000"
-    stdin_open: true
-    env_file:
-      - frontend-landing-page/secrets/.env.development
-    depends_on:
-      - digital-twin-panel
+  # frontend-landing-page:
+  #   build: 
+  #     context: frontend-landing-page
+  #     dockerfile: dev.Dockerfile
+  #   stdin_open: true
+  #   env_file:
+  #     - frontend-landing-page/secrets/.env.development
+  #   depends_on:
+  #     - digital-twin-panel
+  # digital-twin-panel:
+  #   build:
+  #     context: digital-twin-panel
+  #     dockerfile: dev.Dockerfile
+  #   stdin_open: true
+  #   env_file:
+  #     - digital-twin-panel/secrets/.env.development
+  #   depends_on:
+  #     - images-server
+  #     - backend
   images-server:
-    container_name: images-server
     build: images-server
     volumes:
       - ./images-server:/app
       - /app/node_modules
-    ports:
-      - "3500:3500"
     stdin_open: true
     env_file:
       - images-server/.env
-  digital-twin-panel:
-    container_name: digital-twin-panel
-    build: digital-twin-panel
-    volumes:
-      - ./digital-twin-panel:/app
-      - /app/node_modules
-    ports:
-      - "3001:3001"
-    stdin_open: true
-    env_file:
-      - digital-twin-panel/secrets/.env.development
-    depends_on:
-      - images-server
-      - backend
   backend:
     build: backend
-    container_name: gin-server
     env_file:
       - backend/secrets/.env.development
     environment:
       - GIN_MODE=release
       - ENV_MODE=DOCKER
-    ports:
-        - "8080:8080"
     volumes:
-        - ./backend:/gin-server
+      - ./backend:/gin-server
     command: go run ./src/internal/cmd/main.go
     depends_on:
       - redis
-  # mongo:
-  #   build: ./mongodb
-  #   container_name: mongo
-  #   ports:
-  #       - '27018:27017'
-  #   volumes:
-  #       - ./mongodb/mongodata:/data/db
-  #   restart: always
+      - mongo
+  proxy:
+    image: nginx:latest
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./frontend-landing-page/build:/usr/share/nginx/html/lp
+      - ./digital-twin-panel/build:/usr/share/nginx/html/dtp
+  mongo:
+    build: ./mongodb
+    container_name: mongo
+    ports:
+        - '27018:27017'
+    volumes:
+        - ./mongodb/mongodata:/data/db
+    restart: always
     # environment:
     #   MONGODB_ROOT_USER: "${MONGODB_ROOT_USER}"
     #   MONGODB_ROOT_PASSWORD: "${MONGODB_ROOT_PASSWORD}"

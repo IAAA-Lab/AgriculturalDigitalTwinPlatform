@@ -64,10 +64,53 @@ const postNewNews = async (
   return false;
 };
 
+const updateNews = async (
+  id,
+  title,
+  little_description,
+  author,
+  image,
+  read_min,
+  content
+) => {
+  const response = await fetch(API_URL + `/news/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      title,
+      little_description,
+      author,
+      image,
+      content: escapeHtml(content),
+      read_min,
+      date: new Date().toISOString(),
+    }),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+    },
+  }).catch((_) => null);
+  if (!response || !response.ok) return true;
+  return false;
+};
+
+const deleteNews = async (id) => {
+  const response = await fetch(API_URL + `/news/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + localStorage.getItem("jwtToken"),
+    },
+  }).catch((_) => null);
+  if (!response || !response.ok) return true;
+  return false;
+};
+
 export const newsService = {
   fetchAllNews,
   fetchNumberOfNews,
   fetchOneNew,
   postNewNews,
   uploadImage,
+  updateNews,
+  deleteNews,
 };

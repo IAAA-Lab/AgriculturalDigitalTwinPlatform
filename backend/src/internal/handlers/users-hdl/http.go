@@ -22,7 +22,6 @@ func (hdl *HTTPHandler) CheckLogin(c *gin.Context) {
 	var user domain.User
 	c.BindJSON(&user)
 	user, err := hdl.usersService.CheckLogin(user.Username, user.Password)
-
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return

@@ -41,7 +41,7 @@
   "scripts": {
     "start-docker": "react-scripts start",
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "env-cmd -f secrets/.env.development react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

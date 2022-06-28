@@ -50,7 +50,7 @@ func CorsConfig() gin.HandlerFunc {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", os.Getenv("CLIENT_URI"))
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PATCH, DELETE")
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return
@@ -88,6 +88,7 @@ func setupRouter() *gin.Engine {
 
 	r := gin.Default()
 	r.Use(CorsConfig())
+	r.SetTrustedProxies([]string{"localhost"})
 	var xssMdlwr xss.XssMw
 	r.Use(xssMdlwr.RemoveXss())
 
@@ -104,6 +105,8 @@ func setupRouter() *gin.Engine {
 	r.GET("/news/number", cacheMiddleware, newsHandler.GetNumber)
 	r.GET("/news", cacheMiddleware, newsHandler.Get)
 	r.POST("/news", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.NewsEditor}), newsHandler.PostNewNews)
+	r.PATCH("/news/:id", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.NewsEditor}), newsHandler.UpdateNews)
+	r.DELETE("/news/:id", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.NewsEditor}), newsHandler.DeleteNews)
 	r.GET("/news/:id", cacheMiddleware, newsHandler.GetDesc)
 
 	return r

@@ -36,6 +36,17 @@ type PostNews struct {
 	Content           string             `bson:"content"`
 }
 
+type UpdateNews struct {
+	ID                string             `bson:"_id" json:"_id"`
+	Title             string             `bson:"title"`
+	LittleDescription string             `json:"little_description"`
+	Author            string             `bson:"author"`
+	Date              primitive.DateTime `bson:"date"`
+	Image             string             `bson:"image"`
+	ReadMin           uint8              `json:"read_min"`
+	Content           string             `bson:"content"`
+}
+
 type Description struct {
 	Content string `bson:"content"`
 }

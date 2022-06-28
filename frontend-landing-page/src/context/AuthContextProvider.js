@@ -11,23 +11,23 @@ export const AuthContextWrapper = ({ children }) => {
   useEffect(() => {
     if (token) {
       const decodedToken = decodeToken(token);
-      const logged = isExpired(token);
-      if (!logged) {
+      const expired = isExpired(token);
+      if (!expired) {
         setUsr({
           role: decodedToken === null ? DEFAULT_USER.role : decodedToken.role,
           logged: true,
         });
         return;
       }
-      authService.refreshLogin().then((newToken) => {
-        if (newToken) {
-          const decodedNewToken = decodeToken(newToken);
-          setUsr({ role: decodedNewToken.role, logged: true });
-        } else {
-          setUsr(DEFAULT_USER);
-        }
-      });
     }
+    authService.refreshLogin().then((newToken) => {
+      if (newToken) {
+        const decodedNewToken = decodeToken(newToken);
+        setUsr({ role: decodedNewToken.role, logged: true });
+      } else {
+        setUsr(DEFAULT_USER);
+      }
+    });
   }, [token]);
 
   const actions = {

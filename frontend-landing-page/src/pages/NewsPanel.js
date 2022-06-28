@@ -1,156 +1,145 @@
-import React, { useEffect, useState } from "react";
-import { newsService } from "../api/news";
-import classNames from "classnames";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { NewsEdit } from "./NewsEdit";
+import { Link } from "react-router-dom";
 import { SpinnerDotted } from "spinners-react";
-import { DraftailEditor, BLOCK_TYPE, INLINE_STYLE } from "draftail";
-import createImagePlugin from "draft-js-image-plugin";
-import { convertToHTML } from "draft-convert";
-import { EditorState } from "draft-js";
+import { newsService } from "../api/news";
+import ReactPaginate from "react-paginate";
+import Image from "../components/elements/Image";
+import { NEWS_UPLOAD_URL } from "../config/api";
+import { getFormattedDate } from "../utils/functions";
 
-const imagePlugin = createImagePlugin();
+export const NewsPanel = ({ itemsPerPage = 10 }) => {
+  const [news, setNews] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [pageCount, setPageCount] = useState(1);
 
-export const NewsPanel = () => {
-  const [show, setShow] = useState(false);
-  const [postError, setPostError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  // const loadedContent = JSON.parse(sessionStorage.getItem("draftail:content"));
-  const [content, setContent] = useState(EditorState.createEmpty());
+  useEffect(() => {
+    newsService.fetchNumberOfNews().then((number) => {
+      setPageCount(Math.ceil(number / itemsPerPage));
+    });
+  }, []);
 
-  const notificationClassnames = classNames(
-    "text-xs fw-500 m-16",
-    postError ? "notification-error" : "notification-success"
-  );
+  useEffect(() => {
+    newsService.fetchAllNews(pageCount - 1).then((news) => {
+      setNews(news ?? []);
+      setIsLoading(false);
+    });
+  }, [pageCount]);
 
-  const postNewNews = async (e) => {
-    e.preventDefault();
-    const { title, description, author, image, minRead } = e.target;
-    if (image.files[0].size > 4096000) {
-      showNotification(true);
-      return;
-    }
-    setIsLoading(true);
-    const filename = await newsService.uploadImage(image.files[0]);
-    if (filename === null) {
-      showNotification(true);
-      return;
-    }
-    const err = await newsService.postNewNews(
-      title.value,
-      description.value,
-      author.value,
-      filename.path,
-      parseInt(minRead.value),
-      convertToHTML(content.getCurrentContent())
+  if (isError) {
+    return <div className="notification-error">Algo fue mal...</div>;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="spinner-container">
+        <SpinnerDotted size={65} />
+      </div>
     );
-    if (err) {
-      showNotification(true);
-      return;
-    }
-    showNotification(false);
-  };
-
-  const showNotification = (error) => {
-    setIsLoading(false);
-    setPostError(error);
-    setShow(true);
-    setTimeout(() => {
-      setShow(false);
-    }, 5000);
-  };
-
-  const onChange = (content) => {
-    // sessionStorage.setItem("draftail:content", JSON.stringify(content));
-    setContent(content);
-  };
+  }
 
   return (
-    <section className="hero section">
-      <div className="hero-content mb-16">
-        <div className="container-sm reveal-from-bottom">
-          <h3>Panel de noticias</h3>
-          <form className="tiles-col" onSubmit={postNewNews}>
-            <label className="form-label">Título</label>
-            <input
-              required
-              type="text"
-              name="title"
-              maxLength={60}
-              className="text-xxs form-input-sm"
+    <section className="section">
+      <div className="container">
+        <h3 className="text-2xl font-bold">Panel de noticias</h3>
+        <Link to="/panel-news/add">
+          <button className="button button-primary button-wide-mobile">
+            Añadir noticia
+          </button>
+        </Link>
+        <div className="table-wrap mt-16">
+          <table>
+            <thead>
+              <tr>
+                <th>Noticia</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {news.map(
+                ({
+                  ID,
+                  Title,
+                  little_description,
+                  Date,
+                  Author,
+                  Image,
+                  read_min,
+                }) => {
+                  return (
+                    <tr key={ID}>
+                      <td>
+                        <div
+                          className="row"
+                          style={{ display: "flex", flexWrap: "wrap" }}
+                        >
+                          <img
+                            src={`${NEWS_UPLOAD_URL}/${Image}.png`}
+                            style={{
+                              objectFit: "cover",
+                              width: "70px",
+                              height: "70px",
+                            }}
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src =
+                                "https://previews.123rf.com/images/alhovik/alhovik1709/alhovik170900031/86481591-breaking-news-background-world-global-tv-news-banner-design.jpg";
+                            }}
+                          />
+                          <div className="col ml-8">
+                            <p className="text-sm">{Title}</p>
+                            <span className="text-xxs">
+                              {Author} · {getFormattedDate(Date)}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="button-group">
+                          <Link
+                            to={`/panel-news/edit/${ID}?title=${Title}&littleDescription=${little_description}&date=${Date}&author=${Author}&image=${NEWS_UPLOAD_URL}/${Image}&readMin=${read_min}`}
+                          >
+                            <button
+                              style={{ cursor: "pointer" }}
+                              className="button-secondary"
+                            >
+                              Editar
+                            </button>
+                          </Link>
+                          <button
+                            className="button-delete"
+                            style={{ cursor: "pointer" }}
+                            onClick={async () => {
+                              if (!(await newsService.deleteNews(ID)))
+                                setNews(news.filter((news) => news.ID !== ID));
+                            }}
+                          >
+                            Borrar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                }
+              )}
+            </tbody>
+          </table>
+          <div className="pagination center-content">
+            <ReactPaginate
+              breakLabel="..."
+              nextLabel={
+                <strong className="text-sm text-color-primary">{">"}</strong>
+              }
+              pageRangeDisplayed={3}
+              pageCount={pageCount}
+              previousLabel={
+                <strong className="text-sm text-color-primary">{"<"}</strong>
+              }
+              renderOnZeroPageCount={null}
             />
-            <label className="form-label mt-8">Autor</label>
-            <input
-              required
-              name="author"
-              maxLength={40}
-              className="text-xxs form-input-sm"
-              style={{ resize: "none" }}
-            />
-            <label className="form-label mt-8">Descripción</label>
-            <textarea
-              required
-              name="description"
-              maxLength={100}
-              className="text-xxs form-input-sm"
-              style={{ resize: "none", height: "100px" }}
-            />
-            <label className="form-label mt-8">Imagen</label>
-            <input
-              required
-              type="file"
-              accept="image/*"
-              name="image"
-              className="mb-8"
-            />
-            {/* <img src="#" alt="news main image" onChange={() => {}} /> */}
-            <label className="form-label mt-8">Contenido</label>
-            <DraftailEditor
-              onChange={onChange}
-              editorState={content}
-              blockTypes={[
-                { type: BLOCK_TYPE.HEADER_FOUR },
-                { type: BLOCK_TYPE.CODE },
-                { type: BLOCK_TYPE.BLOCKQUOTE },
-                { type: BLOCK_TYPE.UNORDERED_LIST_ITEM },
-                { type: BLOCK_TYPE.ORDERED_LIST_ITEM },
-              ]}
-              inlineStyles={[
-                { type: INLINE_STYLE.BOLD },
-                { type: INLINE_STYLE.ITALIC },
-                { type: INLINE_STYLE.UNDERLINE },
-                { type: INLINE_STYLE.SMALL },
-              ]}
-              plugins={[imagePlugin]}
-            />
-            <label className="form-label mt-8">Minutos de lectura</label>
-            <input
-              className="text-xxs form-input-sm p-8"
-              style={{ maxWidth: 100 }}
-              type="number"
-              name="minRead"
-              max={30}
-              min={1}
-              defaultValue={1}
-            />
-            <button
-              type="submit"
-              className="button button-primary mt-32"
-              disabled={isLoading}
-            >
-              <SpinnerDotted
-                size={20}
-                enabled={isLoading}
-                className="mr-16"
-                color="white"
-              />
-              Nueva noticia
-            </button>
-          </form>
-        </div>
-        {show && (
-          <div className={notificationClassnames}>
-            {postError ? "Error al publicar la noticia" : "Noticia publicada"}
           </div>
-        )}
+        </div>
       </div>
     </section>
   );

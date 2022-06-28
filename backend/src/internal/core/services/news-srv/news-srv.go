@@ -30,3 +30,11 @@ func (srv *service) FetchNumber() (int64, error) {
 func (srv *service) PostNewNews(news domain.PostNews) error {
 	return srv.newsrepository.PostNewNews(news)
 }
+
+func (srv *service) UpdateNews(id primitive.ObjectID, news domain.PostNews) error {
+	return srv.newsrepository.UpdateNews(id, news)
+}
+
+func (srv *service) DeleteNews(id primitive.ObjectID) error {
+	return srv.newsrepository.DeleteNews(id)
+}

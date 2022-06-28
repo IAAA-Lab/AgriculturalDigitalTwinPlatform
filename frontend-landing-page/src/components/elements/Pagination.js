@@ -58,7 +58,7 @@ export const PaginatedItems = ({ itemsPerPage }) => {
           <div className="features-tiles-item-header center-content">
             <div className="features-tiles-item-image-no-bg mb-16">
               <Image
-                src={`${NEWS_UPLOAD_URL}/${e.Image}`}
+                src={`${NEWS_UPLOAD_URL}/${e.Image}.png`}
                 alt="Features tile icon 01"
                 style={{
                   objectFit: "cover",

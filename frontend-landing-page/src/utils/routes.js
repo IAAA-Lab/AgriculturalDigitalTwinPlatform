@@ -6,6 +6,7 @@ import LayoutDefault from "../layouts/LayoutDefault";
 import LayoutEditor from "../layouts/LayoutEditor";
 import { Blog } from "../pages/Blog";
 import Home from "../pages/Home";
+import { NewsEdit } from "../pages/NewsEdit";
 import { NewsPanel } from "../pages/NewsPanel";
 import { SingleNew } from "../pages/SingleNew";
 import { UsersTable } from "../pages/UsersTable";
@@ -56,6 +57,19 @@ const getRoutes = ({ role, logged }) => {
         },
         {
           exact: true,
+          path: "/panel-news/add",
+          protected: true,
+          component: NewsEdit,
+          layout: LayoutAdmin,
+        },
+        {
+          path: "/panel-news/edit/:id",
+          protected: true,
+          component: NewsEdit,
+          layout: LayoutAdmin,
+        },
+        {
+          exact: true,
           path: "/users",
           protected: true,
           name: "Usuarios",
@@ -67,7 +81,6 @@ const getRoutes = ({ role, logged }) => {
           path: DIGITAL_TWIN_PANEL_URL,
           name: "Panel agrario",
           protected: true,
-          component: NewsPanel,
           layout: LayoutAdmin,
         },
         {
@@ -101,6 +114,19 @@ const getRoutes = ({ role, logged }) => {
         },
         {
           exact: true,
+          path: "/panel-news/add",
+          protected: true,
+          component: NewsEdit,
+          layout: LayoutAdmin,
+        },
+        {
+          path: "/panel-news/edit/:id",
+          protected: true,
+          component: NewsEdit,
+          layout: LayoutAdmin,
+        },
+        {
+          exact: true,
           path: "/blog",
           component: Blog,
           name: "Noticias",
@@ -126,7 +152,6 @@ const getRoutes = ({ role, logged }) => {
           path: DIGITAL_TWIN_PANEL_URL,
           name: "Panel agrario",
           protected: true,
-          component: NewsPanel,
           layout: LayoutAgrarian,
         },
         {

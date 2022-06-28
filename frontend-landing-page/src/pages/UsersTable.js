@@ -46,22 +46,20 @@ export const UsersTable = () => {
   return (
     <section className="section">
       <div className="container">
-        <>
-          <h3 className="text-2xl font-bold">Panel de usuarios</h3>
-          <button
-            className="button button-primary button-wide-mobile"
-            onClick={() => {
-              setIsCreateUserModalActive(true);
-            }}
-          >
-            Añadir usuario
-          </button>
-        </>
+        <h3 className="text-2xl font-bold">Panel de usuarios</h3>
+        <button
+          className="button button-primary button-wide-mobile"
+          onClick={() => {
+            setIsCreateUserModalActive(true);
+          }}
+        >
+          Añadir usuario
+        </button>
         <div className="table-wrap mt-16">
           <table>
             <thead>
               <tr>
-                <th>Name</th>
+                <th>Nombre</th>
                 <th>Rol</th>
                 <th>Acciones</th>
               </tr>
@@ -76,9 +74,6 @@ export const UsersTable = () => {
                       <button
                         style={{ cursor: "pointer" }}
                         className="button-secondary"
-                        onClick={() => {
-                          //window.location.href = `/users/${user.id}`;
-                        }}
                       >
                         Editar
                       </button>
