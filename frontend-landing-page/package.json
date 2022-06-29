@@ -36,8 +36,9 @@
     "start": "env-cmd -f secrets/.env.local react-scripts start",
     "start-dev": "env-cmd -f secrets/.env.development react-scripts start",
     "start-prod": "env-cmd -f secrets/.env.production react-scripts start",
-    "start-local": "env-cmd -f secrets/.env.local react-scripts start",
-    "build": "env-cmd -f secrets/.env.development react-scripts build",
+    "build": "env-cmd -f secrets/.env.local react-scripts build",
+    "build-dev": "env-cmd -f secrets/.env.development react-scripts build",
+    "build-prod": "env-cmd -f secrets/.env.production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

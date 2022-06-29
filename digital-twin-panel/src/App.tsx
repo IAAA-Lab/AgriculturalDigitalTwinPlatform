@@ -4,7 +4,7 @@ import { Page404 } from "./infraestructure/delivery/presentation/pages/Page404";
 
 function App() {
   return (
-    <BrowserRouter basename="/">
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
       <Routes>
         {getRoutes(true).map((route, index) => (
           <Route
