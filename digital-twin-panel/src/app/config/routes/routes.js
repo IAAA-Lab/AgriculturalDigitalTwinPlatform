@@ -6,7 +6,6 @@ import { SingleField } from "../../../infraestructure/delivery/presentation/page
 
 export const getRoutes = (logged) => {
   if (!logged) return [];
-
   return [
     {
       exact: true,

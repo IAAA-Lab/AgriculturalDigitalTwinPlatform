@@ -4,6 +4,7 @@ import { fieldUseCases } from "../../../../../app/config/configuration";
 import { getRandomColor } from "../../../PortsImpl";
 import { FieldPopUp } from "../../components/FieldPopUp";
 import { Link, useNavigate } from "react-router-dom";
+import { Field } from "../../../../../core/Domain";
 
 type Props = {
   fieldProfileList?: Field[];

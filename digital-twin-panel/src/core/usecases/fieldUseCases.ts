@@ -1,5 +1,7 @@
+import { FieldsPerArea, Field } from "../Domain";
+
 class FieldUseCases {
-  fieldService: IFieldService;
+  private fieldService: IFieldService;
 
   constructor(fieldService: IFieldService) {
     this.fieldService = fieldService;

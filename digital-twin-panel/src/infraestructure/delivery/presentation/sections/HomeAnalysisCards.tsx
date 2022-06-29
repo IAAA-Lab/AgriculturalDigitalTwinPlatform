@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { useState } from "react";
+import { AreasPerUser } from "../../../../core/Domain";
 import { LineChartCard } from "../components/LineChartCard";
 import { PieChartCard } from "../components/PieChartCard";
 

@@ -62,3 +62,7 @@ func (hdl *HTTPHandler) FetchAllUsers(c *gin.Context) {
 	}
 	c.JSON(200, users)
 }
+
+func (hdl *HTTPHandler) AuthorizeUser(c *gin.Context) {
+	c.JSON(200, nil)
+}

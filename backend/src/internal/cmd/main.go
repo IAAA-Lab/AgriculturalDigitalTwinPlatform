@@ -99,6 +99,7 @@ func setupRouter() *gin.Engine {
 	r.POST("/auth/login", encryptionMiddleware.DecryptData, usersHandler.CheckLogin, authMiddleware.ReturnJWT)
 	r.POST("/auth/logout", authMiddleware.RevokeJWT)
 	r.POST("/auth/refresh", authMiddleware.RefreshJWT)
+	r.POST("/auth/validate", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.Agrarian, domain.NewsEditor}), usersHandler.AuthorizeUser)
 	r.POST("/users", authMiddleware.AuthorizeJWT([]string{domain.Admin}), encryptionMiddleware.DecryptData, usersHandler.CreateNewUser)
 	r.GET("/users", authMiddleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.FetchAllUsers)
 	r.DELETE("/users/:id", authMiddleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.DeleteUser)

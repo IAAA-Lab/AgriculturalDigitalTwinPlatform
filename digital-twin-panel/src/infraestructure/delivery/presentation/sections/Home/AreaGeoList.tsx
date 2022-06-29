@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
+import { Area } from "../../../../../core/Domain";
 
 type Props = {
   areaList?: Area[];

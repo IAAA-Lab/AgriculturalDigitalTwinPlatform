@@ -4,6 +4,7 @@ import { HomeAnalysisCards } from "../sections/HomeAnalysisCards";
 import { AreaMap } from "../sections/Area/AreaMap";
 import { FeaturesSection } from "../sections/FeaturesSection";
 import { PlantList } from "../sections/PlantList";
+import { FieldsPerArea } from "../../../../core/Domain";
 
 export const Area = () => {
   const [fields, setFields] = useState<FieldsPerArea>();

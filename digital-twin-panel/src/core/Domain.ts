@@ -1,3 +1,18 @@
+import CustomError from "./Exceptions";
+
+enum Role {
+  ADMIN = "admin",
+  NEWS_EDITOR = "newsEditor",
+  PLAIN = "user",
+  AGRARIAN = "agrarian",
+}
+
+type Auth = {
+  user: string;
+  role: Role;
+  user_id: string;
+};
+
 enum CharacteristicState {
   GOOD = "BIEN",
   MEDIUM = "MEDIO",
@@ -66,3 +81,17 @@ type Area = {
 type ResultSuccess<T> = { isError: false; data: T };
 type ResultError = { isError: true; error: CustomError };
 type Result<T> = ResultSuccess<T> | ResultError;
+
+export type {
+  Result,
+  Area,
+  AreasPerUser,
+  Field,
+  FieldCharacteristics,
+  FieldsPerArea,
+  Auth,
+  CharacteristicState,
+  FieldProfile,
+};
+
+export { Role };

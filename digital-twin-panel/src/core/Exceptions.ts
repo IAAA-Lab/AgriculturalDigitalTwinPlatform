@@ -1,9 +1,8 @@
 class CustomError {
   cause?: Error;
-  message: string;
+  message: string = "error";
 
   constructor(cause?: Error) {
-    this.message = message;
     this.cause = cause;
   }
 }
@@ -17,3 +16,10 @@ class BackendError extends CustomError {
 class MustLoginAgainError extends CustomError {
   message = "Debe volver a iniciar sesión otra vez";
 }
+
+class MustRefreshSession extends CustomError {
+  message = "Debe volver a revalidar la sesión";
+}
+
+export default CustomError;
+export { LogoutError, BackendError, MustLoginAgainError, MustRefreshSession };

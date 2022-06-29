@@ -1,15 +1,9 @@
 import { Icon } from "leaflet";
-import { ReactNode, useEffect, useRef, useState } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Popup,
-  Marker,
-  CircleMarker,
-  useMap,
-} from "react-leaflet";
+import { useEffect, useRef, useState } from "react";
+import { MapContainer, TileLayer, Popup, Marker } from "react-leaflet";
 import Skeleton from "react-loading-skeleton";
 import { useNavigate } from "react-router-dom";
+import { Area } from "../../../../../core/Domain";
 import { GeoList } from "./AreaGeoList";
 
 type Props = {

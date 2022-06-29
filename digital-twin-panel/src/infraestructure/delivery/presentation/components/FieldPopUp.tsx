@@ -1,3 +1,5 @@
+import { FieldProfile } from "../../../../core/Domain";
+
 type Props = {
   fieldProfile: FieldProfile;
 };

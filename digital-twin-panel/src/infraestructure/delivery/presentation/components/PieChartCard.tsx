@@ -6,6 +6,7 @@ import { numberWithCommas } from "../../PortsImpl";
 import Skeleton from "react-loading-skeleton";
 import ChartDeferred from "chartjs-plugin-deferred";
 import { CardAnalysisSkeleton } from "./CardAnalysisSkeleton";
+import { AreasPerUser } from "../../../../core/Domain";
 
 type Props = {
   data?: AreasPerUser;

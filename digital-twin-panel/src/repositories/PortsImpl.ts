@@ -1,3 +1,13 @@
+import { decodeToken } from "react-jwt";
+import { DEFAULT_AUTH } from "../app/config/constants";
+import {
+  AreasPerUser,
+  Auth,
+  Field,
+  FieldsPerArea,
+  Result,
+} from "../core/Domain";
+import { MustRefreshSession } from "../core/Exceptions";
 import {
   IAreaRepository,
   IAuthRepository,
@@ -10,12 +20,28 @@ class AuthService implements IAuthService {
   constructor(authRepository: IAuthRepository) {
     this.authRepository = authRepository;
   }
+  validateLogin(): Promise<Result<boolean>> {
+    return this.authRepository.validateLogin();
+  }
 
   logout(): Promise<Result<boolean>> {
     return this.authRepository.logout();
   }
-  refresh(): Promise<Result<string>> {
-    return this.authRepository.refresh();
+  async refresh(): Promise<Result<Auth>> {
+    const res = await this.authRepository.refresh();
+    if (res.isError) {
+      return res;
+    }
+    return this.getAuth();
+  }
+
+  getAuth(): Result<Auth> {
+    const res = this.authRepository.getAccessToken();
+    if (res.isError) {
+      return { isError: true, error: new MustRefreshSession() };
+    }
+    const auth: Auth = decodeToken(res.data) ?? DEFAULT_AUTH;
+    return { isError: false, data: auth };
   }
 }
 class FieldService implements IFieldService {

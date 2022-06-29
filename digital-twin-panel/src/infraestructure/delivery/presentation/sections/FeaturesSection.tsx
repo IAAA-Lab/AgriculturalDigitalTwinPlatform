@@ -1,3 +1,4 @@
+import { FieldCharacteristics } from "../../../../core/Domain";
 import { numberWithCommas } from "../../PortsImpl";
 import { FeaturesSkeleton } from "../components/FeaturesSkeleton";
 

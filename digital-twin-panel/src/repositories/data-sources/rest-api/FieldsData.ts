@@ -1,3 +1,10 @@
+import {
+  AreasPerUser,
+  CharacteristicState,
+  Field,
+  FieldsPerArea,
+} from "../../../core/Domain";
+
 class FieldRestAPI {
   async getFieldsInArea(areaId: string): Promise<FieldsPerArea> {
     return {

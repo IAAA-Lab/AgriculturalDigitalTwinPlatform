@@ -11,6 +11,7 @@ import {
   LineElement,
 } from "chart.js";
 import { CardAnalysisSkeleton } from "./CardAnalysisSkeleton";
+import { AreasPerUser } from "../../../../core/Domain";
 
 type Props = {
   data?: AreasPerUser;

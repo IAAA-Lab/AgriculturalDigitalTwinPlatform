@@ -1,3 +1,7 @@
+import { decodeToken, isExpired } from "react-jwt";
+import { ACCESS_TOKEN_KEY } from "../app/config/constants";
+import { FieldsPerArea, Field, AreasPerUser, Result } from "../core/Domain";
+import { MustRefreshSession } from "../core/Exceptions";
 import AuthRestApi from "./data-sources/rest-api/AuthData";
 import FieldRestAPI from "./data-sources/rest-api/FieldsData";
 
@@ -13,6 +17,8 @@ interface IAreaRepository {
 interface IAuthRepository {
   logout(): Promise<Result<boolean>>;
   refresh(): Promise<Result<string>>;
+  validateLogin(): Promise<Result<boolean>>;
+  getAccessToken(): Result<string>;
 }
 
 class FieldRepository implements IFieldRepository {
@@ -50,11 +56,42 @@ class AuthRepository implements IAuthRepository {
   }
 
   async logout(): Promise<Result<boolean>> {
-    return this.data.logout();
+    const resAt = this.getAccessToken();
+    this.deleteAccessToken();
+    return this.data.logout(resAt.isError ? "" : resAt.data);
   }
 
   async refresh(): Promise<Result<string>> {
-    return this.data.refresh();
+    const res = await this.data.refresh();
+    if (!res.isError) {
+      this.setAccessToken(res.data);
+    }
+    return res;
+  }
+
+  async validateLogin(): Promise<Result<boolean>> {
+    const resAt = this.getAccessToken();
+    if (resAt.isError) {
+      this.deleteAccessToken();
+      return resAt;
+    }
+    return this.data.validateLogin(resAt.data);
+  }
+
+  getAccessToken(): Result<string> {
+    const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+    if (!accessToken) {
+      return { isError: true, error: new MustRefreshSession() };
+    }
+    return { isError: false, data: accessToken };
+  }
+
+  private setAccessToken(accessToken: string) {
+    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+  }
+
+  private deleteAccessToken() {
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
   }
 }
 

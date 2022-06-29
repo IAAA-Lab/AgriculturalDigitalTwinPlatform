@@ -1,5 +1,7 @@
+import { AreasPerUser } from "../Domain";
+
 class AreaUseCases {
-  areaService: IAreaService;
+  private areaService: IAreaService;
 
   constructor(areaService: IAreaService) {
     this.areaService = areaService;

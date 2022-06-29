@@ -1,7 +1,6 @@
 import classNames from "classnames";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
 import { RootState } from "../../../../app/config/context/redux/app-store";
 import { Header } from "./components/Header";
 import { NotificationsLayer } from "./components/NotificationsLayer";

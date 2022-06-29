@@ -9,5 +9,7 @@ interface IAreaService {
 
 interface IAuthService {
   logout(): Promise<Result<boolean>>;
-  refresh(): Promise<Result<string>>;
+  refresh(): Promise<Result<Auth>>;
+  validateLogin(): Promise<Result<boolean>>;
+  getAuth(): Result<Auth>;
 }
