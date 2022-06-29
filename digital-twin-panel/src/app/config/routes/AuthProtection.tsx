@@ -1,10 +1,8 @@
-import { useSelector, useStore } from "react-redux";
-import { Role } from "../../../core/Domain";
+import { useSelector } from "react-redux";
 import {
   MustLoginAgainError,
   MustRefreshSession,
 } from "../../../core/Exceptions";
-import { authUseCases } from "../configuration";
 import { doRefreshLogin } from "../context/redux/app-actions";
 import { RootState, useTypedDispatch } from "../context/redux/app-store";
 

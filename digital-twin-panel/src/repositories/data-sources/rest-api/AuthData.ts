@@ -3,7 +3,6 @@ import { API_URL } from "../../../app/config/constants";
 import { Result } from "../../../core/Domain";
 import {
   LogoutError,
-  BackendError,
   MustLoginAgainError,
   MustRefreshSession,
 } from "../../../core/Exceptions";
@@ -49,10 +48,7 @@ class AuthRestApi {
       });
       if (res.status === 200) {
         return { isError: false, data: res.data };
-      }
-      if (res.status === 401)
-        return { isError: true, error: new MustRefreshSession() };
-      else return { isError: true, error: new MustRefreshSession() };
+      } else return { isError: true, error: new MustRefreshSession() };
     } catch (e) {
       console.error((e as Error).message);
       return { isError: true, error: new MustRefreshSession() };
