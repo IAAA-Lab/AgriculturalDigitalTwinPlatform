@@ -1,6 +1,23 @@
-import { IAreaService, IFieldService } from "../core/Ports";
-import { IAreaRepository, IFieldRepository } from "./Repositories";
+import {
+  IAreaRepository,
+  IAuthRepository,
+  IFieldRepository,
+} from "./Repositories";
 
+class AuthService implements IAuthService {
+  private authRepository: IAuthRepository;
+
+  constructor(authRepository: IAuthRepository) {
+    this.authRepository = authRepository;
+  }
+
+  logout(): Promise<Result<boolean>> {
+    return this.authRepository.logout();
+  }
+  refresh(): Promise<Result<string>> {
+    return this.authRepository.refresh();
+  }
+}
 class FieldService implements IFieldService {
   private fieldRepository: IFieldRepository;
 
@@ -27,4 +44,4 @@ class AreaService implements IAreaService {
   }
 }
 
-export { FieldService, AreaService };
+export { FieldService, AreaService, AuthService };

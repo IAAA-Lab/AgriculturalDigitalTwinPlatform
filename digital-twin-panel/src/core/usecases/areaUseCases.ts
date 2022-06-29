@@ -1,5 +1,3 @@
-import { IAreaService } from "../Ports";
-
 class AreaUseCases {
   areaService: IAreaService;
 

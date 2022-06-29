@@ -1,5 +1,3 @@
-import { IFieldService } from "../Ports";
-
 class FieldUseCases {
   fieldService: IFieldService;
 

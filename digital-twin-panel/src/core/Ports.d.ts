@@ -7,4 +7,7 @@ interface IAreaService {
   getAreasByUser(userId: string): Promise<AreasPerUser>;
 }
 
-export { IFieldService, IAreaService };
+interface IAuthService {
+  logout(): Promise<Result<boolean>>;
+  refresh(): Promise<Result<string>>;
+}

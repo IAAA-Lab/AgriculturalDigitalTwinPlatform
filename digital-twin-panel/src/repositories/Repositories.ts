@@ -1,3 +1,4 @@
+import AuthRestApi from "./data-sources/rest-api/AuthData";
 import FieldRestAPI from "./data-sources/rest-api/FieldsData";
 
 interface IFieldRepository {
@@ -7,6 +8,11 @@ interface IFieldRepository {
 
 interface IAreaRepository {
   getAreasByUser(userId: string): Promise<AreasPerUser>;
+}
+
+interface IAuthRepository {
+  logout(): Promise<Result<boolean>>;
+  refresh(): Promise<Result<string>>;
 }
 
 class FieldRepository implements IFieldRepository {
@@ -36,5 +42,21 @@ class AreaRepository implements IAreaRepository {
   }
 }
 
-export { FieldRepository, AreaRepository };
-export type { IFieldRepository, IAreaRepository };
+class AuthRepository implements IAuthRepository {
+  private data: AuthRestApi;
+
+  constructor(data: AuthRestApi) {
+    this.data = data;
+  }
+
+  async logout(): Promise<Result<boolean>> {
+    return this.data.logout();
+  }
+
+  async refresh(): Promise<Result<string>> {
+    return this.data.refresh();
+  }
+}
+
+export { FieldRepository, AreaRepository, AuthRepository };
+export type { IFieldRepository, IAreaRepository, IAuthRepository };

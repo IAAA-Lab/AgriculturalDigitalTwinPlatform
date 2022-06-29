@@ -62,3 +62,7 @@ type Area = {
   geoLocation: GeoLocation;
   characteristics: FieldCharacteristics[];
 };
+
+type ResultSuccess<T> = { isError: false; data: T };
+type ResultError = { isError: true; error: CustomError };
+type Result<T> = ResultSuccess<T> | ResultError;

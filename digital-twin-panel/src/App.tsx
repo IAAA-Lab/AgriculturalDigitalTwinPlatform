@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ProtectedRoute from "./app/config/routes/RouteApp";
 import { getRoutes } from "./app/config/routes/routes";
 import { Page404 } from "./infraestructure/delivery/presentation/pages/Page404";
 
@@ -11,9 +12,11 @@ function App() {
             key={index}
             path={route.path}
             element={
-              <route.layout>
-                <route.component />
-              </route.layout>
+              <ProtectedRoute>
+                <route.layout>
+                  <route.component />
+                </route.layout>
+              </ProtectedRoute>
             }
           />
         ))}
