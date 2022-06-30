@@ -49,7 +49,7 @@ export const HomeMap = ({ areaList }: Props) => {
               url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
             />
 
-            {areaList?.map((area) => (
+            {areaList?.map((area, index) => (
               <MyMarker
                 key={area.id}
                 eventHandlers={{

@@ -1,17 +1,18 @@
-import { useSelector } from "react-redux";
+import { Auth, Result } from "../../../core/Domain";
 import {
   MustLoginAgainError,
   MustRefreshSession,
 } from "../../../core/Exceptions";
+import { LANDING_URL } from "../constants";
 import { doRefreshLogin } from "../context/redux/app-actions";
-import { RootState, useTypedDispatch } from "../context/redux/app-store";
+import { useTypedDispatch } from "../context/redux/app-store";
 
 type Props = {
   children: any;
+  auth: Result<Auth>;
 };
 
-const AuthProtection = ({ children }: Props) => {
-  const auth = useSelector((state: RootState) => state.auth);
+const AuthProtection = ({ children, auth }: Props) => {
   const dispatch = useTypedDispatch();
 
   if (auth.isError) {
@@ -20,6 +21,7 @@ const AuthProtection = ({ children }: Props) => {
       return <>Loading.....</>;
     }
     if (auth.error instanceof MustLoginAgainError) {
+      window.location.href = LANDING_URL!;
       return <>Inicia sesión...</>;
     }
   }

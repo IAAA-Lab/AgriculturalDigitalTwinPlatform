@@ -47,20 +47,11 @@ const doRefreshLogin =
 
 const doValidateLogin =
   (): ThunkAction<void, RootState, unknown, AnyAction> => async (dispatch) => {
-    const auth = authUseCases.getAuth();
-    if (auth.isError) {
-      dispatch(doRefreshLogin());
-      return;
-    }
     const validated = authUseCases.validateLogin();
     if (!validated) {
       dispatch(doRefreshLogin());
       return;
     }
-    dispatch({
-      type: REFRESH_LOGIN,
-      payload: auth,
-    });
   };
 export {
   doToggleNotifications,

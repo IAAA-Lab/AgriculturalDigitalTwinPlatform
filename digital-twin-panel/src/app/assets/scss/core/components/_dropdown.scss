@@ -4,12 +4,16 @@
   }
   .dropdown-content {
     overflow: hidden;
-    transition: all 0.4s ease-in-out;
-    max-height: 800px;
+    transform-origin: top;
     overflow-x: scroll;
+    max-height: 1000px;
+    transform: scaleY(1);
+    transform-origin: top;
+    transition: max-height 1s ease, transform 0.25s ease 0.1s;
     &.off-is-active {
+      transform: scaleY(0.5);
       max-height: 0;
-      opacity: 0;
+      transition: max-height 0.5s ease, transform 0.3s ease 0.2s;
     }
   }
 }
