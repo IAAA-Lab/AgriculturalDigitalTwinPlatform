@@ -23,15 +23,11 @@ services:
     depends_on:
       - redis
       - mongo
-  proxy:
-    image: nginx:latest
+  frontend:
+    build: frontend
     restart: always
     ports:
-      - "80:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./frontend-landing-page/build:/usr/share/nginx/html/lp
-      - ./digital-twin-panel/build:/usr/share/nginx/html/dtp
+      - "4081:80"
   mongo:
     build: ./mongodb
     container_name: mongo
