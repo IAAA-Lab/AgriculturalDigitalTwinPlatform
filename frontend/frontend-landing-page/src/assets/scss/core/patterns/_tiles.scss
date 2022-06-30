@@ -44,7 +44,6 @@
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  overflow-x: scroll;
 }
 
 @if ($tiles-items--padding__desktop != null) {
