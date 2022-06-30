@@ -38,11 +38,17 @@ export const CreateUser = ({ show = false, closeModal }) => {
             <label className="text-xs" htmlFor="name">
               Nombre
             </label>
-            <input className="text-xxs form-input-sm" type="text" name="name" />
+            <input
+              className="text-xxs form-input-sm"
+              type="text"
+              name="name"
+              required
+            />
             <label className="text-xs" htmlFor="password">
               Contraseña
             </label>
             <input
+              required
               className="text-xxs form-input-sm"
               type="password"
               name="password"
