@@ -8,6 +8,7 @@ import { convertFromHTML, convertToHTML } from "draft-convert";
 import { ContentState, EditorState } from "draft-js";
 import { useLocation, useParams } from "react-router-dom";
 import htmlToDraft from "html-to-draftjs";
+import { getFormattedDate } from "../utils/functions";
 
 const imagePlugin = createImagePlugin();
 
@@ -39,7 +40,7 @@ export const NewsEdit = () => {
 
   const postNewNews = async (e) => {
     e.preventDefault();
-    const { title, description, author, image, minRead } = e.target;
+    const { title, description, author, image, minRead, date } = e.target;
     if (image.files[0]?.size > 4096000) {
       showNotification(true);
       return;
@@ -61,7 +62,8 @@ export const NewsEdit = () => {
           author.value,
           filename?.path,
           parseInt(minRead.value),
-          convertToHTML(content.getCurrentContent())
+          convertToHTML(content.getCurrentContent()),
+          date.value && new Date(date.value).toISOString()
         )
       : newsService.postNewNews(
           title.value,
@@ -69,7 +71,10 @@ export const NewsEdit = () => {
           author.value,
           filename.path,
           parseInt(minRead.value),
-          convertToHTML(content.getCurrentContent())
+          convertToHTML(content.getCurrentContent()),
+          date.value
+            ? new Date(date.value).toISOString()
+            : new Date().toISOString()
         );
     if (!err) {
       showNotification(true);
@@ -162,6 +167,17 @@ export const NewsEdit = () => {
               max={30}
               min={1}
               defaultValue={new URLSearchParams(params).get("readMin") || 1}
+            />
+            <label className="form-label mt-8">Fecha de publicación</label>
+            <input
+              className="text-xxs form-input-sm p-8"
+              type="date"
+              name="date"
+              defaultValue={
+                new URLSearchParams(params).get("date") &&
+                getFormattedDate(new URLSearchParams(params).get("date"))
+              }
+              max={new Date().toISOString().split("T")[0]}
             />
             <button
               type="submit"

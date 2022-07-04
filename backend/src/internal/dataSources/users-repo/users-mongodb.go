@@ -21,10 +21,10 @@ type mongodbConn struct {
 
 func NewMongodbConn(dbUrl string, dbName string, timeout int) *mongodbConn {
 	mongoClient, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dbUrl))
-	mongoDb := mongoClient.Database(dbName)
 	if err != nil {
 		panic(err)
 	}
+	mongoDb := mongoClient.Database(dbName)
 	return &mongodbConn{*mongoDb, timeout}
 }
 

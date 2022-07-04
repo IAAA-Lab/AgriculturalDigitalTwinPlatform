@@ -42,7 +42,8 @@ const postNewNews = async (
   author,
   image,
   read_min,
-  content
+  content,
+  date
 ) => {
   const response = await fetch(API_URL + "/news", {
     method: "POST",
@@ -53,7 +54,7 @@ const postNewNews = async (
       image,
       content: escapeHtml(content),
       read_min,
-      date: new Date().toISOString(),
+      date,
     }),
     headers: {
       "Content-Type": "application/json",
@@ -71,7 +72,8 @@ const updateNews = async (
   author,
   image,
   read_min,
-  content
+  content,
+  date
 ) => {
   const response = await fetch(API_URL + `/news/${id}`, {
     method: "PATCH",
@@ -82,7 +84,7 @@ const updateNews = async (
       image,
       content: escapeHtml(content),
       read_min,
-      date: new Date().toISOString(),
+      date,
     }),
     headers: {
       "Content-Type": "application/json",
