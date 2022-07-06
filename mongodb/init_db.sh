@@ -11,9 +11,9 @@ mongo <<EOF
 #   }
 # )
 
-use ${MONGODB_DATABASE}
+db.auth("${MONGO_INITDB_ROOT_USERNAME}", "${MONGO_INITDB_ROOT_PASSWORD}")
+db = db.getSiblingDB(${MONGO_INITDB_DATABASE})
 db.createCollection("User")
-db.auth("${MONGODB_ROOT_USER}", "${MONGODB_ROOT_PASS}")
 db.User.insert({"username": "${MONGODB_USER}", "passwd": "${MONGODB_PASSWORD}", "role": "admin"})
 db.createCollection("News")
 EOF

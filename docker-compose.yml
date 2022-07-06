@@ -73,12 +73,8 @@ services:
       volumes:
           - ./mongodata:/data/db
       restart: always
-      # environment:
-      #   MONGODB_ROOT_USER: "${MONGODB_ROOT_USER}"
-      #   MONGODB_ROOT_PASSWORD: "${MONGODB_ROOT_PASSWORD}"
-      #   MONGODB_USER: "${MONGODB_USER}"
-      #   MONGODB_PASSWORD: "${MONGODB_PASSWORD}"
-      #   MONGODB_DATABASE: "${MONGODB_DATABASE}"
+      env_file:
+      - mongodb/secrets/.env
   mongo_express:
       image: mongo-express
       container_name: mongo_express
