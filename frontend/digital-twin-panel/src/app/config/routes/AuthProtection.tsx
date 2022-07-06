@@ -14,7 +14,6 @@ type Props = {
 
 const AuthProtection = ({ children, auth }: Props) => {
   const dispatch = useTypedDispatch();
-
   if (auth.isError) {
     if (auth.error instanceof MustRefreshSession) {
       dispatch(doRefreshLogin());
@@ -24,6 +23,7 @@ const AuthProtection = ({ children, auth }: Props) => {
       window.location.href = LANDING_URL!;
       return <>Inicia sesión...</>;
     }
+    return <>Error al cargar la página...</>;
   }
 
   return <>{children}</>;

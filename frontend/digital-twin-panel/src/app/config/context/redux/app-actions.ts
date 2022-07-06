@@ -47,7 +47,7 @@ const doRefreshLogin =
 
 const doValidateLogin =
   (): ThunkAction<void, RootState, unknown, AnyAction> => async (dispatch) => {
-    const validated = authUseCases.validateLogin();
+    const validated = await authUseCases.validateLogin();
     if (!validated) {
       dispatch(doRefreshLogin());
       return;
