@@ -24,13 +24,13 @@ export const getRoutes = (auth) => {
         },
         {
           exact: true,
-          path: "/area",
+          path: "/home/:areaName",
           component: Area,
           layout: LayoutDefault,
         },
         {
           exact: true,
-          path: "/singleField",
+          path: "/home/:areaName/:fieldName",
           component: SingleField,
           layout: LayoutDefault,
         },
@@ -51,13 +51,13 @@ export const getRoutes = (auth) => {
         },
         {
           exact: true,
-          path: "/area",
+          path: "/home/area",
           component: Area,
           layout: LayoutDefault,
         },
         {
           exact: true,
-          path: "/singleField",
+          path: "/home/area/singleField",
           component: SingleField,
           layout: LayoutDefault,
         },

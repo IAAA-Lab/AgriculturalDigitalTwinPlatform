@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { fieldUseCases } from "../../../../../app/config/configuration";
 import { getRandomColor } from "../../../PortsImpl";
 import { FieldPopUp } from "../../components/FieldPopUp";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Field } from "../../../../../core/Domain";
 
 type Props = {
@@ -12,6 +12,7 @@ type Props = {
 
 export const AreaMap = ({ fieldProfileList }: Props) => {
   const navigation = useNavigate();
+  let { areaName } = useParams();
 
   return (
     <div className="leaflet-wrapper">
@@ -19,6 +20,8 @@ export const AreaMap = ({ fieldProfileList }: Props) => {
         <MapContainer
           center={[41.403505, -0.52197]}
           zoom={13}
+          minZoom={11}
+          maxZoom={15}
           scrollWheelZoom={false}
         >
           <TileLayer
@@ -26,14 +29,17 @@ export const AreaMap = ({ fieldProfileList }: Props) => {
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           />
           {fieldProfileList?.map((field, index) => (
-            <Link to={"/singleField"} key={index}>
+            <Link
+              to={`/home/${areaName}/${field.fieldProfile.name}`}
+              key={index}
+            >
               <Polyline
                 eventHandlers={{
                   mouseover: (e) => {
                     e.target.openPopup();
                   },
                   click: (_) => {
-                    navigation("/singleField");
+                    navigation(`/home/${areaName}/${field.fieldProfile.name}`);
                   },
                 }}
                 positions={field.fieldProfile.geoBoundaries}

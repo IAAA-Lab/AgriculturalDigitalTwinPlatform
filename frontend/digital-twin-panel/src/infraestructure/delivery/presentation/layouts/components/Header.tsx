@@ -1,9 +1,13 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { LANDING_URL } from "../../../../../app/config/constants";
 import {
   doToggleNotifications,
   doToggleWeather,
 } from "../../../../../app/config/context/redux/app-actions";
 import { useTypedDispatch } from "../../../../../app/config/context/redux/app-store";
+import Breadcrumb from "../../components/Breadcrumb";
 
 export const Header = () => {
   const dispatch = useTypedDispatch();
@@ -12,6 +16,16 @@ export const Header = () => {
     <header className="site-header">
       <div className="container">
         <div className="site-header-inner">
+          <a href={LANDING_URL!}>
+            <img
+              className="mt-8"
+              src={require("../../../../../app/assets/images/logo.png")}
+              alt="Home"
+              width={50}
+              height={50}
+            />
+          </a>
+          <Breadcrumb />
           <nav className="header-nav">
             <div className="header-nav-inner">
               <ul className="header-nav-right text-sm">

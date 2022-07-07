@@ -49,11 +49,11 @@ export const HomeMap = ({ areaList }: Props) => {
               url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
             />
 
-            {areaList?.map((area, index) => (
+            {areaList?.map((area) => (
               <MyMarker
                 key={area.id}
                 eventHandlers={{
-                  click: () => navigation("/area"),
+                  click: () => navigation(`/home/${area.name}`),
                 }}
                 icon={
                   new Icon({
@@ -130,21 +130,6 @@ export const HomeMap = ({ areaList }: Props) => {
                   <rect x="149.328" y="418.72" width="362.672" height="16" />
                 </g>
               </g>
-              <g></g>
-              <g></g>
-              <g></g>
-              <g></g>
-              <g></g>
-              <g></g>
-              <g></g>
-              <g></g>
-              <g></g>
-              <g></g>
-              <g></g>
-              <g></g>
-              <g></g>
-              <g></g>
-              <g></g>
             </svg>
           </div>
         </div>

@@ -40,6 +40,7 @@ $color: (
   high-contrast: get-color(light, 1),
   mid-contrast: get-color(light, 2),
   low-contrast: get-color(light, 3),
+  disabled: get-color(primary, 2),
   primary: get-color(primary, 3),
   secondary: get-color(secondary, 1),
   error: get-color(alert, error),
@@ -89,7 +90,7 @@ $icon--color: (
   social-inverse: null,
   // social icons
   social-hover-inverse: null
-    // social icons (:hover),,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    // social icons (:hover),,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 // Misc elements: background color

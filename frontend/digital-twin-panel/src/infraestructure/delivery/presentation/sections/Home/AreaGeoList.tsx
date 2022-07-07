@@ -20,7 +20,7 @@ export const GeoList = ({ areaList, showList = false }: Props) => {
       <div
         className="geo-list-item has-bottom-divider"
         key={area.id}
-        onClick={() => navigation("/area")}
+        onClick={() => navigation(`/home/${area.name}`)}
         onMouseOver={() => mapIcon?.classList.add("isHovered")}
         onMouseLeave={() => mapIcon?.classList.remove("isHovered")}
       >
