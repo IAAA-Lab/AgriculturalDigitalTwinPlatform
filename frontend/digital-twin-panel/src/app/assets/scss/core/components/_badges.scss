@@ -90,6 +90,22 @@
   }
 }
 
+.badge-recenter {
+  @extend .badge;
+  padding: 2px 6px 2px 6px;
+  position: absolute;
+  top: 115px;
+  left: 11px;
+  background: white;
+  border-radius: 3px;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgb(106, 106, 106);
+  cursor: pointer;
+  &:hover {
+    background: rgb(237, 237, 237);
+  }
+}
+
 .badge-layers-options {
   @extend .badge;
   position: absolute;

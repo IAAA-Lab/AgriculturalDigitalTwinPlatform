@@ -5,6 +5,7 @@ import { getColorList } from "../../../PortsImpl";
 import { useState } from "react";
 import classNames from "classnames";
 import { LatLngBounds } from "leaflet";
+import { RecenterButton } from "../../components/RecenterButton";
 
 type Props = {
   enclosure?: Enclosure;
@@ -60,6 +61,7 @@ export const EnclosureMap = ({ enclosure }: Props) => {
         weight={3}
         opacity={0.8}
       />
+      <RecenterButton coords={totalCoords} />
     </MapContainer>
   );
 

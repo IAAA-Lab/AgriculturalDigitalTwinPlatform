@@ -7,6 +7,7 @@ import { getColorList } from "../../../PortsImpl";
 import { ParcelGeoList } from "./ParcelGeoList";
 import { useState } from "react";
 import { LatLngBounds } from "leaflet";
+import { RecenterButton } from "../../components/RecenterButton";
 
 type Props = {
   enclosures?: Enclosure[];
@@ -76,6 +77,7 @@ export const AreaMap = ({ enclosures }: Props) => {
               </Polyline>
             </Link>
           ))}
+          <RecenterButton coords={totalCoords} />
         </MapContainer>
         <div
           className="badge-image-field"

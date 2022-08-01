@@ -1,48 +1,9 @@
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="21" height="30"
-    fill="rgb(62, 62, 62)" viewBox="0 0 512 512">
-    <g>
-        <g>
-            <path d="M0,53.328V160h106.672V53.328H0z M90.672,144H16V69.328h74.672V144z" />
-        </g>
-    </g>
-    <g>
-        <g>
-            <path d="M0,202.672v106.672h106.672V202.672H0z M90.672,293.328H16v-74.672h74.672V293.328z" />
-        </g>
-    </g>
-    <g>
-        <g>
-            <path d="M0,352v106.672h106.672V352H0z M90.672,442.672H16V368h74.672V442.672z" />
-        </g>
-    </g>
-    <g>
-        <g>
-            <rect x="149.328" y="77.344" width="320" height="16" />
-        </g>
-    </g>
-    <g>
-        <g>
-            <rect x="149.328" y="120" width="362.672" height="16" />
-        </g>
-    </g>
-    <g>
-        <g>
-            <rect x="149.328" y="226.672" width="320" height="16" />
-        </g>
-    </g>
-    <g>
-        <g>
-            <rect x="149.328" y="269.344" width="362.672" height="16" />
-        </g>
-    </g>
-    <g>
-        <g>
-            <rect x="149.328" y="376" width="320" height="16" />
-        </g>
-    </g>
-    <g>
-        <g>
-            <rect x="149.328" y="418.72" width="362.672" height="16" />
-        </g>
-    </g>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" id="Outline" viewBox="0 0 24 24" width="21" height="30" fill="rgb(62, 62, 62)">
+    <path d="M7,6H23a1,1,0,0,0,0-2H7A1,1,0,0,0,7,6Z" />
+    <path d="M23,11H7a1,1,0,0,0,0,2H23a1,1,0,0,0,0-2Z" />
+    <path d="M23,18H7a1,1,0,0,0,0,2H23a1,1,0,0,0,0-2Z" />
+    <circle cx="2" cy="5" r="2" />
+    <circle cx="2" cy="12" r="2" />
+    <circle cx="2" cy="19" r="2" />
 </svg>
