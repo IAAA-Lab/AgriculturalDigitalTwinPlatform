@@ -7,6 +7,7 @@ import {
 } from "../../../../../core/Domain";
 import { numberWithCommas } from "../../../PortsImpl";
 import { CardAnalysisSkeleton } from "../../components/CardAnalysisSkeleton";
+import { CharsTable } from "../../components/CharsTable";
 import { PieChartCard } from "../../components/PieChartCard";
 
 type Props = {

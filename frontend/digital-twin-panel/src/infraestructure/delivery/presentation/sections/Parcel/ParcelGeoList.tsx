@@ -17,7 +17,7 @@ export const ParcelGeoList = ({ enclosures, showList = false }: Props) => {
 
   const _enclosures = enclosures?.map((enclosure, i) => {
     const mapIcon = document
-      .getElementsByClassName("leaflet-popup-parcel-map")
+      .getElementsByClassName("leaflet-tooltip-parcel-map")
       .item(i);
     return (
       <div

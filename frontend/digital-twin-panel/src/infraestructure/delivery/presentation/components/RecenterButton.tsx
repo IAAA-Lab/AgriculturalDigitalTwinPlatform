@@ -19,7 +19,8 @@ export const RecenterButton = ({ coords }: Props) => {
     >
       <img
         src={
-          require("../../../../app/assets/images/icons/recenter.svg").default
+          require("../../../../app/assets/images/icons/recenter-icon.svg")
+            .default
         }
       />
     </div>

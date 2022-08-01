@@ -94,6 +94,10 @@ type ChartDataOptions = Map<
   }
 >;
 
+type TableDataOptions = {
+  key: string;
+}[];
+
 type ResultSuccess<T> = { isError: false; data: T };
 type ResultError = { isError: true; error: CustomError };
 type Result<T> = ResultSuccess<T> | ResultError;

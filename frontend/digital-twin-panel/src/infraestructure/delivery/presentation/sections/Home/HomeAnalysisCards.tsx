@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { useState } from "react";
 import { ChartDataOptions, Parcel, Result } from "../../../../../core/Domain";
 import { numberWithCommas } from "../../../PortsImpl";
+import { CharsTable } from "../../components/CharsTable";
 import { LineChartCard } from "../../components/LineChartCard";
 import { PieChartCard } from "../../components/PieChartCard";
 
@@ -63,6 +64,9 @@ export const HomeAnalysisCards = ({ data }: Props) => {
           </div>
         </div>
         <div className={classesSummary}>
+          <div className="card-analysis-wrapper">
+            <CharsTable />
+          </div>
           <div className="card-analysis-wrapper">
             <PieChartCard options={chartDataOptions} />
           </div>

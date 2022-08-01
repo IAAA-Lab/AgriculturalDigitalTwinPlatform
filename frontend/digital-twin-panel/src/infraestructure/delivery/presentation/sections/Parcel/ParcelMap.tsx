@@ -1,5 +1,11 @@
-import { MapContainer, TileLayer, Polyline, Popup } from "react-leaflet";
-import { FieldPopUp } from "../../components/FieldPopUp";
+import {
+  MapContainer,
+  TileLayer,
+  Polyline,
+  Popup,
+  Tooltip,
+} from "react-leaflet";
+import { EnclosureToolTipContent } from "../../components/FieldPopUp";
 import { Link, useNavigate } from "react-router-dom";
 import { Enclosure } from "../../../../../core/Domain";
 import Skeleton from "react-loading-skeleton";
@@ -65,15 +71,21 @@ export const AreaMap = ({ enclosures }: Props) => {
                 weight={3}
                 opacity={0.8}
               >
-                <Popup autoPan={false} className="leaflet-popup-parcel-map">
-                  <FieldPopUp
+                <Tooltip
+                  interactive
+                  direction="top"
+                  sticky
+                  className="leaflet-tooltip-parcel-map"
+                  opacity={1}
+                >
+                  <EnclosureToolTipContent
                     name={enclosure.id}
                     imageUri={
                       enclosure.imageUri ??
                       "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Fields_below_Frocester_Hill_%281565%29.jpg/1200px-Fields_below_Frocester_Hill_%281565%29.jpg"
                     }
                   />
-                </Popup>
+                </Tooltip>
               </Polyline>
             </Link>
           ))}
