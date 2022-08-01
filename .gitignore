@@ -1,3 +1,4 @@
 mongodb/mongodata/**
 redis/redisdata/**
 .DS_Store
+data
