@@ -4,7 +4,7 @@ import { Result } from "../../../core/Domain";
 import {
   LogoutError,
   MustLoginAgainError,
-  MustRefreshSession,
+  MustRefreshSessionError,
 } from "../../../core/Exceptions";
 
 class AuthRestApi {
@@ -18,7 +18,7 @@ class AuthRestApi {
       });
       if (res.status !== 200)
         return { isError: true, error: new LogoutError() };
-      else return { isError: false, data: true };
+      return { isError: false, data: true };
     } catch (e) {
       console.error((e as Error).message);
       return { isError: true, error: new LogoutError() };
@@ -32,7 +32,7 @@ class AuthRestApi {
       });
       if (res.status === 200)
         return { isError: false, data: res.data.accesstoken };
-      else return { isError: true, error: new MustLoginAgainError() };
+      return { isError: true, error: new MustLoginAgainError() };
     } catch (e) {
       console.error((e as Error).message);
       return { isError: true, error: new MustLoginAgainError() };
@@ -48,10 +48,10 @@ class AuthRestApi {
       });
       if (res.status === 200) {
         return { isError: false, data: res.data };
-      } else return { isError: true, error: new MustRefreshSession() };
+      } else return { isError: true, error: new MustRefreshSessionError() };
     } catch (e) {
       console.error((e as Error).message);
-      return { isError: true, error: new MustRefreshSession() };
+      return { isError: true, error: new MustRefreshSessionError() };
     }
   }
 }

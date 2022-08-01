@@ -24,6 +24,26 @@ type UsersRepository interface {
 	PostNewUser(user domain.User) error
 }
 
+type FieldsWeatherRepository interface {
+}
+
+type FieldsAPIRepository interface {
+	GetGeneralInfoByUser(params domain.UserParcelParams) (domain.UserParcelResponse, error)
+	GetParcels(params domain.ParcelParams) (domain.ParcelResponse, error)
+	GetEnclosures(params domain.EnclosureParams) (domain.EnclosureResponse, error)
+	GetAvgNDVI(params domain.TeleAvgParams) (domain.TeleAvgResponse, error)
+	// GetNVDI(params domain.TeleParams) ()s
+}
+
+type FieldsPersistenceRepository interface {
+	GetParcels(parcelRefs []domain.ParcelRefs, anyo int) ([]domain.Parcel, error)
+	GetParcelsRef(userId primitive.ObjectID) ([]domain.ParcelRefs, error)
+	//GetNDVI(parcelId string) (domain.NDVI, error)
+	//PostNDVI(ndvis []float32) error
+	PostParcelsAndEnclosures(userId primitive.ObjectID, parcelRefs []domain.ParcelRefs) error
+	PostParcel(parcel domain.Parcel) error
+}
+
 type EncryptionRepository interface {
 	EncryptData(data string) (string, error)
 	DecryptData(data string) (string, error)

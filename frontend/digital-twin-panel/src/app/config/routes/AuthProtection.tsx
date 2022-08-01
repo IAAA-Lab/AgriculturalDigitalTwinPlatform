@@ -1,7 +1,7 @@
 import { Auth, Result } from "../../../core/Domain";
 import {
   MustLoginAgainError,
-  MustRefreshSession,
+  MustRefreshSessionError,
 } from "../../../core/Exceptions";
 import { LANDING_URL } from "../constants";
 import { doRefreshLogin } from "../context/redux/app-actions";
@@ -9,13 +9,16 @@ import { useTypedDispatch } from "../context/redux/app-store";
 
 type Props = {
   children: any;
-  auth: Result<Auth>;
+  auth?: Result<Auth>;
 };
 
 const AuthProtection = ({ children, auth }: Props) => {
   const dispatch = useTypedDispatch();
-  if (auth.isError) {
-    if (auth.error instanceof MustRefreshSession) {
+  if (!auth) {
+    <></>;
+  }
+  if (auth?.isError) {
+    if (auth.error instanceof MustRefreshSessionError) {
       dispatch(doRefreshLogin());
       return <>Loading.....</>;
     }
@@ -23,6 +26,7 @@ const AuthProtection = ({ children, auth }: Props) => {
       window.location.href = LANDING_URL!;
       return <>Inicia sesión...</>;
     }
+    window.location.href = LANDING_URL!;
     return <>Error al cargar la página...</>;
   }
 

@@ -65,10 +65,10 @@ export const UsersTable = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map(({ ID, Role, Username }) => (
-                <tr key={ID}>
-                  <td>{Username}</td>
-                  <td>{Role}</td>
+              {users.map(({ _id, role, username }) => (
+                <tr key={_id}>
+                  <td>{username}</td>
+                  <td>{role}</td>
                   <td>
                     <div className="button-group">
                       <button
@@ -81,8 +81,8 @@ export const UsersTable = () => {
                         className="button-delete"
                         style={{ cursor: "pointer" }}
                         onClick={async () => {
-                          await usersService.deleteUser(ID);
-                          setUsers(users.filter((u) => u.ID !== ID));
+                          await usersService.deleteUser(_id);
+                          setUsers(users.filter((u) => u.ID !== _id));
                         }}
                       >
                         Borrar

@@ -17,9 +17,14 @@ class MustLoginAgainError extends CustomError {
   message = "Debe volver a iniciar sesión otra vez";
 }
 
-class MustRefreshSession extends CustomError {
+class MustRefreshSessionError extends CustomError {
   message = "Debe volver a revalidar la sesión";
 }
 
 export default CustomError;
-export { LogoutError, BackendError, MustLoginAgainError, MustRefreshSession };
+export {
+  LogoutError,
+  BackendError,
+  MustLoginAgainError,
+  MustRefreshSessionError,
+};

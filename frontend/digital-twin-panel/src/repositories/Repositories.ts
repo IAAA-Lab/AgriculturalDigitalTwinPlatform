@@ -1,17 +1,13 @@
-import { decodeToken, isExpired } from "react-jwt";
 import { ACCESS_TOKEN_KEY } from "../app/config/constants";
-import { FieldsPerArea, Field, AreasPerUser, Result } from "../core/Domain";
-import { MustRefreshSession } from "../core/Exceptions";
+import { Parcel, Result, Terrain } from "../core/Domain";
+import { MustRefreshSessionError } from "../core/Exceptions";
 import AuthRestApi from "./data-sources/rest-api/AuthData";
 import FieldRestAPI from "./data-sources/rest-api/FieldsData";
 
 interface IFieldRepository {
-  getFieldsInArea(areaId: string): Promise<FieldsPerArea>;
-  getField(fieldId: string): Promise<Field>;
-}
-
-interface IAreaRepository {
-  getAreasByUser(userId: string): Promise<AreasPerUser>;
+  getParcels(accessToken: string): Promise<Result<Parcel[]>>;
+  getSavedTerrain(): Terrain | undefined;
+  saveTerrain(terrain: Terrain): void;
 }
 
 interface IAuthRepository {
@@ -28,23 +24,20 @@ class FieldRepository implements IFieldRepository {
     this.data = data;
   }
 
-  async getFieldsInArea(areaId: string): Promise<FieldsPerArea> {
-    return this.data.getFieldsInArea(areaId);
-  }
-  async getField(fieldId: string): Promise<Field> {
-    return this.data.getField(fieldId);
-  }
-}
-
-class AreaRepository implements IAreaRepository {
-  private data: FieldRestAPI;
-
-  constructor(data: FieldRestAPI) {
-    this.data = data;
+  async getParcels(accessToken: string): Promise<Result<Parcel[]>> {
+    return this.data.getParcelsByUser(accessToken);
   }
 
-  async getAreasByUser(userId: string): Promise<AreasPerUser> {
-    return this.data.getAreasByUser(userId);
+  getSavedTerrain(): Terrain | undefined {
+    try {
+      return JSON.parse(sessionStorage.getItem("terrain")!) as Terrain;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  saveTerrain(terrain: Terrain) {
+    sessionStorage.setItem("terrain", JSON.stringify(terrain));
   }
 }
 
@@ -81,7 +74,7 @@ class AuthRepository implements IAuthRepository {
   getAccessToken(): Result<string> {
     const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
     if (!accessToken) {
-      return { isError: true, error: new MustRefreshSession() };
+      return { isError: true, error: new MustRefreshSessionError() };
     }
     return { isError: false, data: accessToken };
   }
@@ -95,5 +88,5 @@ class AuthRepository implements IAuthRepository {
   }
 }
 
-export { FieldRepository, AreaRepository, AuthRepository };
-export type { IFieldRepository, IAreaRepository, IAuthRepository };
+export { FieldRepository, AuthRepository };
+export type { IFieldRepository, IAuthRepository };

@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { doValidateLogin } from "./app/config/context/redux/app-actions";
+import {
+  doFetchParcels,
+  doValidateLogin,
+} from "./app/config/context/redux/app-actions";
 import {
   RootState,
   useTypedDispatch,
@@ -16,7 +19,8 @@ function App() {
 
   useEffect(() => {
     dispatch(doValidateLogin());
-  }, []);
+    dispatch(doFetchParcels());
+  }, [dispatch]);
 
   return (
     <BrowserRouter basename={process.env.PUBLIC_URL}>

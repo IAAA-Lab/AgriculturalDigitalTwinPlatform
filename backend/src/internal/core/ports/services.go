@@ -25,6 +25,11 @@ type UsersService interface {
 	PostNewUser(user domain.User) error
 }
 
+type FieldsService interface {
+	GetParcels(userId primitive.ObjectID, anyo int) ([]domain.Parcel, error)
+	PostParcelsAndEnclosures(userId primitive.ObjectID, parcels []domain.ParcelRefs) error
+}
+
 type JWTService interface {
 	GenerateAccessToken(user domain.User) string
 	GenerateRefreshToken(user domain.User) string

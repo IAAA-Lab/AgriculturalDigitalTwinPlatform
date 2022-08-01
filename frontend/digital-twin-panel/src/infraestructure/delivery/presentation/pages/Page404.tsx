@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export const Page404 = () => (
   <section className="hero section">
     <div className="center-content">
-      <h1>Error 408 - No encontrado</h1>
+      <h1>Error 404 - No encontrado</h1>
       <p className="text-sm">La página que estás buscando no existe.</p>
       <p>
         <Link to="/">Volver</Link>

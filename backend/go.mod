@@ -1,7 +1,7 @@
 module prakticas/backend-gpsoft
 
 // +heroku goVersion go1.17
-go 1.17
+go 1.18
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -15,7 +15,12 @@ require (
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898
 )
 
-require github.com/ReneKroon/ttlcache/v2 v2.11.0 // indirect
+require (
+	github.com/ReneKroon/ttlcache/v2 v2.11.0 // indirect
+	github.com/parnurzeal/gorequest v0.2.16 // indirect
+	golang.org/x/exp v0.0.0-20220713135740-79cabaa25d75 // indirect
+	moul.io/http2curl v1.0.0 // indirect
+)
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect

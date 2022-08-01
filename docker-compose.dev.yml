@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.8"
 
 services:
 
@@ -9,7 +9,7 @@ services:
       - /app/node_modules
     stdin_open: true
     env_file:
-      - images-server/.env
+      - images-server/secrets/.env.development
   backend:
     build: backend
     env_file:
@@ -28,6 +28,17 @@ services:
     restart: always
     ports:
       - "5081:80"
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot:ro
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt:rw
+      - ./data/certbot/www:/var/www/certbot:rw
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
   mongo:
     build: ./mongodb
     container_name: mongo

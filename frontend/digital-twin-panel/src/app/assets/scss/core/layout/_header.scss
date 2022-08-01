@@ -58,7 +58,7 @@
 .header-nav-right {
   list-style: none;
   justify-content: flex-end;
-
+  padding-left: 0px;
   + .header-nav-right {
     flex-grow: 0;
   }
@@ -71,7 +71,6 @@
 @include media("<=small") {
   .header-nav {
     .header-nav-inner {
-      flex-direction: column;
       padding: $header-nav--padding-v__mobile;
     }
 

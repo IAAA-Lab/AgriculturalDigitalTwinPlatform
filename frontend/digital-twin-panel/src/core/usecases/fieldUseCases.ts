@@ -1,4 +1,5 @@
-import { FieldsPerArea, Field } from "../Domain";
+import { Parcel, Result, Terrain } from "../Domain";
+import { IFieldService } from "../Ports";
 
 class FieldUseCases {
   private fieldService: IFieldService;
@@ -7,12 +8,12 @@ class FieldUseCases {
     this.fieldService = fieldService;
   }
 
-  async getAllFieldsInArea(areaId: string): Promise<FieldsPerArea> {
-    return this.fieldService.getFieldsInArea(areaId);
+  async getParcels(): Promise<Result<Parcel[]>> {
+    return this.fieldService.getParcels();
   }
 
-  async getField(fieldId: string): Promise<Field> {
-    return this.fieldService.getField(fieldId);
+  calculateCommons(terrain: Terrain): Terrain {
+    return this.fieldService.calculateCommons(terrain);
   }
 }
 

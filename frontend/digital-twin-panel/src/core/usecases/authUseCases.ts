@@ -1,4 +1,5 @@
 import { Result, Auth } from "../Domain";
+import { IAuthService } from "../Ports";
 
 class AuthUseCases {
   private authService: IAuthService;

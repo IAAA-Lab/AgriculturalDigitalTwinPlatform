@@ -8,16 +8,14 @@
   display: flex;
   align-items: center;
   text-align: center;
-  border-radius: 8px;
-  padding: 0px 8px 0px 8px;
-  z-index: 2000;
+  z-index: 9999;
 }
 
 .badge-notification {
   position: absolute;
-  @extend .badge;
   border-radius: 30px;
-  right: -10px;
+  padding: 0px 8px 0px 8px;
+  right: -7px;
   top: -8px;
   background: color(badge-notification);
 
@@ -26,32 +24,40 @@
   }
 }
 
-.badge-state-BIEN {
+.badge-state {
   @extend .badge;
+  padding: 0px 8px 0px 8px;
+  margin-left: 10px;
+  border-radius: 6px;
+}
+
+.badge-state-BIEN {
+  @extend .badge-state;
   background: color(success);
   color: color(success-text);
 }
 
 .badge-state-MEDIO {
-  @extend .badge;
+  @extend .badge-state;
   background: color(warning);
   color: color(warning-text);
 }
 
 .badge-state-MAL {
-  @extend .badge;
+  @extend .badge-state;
   background: color(error);
   color: color(error-text);
 }
 
 .badge-state-NA {
-  @extend .badge;
+  @extend .badge-state;
   background: color(low-contrast);
   color: color(low-contrast-text);
 }
 
 .badge-image-field {
   @extend .badge;
+  padding: 0px 5px 0px 5px;
   position: absolute;
   top: 80px;
   left: 12px;
@@ -65,5 +71,35 @@
   }
   @include media("<small") {
     display: none;
+  }
+}
+
+.badge-layers {
+  @extend .badge;
+  padding: 0px 5px 0px 5px;
+  position: absolute;
+  top: 80px;
+  left: 12px;
+  background: white;
+  border-radius: 3px;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgb(106, 106, 106);
+  cursor: pointer;
+  &:hover {
+    background: rgb(237, 237, 237);
+  }
+}
+
+.badge-layers-options {
+  @extend .badge;
+  position: absolute;
+  top: 78px;
+  left: 50px;
+  size: 2;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity ease-in-out 0.3s;
+  &.active {
+    opacity: 1;
   }
 }

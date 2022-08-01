@@ -1,7 +1,6 @@
 package newshdl
 
 import (
-	"fmt"
 	"prakticas/backend-gpsoft/src/internal/core/domain"
 	"prakticas/backend-gpsoft/src/internal/core/ports"
 	"prakticas/backend-gpsoft/src/pkg/utils"
@@ -42,7 +41,6 @@ func (hdl *HTTPHandler) GetDesc(c *gin.Context) {
 		return
 	}
 	desc, err := hdl.newsService.Fetch(id)
-	fmt.Println(desc)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return

@@ -1,33 +1,47 @@
-var Colors: any = {};
-Colors.names = {
-  aqua: "#00ffff",
-  azure: "#f0ffff",
-  beige: "#f5f5dc",
-  black: "#000000",
-  blue: "#0000ff",
-  brown: "#a52a2a",
-  cyan: "#00ffff",
-  darkblue: "#00008b",
-  magenta: "#ff00ff",
-  maroon: "#800000",
-  navy: "#000080",
-  orange: "#ffa500",
-  violet: "#800080",
-  red: "#ff0000",
-  silver: "#c0c0c0",
-  white: "#ffffff",
-  yellow: "#ffff00",
-};
+import { LatLng } from "leaflet";
+import { Coordinates } from "../../core/Domain";
 
-const getRandomColor = () => {
-  var result;
-  var count = 0;
-  for (var prop in Colors.names) if (Math.random() < 1 / ++count) result = prop;
-  return result;
+var Colors: any = {};
+Colors.names = [
+  "#FF1102",
+  "#3DFF02",
+  "#0259FF",
+  "#D902FF",
+  "#000000",
+  "#FFFFFF",
+  "#02FF9A",
+  "#FF0271",
+  "#FF9F02",
+  "#02FFB1",
+  "#FF0202",
+  "#96BF6A",
+  "#5485A3",
+  "#903A7D",
+  "#A0A0A0",
+  "#FFE26E",
+  "#EE9D51",
+];
+
+const COLORS_SIZE = Colors.names.length;
+
+const getColorList = (n: number) => {
+  const mod = n % COLORS_SIZE;
+  return n > COLORS_SIZE
+    ? Colors.names.slice(0).concat(Colors.names.slice(0, mod))
+    : Colors.names.slice(0, n);
 };
 
 const numberWithCommas = (num?: number) => {
-  return num?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return num?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
-export { getRandomColor, numberWithCommas };
+const getCoordsCentroid = (coords: Coordinates[]): Coordinates => {
+  const x = coords.map((xy) => xy.lat);
+  const y = coords.map((xy) => xy.lng);
+  return {
+    lat: (Math.min(...x) + Math.max(...x)) / 2,
+    lng: (Math.min(...y) + Math.max(...y)) / 2,
+  };
+};
+
+export { getColorList, numberWithCommas };

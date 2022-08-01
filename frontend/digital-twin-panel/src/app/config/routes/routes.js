@@ -1,12 +1,21 @@
 import { Navigate } from "react-router-dom";
 import { Role } from "../../../core/Domain";
 import { LayoutDefault } from "../../../infraestructure/delivery/presentation/layouts/LayoutDefault";
-import { Area } from "../../../infraestructure/delivery/presentation/pages/Area";
 import { Home } from "../../../infraestructure/delivery/presentation/pages/Home";
-import { SingleField } from "../../../infraestructure/delivery/presentation/pages/SingleField";
+import { PageNoContent } from "../../../infraestructure/delivery/presentation/pages/PageNoContent";
+import { EnclosurePage } from "../../../infraestructure/delivery/presentation/pages/Enclosure";
+import { ParcelPage } from "../../../infraestructure/delivery/presentation/pages/Parcel";
 
 export const getRoutes = (auth) => {
-  if (auth.isError) return [];
+  if (!auth || auth.isError)
+    return [
+      {
+        exact: true,
+        path: "*",
+        component: PageNoContent,
+        layout: LayoutDefault,
+      },
+    ];
   switch (auth.data.role) {
     case Role.ADMIN:
       return [
@@ -24,14 +33,14 @@ export const getRoutes = (auth) => {
         },
         {
           exact: true,
-          path: "/home/:areaName",
-          component: Area,
+          path: "/home/:parcel",
+          component: ParcelPage,
           layout: LayoutDefault,
         },
         {
           exact: true,
-          path: "/home/:areaName/:fieldName",
-          component: SingleField,
+          path: "/home/:parcel/:enclosure",
+          component: EnclosurePage,
           layout: LayoutDefault,
         },
       ];
@@ -51,18 +60,25 @@ export const getRoutes = (auth) => {
         },
         {
           exact: true,
-          path: "/home/area",
-          component: Area,
+          path: "/home/:parcel",
+          component: ParcelPage,
           layout: LayoutDefault,
         },
         {
           exact: true,
-          path: "/home/area/singleField",
-          component: SingleField,
+          path: "/home/:parcel/:enclosure",
+          component: EnclosurePage,
           layout: LayoutDefault,
         },
       ];
     default:
-      return [];
+      return [
+        {
+          exact: true,
+          path: "*",
+          component: PageNoContent,
+          layout: LayoutDefault,
+        },
+      ];
   }
 };

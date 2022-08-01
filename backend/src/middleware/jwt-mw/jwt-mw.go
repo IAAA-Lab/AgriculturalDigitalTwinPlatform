@@ -40,6 +40,7 @@ func (srv *service) AuthorizeJWT(roles []string) gin.HandlerFunc {
 		}
 		for _, role := range roles {
 			if role == claims["role"].(string) {
+				c.Set("userInfo", claims)
 				c.Next()
 				return
 			}
@@ -85,7 +86,6 @@ func (srv *service) RefreshJWT(c *gin.Context) {
 		c.AbortWithStatusJSON(404, apperrors.ErrNotFound)
 		return
 	}
-	println(user.ID.String())
 	accesstoken := srv.authsrv.GenerateAccessToken(user)
 	c.JSON(200, gin.H{"accesstoken": accesstoken})
 }

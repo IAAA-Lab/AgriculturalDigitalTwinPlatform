@@ -30,12 +30,15 @@ import (
 	authsrv "prakticas/backend-gpsoft/src/internal/core/services/auth-srv"
 	cachesrv "prakticas/backend-gpsoft/src/internal/core/services/cache-srv"
 	encryptionsrv "prakticas/backend-gpsoft/src/internal/core/services/encryption-srv"
+	fieldssrv "prakticas/backend-gpsoft/src/internal/core/services/fields-srv"
 	newssrv "prakticas/backend-gpsoft/src/internal/core/services/news-srv"
 	userssrv "prakticas/backend-gpsoft/src/internal/core/services/users-srv"
+	agroslabrepo "prakticas/backend-gpsoft/src/internal/dataSources/agroslab-repo"
 	cacherepo "prakticas/backend-gpsoft/src/internal/dataSources/cache-repo"
 	encryptionrepo "prakticas/backend-gpsoft/src/internal/dataSources/encryption-repo"
 	newsrepo "prakticas/backend-gpsoft/src/internal/dataSources/news-repo"
 	usersrepo "prakticas/backend-gpsoft/src/internal/dataSources/users-repo"
+	fieldshdl "prakticas/backend-gpsoft/src/internal/handlers/fields-hdl"
 	newshdl "prakticas/backend-gpsoft/src/internal/handlers/news-hdl"
 	usershdl "prakticas/backend-gpsoft/src/internal/handlers/users-hdl"
 	encryptionmw "prakticas/backend-gpsoft/src/middleware/encryption-mw"
@@ -66,6 +69,9 @@ func setupRouter() *gin.Engine {
 	redisUri := os.Getenv("REDIS_URI")
 	encKey := os.Getenv("KEY_DECRYPT_PASSWD")
 	ivKey := os.Getenv("IV_BLOCK_PASSWD")
+	agroslabGeoUri := os.Getenv("AGROSLAB_GEO_URI")
+	// agroslabTeleUri := os.Getenv("AGROSLAB_TELE_URI")
+	agroslabAuthToken := os.Getenv("AGROSLAB_AUTH_TOKEN")
 
 	encryptionrepository := encryptionrepo.NewEncrypter(encKey, ivKey)
 	encryptionService := encryptionsrv.New(encryptionrepository)
@@ -78,6 +84,12 @@ func setupRouter() *gin.Engine {
 	usersrespository := usersrepo.NewMongodbConn(mongoUri, mongoDb, 15)
 	usersService := userssrv.New(usersrespository)
 	usersHandler := usershdl.NewHTTPHandler(usersService)
+
+	fieldsHTTPRepository := agroslabrepo.NewHttpConn(agroslabGeoUri, agroslabAuthToken)
+	fieldsMongoRepository := agroslabrepo.NewMongodbConn(mongoUri, mongoDb, 15)
+	fieldsAemetRepository := agroslabrepo.NewAemetHttpConn(agroslabGeoUri, agroslabAuthToken)
+	fieldsService := fieldssrv.New(fieldsHTTPRepository, fieldsMongoRepository, fieldsAemetRepository)
+	fieldsHandler := fieldshdl.NewHTTPHandler(fieldsService)
 
 	cacherepository := cacherepo.NewRedisConn(redisUri)
 	cacheService := cachesrv.New(cacherepository)
@@ -96,19 +108,25 @@ func setupRouter() *gin.Engine {
 		c.String(200, "pong")
 	})
 
+	// ---- Auth
 	r.POST("/auth/login", encryptionMiddleware.DecryptData, usersHandler.CheckLogin, authMiddleware.ReturnJWT)
 	r.POST("/auth/logout", authMiddleware.RevokeJWT)
 	r.POST("/auth/refresh", authMiddleware.RefreshJWT)
 	r.POST("/auth/validate", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.Agrarian, domain.NewsEditor}), usersHandler.AuthorizeUser)
+	// ---- Users
 	r.POST("/users", authMiddleware.AuthorizeJWT([]string{domain.Admin}), encryptionMiddleware.DecryptData, usersHandler.CreateNewUser)
 	r.GET("/users", authMiddleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.FetchAllUsers)
 	r.DELETE("/users/:id", authMiddleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.DeleteUser)
+	// ---- News
 	r.GET("/news/number", cacheMiddleware, newsHandler.GetNumber)
 	r.GET("/news", cacheMiddleware, newsHandler.Get)
 	r.POST("/news", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.NewsEditor}), newsHandler.PostNewNews)
 	r.PATCH("/news/:id", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.NewsEditor}), newsHandler.UpdateNews)
 	r.DELETE("/news/:id", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.NewsEditor}), newsHandler.DeleteNews)
 	r.GET("/news/:id", cacheMiddleware, newsHandler.GetDesc)
+	// ---- Agrarian
+	r.POST("/fields", authMiddleware.AuthorizeJWT([]string{domain.Admin}), fieldsHandler.PostParcelsAndEnclosures)
+	r.GET("/fields", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.Agrarian}), fieldsHandler.GetParcelsByUser)
 
 	return r
 }

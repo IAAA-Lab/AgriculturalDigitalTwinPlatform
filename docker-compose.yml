@@ -3,8 +3,7 @@ version: "3.8"
 services:
 
   frontend-landing-page:
-    container_name: landing-page
-    build: frontend-landing-page
+    build: frontend/frontend-landing-page
     volumes:
       - ./frontend-landing-page:/app
       - /app/node_modules
@@ -12,23 +11,21 @@ services:
       - "3000:3000"
     stdin_open: true
     env_file:
-      - frontend-landing-page/secrets/.env.local
+      - frontend/frontend-landing-page/secrets/.env.local
     depends_on:
       - digital-twin-panel
   images-server:
-    container_name: images-server
     build: images-server
     volumes:
-      - ./images-server:/app
+      - ./images-server:/app:rw
       - /app/node_modules
     ports:
       - "3500:3500"
     stdin_open: true
     env_file:
-      - images-server/.env
+      - images-server/secrets/.env.local
   digital-twin-panel:
-    container_name: digital-twin-panel
-    build: digital-twin-panel
+    build: frontend/digital-twin-panel
     volumes:
       - ./digital-twin-panel:/app
       - /app/node_modules
@@ -36,7 +33,7 @@ services:
       - "3001:3001"
     stdin_open: true
     env_file:
-      - digital-twin-panel/secrets/.env.local
+      - frontend/digital-twin-panel/secrets/.env.local
     depends_on:
       - images-server
       - backend
@@ -63,7 +60,7 @@ services:
     ports:
         - "6379:6379"
     volumes:
-        - ./backend:/redis
+        - ./redis/redisdata:/data
     command: redis-server
   mongo:
       build: ./mongodb

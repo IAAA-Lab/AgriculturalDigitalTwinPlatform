@@ -1,3 +1,4 @@
+import { Parcel, Result } from "../../../../core/Domain";
 import { AppState } from "./app-store";
 import {
   TOGGLE_NOTIFICATIONS,
@@ -5,6 +6,8 @@ import {
   LOGOUT,
   REFRESH_LOGIN,
   LOGIN,
+  SET_PARCELS,
+  SET_PARCELS_COMMONS,
 } from "./types";
 
 export default function appReducer(state = AppState, action: any) {
@@ -17,6 +20,17 @@ export default function appReducer(state = AppState, action: any) {
     case REFRESH_LOGIN:
     case LOGIN:
       return state.copyWith({ auth: action.payload });
+    case SET_PARCELS:
+      return state.copyWith({
+        terrain: {
+          ...state.terrain!,
+          parcels: action.payload,
+        },
+      });
+    case SET_PARCELS_COMMONS:
+      return state.copyWith({
+        terrain: action.payload,
+      });
     default:
       return state;
   }

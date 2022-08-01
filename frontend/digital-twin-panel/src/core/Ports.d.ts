@@ -1,10 +1,8 @@
-interface IFieldService {
-  getFieldsInArea(areaId: string): Promise<FieldsPerArea>;
-  getField(fieldId: string): Promise<Field>;
-}
+import { Parcel, Terrain } from "./Domain";
 
-interface IAreaService {
-  getAreasByUser(userId: string): Promise<AreasPerUser>;
+interface IFieldService {
+  getParcels(): Promise<Result<Parcel[]>>;
+  calculateCommons(terrain: Terrain): Terrain;
 }
 
 interface IAuthService {

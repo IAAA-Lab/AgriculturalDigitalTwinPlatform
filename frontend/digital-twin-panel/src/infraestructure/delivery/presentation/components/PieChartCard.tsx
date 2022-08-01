@@ -1,74 +1,62 @@
-import { ChartDataset, TooltipItem, TooltipModel } from "chart.js";
-import { useState, useEffect } from "react";
+import { ChartDataset, TooltipItem } from "chart.js";
+import { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { numberWithCommas } from "../../PortsImpl";
-import Skeleton from "react-loading-skeleton";
 import ChartDeferred from "chartjs-plugin-deferred";
 import { CardAnalysisSkeleton } from "./CardAnalysisSkeleton";
-import { AreasPerUser } from "../../../../core/Domain";
+import { ChartDataOptions } from "../../../../core/Domain";
+import { getColorList } from "../../PortsImpl";
 
 type Props = {
-  data?: AreasPerUser;
+  options: ChartDataOptions;
 };
-
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export const PieChartCard = ({ data }: Props) => {
-  const [selectedOption, setSelectedOption] = useState<string>();
+export const PieChartCard = ({ options }: Props) => {
+  const [selectedOption, setSelectedOption] = useState<string>("");
 
   useEffect(() => {
-    setSelectedOption(data?.features.distinctCharacteristics[0]);
-  }, [data]);
+    setSelectedOption(options?.keys().next().value);
+  }, [options]);
 
-  if (!data) {
+  if (options.size === 0) {
     return <CardAnalysisSkeleton />;
   }
 
-  var labels: string[] = [];
-  var dataset: ChartDataset<"doughnut", number[]>[] = [];
+  const { labels, values } = options?.get(selectedOption) ?? {
+    labels: [],
+    values: [],
+  };
 
+  const COLORS = getColorList(labels.length);
+
+  var dataset: ChartDataset<"doughnut", number[]>[] = [];
   dataset = [
     {
       label: "",
       borderRadius: 6,
       spacing: 2,
       backgroundColor: COLORS,
-      data: data!.areas.flatMap((area) => {
-        return area.characteristics
-          .filter((feature) => {
-            return feature.name === selectedOption;
-          })
-          .map((feature) => {
-            labels = [
-              ...labels,
-              `${area.name} - ${numberWithCommas(feature.value)} ${
-                feature.unit ?? ""
-              }`,
-            ];
-            return feature.value;
-          });
-      }),
+      data: values,
     },
   ];
-
   return (
     <div className="card-analysis reveal-from-right mb-16 col">
       <select
         onChange={(e) => setSelectedOption(e.currentTarget.value)}
         value={selectedOption}
       >
-        {data!.features.distinctCharacteristics.map((e, i) => (
-          <option key={i} value={e}>
-            {e}
+        {Array.from(options?.keys()).map((o) => (
+          <option key={o} value={o}>
+            {o}
           </option>
         ))}
       </select>
       <Doughnut
         style={{
           maxHeight: "200px",
+          width: "100%",
         }}
         className="mt-8"
         plugins={[ChartDeferred]}
@@ -101,7 +89,7 @@ export const PieChartCard = ({ data }: Props) => {
           },
         }}
         data={{
-          labels: labels,
+          labels,
           datasets: dataset,
         }}
       />

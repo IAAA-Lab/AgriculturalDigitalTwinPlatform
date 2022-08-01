@@ -16,6 +16,7 @@ app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname + "/data/img"));
+// app.use("/weather", express.static(__dirname + "/data/img/weather"));
 app.use("/upload", router);
 
 const port = process.env.PORT || 3500;

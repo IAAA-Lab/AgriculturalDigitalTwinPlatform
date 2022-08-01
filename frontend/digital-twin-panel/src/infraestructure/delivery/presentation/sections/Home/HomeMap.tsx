@@ -1,28 +1,21 @@
-import { Icon } from "leaflet";
-import { useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, Popup, Marker } from "react-leaflet";
+import { Icon, LatLngBounds, LatLngTuple, Point } from "leaflet";
+import { useState } from "react";
+import { MapContainer, TileLayer, Marker, Tooltip } from "react-leaflet";
 import Skeleton from "react-loading-skeleton";
 import { useNavigate } from "react-router-dom";
-import { Area } from "../../../../../core/Domain";
-import { GeoList } from "./AreaGeoList";
+import { Parcel, Result } from "../../../../../core/Domain";
+import { getColorList } from "../../../PortsImpl";
+import { HomeGeoList } from "./HomeGeoList";
 
 type Props = {
-  areaList?: Area[];
+  parcelList?: Result<Parcel[]>;
 };
 
-const MyMarker = (props: any) => {
-  const leafletRef = useRef<any>();
-  useEffect(() => {
-    leafletRef.current.openPopup();
-  }, []);
-  return <Marker ref={leafletRef} {...props} />;
-};
-
-export const HomeMap = ({ areaList }: Props) => {
+export const HomeMap = ({ parcelList }: Props) => {
   const navigation = useNavigate();
   const [showList, setShowList] = useState(false);
 
-  if (!areaList) {
+  if (!parcelList) {
     return (
       <div className="leaflet-wrapper mb-8">
         <Skeleton height={"100%"} width={1000} />
@@ -30,110 +23,86 @@ export const HomeMap = ({ areaList }: Props) => {
     );
   }
 
+  if (parcelList.isError) {
+    return <></>;
+  }
+
+  const colors = getColorList(parcelList.data.length);
+  const totalCoords = parcelList.data.map((e) => [
+    e.current.info.coordinates.lat,
+    e.current.info.coordinates.lng,
+  ]);
+
   return (
     <>
       <div className="leaflet-wrapper">
         <div className="badge-wrapper" style={{ overflow: "hidden" }}>
           <MapContainer
-            center={
-              areaList.length === 0
-                ? [41.442, -0.5432]
-                : areaList!![0].geoLocation
-            }
-            zoom={11}
+            bounds={new LatLngBounds(totalCoords as any)}
+            boundsOptions={{
+              padding: [50, 50],
+            }}
+            zoom={14}
             scrollWheelZoom={false}
           >
             <TileLayer
-              maxZoom={13}
-              minZoom={7}
+              maxZoom={15}
+              minZoom={5}
               url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
             />
-
-            {areaList?.map((area) => (
-              <MyMarker
-                key={area.id}
-                eventHandlers={{
-                  click: () => navigation(`/home/${area.name}`),
-                }}
-                icon={
-                  new Icon({
-                    iconUrl: require("../../../../../app/assets/images/marker-icon.png"),
-                    iconSize: [41, 41],
-                    popupAnchor: [1, -25],
-                  })
-                }
-                position={area.geoLocation}
-              >
-                <Popup autoClose={false}>
-                  <p>{area.name}</p>
-                </Popup>
-              </MyMarker>
-            ))}
+            {parcelList.data.map((area, i) => {
+              const popUp = document
+                .getElementsByClassName("leaflet-tooltip-home-map")
+                .item(i);
+              return (
+                <Marker
+                  key={area.id}
+                  eventHandlers={{
+                    click: () => navigation(`${area.id}`),
+                    mouseover: () => {
+                      popUp?.classList.add("isHovered");
+                    },
+                    mouseout: () => {
+                      popUp?.classList.remove("isHovered");
+                    },
+                  }}
+                  icon={
+                    new Icon({
+                      iconUrl: `data:image/svg+xml;utf8,${encodeURIComponent(
+                        `<?xml version="1.0" encoding="UTF-8"?> <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 16" version="1.1" class="si-glyph si-glyph-pin-location-1"><title>Pin-location-1</title><defs></defs><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g transform="translate(2.000000, 0.000000)" 
+                        fill="${colors[i]}"><g transform="translate(2.000000, 0.000000)"><rect x="4" y="6" width="0.956" height="7.944" class="si-glyph-fill"></rect><path d="M4.511,0.016 C2.047,0.016 0.047,2.024 0.047,4.5 C0.047,6.978 2.047,8.984 4.511,8.984 C6.976,8.984 8.975,6.977 8.975,4.5 C8.975,2.023 6.977,0.016 4.511,0.016 L4.511,0.016 Z M4.67,1.642 C3.002,1.642 1.652,2.985 1.652,4.639 C1.652,5.301 1.004,4.985 1.004,3.994 C1.004,2.34 2.354,0.997 4.022,0.997 C5.018,0.997 5.336,1.642 4.67,1.642 L4.67,1.642 Z" class="si-glyph-fill"></path></g><path d="M8.109,11.156 L8.109,12.082 C10.586,12.33 11.838,13.144 11.838,13.552 C11.838,14.061 9.951,15.053 6.494,15.053 C3.035,15.053 1.148,14.061 1.148,13.552 C1.148,13.114 2.49,12.371 4.906,12.131 L4.906,11.204 C2.527,11.415 0.034,12.142 0.034,13.564 C0.034,15.162 3.283,15.997 6.494,15.997 C9.703,15.997 12.953,15.162 12.953,13.564 C12.953,12.102 10.393,11.361 8.109,11.156 L8.109,11.156 Z" class="si-glyph-fill"></path></g></g></svg>`
+                      )}`,
+                      iconSize: [41, 41],
+                      popupAnchor: [1, -25],
+                    })
+                  }
+                  position={area.current.info.coordinates}
+                >
+                  <Tooltip
+                    className="leaflet-tooltip-home-map"
+                    interactive
+                    permanent
+                    direction="top"
+                  >
+                    <p>{area.id}</p>
+                  </Tooltip>
+                </Marker>
+              );
+            })}
           </MapContainer>
           <div
             className="badge-image-field"
             onClick={() => setShowList(!showList)}
           >
-            <svg
-              version="1.1"
-              id="Layer_1"
-              xmlns="http://www.w3.org/2000/svg"
-              x="0px"
-              y="0px"
-              width={21}
-              height={30}
-              style={{ fill: "rgb(62, 62, 62)" }}
-              viewBox="0 0 512 512"
-            >
-              <g>
-                <g>
-                  <path d="M0,53.328V160h106.672V53.328H0z M90.672,144H16V69.328h74.672V144z" />
-                </g>
-              </g>
-              <g>
-                <g>
-                  <path d="M0,202.672v106.672h106.672V202.672H0z M90.672,293.328H16v-74.672h74.672V293.328z" />
-                </g>
-              </g>
-              <g>
-                <g>
-                  <path d="M0,352v106.672h106.672V352H0z M90.672,442.672H16V368h74.672V442.672z" />
-                </g>
-              </g>
-              <g>
-                <g>
-                  <rect x="149.328" y="77.344" width="320" height="16" />
-                </g>
-              </g>
-              <g>
-                <g>
-                  <rect x="149.328" y="120" width="362.672" height="16" />
-                </g>
-              </g>
-              <g>
-                <g>
-                  <rect x="149.328" y="226.672" width="320" height="16" />
-                </g>
-              </g>
-              <g>
-                <g>
-                  <rect x="149.328" y="269.344" width="362.672" height="16" />
-                </g>
-              </g>
-              <g>
-                <g>
-                  <rect x="149.328" y="376" width="320" height="16" />
-                </g>
-              </g>
-              <g>
-                <g>
-                  <rect x="149.328" y="418.72" width="362.672" height="16" />
-                </g>
-              </g>
-            </svg>
+            <img
+              src={
+                require("../../../../../app/assets/images/icons/list-icon.svg")
+                  .default
+              }
+            />
           </div>
         </div>
-        <GeoList areaList={areaList} showList={showList} />
+        <HomeGeoList parcelList={parcelList.data} showList={showList} />
       </div>
     </>
   );

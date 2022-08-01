@@ -1,18 +1,9 @@
 import { decodeToken } from "react-jwt";
 import { DEFAULT_AUTH } from "../app/config/constants";
-import {
-  AreasPerUser,
-  Auth,
-  Field,
-  FieldsPerArea,
-  Result,
-} from "../core/Domain";
-import { MustRefreshSession } from "../core/Exceptions";
-import {
-  IAreaRepository,
-  IAuthRepository,
-  IFieldRepository,
-} from "./Repositories";
+import { Auth, Features, Parcel, Result, Terrain } from "../core/Domain";
+import { MustRefreshSessionError } from "../core/Exceptions";
+import { IAuthService, IFieldService } from "../core/Ports";
+import { IAuthRepository, IFieldRepository } from "./Repositories";
 
 class AuthService implements IAuthService {
   private authRepository: IAuthRepository;
@@ -38,7 +29,7 @@ class AuthService implements IAuthService {
   getAuth(): Result<Auth> {
     const res = this.authRepository.getAccessToken();
     if (res.isError) {
-      return { isError: true, error: new MustRefreshSession() };
+      return { isError: true, error: new MustRefreshSessionError() };
     }
     const auth: Auth = decodeToken(res.data) ?? DEFAULT_AUTH;
     return { isError: false, data: auth };
@@ -46,28 +37,94 @@ class AuthService implements IAuthService {
 }
 class FieldService implements IFieldService {
   private fieldRepository: IFieldRepository;
+  private authRepository: IAuthRepository;
 
-  constructor(fieldRepository: IFieldRepository) {
+  constructor(
+    fieldRepository: IFieldRepository,
+    authRepository: IAuthRepository
+  ) {
     this.fieldRepository = fieldRepository;
+    this.authRepository = authRepository;
   }
-  getFieldsInArea(areaId: string): Promise<FieldsPerArea> {
-    return this.fieldRepository.getFieldsInArea(areaId);
+  calculateCommons(terrain: Terrain): Terrain {
+    // Check if we have a saved terrain in sessionStorage
+    const savedTerrain = this.fieldRepository.getSavedTerrain();
+    if (savedTerrain) return savedTerrain;
+    // If dont, calculate commons
+    if (terrain.parcels?.isError) {
+      return terrain;
+    }
+    let newTerrain = { ...terrain };
+    if (newTerrain.parcels?.isError) return terrain;
+    let sumParcels: Features[] = [];
+    let totalSum: Features[] = [];
+
+    try {
+      terrain.parcels?.data.forEach((parcel, i) => {
+        sumParcels = JSON.parse(
+          JSON.stringify(
+            parcel.current.enclosures[0].current.info.characteristics
+          )
+        );
+        parcel.current.enclosures.forEach((enclosure, j) => {
+          if (j > 0) {
+            enclosure.current.info.characteristics.forEach(
+              (characteristic, k) => {
+                sumParcels[k].value += characteristic.value;
+              }
+            );
+          }
+        });
+        this.calculateRulesCharacteristics(
+          sumParcels,
+          parcel.current.enclosures.length
+        );
+        if (newTerrain.parcels?.isError) {
+          return;
+        }
+        newTerrain.parcels!.data[i].current.commons = JSON.parse(
+          JSON.stringify(sumParcels)
+        );
+        if (i === 0) {
+          totalSum = JSON.parse(JSON.stringify(sumParcels));
+        } else {
+          sumParcels.forEach((e, h) => {
+            totalSum[h].value += e.value;
+          });
+        }
+      });
+      this.calculateRulesCharacteristics(
+        totalSum,
+        terrain.parcels?.data.length!
+      );
+      newTerrain.commons = JSON.parse(JSON.stringify(totalSum));
+    } catch (e) {
+      console.error(e);
+      return terrain;
+    }
+    //
+    this.fieldRepository.saveTerrain(newTerrain);
+    return newTerrain;
   }
-  getField(fieldId: string): Promise<Field> {
-    return this.fieldRepository.getField(fieldId);
+
+  calculateRulesCharacteristics(characteristics: Features[], n: number) {
+    characteristics.forEach((characteristic) => {
+      switch (characteristic.name) {
+        case "Pendiente media":
+        case "Coef. de regadío":
+        case "Salud plantas (NDVI)":
+          characteristic.value /= n;
+      }
+    });
+  }
+
+  async getParcels(): Promise<Result<Parcel[]>> {
+    const terrain = this.fieldRepository.getSavedTerrain();
+    if (terrain) return terrain.parcels!;
+    const auth = this.authRepository.getAccessToken();
+    if (auth.isError) return auth;
+    return this.fieldRepository.getParcels(auth.data);
   }
 }
 
-class AreaService implements IAreaService {
-  private fieldRepository: IAreaRepository;
-
-  constructor(fieldRepository: IAreaRepository) {
-    this.fieldRepository = fieldRepository;
-  }
-
-  getAreasByUser(userId: string): Promise<AreasPerUser> {
-    return this.fieldRepository.getAreasByUser(userId);
-  }
-}
-
-export { FieldService, AreaService, AuthService };
+export { FieldService, AuthService };

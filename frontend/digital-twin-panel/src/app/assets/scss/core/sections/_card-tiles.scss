@@ -2,16 +2,23 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  justify-content: center;
 }
 
 .card-tiles-item {
   min-width: 160px;
   max-width: 250px;
   padding: 8px 5px 8px 5px;
+}
 
-  @include media("<small") {
+@include media("<small") {
+  .card-tiles-item {
     flex: 1;
     max-width: none;
+  }
+}
+
+@include media("<medium") {
+  .card-tiles {
+    justify-content: center;
   }
 }

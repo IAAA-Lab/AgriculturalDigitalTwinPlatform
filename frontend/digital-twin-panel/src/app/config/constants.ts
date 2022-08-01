@@ -2,6 +2,7 @@ import { Auth, Role } from "../../core/Domain";
 
 const API_URL = process.env.REACT_APP_API_URL;
 const LANDING_URL = process.env.REACT_APP_LANDING_URL;
+
 const DEFAULT_AUTH: Auth = {
   user: "",
   role: Role.PLAIN,

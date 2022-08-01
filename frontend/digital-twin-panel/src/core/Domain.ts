@@ -20,63 +20,79 @@ enum CharacteristicState {
   NA = "NA",
 }
 
-type GeoLocation = {
+type Coordinates = {
   lat: number;
   lng: number;
 };
 
-type FieldCharacteristics = {
+type Characteristics = {
   name: string;
   value: number;
   unit?: string;
   state?: CharacteristicState;
 };
 
-type Disease = {
-  id: string;
+type Crops = {
   name: string;
-  description: string;
-  startDate: string;
-  endDate: string;
+  variety: string;
+  imageUri?: string;
 };
 
-type FieldProfile = {
-  id: string;
+type Fertilizers = {
   name: string;
-  description: string;
-  plantType: string;
-  geoBoundaries: GeoLocation[];
-  imageUrl: string;
+  startDate: Date;
+  quantity: number;
 };
 
-type FieldsPerArea = {
-  fields: Field[];
-  features: {
-    characteristics: FieldCharacteristics[];
-    distinctCharacteristics: string[];
+type Phytosanitaries = {};
+
+type Enclosure = {
+  id: string;
+  imageUri?: string;
+  current: {
+    info: EnclosureInfo;
   };
 };
 
-type Field = {
-  fieldProfile: FieldProfile;
-  characteristics: FieldCharacteristics[];
-  diseases: Disease[];
+type EnclosureInfo = {
+  ts: Date;
+  characteristics: Characteristics[];
+  coordinates: Coordinates[];
+  ndvi: {
+    avg: number;
+  };
+  crops?: Crops[];
+  fertilizers?: Fertilizers[];
+  phytosanitaries?: Phytosanitaries[];
 };
 
-type AreasPerUser = {
-  areas: Area[];
-  features: {
-    characteristics: FieldCharacteristics[];
-    distinctCharacteristics: string[];
+type Parcel = {
+  ts: Date;
+  id: string;
+  current: {
+    ts: Date;
+    info: ParcelInfo;
+    commons?: Characteristics[];
+    enclosures: Enclosure[];
   };
 };
 
-type Area = {
-  id: string;
-  name: string;
-  geoLocation: GeoLocation;
-  characteristics: FieldCharacteristics[];
+type ParcelInfo = {
+  coordinates: Coordinates;
 };
+
+type Terrain = {
+  commons?: Characteristics[];
+  parcels?: Result<Parcel[]>;
+};
+
+type ChartDataOptions = Map<
+  string,
+  {
+    labels: string[];
+    values: number[];
+  }
+>;
 
 type ResultSuccess<T> = { isError: false; data: T };
 type ResultError = { isError: true; error: CustomError };
@@ -84,14 +100,15 @@ type Result<T> = ResultSuccess<T> | ResultError;
 
 export type {
   Result,
-  Area,
-  AreasPerUser,
-  Field,
-  FieldCharacteristics,
-  FieldsPerArea,
+  Characteristics as Features,
   Auth,
   CharacteristicState,
-  FieldProfile,
+  Parcel,
+  Enclosure,
+  ParcelInfo,
+  Terrain,
+  ChartDataOptions,
+  Coordinates,
 };
 
 export { Role };

@@ -33,8 +33,6 @@ export const Header = () => {
                   <div onClick={() => dispatch(doToggleWeather())}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      id="Layer_1"
-                      data-name="Layer 1"
                       viewBox="0 0 24 24"
                       width="25"
                       height="25"

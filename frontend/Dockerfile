@@ -14,6 +14,6 @@ RUN yarn run build-dev
 
 FROM nginx:latest
 EXPOSE 80
-COPY nginx/dev.nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=landing /usr/src/app/build /usr/share/nginx/html/lp
 COPY --from=panel /usr/src/app/build /usr/share/nginx/html/dtp

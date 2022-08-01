@@ -1,14 +1,13 @@
-import { FieldProfile } from "../../../../core/Domain";
-
 type Props = {
-  fieldProfile: FieldProfile;
+  name: string;
+  imageUri: string;
 };
 
-export const FieldPopUp = ({ fieldProfile }: Props) => {
+export const FieldPopUp = ({ name, imageUri }: Props) => {
   return (
-    <div>
-      <img width={"100%"} src={fieldProfile.imageUrl} alt="field" />
-      <p className="text-sm">{fieldProfile.name}</p>
-    </div>
+    <>
+      <img className="has-shadow" width={"100%"} src={imageUri} alt="field" />
+      <p className="text-sm">{name}</p>
+    </>
   );
 };
