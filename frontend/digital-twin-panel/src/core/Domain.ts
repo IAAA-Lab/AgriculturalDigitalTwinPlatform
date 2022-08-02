@@ -89,13 +89,20 @@ type Terrain = {
 type ChartDataOptions = Map<
   string,
   {
-    labels: string[];
+    labels: {
+      name: string;
+      color: string;
+    }[];
     values: number[];
   }
 >;
 
 type TableDataOptions = {
-  key: string;
+  key: {
+    name: string;
+    color: string;
+  };
+  values: Characteristics[];
 }[];
 
 type ResultSuccess<T> = { isError: false; data: T };
@@ -113,6 +120,7 @@ export type {
   Terrain,
   ChartDataOptions,
   Coordinates,
+  TableDataOptions,
 };
 
 export { Role };

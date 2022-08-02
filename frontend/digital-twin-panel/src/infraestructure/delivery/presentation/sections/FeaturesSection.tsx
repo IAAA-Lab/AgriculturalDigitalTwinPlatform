@@ -18,11 +18,7 @@ export const FeaturesSection = ({ features }: Props) => {
           <p className="text-xs tt-u fw-500 m-0">{name}</p>
           <div className="row space-between">
             <div className="row">
-              <h3 className="m-0">
-                {numberWithCommas(
-                  Math.round((value + Number.EPSILON) * 100) / 100
-                )}
-              </h3>
+              <h3 className="m-0">{numberWithCommas(value)}</h3>
               <p className="text-xxs m-0 ml-8">{unit}</p>
             </div>
             <p className={`badge-state-${state} m-0 text-xxs`}>{state}</p>

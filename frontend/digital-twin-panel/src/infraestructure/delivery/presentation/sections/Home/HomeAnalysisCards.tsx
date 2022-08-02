@@ -1,7 +1,12 @@
 import classNames from "classnames";
 import { useState } from "react";
-import { ChartDataOptions, Parcel, Result } from "../../../../../core/Domain";
-import { numberWithCommas } from "../../../PortsImpl";
+import {
+  ChartDataOptions,
+  Parcel,
+  Result,
+  TableDataOptions,
+} from "../../../../../core/Domain";
+import { getColorList, numberWithCommas } from "../../../PortsImpl";
 import { CharsTable } from "../../components/CharsTable";
 import { LineChartCard } from "../../components/LineChartCard";
 import { PieChartCard } from "../../components/PieChartCard";
@@ -29,8 +34,17 @@ export const HomeAnalysisCards = ({ data }: Props) => {
   }
 
   var chartDataOptions: ChartDataOptions = new Map();
+  var tableDataOptions: TableDataOptions = [];
+  const colors = getColorList(data?.data.length ?? 0);
 
-  data?.data.forEach((e) => {
+  data?.data.forEach((e, i) => {
+    tableDataOptions = [
+      ...tableDataOptions,
+      {
+        key: { name: e.id, color: colors[i] },
+        values: e.current.commons ?? [],
+      },
+    ];
     e.current.commons?.forEach((c) => {
       var { labels, values } = chartDataOptions.get(c.name) ?? {
         labels: [],
@@ -38,9 +52,10 @@ export const HomeAnalysisCards = ({ data }: Props) => {
       };
       labels = [
         ...labels,
-        `${e.id} · ${numberWithCommas(
-          Math.round((c.value + Number.EPSILON) * 100) / 100
-        )} ${c.unit}`,
+        {
+          name: `${e.id} · ${numberWithCommas(c.value)} ${c.unit}`,
+          color: colors[i],
+        },
       ];
       values = [...values, c.value];
       chartDataOptions.set(c.name, { labels, values });
@@ -65,7 +80,7 @@ export const HomeAnalysisCards = ({ data }: Props) => {
         </div>
         <div className={classesSummary}>
           <div className="card-analysis-wrapper">
-            <CharsTable />
+            <CharsTable data={tableDataOptions} />
           </div>
           <div className="card-analysis-wrapper">
             <PieChartCard options={chartDataOptions} />

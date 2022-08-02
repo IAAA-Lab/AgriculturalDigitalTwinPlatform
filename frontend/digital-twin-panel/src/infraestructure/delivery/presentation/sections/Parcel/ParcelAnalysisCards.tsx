@@ -5,7 +5,7 @@ import {
   Enclosure,
   Result,
 } from "../../../../../core/Domain";
-import { numberWithCommas } from "../../../PortsImpl";
+import { getColorList, numberWithCommas } from "../../../PortsImpl";
 import { LineChartCard } from "../../components/LineChartCard";
 import { PieChartCard } from "../../components/PieChartCard";
 
@@ -28,8 +28,9 @@ export const AreaAnalysisCards = ({ data }: Props) => {
   );
 
   var chartDataOptions: ChartDataOptions = new Map();
+  const colors = getColorList(data?.length ?? 0);
 
-  data?.forEach((e) => {
+  data?.forEach((e, i) => {
     e.current.info.characteristics?.forEach((c) => {
       var { labels, values } = chartDataOptions.get(c.name) ?? {
         labels: [],
@@ -37,9 +38,10 @@ export const AreaAnalysisCards = ({ data }: Props) => {
       };
       labels = [
         ...labels,
-        `${e.id} · ${numberWithCommas(
-          Math.round((c.value + Number.EPSILON) * 100) / 100
-        )} ${c.unit}`,
+        {
+          name: `${e.id} · ${numberWithCommas(c.value)} ${c.unit}`,
+          color: colors[i],
+        },
       ];
       values = [...values, c.value];
       chartDataOptions.set(c.name, { labels, values });

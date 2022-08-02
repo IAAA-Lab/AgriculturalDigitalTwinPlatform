@@ -29,7 +29,12 @@ export const PieChartCard = ({ options }: Props) => {
     values: [],
   };
 
-  const COLORS = getColorList(labels.length);
+  var labelNames: string[] = [];
+  var labelColors: string[] = [];
+  labels.forEach(({ name, color }) => {
+    labelNames = [...labelNames, name];
+    labelColors = [...labelColors, color];
+  });
 
   var dataset: ChartDataset<"doughnut", number[]>[] = [];
   dataset = [
@@ -37,7 +42,7 @@ export const PieChartCard = ({ options }: Props) => {
       label: "",
       borderRadius: 6,
       spacing: 2,
-      backgroundColor: COLORS,
+      backgroundColor: labelColors,
       data: values,
     },
   ];
@@ -89,7 +94,7 @@ export const PieChartCard = ({ options }: Props) => {
           },
         }}
         data={{
-          labels,
+          labels: labelNames,
           datasets: dataset,
         }}
       />
