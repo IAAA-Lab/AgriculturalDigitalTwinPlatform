@@ -22,7 +22,7 @@ export const CharsTable = ({ data }: Props) => {
         <Link
           to={row["name"].name}
           style={{ color: "#354051", fontWeight: "bold" }}
-          className="p-16"
+          className="p-8"
         >
           <span className="row">
             <div
@@ -49,7 +49,7 @@ export const CharsTable = ({ data }: Props) => {
         columns = [
           ...columns,
           {
-            name: c.name.toLocaleUpperCase(),
+            name: `${c.name.toLocaleUpperCase()} (${c.unit})`,
             selector: (row: any) => row[c.name + "-val"],
             cell: (row: any) => <span>{row[c.name]}</span>,
             sortable: true,
