@@ -1,4 +1,5 @@
 import DataTable from "react-data-table-component";
+import { Link } from "react-router-dom";
 import { TableDataOptions } from "../../../../core/Domain";
 import { numberWithCommas } from "../../PortsImpl";
 import { FeaturesSkeleton } from "./FeaturesSkeleton";
@@ -18,13 +19,19 @@ export const CharsTable = ({ data }: Props) => {
       selector: () => "name",
       grow: 1.5,
       cell: (row: any) => (
-        <span className="row">
-          <div
-            style={{ background: row["name"].color }}
-            className="dot-name mr-8"
-          />
-          {row["name"].name}
-        </span>
+        <Link
+          to={row["name"].name}
+          style={{ color: "#354051", fontWeight: "bold" }}
+          className="p-16"
+        >
+          <span className="row">
+            <div
+              style={{ background: row["name"].color }}
+              className="dot-name mr-8"
+            />
+            {row["name"].name}
+          </span>
+        </Link>
       ),
     },
   ];
