@@ -13,6 +13,7 @@ import {
   SET_PARCELS,
   SET_PARCELS_COMMONS,
 } from "./types";
+import { MustLoginAgainError } from "../../../../core/Exceptions";
 
 const doToggleNotifications =
   (): ThunkAction<void, RootState, unknown, AnyAction> => async (dispatch) => {
@@ -35,7 +36,10 @@ const doLogout =
     await authUseCases.logout();
     dispatch({
       type: LOGOUT,
-      payload: DEFAULT_AUTH,
+      payload: {
+        isError: true,
+        error: MustLoginAgainError,
+      },
     });
   };
 

@@ -68,6 +68,51 @@
   display: none;
 }
 
+.nav-dropdown {
+  background: color(card);
+  border: 1px solid #d8dae5;
+  box-shadow: 0px 4px 8px rgba(16, 24, 64, 0.08);
+  max-width: 200px;
+  border-radius: 6px;
+  list-style: none;
+  text-align: start;
+  padding: 0;
+  position: absolute;
+  opacity: 0;
+  right: 10px;
+  display: block !important;
+  visibility: hidden;
+  animation: fadeOutAndSlideDown 0.1s ease-in;
+  z-index: 9999;
+  &.is-active {
+    opacity: 1;
+    visibility: visible;
+    animation: fadeInAndSlideUp 0.1s ease-in;
+  }
+
+  li {
+    cursor: pointer;
+    padding: 5px 20px 5px 20px;
+    margin: 0;
+    transition: all 0.2s ease-in-out;
+
+    &:first-child {
+      &:hover {
+        background: #fcb738a7;
+      }
+      border-radius: 6px 6px 0 0;
+    }
+
+    &:last-child {
+      border-radius: 0 0 6px 6px;
+    }
+
+    &:hover {
+      background: #c6f37393;
+    }
+  }
+}
+
 @include media("<=small") {
   .header-nav {
     .header-nav-inner {

@@ -16,6 +16,7 @@ export const getRoutes = (auth) => {
         layout: LayoutDefault,
       },
     ];
+
   switch (auth.data.role) {
     case Role.ADMIN:
       return [
