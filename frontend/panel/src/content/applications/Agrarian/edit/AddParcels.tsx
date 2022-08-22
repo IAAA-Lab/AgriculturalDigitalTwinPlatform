@@ -77,7 +77,7 @@ const AddParcels = ({ onAddParcel, parcel }: AddParcelsProps) => {
           size="small"
           label="Agregar ids de recintos"
           fullWidth
-          defaultValue={parcel?.enclosures.ids.join(",")}
+          defaultValue={parcel?.enclosures.ids?.join(",")}
           error={checkError()}
           onChange={onChange}
         />

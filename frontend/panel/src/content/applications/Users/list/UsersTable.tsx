@@ -35,7 +35,6 @@ import { usersService } from "api/users";
 import PageTitleWrapper from "components/PageTitleWrapper";
 import { AddTwoTone } from "@mui/icons-material";
 import { Role } from "models/auth";
-import { createNextState } from "@reduxjs/toolkit";
 
 const applyPagination = (
   users: User[],
@@ -230,6 +229,8 @@ const RecentOrdersTable = () => {
                   page={page}
                   rowsPerPage={limit}
                   rowsPerPageOptions={[5, 10, 25, 30]}
+                  showFirstButton
+                  showLastButton
                 />
               </Box>
               <Snackbar

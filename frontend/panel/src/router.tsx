@@ -5,7 +5,6 @@ import { RouteObject } from "react-router";
 import SidebarLayout from "layouts/SidebarLayout";
 
 import SuspenseLoader from "components/SuspenseLoader";
-import { element } from "prop-types";
 import Login from "content/applications/Login";
 import Auth, { Result, Role } from "models/auth";
 import AuthProtection from "AuthProtection";
@@ -29,9 +28,6 @@ const SingleNew = Loader(
 
 // Applications
 
-const Transactions = Loader(
-  lazy(() => import("content/applications/Transactions"))
-);
 const ParcelsList = Loader(lazy(() => import("content/applications/Agrarian")));
 
 // Users

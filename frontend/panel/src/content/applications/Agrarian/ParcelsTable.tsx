@@ -13,14 +13,10 @@ import {
   MenuItem,
   Select,
   Container,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 
-import EditTwoToneIcon from "@mui/icons-material/EditTwoTone";
-import DeleteTwoToneIcon from "@mui/icons-material/DeleteTwoTone";
-import { News } from "models/news";
-import { getFormattedDate } from "content/utils";
-import { newsService } from "api/news";
-import { DEFAULT_NEWS_IMAGE, NEWS_UPLOAD_URI } from "contexts/contants";
 import { User } from "models/user";
 import { usersService } from "api/users";
 import SuspenseLoader from "components/SuspenseLoader";
@@ -58,6 +54,9 @@ const ParcelsTable = () => {
   const loadUsers = async () => {
     const _users = await usersService.fetchAllUsers();
     setUsers(_users);
+    if (!_users.isError) {
+      setSelectedUser(_users.data[0]);
+    }
   };
 
   const handleSelected = (e: any) => {
@@ -85,7 +84,6 @@ const ParcelsTable = () => {
 
   const handleAddParcel = async (newParcel?: Parcel) => {
     if (parcels?.isError || !newParcel) return;
-    console.log(parcels?.data, newParcel);
     if (parcels!.data.filter((e) => e.id === newParcel.id).length > 0) return;
     setParcels({
       data: [...parcels!.data, newParcel],
@@ -111,19 +109,19 @@ const ParcelsTable = () => {
     loadParcels();
   };
 
-  if (!users) {
-    return <SuspenseLoader />;
-  }
-  if (users.isError || parcels?.isError) {
-    return <Status500 />;
-  }
-
   const applyPagination = (parcels?: Parcel[]) =>
     parcels?.slice(page * limit, page * limit + limit);
 
   const handlePageChange = (event: any, newPage: number): void => {
     setPage(newPage);
   };
+
+  if (!users) {
+    return <SuspenseLoader />;
+  }
+  if (users.isError || parcels?.isError) {
+    return <Status500 />;
+  }
 
   return (
     <>
@@ -171,7 +169,7 @@ const ParcelsTable = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <Box p={2}>
+          <Box p={1}>
             <TablePagination
               component="div"
               count={users.data.length}

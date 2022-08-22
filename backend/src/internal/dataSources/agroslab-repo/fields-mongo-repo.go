@@ -2,7 +2,6 @@ package agroslabrepo
 
 import (
 	"context"
-	"fmt"
 	"prakticas/backend-gpsoft/src/internal/core/domain"
 	"prakticas/backend-gpsoft/src/pkg/apperrors"
 	"time"
@@ -88,7 +87,6 @@ func (mc *mongodbConn) PostParcelsAndEnclosures(userId primitive.ObjectID, parce
 
 func (mc *mongodbConn) GetParcels(parcelRefs []domain.ParcelRefs, anyo int) ([]domain.Parcel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
-	fmt.Println(parcelRefs)
 	defer cancel()
 	// Get the parcels info of [userParcelRefs]
 	var parcelIds []string

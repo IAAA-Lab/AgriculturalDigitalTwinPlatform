@@ -173,7 +173,7 @@ const NewsTable = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Box p={2}>
+      <Box p={1}>
         <TablePagination
           hidden={loading}
           component="div"
@@ -183,6 +183,8 @@ const NewsTable = () => {
           page={page}
           rowsPerPage={limit}
           rowsPerPageOptions={[6, 12, 18, 24]}
+          showFirstButton
+          showLastButton
         />
       </Box>
     </Card>

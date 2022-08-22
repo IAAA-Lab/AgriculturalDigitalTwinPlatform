@@ -44,7 +44,7 @@ const ParcelsRow = ({
       </TableCell>
       <TableCell>
         <Typography variant="body1" fontWeight="bold" color="text.primary">
-          {parcel.enclosures.ids.map((id, index) => (
+          {parcel.enclosures.ids?.map((id, index) => (
             <Chip
               label={id}
               key={id}
