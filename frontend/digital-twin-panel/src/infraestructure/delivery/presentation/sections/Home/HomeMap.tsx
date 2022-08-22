@@ -93,8 +93,10 @@ export const HomeMap = ({ parcelList }: Props) => {
             })}
             <RecenterButton coords={totalCoords} />
           </MapContainer>
-          <div
+          <a
+            href="javascript:;"
             className="badge-image-field"
+            title="Abrir lista"
             onClick={() => setShowList(!showList)}
           >
             <img
@@ -103,7 +105,7 @@ export const HomeMap = ({ parcelList }: Props) => {
                   .default
               }
             />
-          </div>
+          </a>
         </div>
         <HomeGeoList parcelList={parcelList.data} showList={showList} />
       </div>

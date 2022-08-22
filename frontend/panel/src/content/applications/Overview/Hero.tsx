@@ -86,15 +86,6 @@ const Hero = () => {
               digital para un tipo concreto de explotación agraria: frutos secos
               de cáscara.
             </Typography>
-            <Box sx={{ pt: 3 }} className="reveal-from-bottom-animation">
-              <Link
-                href="https://twitter.com/iaaa_lab?lang=es"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Twitter color="primary" sx={{ width: 30, height: 30 }} />
-              </Link>
-            </Box>
           </Grid>
           <Grid
             item

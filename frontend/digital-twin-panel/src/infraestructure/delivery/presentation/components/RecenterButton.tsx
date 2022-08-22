@@ -9,8 +9,10 @@ type Props = {
 export const RecenterButton = ({ coords }: Props) => {
   const map = useMap();
   return (
-    <div
+    <a
       className="badge-recenter"
+      href="javascript:;"
+      title="Recentrar"
       onClick={() =>
         map.fitBounds(new LatLngBounds(coords as any), {
           padding: [50, 50],
@@ -23,6 +25,6 @@ export const RecenterButton = ({ coords }: Props) => {
             .default
         }
       />
-    </div>
+    </a>
   );
 };

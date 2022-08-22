@@ -11,9 +11,7 @@ import {
 } from "@mui/material";
 import { Container } from "@mui/system";
 import Logo from "components/LogoSign";
-import { RootState } from "contexts/redux/app-store";
-import { useSelector } from "react-redux";
-import { NavLink as RouterLink } from "react-router-dom";
+import { Link, NavLink as RouterLink } from "react-router-dom";
 import HeaderUserbox from "./HeaderUserBox";
 
 const HeaderC = () => {
@@ -41,7 +39,7 @@ const HeaderC = () => {
         }}
         style={{ justifyContent: "space-between" }}
       >
-        <Box>
+        <Link to="/" style={{ textDecoration: "none" }}>
           <Grid
             flexWrap="nowrap"
             container
@@ -56,7 +54,7 @@ const HeaderC = () => {
               </Typography>
             </Hidden>
           </Grid>
-        </Box>
+        </Link>
         <Box sx={{ mr: 0 }}>
           <Grid
             container

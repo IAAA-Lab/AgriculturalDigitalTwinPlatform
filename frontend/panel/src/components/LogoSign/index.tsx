@@ -1,8 +1,7 @@
 import { Avatar, Box, styled } from "@mui/material";
 import { FC } from "react";
-import { Link } from "react-router-dom";
 
-const LogoWrapper = styled(Link)(
+const LogoWrapper = styled(Box)(
   ({ theme }) => `
         color: ${theme.palette.text.primary};
         display: flex;
@@ -17,7 +16,7 @@ type Props = {
 
 const Logo: FC<Props> = ({ light = true }) => {
   return (
-    <LogoWrapper to="/">
+    <LogoWrapper>
       <Avatar
         src={
           light

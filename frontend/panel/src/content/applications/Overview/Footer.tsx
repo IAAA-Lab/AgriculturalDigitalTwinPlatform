@@ -1,21 +1,6 @@
-import Twitter from "@mui/icons-material/Twitter";
-import { Typography, Link, useTheme, styled, Box } from "@mui/material";
+import { Typography, useTheme, Box } from "@mui/material";
+import { Link } from "react-router-dom";
 
-const Image = styled(Box)(
-  `
-  img {
-  max-width: 100%;
-  width: 400px;
-  position: relative;
-  padding-top: 20px;
-  top: -90px;
-  left: 50%;
-  transform: translateX(-50%);
-  -web-kit-filter: drop-shadow(10px 10px 5px #222);
-  filter: drop-shadow(10px 10px 5px #222);
-  }
-`
-);
 const Footer = () => {
   const theme = useTheme();
 
@@ -35,11 +20,13 @@ const Footer = () => {
         justifyContent="space-between"
       >
         <Box>
-          <img
-            src="/static/images/overview/logo-light.svg"
-            width={100}
-            onClick={() => window.scrollTo(0, 0)}
-          />
+          <Link to="/">
+            <img
+              src="/static/images/overview/logo-light.svg"
+              width={100}
+              onClick={() => window.scrollTo(0, 0)}
+            />
+          </Link>
           <Typography variant="subtitle1" sx={{ color: "white" }}>
             &copy; 2022 - GEDEFEC
           </Typography>
