@@ -26,6 +26,7 @@ function App() {
     <BrowserRouter basename={process.env.PUBLIC_URL}>
       <AuthProtection auth={auth}>
         <Routes>
+          <Route path="*" element={<Page404 />} />
           {getRoutes(auth).map((route, index) => (
             <Route
               key={index}
@@ -37,7 +38,6 @@ function App() {
               }
             />
           ))}
-          <Route path="*" element={<Page404 />} />
         </Routes>
       </AuthProtection>
     </BrowserRouter>

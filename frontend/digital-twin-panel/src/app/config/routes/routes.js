@@ -5,6 +5,7 @@ import { Home } from "../../../infraestructure/delivery/presentation/pages/Home"
 import { PageNoContent } from "../../../infraestructure/delivery/presentation/pages/PageNoContent";
 import { EnclosurePage } from "../../../infraestructure/delivery/presentation/pages/Enclosure";
 import { ParcelPage } from "../../../infraestructure/delivery/presentation/pages/Parcel";
+import { Page404 } from "../../../infraestructure/delivery/presentation/pages/Page404";
 
 export const getRoutes = (auth) => {
   if (!auth || auth.isError)
@@ -12,8 +13,8 @@ export const getRoutes = (auth) => {
       {
         exact: true,
         path: "*",
-        component: PageNoContent,
-        layout: LayoutDefault,
+        component: Page404,
+        layout: () => <></>,
       },
     ];
 
@@ -77,8 +78,8 @@ export const getRoutes = (auth) => {
         {
           exact: true,
           path: "*",
-          component: PageNoContent,
-          layout: LayoutDefault,
+          component: Page404,
+          layout: () => <></>,
         },
       ];
   }

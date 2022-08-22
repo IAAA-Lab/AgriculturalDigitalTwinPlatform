@@ -11,9 +11,9 @@ import (
 type NewsService interface {
 	FetchNumber() (int64, error)
 	FetchAll(numPage int64) ([]domain.News, error)
-	Fetch(id primitive.ObjectID) (domain.Description, error)
-	PostNewNews(news domain.PostNews) error
-	UpdateNews(id primitive.ObjectID, news domain.PostNews) error
+	Fetch(id primitive.ObjectID) (domain.News, error)
+	PostNewNews(news domain.News) error
+	UpdateNews(id primitive.ObjectID, news domain.News) error
 	DeleteNews(id primitive.ObjectID) error
 }
 
@@ -28,6 +28,7 @@ type UsersService interface {
 type FieldsService interface {
 	GetParcels(userId primitive.ObjectID, anyo int) ([]domain.Parcel, error)
 	PostParcelsAndEnclosures(userId primitive.ObjectID, parcels []domain.ParcelRefs) error
+	GetParcelRefs(userId primitive.ObjectID, anyo int) ([]domain.ParcelRefs, error)
 }
 
 type JWTService interface {

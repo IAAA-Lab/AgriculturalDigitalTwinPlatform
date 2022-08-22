@@ -1,8 +1,8 @@
 .card-features {
   background: color(card);
-  border: 1px solid #d8dae5;
+  border: 2px solid #d8dae5;
   padding: 10px;
-  box-shadow: 0px 4px 8px rgba(16, 24, 64, 0.08);
+  box-shadow: 5px 5px 15px rgba(16, 24, 64, 0.3);
   border-radius: 8px;
   display: flex;
   overflow: hidden;
@@ -19,7 +19,7 @@
 
 .notifications-card {
   background: rgba(255, 255, 255, 0.7);
-  border: 1px solid #d8dae5;
+  border: 2px solid #d8dae5;
   padding: 10px;
   box-shadow: 0px 4px 8px rgba(16, 24, 64, 0.08);
   border-radius: 8px;
@@ -33,9 +33,10 @@
 
 .card-analysis {
   background: color(card);
-  border: 1px solid #d8dae5;
+  border: 2px solid #d8dae5;
   padding: 10px;
-  box-shadow: 0px 4px 8px rgba(16, 24, 64, 0.08);
+  margin: 12px;
+  box-shadow: 5px 5px 15px rgba(16, 24, 64, 0.3);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -46,4 +47,19 @@
   .invert-color & {
     background: color(card-inverse);
   }
+}
+
+.card-icon {
+  background: color(card);
+  padding: 6px;
+  border-radius: 8px;
+  box-shadow: 5px 10px 15px rgba(16, 24, 64, 0.3);
+}
+
+.card-icon-main {
+  background: color(card);
+  border: 1px solid color(primary);
+  padding: 6px;
+  border-radius: 8px;
+  box-shadow: -3px 15px 20px rgba(65, 177, 84, 0.46);
 }

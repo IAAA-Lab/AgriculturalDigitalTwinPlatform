@@ -5,11 +5,32 @@ services:
   images-server:
     build: images-server
     volumes:
-      - ./images-server:/app
-      - /app/node_modules
+      - images-server-data:/app/data
     stdin_open: true
     env_file:
       - images-server/secrets/.env.development
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./backend/prometheus:/etc/prometheus/
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9090:9090"
+    depends_on:
+      - backend
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - ./backend/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    
   backend:
     build: backend
     env_file:
@@ -28,17 +49,17 @@ services:
     restart: always
     ports:
       - "5081:80"
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot:ro
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-  certbot:
-    image: certbot/certbot
-    restart: unless-stopped
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt:rw
-      - ./data/certbot/www:/var/www/certbot:rw
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+  #   volumes:
+  #     - ./data/certbot/conf:/etc/letsencrypt
+  #     - ./data/certbot/www:/var/www/certbot:ro
+  #   command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  # certbot:
+  #   image: certbot/certbot
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./data/certbot/conf:/etc/letsencrypt:rw
+  #     - ./data/certbot/www:/var/www/certbot:rw
+  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
   mongo:
     build: ./mongodb
     container_name: mongo
@@ -58,3 +79,7 @@ services:
     volumes:
         - ./redis/redisdata:/data
     command: redis-server
+    
+volumes:
+  grafana-data:
+  images-server-data:

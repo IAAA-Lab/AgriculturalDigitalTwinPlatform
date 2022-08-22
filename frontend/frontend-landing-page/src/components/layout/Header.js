@@ -134,7 +134,11 @@ const Header = ({
                                 {name}
                               </Link>
                             ) : (
-                              <a href={path} onClick={closeMenu}>
+                              <a
+                                href={path}
+                                target="_blank"
+                                onClick={closeMenu}
+                              >
                                 {name}
                               </a>
                             )}

@@ -8,7 +8,7 @@ import (
 )
 
 type User struct {
-	ID       primitive.ObjectID `json:"id" bson:"_id"`
+	ID       primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Username string             `json:"username"`
 	Password string             `json:"password"`
 	Role     string             `json:"role"`
@@ -22,31 +22,19 @@ type UserNoPasswd struct {
 type ParcelRefs struct {
 	Id         string `json:"id"`
 	Enclosures struct {
-		Id []string `json:"ids"`
+		Ids []string `json:"ids"`
 	} `json:"enclosures"`
 }
 
 type News struct {
-	ID                primitive.ObjectID `bson:"_id"`
-	Title             string             `bson:"title"`
-	LittleDescription string             `json:"little_description"`
-	Author            string             `bson:"author"`
-	Date              primitive.DateTime `bson:"date"`
-	ReadMin           uint8              `json:"read_min"`
-	Image             string             `bson:"image"`
-}
-
-type PostNews struct {
-	Title             string             `bson:"title"`
-	LittleDescription string             `json:"little_description"`
-	Author            string             `bson:"author"`
-	Date              primitive.DateTime `bson:"date"`
-	Image             string             `json:"image,omitempty" bson:"image,omitempty"`
-	ReadMin           uint8              `json:"read_min"`
-	Content           string             `bson:"content"`
-}
-type Description struct {
-	Content string `bson:"content"`
+	ID                primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Title             string             `bson:"title" json:"title"`
+	LittleDescription string             `bson:"little_description" json:"subtitle"`
+	Author            string             `bson:"author" json:"author"`
+	Date              primitive.DateTime `bson:"date" json:"date"`
+	ReadMin           uint8              `bson:"read_min" json:"readTime"`
+	Image             string             `bson:"image" json:"thumbnail"`
+	Content           string             `bson:"content,omitempty" json:"content,omitempty"`
 }
 
 type AuthCustomClaims struct {

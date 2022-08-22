@@ -22,7 +22,7 @@ func (srv *service) EncryptData(c *gin.Context) {
 	data := c.MustGet("data").(string)
 	cipherText, err := srv.encryptsrv.EncryptData(data)
 	if err != nil {
-		c.AbortWithStatusJSON(500, apperrors.ErrInternal)
+		c.AbortWithStatusJSON(500, gin.H{"message": apperrors.ErrInternal.Error()})
 	}
 	c.JSON(200, gin.H{"result": cipherText})
 }
@@ -32,7 +32,7 @@ func (srv *service) DecryptData(c *gin.Context) {
 	c.BindJSON(&data)
 	plainText, err := srv.encryptsrv.DecryptData(data.Data)
 	if err != nil {
-		c.AbortWithStatusJSON(500, apperrors.ErrInternal)
+		c.AbortWithStatusJSON(500, gin.H{"message": apperrors.ErrInvalidInput.Error()})
 		return
 	}
 	c.Request.Body = ioutil.NopCloser(bytes.NewBufferString(plainText))

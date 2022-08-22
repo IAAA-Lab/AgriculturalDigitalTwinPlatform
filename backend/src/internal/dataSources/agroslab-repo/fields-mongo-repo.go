@@ -11,7 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"golang.org/x/exp/slices"
 )
 
 type mongodbConn struct {
@@ -79,10 +78,8 @@ func (mc *mongodbConn) PostParcelsAndEnclosures(userId primitive.ObjectID, parce
 		"_id": bson.M{"$eq": userId},
 	}
 	update := bson.M{
-		"$addToSet": bson.M{
-			"parcels": bson.M{
-				"$each": parcelRefs,
-			},
+		"$set": bson.M{
+			"parcels": parcelRefs,
 		},
 	}
 	_, err := mc.db.Collection("User").UpdateOne(ctx, filter, update)
@@ -91,11 +88,14 @@ func (mc *mongodbConn) PostParcelsAndEnclosures(userId primitive.ObjectID, parce
 
 func (mc *mongodbConn) GetParcels(parcelRefs []domain.ParcelRefs, anyo int) ([]domain.Parcel, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
+	fmt.Println(parcelRefs)
 	defer cancel()
 	// Get the parcels info of [userParcelRefs]
 	var parcelIds []string
+	var enclosureIds []string
 	for _, x := range parcelRefs {
 		parcelIds = append(parcelIds, x.Id)
+		enclosureIds = append(enclosureIds, x.Enclosures.Ids...)
 	}
 	var userParcels []domain.Parcel
 	pipeline := []bson.M{
@@ -104,6 +104,43 @@ func (mc *mongodbConn) GetParcels(parcelRefs []domain.ParcelRefs, anyo int) ([]d
 				"id": bson.M{
 					"$in": parcelIds,
 				},
+			},
+		},
+		{
+			"$unwind": "$current.enclosures",
+		},
+		{
+			"$match": bson.M{
+				"current.enclosures.id": bson.M{
+					"$in": enclosureIds,
+				},
+			},
+		},
+		{
+			"$group": bson.M{
+				"_id": "$_id",
+				"id": bson.M{
+					"$first": "$id",
+				},
+				"ts": bson.M{
+					"$first": "$ts",
+				},
+				"current": bson.M{
+					"$first": "$current",
+				},
+				"enclosures": bson.M{
+					"$push": "$current.enclosures",
+				},
+			},
+		},
+		{
+			"$set": bson.M{
+				"current.enclosures": "$enclosures",
+			},
+		},
+		{
+			"$project": bson.M{
+				"enclosures": 0,
 			},
 		},
 		{
@@ -123,20 +160,6 @@ func (mc *mongodbConn) GetParcels(parcelRefs []domain.ParcelRefs, anyo int) ([]d
 	if len(userParcels) != len(parcelRefs) {
 		return []domain.Parcel{}, apperrors.ErrNotFound
 	}
-	// Filter the enclosures "manually" because I don´t know how to make it
-	// through an agreggate in mongodb xd
-	for i, x := range userParcels {
-		k := 0
-		for _, y := range x.Current.Enclosures {
-			fmt.Println(parcelRefs[i].Enclosures.Id, y.Id)
-			if slices.Contains(parcelRefs[i].Enclosures.Id, y.Id) {
-				userParcels[i].Current.Enclosures[k] = y
-				k++
-			}
-		}
-		// Remove element from slice
-		userParcels[i].Current.Enclosures = userParcels[i].Current.Enclosures[:k]
-	}
 
 	return userParcels, err
 }
@@ -150,3 +173,62 @@ func (mc *mongodbConn) PostParcel(parcel domain.Parcel) error {
 	_, err := mc.db.Collection("Fields").UpdateOne(ctx, filter, update, opts)
 	return err
 }
+
+// [
+//   {
+//     "$match": {
+//       "id": {
+//         "$in": [
+//           "45-137-0-0-9-23",
+//           "45-137-0-0-9-20"
+//         ]
+//       }
+//     }
+//   },
+//   {
+//     "$unwind": "$current.enclosures"
+//   },
+//   {
+//     "$match": {
+//       "current.enclosures.id": {
+//         "$in": [
+//           "45-137-0-0-9-23-1",
+//           "45-137-0-0-9-23-3",
+//           "45-137-0-0-9-20-32"
+//         ]
+//       }
+//     }
+//   },
+//   {
+//     "$group": {
+//       "_id": "$_id",
+//       "id": {
+//         "$first": "$id"
+//       },
+//       "ts": {
+//         "$first": "$ts"
+//       },
+//       "current": {
+//         "$first": "$current"
+//       },
+//       "enclosures": {
+//         "$push": "$current.enclosures"
+//       }
+//     }
+//   },
+//   {
+//     "$set": {
+//       "current.enclosures": "$enclosures"
+//     }
+//   },
+//   {
+//     "$project": {
+//       "enclosures": 0
+//     }
+//   },
+//   {
+//     "$sort": {
+//       "id": 1
+//     }
+//   }
+// ]

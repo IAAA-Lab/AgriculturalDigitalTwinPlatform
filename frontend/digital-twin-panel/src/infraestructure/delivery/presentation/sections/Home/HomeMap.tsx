@@ -1,12 +1,7 @@
-import { Icon, LatLngBounds, LatLngTuple, Point } from "leaflet";
+import { Icon, LatLngBounds } from "leaflet";
 import { useState } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Tooltip,
-  useMap,
-} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Tooltip } from "react-leaflet";
+
 import Skeleton from "react-loading-skeleton";
 import { useNavigate } from "react-router-dom";
 import { Parcel, Result } from "../../../../../core/Domain";

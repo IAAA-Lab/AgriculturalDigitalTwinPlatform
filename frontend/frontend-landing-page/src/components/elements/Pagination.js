@@ -6,7 +6,7 @@ import classNames from "classnames";
 import { newsService } from "../../api/news";
 import { getFormattedDate } from "../../utils/functions";
 import { SpinnerDotted } from "spinners-react";
-import { NEWS_UPLOAD_URL } from "../../config/api";
+import { NEWS_UPLOAD_URL } from "../../config/constants";
 
 export const PaginatedItems = ({ itemsPerPage }) => {
   // We start with an empty list of items.

@@ -11,7 +11,7 @@ select {
 }
 
 svg {
-  fill: color-icon(social);
+  // fill: color-icon(social);
   transition: fill 0.15s ease;
 
   .invert-color & {
@@ -36,5 +36,5 @@ img {
 
 .illustration-background::after {
   z-index: -2;
-  @include illustration("illustration-background-2.svg", 100%, 120%, top);
+  @include illustration("body-wallpaper.svg", 100%, 100%, top);
 }

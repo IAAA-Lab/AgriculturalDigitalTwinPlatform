@@ -31,7 +31,11 @@ export const Header = () => {
             <div className="header-nav-inner">
               <ul className="header-nav-right text-sm">
                 <li>
-                  <div onClick={() => dispatch(doToggleWeather())}>
+                  <div
+                    className="card-icon"
+                    style={{ paddingBottom: 0 }}
+                    onClick={() => dispatch(doToggleWeather())}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
@@ -43,7 +47,10 @@ export const Header = () => {
                   </div>
                 </li>
                 <li>
-                  <div onClick={() => dispatch(doToggleNotifications())}>
+                  <div
+                    className="card-icon"
+                    onClick={() => dispatch(doToggleNotifications())}
+                  >
                     <div className="badge-wrapper">
                       <span className="badge-notification">
                         <p className="text-xxs m-0">1</p>

@@ -32,7 +32,9 @@ const getColorList = (n: number) => {
 };
 
 const numberWithCommas = (num?: number) => {
-  return Number(num).toLocaleString("es-ES", { maximumFractionDigits: 2 });
+  return num! < 0
+    ? "N/A"
+    : Number(num).toLocaleString("es-ES", { maximumFractionDigits: 2 });
 };
 
 const getCoordsCentroid = (coords: Coordinates[]): Coordinates => {

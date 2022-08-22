@@ -1,4 +1,4 @@
-import { Auth, Result } from "../../../core/Domain";
+import { Auth, Result, Role } from "../../../core/Domain";
 import {
   MustLoginAgainError,
   MustRefreshSessionError,
@@ -14,9 +14,7 @@ type Props = {
 
 const AuthProtection = ({ children, auth }: Props) => {
   const dispatch = useTypedDispatch();
-  if (!auth) {
-    <></>;
-  }
+
   if (auth?.isError) {
     if (auth.error instanceof MustRefreshSessionError) {
       dispatch(doRefreshLogin());
@@ -28,6 +26,10 @@ const AuthProtection = ({ children, auth }: Props) => {
     }
     window.location.href = LANDING_URL!;
     return <>Error al cargar la página...</>;
+  }
+
+  if (auth?.data.role !== Role.ADMIN && auth?.data.role !== Role.AGRARIAN) {
+    return <>Usuario incorrecto...</>;
   }
 
   return <>{children}</>;

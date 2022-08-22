@@ -20,7 +20,7 @@
 }
 
 .body-wrap {
-  background: linear-gradient(-30deg, color(primary) 0%, white 80%);
+  background: color-bg(body);
   position: relative;
   overflow: hidden;
   // Sticky footer

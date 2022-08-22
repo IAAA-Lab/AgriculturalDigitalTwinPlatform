@@ -30,7 +30,7 @@ func NewMongodbConn(dbUrl string, dbName string, timeout int) *mongodbConn {
 func (mc *mongodbConn) FetchAll(numPage int64) ([]domain.News, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
 	defer cancel()
-	findOptions := options.Find()
+	findOptions := options.Find().SetProjection(bson.M{"content": 0})
 	findOptions.SetSort(bson.D{{"date", -1}})
 	findOptions.SetLimit(6)
 	findOptions.SetSkip(6 * numPage)
@@ -45,14 +45,14 @@ func (mc *mongodbConn) FetchAll(numPage int64) ([]domain.News, error) {
 	return results, nil
 }
 
-func (mc *mongodbConn) Fetch(id primitive.ObjectID) (domain.Description, error) {
+func (mc *mongodbConn) Fetch(id primitive.ObjectID) (domain.News, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
 	defer cancel()
 	filter := bson.M{"_id": bson.M{"$eq": id}}
-	var results domain.Description
+	var results domain.News
 	err := mc.db.Collection("News").FindOne(ctx, filter).Decode(&results)
 	if err != nil {
-		return domain.Description{}, apperrors.ErrNotFound
+		return domain.News{}, apperrors.ErrNotFound
 	}
 	return results, nil
 }
@@ -67,7 +67,7 @@ func (mc *mongodbConn) FetchNumber() (int64, error) {
 	return number, nil
 }
 
-func (mc *mongodbConn) PostNewNews(news domain.PostNews) error {
+func (mc *mongodbConn) PostNewNews(news domain.News) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
 	defer cancel()
 	_, err := mc.db.Collection("News").InsertOne(ctx, news)
@@ -77,7 +77,7 @@ func (mc *mongodbConn) PostNewNews(news domain.PostNews) error {
 	return nil
 }
 
-func (mc *mongodbConn) UpdateNews(id primitive.ObjectID, news domain.PostNews) error {
+func (mc *mongodbConn) UpdateNews(id primitive.ObjectID, news domain.News) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
 	defer cancel()
 	update := bson.D{{

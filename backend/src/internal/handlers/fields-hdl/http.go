@@ -65,3 +65,38 @@ func (hdl *HTTPHandler) PostParcelsAndEnclosures(c *gin.Context) {
 	}
 	c.JSON(200, err)
 }
+
+func (hdl *HTTPHandler) GetParcelRefs(c *gin.Context) {
+	userId, err := primitive.ObjectIDFromHex(c.Query("userId"))
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	res, err := hdl.fieldsService.GetParcelRefs(userId, 2014)
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(200, res)
+}
+
+func (hdl *HTTPHandler) PostParcelRefs(c *gin.Context) {
+	userId, err := primitive.ObjectIDFromHex(c.Query("userId"))
+
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	var parcelRefs []domain.ParcelRefs
+	err = c.BindJSON(&parcelRefs)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
+		return
+	}
+	err = hdl.fieldsService.PostParcelsAndEnclosures(userId, parcelRefs)
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(200, err)
+}

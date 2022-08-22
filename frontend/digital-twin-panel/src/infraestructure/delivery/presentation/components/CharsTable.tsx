@@ -61,7 +61,10 @@ export const CharsTable = ({ data }: Props) => {
   });
 
   return (
-    <div className="reveal-from-right mb-16">
+    <div
+      className="card-analysis reveal-from-right mb-16"
+      style={{ padding: 0 }}
+    >
       <DataTable
         customStyles={{
           tableWrapper: {

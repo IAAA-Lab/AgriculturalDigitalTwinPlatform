@@ -1,0 +1,26 @@
+.reveal-from-right-animation {
+    transform: translateX(100px);
+}
+
+.reveal-from-left-animation {
+    transform: translateX(-100px);
+}
+
+.reveal-from-bottom-animation {
+    transform: translateY(50px);
+}
+
+.reveal-from-top-animation {
+    transform: translateY(-50px);
+}
+
+[class*="-animation"] {
+    opacity: 0;
+    will-change: opacity transform;
+    transition: 0.4s ease-in-out .15s;
+}
+
+[class*="-animation"].isActive {
+    opacity: 1;
+    transform: translate(0);
+}

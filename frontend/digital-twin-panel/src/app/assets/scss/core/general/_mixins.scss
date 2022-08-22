@@ -20,9 +20,9 @@
   @if ($type == "main") {
     // Base
     @if ($layout == "inverse") {
-      color: color(link-inverse);
+      color: color(base);
     } @else {
-      color: color(link);
+      color: color(base);
     }
     text-decoration: $link-main--decoration;
 
@@ -189,10 +189,10 @@
   width: $width;
   max-width: $width;
   height: $height;
-  background-image: url(../../../images/#{$file});
+  background-image: url(../../../../../../public/static/#{$file});
   background-repeat: no-repeat;
   @if (unit($height) == "%") {
-    background-size: contain;
+    background-size: cover;
   } @else {
     background-size: auto;
   }

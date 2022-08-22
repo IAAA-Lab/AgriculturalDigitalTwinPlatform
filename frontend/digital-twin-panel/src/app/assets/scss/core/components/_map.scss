@@ -3,9 +3,9 @@
   flex-direction: row;
 
   .leaflet-container {
-    border: 2px solid color(primary);
-    border-radius: 5px;
+    border-radius: 6px !important;
     aspect-ratio: 4 / 3;
+    z-index: 500;
     width: 100%;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
   }

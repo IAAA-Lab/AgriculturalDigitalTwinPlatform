@@ -6,6 +6,7 @@ $palette: (
     1: #ffffff,
     2: #2f485a,
     3: #717d86,
+    4: #ecf7ff,
   ),
   dark: (
     1: #232d36,
@@ -34,7 +35,7 @@ $palette: (
 // Base typography: color
 $color: (
   heading: get-color(dark, 2),
-  card: rgba(get-color(light, 1), 0.5),
+  card: rgba(get-color(light, 1), 0.65),
   badge-notification: get-color(alert, error),
   base: get-color(dark, 2),
   high-contrast: get-color(light, 1),
@@ -90,12 +91,12 @@ $icon--color: (
   social-inverse: null,
   // social icons
   social-hover-inverse: null
-    // social icons (:hover),,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    // social icons (:hover),,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 // Misc elements: background color
 $bg--color: (
-  body: get-color(light, 1),
+  body: get-color(light, 4),
   body-shadow: 0 20px 48px rgba(get-color(dark, 1), 0.8),
   // body shadow when a boxed layout is used (set to null if don't want a shadow)
   body-outer: lighten(get-color(dark, 1), 2%),

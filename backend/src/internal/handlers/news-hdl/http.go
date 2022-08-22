@@ -58,7 +58,7 @@ func (hdl *HTTPHandler) GetNumber(c *gin.Context) {
 }
 
 func (hdl *HTTPHandler) PostNewNews(c *gin.Context) {
-	var news domain.PostNews
+	var news domain.News
 	c.BindJSON(&news)
 	news.Content = utils.EscapeHTMLBack(news.Content)
 	err := hdl.newsService.PostNewNews(news)
@@ -75,7 +75,7 @@ func (hdl *HTTPHandler) UpdateNews(c *gin.Context) {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
 	}
-	var news domain.PostNews
+	var news domain.News
 	c.BindJSON(&news)
 	news.Content = utils.EscapeHTMLBack(news.Content)
 	err = hdl.newsService.UpdateNews(id, news)

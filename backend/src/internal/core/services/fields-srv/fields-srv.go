@@ -42,6 +42,10 @@ func (srv *service) PostParcelsAndEnclosures(userId primitive.ObjectID, parcels 
 	return srv.fieldsPersistenceRepository.PostParcelsAndEnclosures(userId, parcels)
 }
 
+func (srv *service) GetParcelRefs(userId primitive.ObjectID, anyo int) ([]domain.ParcelRefs, error) {
+	return srv.fieldsPersistenceRepository.GetParcelsRef(userId)
+}
+
 // ----------------------------------------------------- \\
 // ----------------- Private functions ----------------- \\
 // ----------------------------------------------------- \\
@@ -59,7 +63,6 @@ func getAvgNDVI(srv *service, anyo int, parcelId string) domain.NDVI {
 		}
 	}
 	var avgNDVI float32 = 0.0
-	fmt.Println(ndvi.Response)
 
 	return domain.NDVI{
 		Avg: avgNDVI,

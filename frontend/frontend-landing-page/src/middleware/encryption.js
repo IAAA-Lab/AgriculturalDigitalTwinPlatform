@@ -1,4 +1,4 @@
-import { IV_BLOCK_PASSWD, KEY_DECRYPT_PASSWD } from "../config/api";
+import { IV_BLOCK_PASSWD, KEY_DECRYPT_PASSWD } from "../config/constants";
 
 var crypto = require("crypto");
 

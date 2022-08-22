@@ -9,7 +9,7 @@ const Breadcrumb = () => {
 
   return (
     <nav>
-      <ol className="breadcrumb ml-8">
+      <ol className="breadcrumb ml-8 m-0">
         {pathnames.map((route, index) => {
           const routeTo = `/${pathnames.slice(0, index + 1).join("/")}`;
           return (

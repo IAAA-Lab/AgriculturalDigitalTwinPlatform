@@ -19,7 +19,7 @@ func (srv *service) FetchAll(numPage int64) ([]domain.News, error) {
 	return srv.newsrepository.FetchAll(numPage)
 }
 
-func (srv *service) Fetch(id primitive.ObjectID) (domain.Description, error) {
+func (srv *service) Fetch(id primitive.ObjectID) (domain.News, error) {
 	return srv.newsrepository.Fetch(id)
 }
 
@@ -27,11 +27,11 @@ func (srv *service) FetchNumber() (int64, error) {
 	return srv.newsrepository.FetchNumber()
 }
 
-func (srv *service) PostNewNews(news domain.PostNews) error {
+func (srv *service) PostNewNews(news domain.News) error {
 	return srv.newsrepository.PostNewNews(news)
 }
 
-func (srv *service) UpdateNews(id primitive.ObjectID, news domain.PostNews) error {
+func (srv *service) UpdateNews(id primitive.ObjectID, news domain.News) error {
 	return srv.newsrepository.UpdateNews(id, news)
 }
 

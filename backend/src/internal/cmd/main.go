@@ -20,6 +20,7 @@ import (
 	"github.com/dvwright/xss-mw"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/penglongli/gin-metrics/ginmetrics"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 
@@ -62,6 +63,14 @@ func CorsConfig() gin.HandlerFunc {
 	}
 }
 
+func setUpMonitoring(r *gin.Engine) *gin.Engine {
+	m := gin.Default()
+	metrics := ginmetrics.GetMonitor()
+	metrics.UseWithoutExposingEndpoint(r)
+	metrics.Expose(m)
+	return m
+}
+
 func setupRouter() *gin.Engine {
 
 	mongoUri := os.Getenv("MONGO_URI")
@@ -99,8 +108,11 @@ func setupRouter() *gin.Engine {
 	cacheMiddleware := cache.CacheByRequestURI(persist.NewRedisStore(cacherepository.GetClient()), 10*time.Minute)
 
 	r := gin.Default()
-	r.Use(CorsConfig())
+	m := ginmetrics.GetMonitor()
+	m.SetMetricPath("/metrics")
+	m.Use(r)
 	r.SetTrustedProxies([]string{"localhost"})
+	r.Use(CorsConfig())
 	var xssMdlwr xss.XssMw
 	r.Use(xssMdlwr.RemoveXss())
 
@@ -126,6 +138,8 @@ func setupRouter() *gin.Engine {
 	r.GET("/news/:id", cacheMiddleware, newsHandler.GetDesc)
 	// ---- Agrarian
 	r.POST("/fields", authMiddleware.AuthorizeJWT([]string{domain.Admin}), fieldsHandler.PostParcelsAndEnclosures)
+	r.GET("/fields/refs", authMiddleware.AuthorizeJWT([]string{domain.Admin}), fieldsHandler.GetParcelRefs)
+	r.PATCH("/fields/refs", authMiddleware.AuthorizeJWT([]string{domain.Admin}), fieldsHandler.PostParcelRefs)
 	r.GET("/fields", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.Agrarian}), fieldsHandler.GetParcelsByUser)
 
 	return r
@@ -160,11 +174,15 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r := setupRouter()
+	// m := setUpMonitoring(r)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	port := os.Getenv("PORT")
 
 	if port == "" {
 		port = "8080"
 	}
+	// go func() {
+	// 	_ = m.Run(":9090")
+	// }()
 	r.Run(":" + port)
 }
