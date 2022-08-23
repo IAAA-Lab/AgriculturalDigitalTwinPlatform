@@ -1,7 +1,7 @@
 import { HomeAnalysisCards } from "../sections/Home/HomeAnalysisCards";
 import { FeaturesSection } from "../sections/FeaturesSection";
 import { HomeMap } from "../sections/Home/HomeMap";
-import { PlantList } from "../sections/PlantList";
+import { CropList } from "../sections/PlantList";
 import { RootState } from "../../../../app/config/context/redux/app-store";
 import { useSelector } from "react-redux";
 import { ErrorPage } from "./ErrorPage";
@@ -18,7 +18,7 @@ export const Home = () => {
       <div className="site-quadrant-left">
         <HomeMap parcelList={terrain?.parcels} />
         <FeaturesSection features={terrain?.commons} />
-        <PlantList />
+        <CropList plants={[]} />
         <br />
       </div>
       <div className="vertical-site-separator" />

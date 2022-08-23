@@ -227,9 +227,13 @@ type EnclosureInfo struct {
 	Coordinates     []Coordinates     `json:"coordinates"`
 	NDVI            NDVI              `json:"ndvi"`
 	Crops           []struct {
-		Name     string `json:"name"`
-		Variety  string `json:"variety"`
-		ImageUri string `json:"imageUri"`
+		Name        string  `json:"name"`
+		Variety     string  `json:"variety"`
+		ImageUri    string  `json:"imageUri" bson:"imageUri"`
+		Production  float32 `json:"production" bson:",truncate"`
+		Area        float32 `json:"area" bson:",truncate"`
+		Performance float32 `json:"performance" bson:",truncate"`
+		Harvest     int8    `json:"harvest"`
 	} `json:"crops"`
 	Fertilizers []struct {
 		Name      string    `json:"name"`

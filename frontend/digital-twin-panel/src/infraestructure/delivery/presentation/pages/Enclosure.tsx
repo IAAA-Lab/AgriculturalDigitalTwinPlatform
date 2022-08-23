@@ -4,7 +4,7 @@ import { RootState } from "../../../../app/config/context/redux/app-store";
 import { EnclosureAnalysisCards } from "../sections/Enclosure/EnclosureAnalysisCards";
 import { EnclosureMap } from "../sections/Enclosure/EnclosureMap";
 import { FeaturesSection } from "../sections/FeaturesSection";
-import { PlantList } from "../sections/PlantList";
+import { CropList } from "../sections/PlantList";
 
 export const EnclosurePage = () => {
   const { pathname } = useLocation();
@@ -26,7 +26,7 @@ export const EnclosurePage = () => {
       <div className="site-quadrant-left">
         <EnclosureMap enclosure={enclosure} />
         <FeaturesSection features={enclosure?.current.info.characteristics} />
-        <PlantList />
+        <CropList plants={enclosure?.current.info.crops} />
         <br />
       </div>
       <div className="vertical-site-separator" />

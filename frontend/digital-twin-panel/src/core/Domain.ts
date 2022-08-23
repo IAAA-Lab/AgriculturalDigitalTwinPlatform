@@ -32,10 +32,14 @@ type Characteristics = {
   state?: CharacteristicState;
 };
 
-type Crops = {
+type Crop = {
   name: string;
   variety: string;
   imageUri?: string;
+  production: number;
+  area: number;
+  performance: number;
+  harvest: number;
 };
 
 type Fertilizers = {
@@ -61,7 +65,7 @@ type EnclosureInfo = {
   ndvi: {
     avg: number;
   };
-  crops?: Crops[];
+  crops?: Crop[];
   fertilizers?: Fertilizers[];
   phytosanitaries?: Phytosanitaries[];
 };
@@ -121,6 +125,7 @@ export type {
   ChartDataOptions,
   Coordinates,
   TableDataOptions,
+  Crop,
 };
 
 export { Role };

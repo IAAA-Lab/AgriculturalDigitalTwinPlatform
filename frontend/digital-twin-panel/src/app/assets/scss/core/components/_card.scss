@@ -10,13 +10,6 @@
   text-size-adjust: "80%";
 }
 
-.card-plants {
-  @extend .card-features;
-  flex: 1;
-  min-height: 65px;
-  background: color(primary);
-}
-
 .notifications-card {
   background: rgba(255, 255, 255, 0.7);
   border: 2px solid #d8dae5;

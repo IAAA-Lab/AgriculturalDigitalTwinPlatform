@@ -1,5 +1,5 @@
 import { AreaMap } from "../sections/Parcel/ParcelMap";
-import { PlantList } from "../sections/PlantList";
+import { CropList } from "../sections/PlantList";
 import { Enclosure, Features } from "../../../../core/Domain";
 import { useLocation } from "react-router-dom";
 import { FeaturesSection } from "../sections/FeaturesSection";
@@ -23,7 +23,7 @@ export const ParcelPage = () => {
       <div className="site-quadrant-left">
         <AreaMap enclosures={parcel?.current.enclosures} />
         <FeaturesSection features={parcel?.current.commons} />
-        <PlantList />
+        <CropList plants={[]} />
         <br />
       </div>
       <div className="vertical-site-separator" />
