@@ -46,4 +46,19 @@ const getCoordsCentroid = (coords: Coordinates[]): Coordinates => {
   };
 };
 
-export { getColorList, numberWithCommas };
+const getCropIconByName = (name: string) => {
+  switch (name) {
+    case "Área":
+      return "fi fi-rs-cursor-text-alt";
+    case "Producción":
+      return "fi fi-rs-tractor";
+    case "Rendimiento":
+      return "fi fi-rs-chart-histogram";
+    case "Cosecha":
+      return "fi fi-rs-hand-holding-seeding";
+    default:
+      return "fi fi-rs-cursor-text-alt";
+  }
+};
+
+export { getColorList, numberWithCommas, getCropIconByName };
