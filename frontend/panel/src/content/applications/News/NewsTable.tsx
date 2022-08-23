@@ -23,6 +23,7 @@ import { News } from "models/news";
 import { getFormattedDate } from "content/utils";
 import { newsService } from "api/news";
 import { DEFAULT_NEWS_IMAGE, NEWS_UPLOAD_URI } from "contexts/contants";
+import { Link } from "react-router-dom";
 
 const NewsTable = () => {
   const [news, setNews] = useState<News[]>([]);
@@ -141,18 +142,23 @@ const NewsTable = () => {
                   </TableCell>
                   <TableCell align="right">
                     <Tooltip title="Editar noticia" arrow>
-                      <IconButton
-                        sx={{
-                          "&:hover": {
-                            background: theme.colors.primary.lighter,
-                          },
-                          color: theme.palette.primary.main,
-                        }}
-                        color="inherit"
-                        size="small"
+                      <Link
+                        to={`/management/news/manage`}
+                        state={{ id: news.id }}
                       >
-                        <EditTwoToneIcon fontSize="small" />
-                      </IconButton>
+                        <IconButton
+                          sx={{
+                            "&:hover": {
+                              background: theme.colors.primary.lighter,
+                            },
+                            color: theme.palette.primary.main,
+                          }}
+                          color="inherit"
+                          size="small"
+                        >
+                          <EditTwoToneIcon fontSize="small" />
+                        </IconButton>
+                      </Link>
                     </Tooltip>
                     <Tooltip title="Borrar noticia" arrow>
                       <IconButton

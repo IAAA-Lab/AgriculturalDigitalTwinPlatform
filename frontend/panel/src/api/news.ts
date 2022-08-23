@@ -18,11 +18,11 @@ const fetchNumberOfNews = async (): Promise<Result<number>> => {
   return { isError: false, data: await response.json() };
 };
 
-const fetchOneNew = async (id: string): Promise<News | undefined> => {
+const fetchOneNew = async (id: string): Promise<Result<News> | undefined> => {
   const response = await fetch(API_URL + "/news/" + id).catch(() => null);
-  if (!response || !response.ok) return undefined;
+  if (!response || !response.ok) return { isError: true, error: new Error() };
   const data = await response.json();
-  return data;
+  return { isError: false, data };
 };
 
 const uploadImage = async (image: any) => {

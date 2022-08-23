@@ -1,20 +1,11 @@
-import { LinkOutlined } from "@mui/icons-material";
-import {
-  Box,
-  Container,
-  styled,
-  Tooltip,
-  Typography,
-  Zoom,
-} from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import { newsService } from "api/news";
 import SuspenseLoader from "components/SuspenseLoader";
 import Footer from "content/applications/Overview/Footer";
-import HeaderC from "content/applications/Overview/Header";
-import { getFormattedDate, copy } from "content/utils";
+import Status500 from "content/pages/Status/Status500";
 import { DEFAULT_NEWS_IMAGE, NEWS_UPLOAD_URI } from "contexts/contants";
 import HTMLReactParser from "html-react-parser";
-import OverviewLayout from "layouts/OverviewLayout";
+import { Result } from "models/auth";
 import { News } from "models/news";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
@@ -23,7 +14,7 @@ import NewsHeader from "./NewsHeader";
 
 const SingleNews = () => {
   const { id } = useParams();
-  const [news, setNews] = useState<News | undefined>();
+  const [news, setNews] = useState<Result<News> | undefined>();
 
   useEffect(() => {
     loadInfo();
@@ -39,6 +30,10 @@ const SingleNews = () => {
     return <SuspenseLoader />;
   }
 
+  if (news.isError) {
+    return <Status500 />;
+  }
+
   return (
     <>
       <Helmet>
@@ -46,22 +41,22 @@ const SingleNews = () => {
       </Helmet>
       <Container maxWidth="md" sx={{ mt: 10 }}>
         <NewsHeader
-          author={news.author}
-          date={news.date}
-          readTime={news.readTime}
+          author={news.data.author}
+          date={news.data.date}
+          readTime={news.data.readTime}
         />
         <Typography
           variant="h1"
           component="h1"
-          sx={{ mt: 2, mb: 2, wordBreak: "break-word" }}
+          sx={{ mt: 1, mb: 1.5, wordBreak: "break-word" }}
         >
-          <b>{news?.title}</b>
+          <b>{news.data.title}</b>
         </Typography>
-        <Typography component="p" variant="subtitle2" sx={{ mb: 3 }}>
-          {news?.subtitle}
+        <Typography component="p" variant="subtitle2" sx={{ mb: 2 }}>
+          {news.data.subtitle}
         </Typography>
         <img
-          src={`${NEWS_UPLOAD_URI}/${news.thumbnail}`}
+          src={`${NEWS_UPLOAD_URI}/${news.data.thumbnail}`}
           onError={(e: any) => {
             e.target.onerror = null;
             e.target.src = DEFAULT_NEWS_IMAGE;
@@ -76,7 +71,7 @@ const SingleNews = () => {
           variant="body2"
           sx={{ fontSize: 18, mt: 3, mb: 8 }}
         >
-          {news && HTMLReactParser(news?.content ?? "")}
+          {news && HTMLReactParser(news?.data.content ?? "")}
         </Typography>
       </Container>
       <Footer />

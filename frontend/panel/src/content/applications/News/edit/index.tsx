@@ -1,32 +1,56 @@
-import {
-  Alert,
-  Button,
-  FormControl,
-  IconButton,
-  Input,
-  Snackbar,
-  TextField,
-} from "@mui/material";
+import { Alert, Button, Input, Snackbar, TextField } from "@mui/material";
 import { Container } from "@mui/system";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
-import { convertToRaw, EditorState } from "draft-js";
+import { ContentState, EditorState } from "draft-js";
 import { Helmet } from "react-helmet-async";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { Add } from "@mui/icons-material";
+import { Add, Preview } from "@mui/icons-material";
 import { newsService } from "api/news";
 import { convertToHTML } from "draft-convert";
 import { LoadingButton } from "@mui/lab";
 import { escapeHtml } from "content/utils";
+import { useLocation } from "react-router";
+import { Result } from "models/auth";
+import { News } from "models/news";
+import SuspenseLoader from "components/SuspenseLoader";
+import Status500 from "content/pages/Status/Status500";
+import htmlToDraft from "html-to-draftjs";
 
 const NewsEdit = () => {
   const [showNotification, setshowNotification] = useState(false);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [news, setNews] = useState<Result<News> | undefined>();
   const [editorState, setEditorState] = useState<EditorState>(
     EditorState.createEmpty()
   );
+
+  const { state } = useLocation() as any;
+  const id = state?.id;
+
+  useEffect(() => {
+    if (!id) return;
+    loadNews();
+  }, [id]);
+
+  const loadNews = async () => {
+    setLoading(true);
+    const _news = await newsService.fetchOneNew(id);
+    setNews(_news);
+    if (_news?.isError) {
+      return;
+    }
+    setEditorState(
+      EditorState.createWithContent(
+        ContentState.createFromBlockArray(
+          htmlToDraft(_news?.data.content ?? "").contentBlocks
+        )
+      )
+    );
+    setLoading(false);
+  };
 
   const onEditorStateChange = (editorState: EditorState) => {
     setEditorState(editorState);
@@ -43,33 +67,47 @@ const NewsEdit = () => {
     e.preventDefault();
     setLoading(true);
     const { title, subtitle, image, author, date, readTime } = e.target;
-    if (image.files[0]?.size > 4096000) {
+    if (image?.files[0]?.size > 4096000) {
       showAlert(true, "Imagen demasiado grande");
       return;
     }
     var filename;
-    if (image.files[0]) {
+    if (image?.files[0]) {
       filename = await newsService.uploadImage(image.files[0]);
     }
     if (filename === null) {
       showAlert(true, "Error al subir la imagen");
       return;
     }
-    const err = await newsService.postNewNews({
+    console.log(date.value);
+    const _news = {
       title: title.value,
       subtitle: subtitle.value,
       author: author.value,
-      date: date.value && new Date(date.value).toISOString(),
+      date: date.value
+        ? new Date(date.value).toISOString()
+        : new Date().toISOString(),
       readTime: parseInt(readTime.value),
-      thumbnail: filename.path,
+      thumbnail: filename?.path,
       content: escapeHtml(convertToHTML(editorState.getCurrentContent())),
-    });
+    };
+    const err = id
+      ? await newsService.updateNews(id, _news)
+      : await newsService.postNewNews(_news);
     if (err) {
       showAlert(true, "Error al subir la noticia");
       return;
     }
     showAlert(false, "Noticia subida correctamente");
   };
+
+  if (id && !news) {
+    return <SuspenseLoader />;
+  }
+
+  if (id && news?.isError) {
+    return <Status500 />;
+  }
 
   return (
     <Container maxWidth="lg">
@@ -87,6 +125,7 @@ const NewsEdit = () => {
           label="Título"
           name="title"
           inputProps={{ maxLength: 60 }}
+          defaultValue={id && !news?.isError && news?.data?.title}
           autoFocus
         />
 
@@ -100,11 +139,12 @@ const NewsEdit = () => {
           id="subtitle"
           label="Descripción"
           name="subtitle"
+          defaultValue={id && !news?.isError && news?.data?.subtitle}
           inputProps={{ maxLength: 100 }}
         />
 
         <Input
-          required
+          required={!id}
           disableUnderline
           fullWidth
           type="file"
@@ -121,19 +161,24 @@ const NewsEdit = () => {
           label="Autor"
           name="author"
           sx={{ mr: 2 }}
+          defaultValue={id && !news?.isError && news?.data?.author}
           inputProps={{ maxLength: 50 }}
         />
 
         <TextField
           variant="outlined"
           margin="normal"
-          required
+          required={!id}
           size="small"
-          type="datetime-local"
+          type="date"
           id="date"
           name="date"
           sx={{ mr: 2 }}
-          defaultValue={new Date().toISOString().split("T")[0]}
+          defaultValue={
+            id && !news?.isError
+              ? news?.data?.date.split("T")[0]
+              : new Date().toISOString().split("T")[0]
+          }
           InputProps={{
             inputProps: {
               max: new Date().toISOString().split("T")[0],
@@ -149,7 +194,7 @@ const NewsEdit = () => {
           type="number"
           id="readTime"
           label="Tiempo de lectura (min)"
-          defaultValue={1}
+          defaultValue={id && !news?.isError ? news?.data?.readTime : 1}
           InputProps={{
             inputProps: {
               min: 1,
@@ -201,9 +246,17 @@ const NewsEdit = () => {
           loadingIndicator="Subiendo..."
           type="submit"
         >
-          Añadir noticia
+          {!id ? "Añadir noticia" : "Actualizar noticia"}
         </LoadingButton>
       </form>
+      <Button
+        color="secondary"
+        variant="outlined"
+        startIcon={<Preview fontSize="small" />}
+        sx={{ mt: 4, mb: 4 }}
+      >
+        Preview
+      </Button>
       <Snackbar
         open={showNotification}
         onClose={() => setshowNotification(false)}
