@@ -105,11 +105,11 @@ func (mc *mongodbConn) GetParcels(parcelRefs []domain.ParcelRefs, anyo int) ([]d
 			},
 		},
 		{
-			"$unwind": "$current.enclosures",
+			"$unwind": "$historic.enclosures",
 		},
 		{
 			"$match": bson.M{
-				"current.enclosures.id": bson.M{
+				"historic.enclosures.id": bson.M{
 					"$in": enclosureIds,
 				},
 			},
@@ -123,17 +123,17 @@ func (mc *mongodbConn) GetParcels(parcelRefs []domain.ParcelRefs, anyo int) ([]d
 				"ts": bson.M{
 					"$first": "$ts",
 				},
-				"current": bson.M{
-					"$first": "$current",
+				"historic": bson.M{
+					"$first": "$historic",
 				},
 				"enclosures": bson.M{
-					"$push": "$current.enclosures",
+					"$push": "$historic.enclosures",
 				},
 			},
 		},
 		{
 			"$set": bson.M{
-				"current.enclosures": "$enclosures",
+				"historic.enclosures": "$enclosures",
 			},
 		},
 		{
@@ -171,62 +171,3 @@ func (mc *mongodbConn) PostParcel(parcel domain.Parcel) error {
 	_, err := mc.db.Collection("Fields").UpdateOne(ctx, filter, update, opts)
 	return err
 }
-
-// [
-//   {
-//     "$match": {
-//       "id": {
-//         "$in": [
-//           "45-137-0-0-9-23",
-//           "45-137-0-0-9-20"
-//         ]
-//       }
-//     }
-//   },
-//   {
-//     "$unwind": "$current.enclosures"
-//   },
-//   {
-//     "$match": {
-//       "current.enclosures.id": {
-//         "$in": [
-//           "45-137-0-0-9-23-1",
-//           "45-137-0-0-9-23-3",
-//           "45-137-0-0-9-20-32"
-//         ]
-//       }
-//     }
-//   },
-//   {
-//     "$group": {
-//       "_id": "$_id",
-//       "id": {
-//         "$first": "$id"
-//       },
-//       "ts": {
-//         "$first": "$ts"
-//       },
-//       "current": {
-//         "$first": "$current"
-//       },
-//       "enclosures": {
-//         "$push": "$current.enclosures"
-//       }
-//     }
-//   },
-//   {
-//     "$set": {
-//       "current.enclosures": "$enclosures"
-//     }
-//   },
-//   {
-//     "$project": {
-//       "enclosures": 0
-//     }
-//   },
-//   {
-//     "$sort": {
-//       "id": 1
-//     }
-//   }
-// ]

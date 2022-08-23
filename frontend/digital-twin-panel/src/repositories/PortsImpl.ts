@@ -62,27 +62,23 @@ class FieldService implements IFieldService {
     try {
       terrain.parcels?.data.forEach((parcel, i) => {
         sumParcels = JSON.parse(
-          JSON.stringify(
-            parcel.current.enclosures[0].current.info.characteristics
-          )
+          JSON.stringify(parcel.historic.enclosures[0].info.characteristics)
         );
-        parcel.current.enclosures.forEach((enclosure, j) => {
+        parcel.historic.enclosures.forEach((enclosure, j) => {
           if (j > 0) {
-            enclosure.current.info.characteristics.forEach(
-              (characteristic, k) => {
-                sumParcels[k].value += characteristic.value;
-              }
-            );
+            enclosure.info.characteristics.forEach((characteristic, k) => {
+              sumParcels[k].value += characteristic.value;
+            });
           }
         });
         this.calculateRulesCharacteristics(
           sumParcels,
-          parcel.current.enclosures.length
+          parcel.historic.enclosures.length
         );
         if (newTerrain.parcels?.isError) {
           return;
         }
-        newTerrain.parcels!.data[i].current.commons = JSON.parse(
+        newTerrain.parcels!.data[i].historic.commons = JSON.parse(
           JSON.stringify(sumParcels)
         );
         if (i === 0) {

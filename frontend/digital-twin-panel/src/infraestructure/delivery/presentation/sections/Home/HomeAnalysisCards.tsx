@@ -42,10 +42,10 @@ export const HomeAnalysisCards = ({ data }: Props) => {
       ...tableDataOptions,
       {
         key: { name: e.id, color: colors[i] },
-        values: e.current.commons ?? [],
+        values: e.historic.commons ?? [],
       },
     ];
-    e.current.commons?.forEach((c) => {
+    e.historic.commons?.forEach((c) => {
       var { labels, values } = chartDataOptions.get(c.name) ?? {
         labels: [],
         values: [],

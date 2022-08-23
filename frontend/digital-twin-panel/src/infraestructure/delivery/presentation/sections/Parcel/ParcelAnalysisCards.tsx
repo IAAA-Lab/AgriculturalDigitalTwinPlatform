@@ -31,7 +31,7 @@ export const AreaAnalysisCards = ({ data }: Props) => {
   const colors = getColorList(data?.length ?? 0);
 
   data?.forEach((e, i) => {
-    e.current.info.characteristics?.forEach((c) => {
+    e.info.characteristics?.forEach((c) => {
       var { labels, values } = chartDataOptions.get(c.name) ?? {
         labels: [],
         values: [],

@@ -21,14 +21,14 @@ export const ParcelPage = () => {
   return (
     <div className="site-inner-content">
       <div className="site-quadrant-left">
-        <AreaMap enclosures={parcel?.current.enclosures} />
-        <FeaturesSection features={parcel?.current.commons} />
+        <AreaMap enclosures={parcel?.historic.enclosures} />
+        <FeaturesSection features={parcel?.historic.commons} />
         <CropList plants={[]} />
         <br />
       </div>
       <div className="vertical-site-separator" />
       <div className="site-quadrant-right">
-        <AreaAnalysisCards data={parcel?.current.enclosures} />
+        <AreaAnalysisCards data={parcel?.historic.enclosures} />
       </div>
     </div>
   );

@@ -33,10 +33,7 @@ export const EnclosureMap = ({ enclosure }: Props) => {
   }
 
   const mapColor = getColorList(1)[0];
-  const totalCoords = enclosure.current.info.coordinates.map((c) => [
-    c.lat,
-    c.lng,
-  ]);
+  const totalCoords = enclosure.info.coordinates.map((c) => [c.lat, c.lng]);
 
   const map = (
     <MapContainer
@@ -54,7 +51,7 @@ export const EnclosureMap = ({ enclosure }: Props) => {
         url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
       />
       <Polyline
-        positions={enclosure.current.info.coordinates}
+        positions={enclosure.info.coordinates}
         fill={true}
         fillOpacity={0.4}
         color={mapColor}

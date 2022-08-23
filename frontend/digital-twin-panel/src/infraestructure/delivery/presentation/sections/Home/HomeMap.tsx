@@ -31,8 +31,8 @@ export const HomeMap = ({ parcelList }: Props) => {
 
   const colors = getColorList(parcelList.data.length);
   const totalCoords = parcelList.data.map((e) => [
-    e.current.info.coordinates.lat,
-    e.current.info.coordinates.lng,
+    e.historic.info.coordinates.lat,
+    e.historic.info.coordinates.lng,
   ]);
 
   return (
@@ -78,7 +78,7 @@ export const HomeMap = ({ parcelList }: Props) => {
                       popupAnchor: [1, -25],
                     })
                   }
-                  position={area.current.info.coordinates}
+                  position={area.historic.info.coordinates}
                 >
                   <Tooltip
                     className="leaflet-tooltip-home-map"

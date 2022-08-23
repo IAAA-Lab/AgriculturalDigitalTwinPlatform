@@ -15,13 +15,7 @@ type Props = {
 };
 
 export const EnclosureAnalysisCards = ({ data }: Props) => {
-  const [openSummary, setOpenSummary] = useState(false);
   const [openHistoric, setOpenHistoric] = useState(false);
-
-  const classesSummary = classNames(
-    "dropdown-content",
-    openSummary && "off-is-active"
-  );
 
   const classHistoric = classNames(
     "dropdown-content",
@@ -35,7 +29,7 @@ export const EnclosureAnalysisCards = ({ data }: Props) => {
   var chartDataOptions: ChartDataOptions = new Map();
   const colors = getColorList(1);
 
-  data?.current.info.characteristics?.forEach((c) => {
+  data?.info.characteristics?.forEach((c) => {
     var { labels, values } = chartDataOptions.get(c.name) ?? {
       labels: [],
       values: [],

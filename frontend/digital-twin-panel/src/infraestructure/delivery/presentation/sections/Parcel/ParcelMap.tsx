@@ -33,7 +33,7 @@ export const AreaMap = ({ enclosures }: Props) => {
 
   const colorList = getColorList(enclosures.length);
   const totalCoords = enclosures.flatMap((e) =>
-    e.current.info.coordinates.map((c) => [c.lat, c.lng])
+    e.info.coordinates.map((c) => [c.lat, c.lng])
   );
 
   return (
@@ -64,7 +64,7 @@ export const AreaMap = ({ enclosures }: Props) => {
                     navigation(`${enclosure.id}`);
                   },
                 }}
-                positions={enclosure.current.info.coordinates}
+                positions={enclosure.info.coordinates}
                 fill={true}
                 fillOpacity={0.4}
                 color={colorList[index]}

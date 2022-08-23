@@ -53,9 +53,7 @@ type Phytosanitaries = {};
 type Enclosure = {
   id: string;
   imageUri?: string;
-  current: {
-    info: EnclosureInfo;
-  };
+  info: EnclosureInfo;
 };
 
 type EnclosureInfo = {
@@ -73,7 +71,7 @@ type EnclosureInfo = {
 type Parcel = {
   ts: Date;
   id: string;
-  current: {
+  historic: {
     ts: Date;
     info: ParcelInfo;
     commons?: Characteristics[];

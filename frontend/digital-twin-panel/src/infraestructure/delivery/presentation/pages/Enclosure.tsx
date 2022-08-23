@@ -19,18 +19,18 @@ export const EnclosurePage = () => {
 
   const enclosure = parcels?.data
     .find((e) => e.id === parcelId)
-    ?.current.enclosures.find((f) => f.id === enclosureId);
+    ?.historic.enclosures.find((f) => f.id === enclosureId);
 
   return (
     <div className="site-inner-content">
       <div className="site-quadrant-left">
         <EnclosureMap enclosure={enclosure} />
-        <FeaturesSection features={enclosure?.current.info.characteristics} />
+        <FeaturesSection features={enclosure?.info.characteristics} />
         <br />
       </div>
       <div className="vertical-site-separator" />
       <div className="site-quadrant-right">
-        <CropList plants={enclosure?.current.info.crops} />
+        <CropList plants={enclosure?.info.crops} />
         <EnclosureAnalysisCards data={enclosure} />
       </div>
     </div>

@@ -202,23 +202,21 @@ type identifiersEnclosure struct {
 
 // ----- BBDD -----
 type Parcel struct {
-	Ts      time.Time `json:"ts"`
-	Id      string    `json:"id"`
-	Current struct {
+	Ts       time.Time `json:"ts"`
+	Id       string    `json:"id"`
+	Historic struct {
 		Ts   time.Time `json:"ts"`
 		Info struct {
 			Coordinates Coordinates `json:"coordinates"`
 		} `json:"info"`
 		Enclosures []Enclosure `json:"enclosures"`
-	} `json:"current"`
+	} `json:"historic"`
 }
 
 type Enclosure struct {
-	Id       string `json:"id"`
-	ImageUri string `json:"imageUri"`
-	Current  struct {
-		Info EnclosureInfo `json:"info"`
-	} `json:"current"`
+	Id       string        `json:"id"`
+	ImageUri string        `json:"imageUri"`
+	Info     EnclosureInfo `json:"info"`
 }
 
 type EnclosureInfo struct {

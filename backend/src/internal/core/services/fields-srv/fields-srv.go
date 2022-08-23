@@ -25,6 +25,7 @@ func (srv *service) GetParcels(userId primitive.ObjectID, anyo int) ([]domain.Pa
 		return []domain.Parcel{}, err
 	}
 	parcels, err := srv.fieldsPersistenceRepository.GetParcels(parcelRefs, anyo)
+
 	if err != nil {
 		// Get information from the external api and store it
 		parcels := []domain.Parcel{}
