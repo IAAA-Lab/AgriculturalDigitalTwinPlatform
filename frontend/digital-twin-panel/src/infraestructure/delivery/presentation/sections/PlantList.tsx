@@ -19,25 +19,13 @@ export const CropList = ({ plants }: CropListProps) => {
           </div>
           <div className="vertical-divider" />
           <div className="card-plant-content">
-            <div className="card-plant-content-row">
-              <i className="fi fi-rs-cursor-text-alt"></i>
-              <span className="text-xs">{plant.area}</span>
-              <span className="text-xxs">Ha</span>
-            </div>
-            <div className="card-plant-content-row">
-              <i className="fi fi-rs-tractor"></i>
-              <span className="text-xs">{plant.production}</span>
-              <span className="text-xxs">Kg</span>
-            </div>
-            <div className="card-plant-content-row">
-              <i className="fi fi-rs-chart-histogram"></i>
-              <span className="text-xs">{plant.performance}</span>
-              <span className="text-xxs">Kg/Ha</span>
-            </div>
-            <div className="row">
-              <i className="fi fi-rs-hand-holding-seeding"></i>
-              <p className="text-xs m-0 ml-8">x {plant.harvest}</p>
-            </div>
+            {plant.characteristics.map((c, index) => (
+              <div className="card-plant-content-row">
+                <i className="fi fi-rs-cursor-text-alt"></i>
+                <span className="text-xs">{c.value}</span>
+                <span className="text-xxs">{c.unit}</span>
+              </div>
+            ))}
           </div>
         </div>
       ))}

@@ -36,10 +36,7 @@ type Crop = {
   name: string;
   variety: string;
   imageUri?: string;
-  production: number;
-  area: number;
-  performance: number;
-  harvest: number;
+  characteristics: Characteristics[];
 };
 
 type Fertilizers = {

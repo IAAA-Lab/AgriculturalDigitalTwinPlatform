@@ -225,13 +225,10 @@ type EnclosureInfo struct {
 	Coordinates     []Coordinates     `json:"coordinates"`
 	NDVI            NDVI              `json:"ndvi"`
 	Crops           []struct {
-		Name        string  `json:"name"`
-		Variety     string  `json:"variety"`
-		ImageUri    string  `json:"imageUri" bson:"imageUri"`
-		Production  float32 `json:"production" bson:",truncate"`
-		Area        float32 `json:"area" bson:",truncate"`
-		Performance float32 `json:"performance" bson:",truncate"`
-		Harvest     int8    `json:"harvest"`
+		Name            string            `json:"name"`
+		Variety         string            `json:"variety"`
+		ImageUri        string            `json:"imageUri" bson:"imageUri"`
+		Characteristics []Characteristics `json:"characteristics"`
 	} `json:"crops"`
 	Fertilizers []struct {
 		Name      string    `json:"name"`
@@ -247,9 +244,16 @@ type EnclosureInfo struct {
 	} `json:"phytosanitaries"`
 }
 
+type CropsInfo struct {
+	Production  float32 `json:"production" bson:",truncate"`
+	Area        float32 `json:"area" bson:",truncate"`
+	Performance float32 `json:"performance" bson:",truncate"`
+	Harvest     int8    `json:"harvest"`
+}
+
 type Characteristics struct {
 	Name  string     `json:"name"`
-	Value float32    `json:"value"`
+	Value float32    `json:"value" bson:",truncate"`
 	Unit  string     `json:"unit,omitempty" bson:"unit,omitempty"`
 	State StateNames `json:"state"`
 }

@@ -15,55 +15,34 @@ type Props = {
 };
 
 export const EnclosureAnalysisCards = ({ data }: Props) => {
-  const [openHistoric, setOpenHistoric] = useState(false);
-
-  const classHistoric = classNames(
-    "dropdown-content",
-    openHistoric && "off-is-active"
-  );
-
   if (!data) {
     return <CardAnalysisSkeleton />;
   }
 
   var chartDataOptions: ChartDataOptions = new Map();
-  const colors = getColorList(1);
+  const colors = getColorList(data.info.crops?.length ?? 0);
 
-  data?.info.characteristics?.forEach((c) => {
-    var { labels, values } = chartDataOptions.get(c.name) ?? {
-      labels: [],
-      values: [],
-    };
-    labels = [
-      ...labels,
-      {
-        name: `${data?.id} - ${numberWithCommas(c.value)} ${c.unit}`,
-        color: colors[0],
-      },
-    ];
-    values = [...values, c.value];
-    chartDataOptions.set(c.name, { labels, values });
+  data?.info.crops?.forEach((e, i) => {
+    e.characteristics?.forEach((c) => {
+      var { labels, values } = chartDataOptions.get(c.name) ?? {
+        labels: [],
+        values: [],
+      };
+      labels = [
+        ...labels,
+        {
+          name: ` ${e.name} · ${numberWithCommas(c.value)} ${c.unit ?? ""}`,
+          color: colors[i],
+        },
+      ];
+      values = [...values, c.value];
+      chartDataOptions.set(c.name, { labels, values });
+    });
   });
-
   return (
     <>
-      <div className="dropdown-analysis">
-        <div
-          className="dropdown-header"
-          onClick={() => setOpenHistoric(!openHistoric)}
-        >
-          <div className="row space-between reveal-from-left">
-            <div className="col">
-              <h3 className="m-0">Histórico</h3>
-              <p className="text-sm mb-8">Datos históricos de los campos</p>
-            </div>
-          </div>
-        </div>
-        <div className={classHistoric}>
-          {/* <LineChartCard data={data} /> */}
-          <PieChartCard options={chartDataOptions} />
-        </div>
-      </div>
+      {/* <LineChartCard data={data} /> */}
+      <PieChartCard options={chartDataOptions} />
     </>
   );
 };

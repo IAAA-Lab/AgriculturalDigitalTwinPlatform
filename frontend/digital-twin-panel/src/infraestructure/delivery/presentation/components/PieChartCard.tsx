@@ -47,7 +47,7 @@ export const PieChartCard = ({ options }: Props) => {
     },
   ];
   return (
-    <div className="card-analysis reveal-from-right mb-16 col">
+    <div className="card-analysis mb-16">
       <select
         onChange={(e) => setSelectedOption(e.currentTarget.value)}
         value={selectedOption}
@@ -61,7 +61,6 @@ export const PieChartCard = ({ options }: Props) => {
       <Doughnut
         style={{
           maxHeight: "200px",
-          width: "100%",
         }}
         className="mt-8"
         plugins={[ChartDeferred]}
@@ -75,7 +74,7 @@ export const PieChartCard = ({ options }: Props) => {
               },
             },
             legend: {
-              display: window.innerWidth > 400,
+              display: false,
               position: "right",
               labels: {
                 usePointStyle: true,
