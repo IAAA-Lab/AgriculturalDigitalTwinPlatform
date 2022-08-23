@@ -17,11 +17,11 @@
   overflow-x: scroll;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   align-items: center;
   transition: all 0.2s ease-in-out;
 
   .card-plant-header {
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-items: center;
@@ -48,6 +48,7 @@
   }
 
   .card-plant-content {
+    flex: 2;
     display: flex;
     flex-direction: column;
     row-gap: 4px;
