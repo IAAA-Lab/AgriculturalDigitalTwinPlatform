@@ -26,11 +26,11 @@ export const EnclosurePage = () => {
       <div className="site-quadrant-left">
         <EnclosureMap enclosure={enclosure} />
         <FeaturesSection features={enclosure?.current.info.characteristics} />
-        <CropList plants={enclosure?.current.info.crops} />
         <br />
       </div>
       <div className="vertical-site-separator" />
       <div className="site-quadrant-right">
+        <CropList plants={enclosure?.current.info.crops} />
         <EnclosureAnalysisCards data={enclosure} />
       </div>
     </div>

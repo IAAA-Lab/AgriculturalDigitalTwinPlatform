@@ -1,23 +1,20 @@
 .card-plants {
-  display: flex;
-  flex-wrap: wrap;
-  overflow: hidden;
-  min-height: 65px;
-  background-image: linear-gradient(
-    transparent 15%,
-    color(primary) 15%,
-    color(primary) 85%,
-    transparent 15%
-  );
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(40%, 1fr));
+  grid-gap: 1rem;
+  margin-bottom: 15px;
+  @include media("<medium") {
+    grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
+  }
 }
 
 .card-plant {
   background-color: color(card);
-  backdrop-filter: blur(3px);
   border: 2px solid color(primary);
   border-radius: 8px;
   padding: 10px;
-  margin: 10px;
+  overflow: hidden;
+  overflow-x: scroll;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

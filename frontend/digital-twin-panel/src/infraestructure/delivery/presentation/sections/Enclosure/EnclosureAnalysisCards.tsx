@@ -56,26 +56,6 @@ export const EnclosureAnalysisCards = ({ data }: Props) => {
       <div className="dropdown-analysis">
         <div
           className="dropdown-header"
-          onClick={() => setOpenSummary(!openSummary)}
-        >
-          <div className="row space-between reveal-from-left">
-            <div className="col">
-              <h3 className="m-0">Resumen actual</h3>
-              <p className="text-sm mb-8">
-                Actualizaciones al momento del estado de los campos
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className={classesSummary}>
-          <div className="card-analysis-wrapper">
-            <PieChartCard options={chartDataOptions} />
-          </div>
-        </div>
-      </div>
-      <div className="dropdown-analysis">
-        <div
-          className="dropdown-header"
           onClick={() => setOpenHistoric(!openHistoric)}
         >
           <div className="row space-between reveal-from-left">
