@@ -74,7 +74,7 @@ export const PieChartCard = ({ options }: Props) => {
               },
             },
             legend: {
-              display: false,
+              display: true,
               position: "right",
               labels: {
                 usePointStyle: true,

@@ -1,5 +1,6 @@
 import { IMAGES_URL } from "../../../../app/config/constants";
 import { Crop } from "../../../../core/Domain";
+import { getCropIconByName } from "../../PortsImpl";
 
 type CropListProps = {
   plants?: Crop[];
@@ -20,8 +21,8 @@ export const CropList = ({ plants }: CropListProps) => {
           <div className="vertical-divider" />
           <div className="card-plant-content">
             {plant.characteristics.map((c, index) => (
-              <div className="card-plant-content-row">
-                <i className="fi fi-rs-cursor-text-alt"></i>
+              <div key={index} className="card-plant-content-row">
+                <i className={getCropIconByName(c.name)}></i>
                 <span className="text-xs">{c.value}</span>
                 <span className="text-xxs">{c.unit}</span>
               </div>
