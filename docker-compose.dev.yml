@@ -2,17 +2,10 @@ version: "3.8"
 
 services:
 
-  images-server:
-    build: images-server
-    volumes:
-      - images-server-data:/app/data
-    stdin_open: true
-    env_file:
-      - images-server/secrets/.env.development
   prometheus:
     image: prom/prometheus:latest
     volumes:
-      - ./backend/prometheus:/etc/prometheus/
+      - ./backend/monitorization/prometheus:/etc/prometheus/
       - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -24,7 +17,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     volumes:
-      - ./backend/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./backend/monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - grafana-data:/var/lib/grafana
     restart: unless-stopped
     ports:
@@ -33,14 +26,14 @@ services:
       - prometheus
     
   backend:
-    build: backend
+    build: backend/main-server
     env_file:
-      - backend/secrets/.env.development
+      - backend/main-server/secrets/.env.development
     environment:
       - GIN_MODE=release
       - ENV_MODE=DOCKER
     volumes:
-      - ./backend:/gin-server
+      - ./backend/main-server:/gin-server
     command: go run ./src/internal/cmd/main.go
     depends_on:
       - redis
@@ -84,4 +77,3 @@ services:
 volumes:
   grafana-data:
   prometheus-data:
-  images-server-data:
