@@ -1,10 +1,10 @@
 package jwtmw
 
 import (
+	"digital-twin/main-server/src/internal/core/domain"
+	"digital-twin/main-server/src/internal/core/ports"
+	"digital-twin/main-server/src/pkg/apperrors"
 	"fmt"
-	"prakticas/backend-gpsoft/src/internal/core/domain"
-	"prakticas/backend-gpsoft/src/internal/core/ports"
-	"prakticas/backend-gpsoft/src/pkg/apperrors"
 	"strings"
 	"time"
 

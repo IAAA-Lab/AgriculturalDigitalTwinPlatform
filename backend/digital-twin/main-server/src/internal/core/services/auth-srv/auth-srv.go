@@ -1,10 +1,10 @@
 package authsrv
 
 import (
+	"digital-twin/main-server/src/internal/core/domain"
+	"digital-twin/main-server/src/internal/core/ports"
+	"digital-twin/main-server/src/pkg/apperrors"
 	"os"
-	"prakticas/backend-gpsoft/src/internal/core/domain"
-	"prakticas/backend-gpsoft/src/internal/core/ports"
-	"prakticas/backend-gpsoft/src/pkg/apperrors"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"

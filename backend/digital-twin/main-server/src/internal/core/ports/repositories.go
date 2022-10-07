@@ -1,7 +1,7 @@
 package ports
 
 import (
-	"prakticas/backend-gpsoft/src/internal/core/domain"
+	"digital-twin/main-server/src/internal/core/domain"
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"

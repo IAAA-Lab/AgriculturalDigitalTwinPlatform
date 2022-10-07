@@ -1,8 +1,8 @@
 package eventhdl
 
 import (
+	"digital-twin/main-server/src/internal/core/ports"
 	"fmt"
-	"prakticas/backend-gpsoft/src/internal/core/ports"
 
 	"github.com/rabbitmq/amqp091-go"
 )

@@ -2,9 +2,9 @@ package imageshdl
 
 import (
 	"bytes"
+	"digital-twin/main-server/src/internal/core/ports"
 	"io"
 	"mime/multipart"
-	"prakticas/backend-gpsoft/src/internal/core/ports"
 
 	"github.com/gin-gonic/gin"
 )

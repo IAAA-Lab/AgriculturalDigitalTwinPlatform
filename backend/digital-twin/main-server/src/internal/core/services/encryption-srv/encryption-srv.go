@@ -1,7 +1,7 @@
 package encryptionsrv
 
 import (
-	"prakticas/backend-gpsoft/src/internal/core/ports"
+	"digital-twin/main-server/src/internal/core/ports"
 )
 
 type service struct {
