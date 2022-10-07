@@ -4,8 +4,26 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+type EventIn struct {
+	ID        uuid.UUID     `json:"id,omitempty"`
+	EventType string        `json:"eventType"`
+	Channel   chan EventOut `json:"channel"`
+	Payload   interface{}   `json:"payload"`
+}
+
+type EventExt struct {
+	ID      string      `json:"_id,omitempty"`
+	Payload interface{} `json:"payload"`
+}
+
+type EventOut struct {
+	ErrorMessage string      `json:"errorMessage"`
+	Payload      interface{} `json:"payload"`
+}
 
 type AuthCustomClaims struct {
 	User_id string `json:"user_id"`

@@ -14,7 +14,6 @@ package main
 
 import (
 	"digital-twin/main-server/docs"
-	eventhdl "digital-twin/main-server/src/internal/adapters/primary/event-handler"
 	imageshdl "digital-twin/main-server/src/internal/adapters/primary/rest-api/images-hdl"
 	encryptionmw "digital-twin/main-server/src/internal/adapters/primary/rest-api/middleware/encryption-mw"
 	jwtmw "digital-twin/main-server/src/internal/adapters/primary/rest-api/middleware/jwt-mw"
@@ -24,7 +23,6 @@ import (
 	aes256repo "digital-twin/main-server/src/internal/adapters/secondary/aes-256"
 	localfilestoragerepo "digital-twin/main-server/src/internal/adapters/secondary/local-file-storage"
 	mongodb "digital-twin/main-server/src/internal/adapters/secondary/mongodb"
-	rabbitmqrepo "digital-twin/main-server/src/internal/adapters/secondary/rabbitmq"
 	redisrepo "digital-twin/main-server/src/internal/adapters/secondary/redis"
 	"digital-twin/main-server/src/internal/core/domain"
 	authsrv "digital-twin/main-server/src/internal/core/services/auth-srv"
@@ -34,6 +32,7 @@ import (
 	newssrv "digital-twin/main-server/src/internal/core/services/news-srv"
 	parcelssrv "digital-twin/main-server/src/internal/core/services/parcels-srv"
 	userssrv "digital-twin/main-server/src/internal/core/services/users-srv"
+	"io"
 
 	"log"
 	"os"
@@ -74,7 +73,7 @@ func setUpMonitoring(r *gin.Engine) *gin.Engine {
 func setupRouter() *gin.Engine {
 
 	mongoUri := os.Getenv("MONGO_URI")
-	rabbitMQURI := os.Getenv("RABBITMQ_URI")
+	//rabbitMQURI := os.Getenv("RABBITMQ_URI")
 	mongoDb := os.Getenv("MONGO_DB")
 	redisUri := os.Getenv("REDIS_URI")
 	encKey := os.Getenv("KEY_DECRYPT_PASSWD")
@@ -104,11 +103,11 @@ func setupRouter() *gin.Engine {
 	authService := authsrv.JWTAuthService(cacheService)
 	authMiddleware := jwtmw.Init(authService, usersService, os.Getenv("ENV_MODE"))
 
-	messageBrokerRepository := rabbitmqrepo.NewRabbitMQConn(rabbitMQURI)
+	//messageBrokerRepository := rabbitmqrepo.NewRabbitMQConn(rabbitMQURI)
 
 	// Start event handler
-	eventHandler := eventhdl.NewEventHandler(cacheService, messageBrokerRepository)
-	eventHandler.Start()
+	//eventHandler := eventhdl.NewEventHandler(cacheService, messageBrokerRepository)
+	//eventHandler.Start()
 
 	cacheMiddleware := cache.CacheByRequestURI(persist.NewRedisStore(cacherepository.GetClient()), 10*time.Minute)
 
@@ -151,6 +150,25 @@ func setupRouter() *gin.Engine {
 	r.GET("/fields/refs", authMiddleware.AuthorizeJWT([]string{domain.Admin}), fieldsHandler.GetParcelRefs)
 	r.PATCH("/fields/refs", authMiddleware.AuthorizeJWT([]string{domain.Admin}), fieldsHandler.PostParcelRefs)
 	r.GET("/fields", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.Agrarian}), fieldsHandler.GetParcelsByUser)
+
+	r.GET("/stream", func(c *gin.Context) {
+		chanStream := make(chan interface{}, 10)
+		// data, err := srv.getData()
+		// if err == NOT_FOUND {
+		// 	events.GetChannel() <- domain.EventIn {id, "ndvi", channel, payload}
+		// }
+		// else {
+		// 	chanStream <- data
+		// }
+		c.Stream(func(w io.Writer) bool {
+			if msg, ok := <-chanStream; ok {
+				c.SSEvent("message", msg)
+				// go srv.savetoLocalDatabase(msg.(domain.Parcel))
+				return true
+			}
+			return false
+		})
+	})
 
 	return r
 }
