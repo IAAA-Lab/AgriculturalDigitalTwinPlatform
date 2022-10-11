@@ -13,6 +13,21 @@ type mongodbConn struct {
 	timeout int
 }
 
+const (
+	PARCELS_COLLECTION         = "Parcels"
+	USER_PARCELS_COLLECTION    = "UserParcels"
+	WEATHER_COLLECTION         = "Weather"
+	NDVI_COLLECTION            = "NDVI"
+	FARM_COLLECTION            = "Farm"
+	FERTILIZERS_COLLECTION     = "Fertilizers"
+	PHYTOSANITARIES_COLLECTION = "Phytosanitaries"
+	CROPSTATS_COLLECTION       = "CropStats"
+	SENSOR_DATA_COLLECTION     = "SensorData"
+	NOTIFICATIONS_COLLECTION   = "Notifications"
+	NEWS_COLLECTION            = "News"
+	USERS_COLLECTION           = "Users"
+)
+
 func NewMongodbConn(dbUrl string, dbName string, timeout int) *mongodbConn {
 	mongoClient, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dbUrl))
 	mongoDb := mongoClient.Database(dbName)

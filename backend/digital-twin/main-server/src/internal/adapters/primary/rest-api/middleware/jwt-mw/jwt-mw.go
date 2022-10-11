@@ -26,7 +26,7 @@ func Init(authsrv ports.JWTService, usersrv ports.UsersService, envMode string) 
 func (srv *service) AuthorizeJWT(roles []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		fmt.Println(srv.envMode)
-		if srv.envMode == "local" {
+		if srv.envMode == "LOCAL" {
 			c.Next()
 			return
 		}
@@ -84,11 +84,11 @@ func (srv *service) RefreshJWT(c *gin.Context) {
 		panic(err)
 	}
 	user := domain.User{
-		ID:       objID,
-		Username: claims["user"].(string),
-		Role:     claims["role"].(string),
+		ID:    objID,
+		Email: claims["user"].(string),
+		Role:  claims["role"].(string),
 	}
-	_, err = srv.usersrv.FetchUser(user.ID)
+	_, err = srv.usersrv.FetchUser(user.ID.Hex())
 	if err != nil {
 		c.AbortWithStatusJSON(404, apperrors.ErrNotFound)
 		return

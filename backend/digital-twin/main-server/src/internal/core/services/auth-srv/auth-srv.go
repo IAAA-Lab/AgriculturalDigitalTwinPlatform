@@ -33,7 +33,7 @@ func getSecretKey() string {
 func (service *jwtService) generateToken(user domain.User, timeExp time.Duration) string {
 	claims := &domain.AuthCustomClaims{
 		user.ID.Hex(),
-		user.Username,
+		user.Email,
 		user.Role,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(timeExp).Unix(),

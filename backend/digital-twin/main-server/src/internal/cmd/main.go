@@ -14,6 +14,7 @@ package main
 
 import (
 	"digital-twin/main-server/docs"
+	eventhdl "digital-twin/main-server/src/internal/adapters/primary/event-handler"
 	imageshdl "digital-twin/main-server/src/internal/adapters/primary/rest-api/images-hdl"
 	encryptionmw "digital-twin/main-server/src/internal/adapters/primary/rest-api/middleware/encryption-mw"
 	jwtmw "digital-twin/main-server/src/internal/adapters/primary/rest-api/middleware/jwt-mw"
@@ -23,6 +24,7 @@ import (
 	aes256repo "digital-twin/main-server/src/internal/adapters/secondary/aes-256"
 	localfilestoragerepo "digital-twin/main-server/src/internal/adapters/secondary/local-file-storage"
 	mongodb "digital-twin/main-server/src/internal/adapters/secondary/mongodb"
+	rabbitmqrepo "digital-twin/main-server/src/internal/adapters/secondary/rabbitmq"
 	redisrepo "digital-twin/main-server/src/internal/adapters/secondary/redis"
 	"digital-twin/main-server/src/internal/core/domain"
 	authsrv "digital-twin/main-server/src/internal/core/services/auth-srv"
@@ -32,7 +34,6 @@ import (
 	newssrv "digital-twin/main-server/src/internal/core/services/news-srv"
 	parcelssrv "digital-twin/main-server/src/internal/core/services/parcels-srv"
 	userssrv "digital-twin/main-server/src/internal/core/services/users-srv"
-	"io"
 
 	"log"
 	"os"
@@ -73,7 +74,7 @@ func setUpMonitoring(r *gin.Engine) *gin.Engine {
 func setupRouter() *gin.Engine {
 
 	mongoUri := os.Getenv("MONGO_URI")
-	//rabbitMQURI := os.Getenv("RABBITMQ_URI")
+	rabbitMQURI := os.Getenv("RABBITMQ_URI")
 	mongoDb := os.Getenv("MONGO_DB")
 	redisUri := os.Getenv("REDIS_URI")
 	encKey := os.Getenv("KEY_DECRYPT_PASSWD")
@@ -91,8 +92,8 @@ func setupRouter() *gin.Engine {
 	usersService := userssrv.New(mongodbRepository)
 	usersHandler := usershdl.NewHTTPHandler(usersService)
 
-	fieldsService := parcelssrv.New(mongodbRepository)
-	fieldsHandler := parcelshdl.NewHTTPHandler(fieldsService)
+	parcelsService := parcelssrv.New(mongodbRepository)
+	parcelsHandler := parcelshdl.NewHTTPHandler(parcelsService)
 
 	imagesRepository := localfilestoragerepo.NewLocalFileStorage("./images")
 	imagesService := imagessrv.New(imagesRepository)
@@ -103,13 +104,15 @@ func setupRouter() *gin.Engine {
 	authService := authsrv.JWTAuthService(cacheService)
 	authMiddleware := jwtmw.Init(authService, usersService, os.Getenv("ENV_MODE"))
 
-	//messageBrokerRepository := rabbitmqrepo.NewRabbitMQConn(rabbitMQURI)
-
-	// Start event handler
-	//eventHandler := eventhdl.NewEventHandler(cacheService, messageBrokerRepository)
-	//eventHandler.Start()
+	messageBrokerRepository := rabbitmqrepo.NewRabbitMQConn(rabbitMQURI)
 
 	cacheMiddleware := cache.CacheByRequestURI(persist.NewRedisStore(cacherepository.GetClient()), 10*time.Minute)
+
+	//Start event handler
+	eventHandler := eventhdl.NewEventHandler(parcelsService, cacheService, messageBrokerRepository)
+	eventHandler.Start()
+
+	parcelsStreamingHandler := parcelshdl.NewHTTPStreamHandler(parcelsService, eventHandler.GetIntChannel())
 
 	r := gin.Default()
 	m := ginmetrics.GetMonitor()
@@ -126,49 +129,48 @@ func setupRouter() *gin.Engine {
 
 	// ---- Image storage
 	r.Static("/images", "./images")
-	r.POST("/images/upload", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.NewsEditor}), imagesHandler.UploadImage)
+	r.POST("/images/upload", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_NEWS_EDITOR}), imagesHandler.UploadImage)
 
 	// ---- Auth
 	r.POST("/auth/login", encryptionMiddleware.DecryptData, usersHandler.CheckLogin, authMiddleware.ReturnJWT)
 	r.POST("/auth/logout", authMiddleware.RevokeJWT)
 	r.POST("/auth/refresh", authMiddleware.RefreshJWT)
-	r.POST("/auth/validate", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.Agrarian, domain.NewsEditor}), usersHandler.AuthorizeUser)
+	r.POST("/auth/validate", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_AGRARIAN, domain.ROLE_NEWS_EDITOR}), usersHandler.AuthorizeUser)
 	// ---- Users
-	r.POST("/users", authMiddleware.AuthorizeJWT([]string{domain.Admin}), encryptionMiddleware.DecryptData, usersHandler.CreateNewUser)
-	r.GET("/users", authMiddleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.FetchAllUsers)
-	r.DELETE("/users/:id", authMiddleware.AuthorizeJWT([]string{domain.Admin}), usersHandler.DeleteUser)
+	usersGroup := r.Group("/users", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN}))
+	{
+		usersGroup.POST("/", encryptionMiddleware.DecryptData, usersHandler.CreateNewUser)
+		usersGroup.GET("/", usersHandler.FetchAllUsers)
+		usersGroup.DELETE("/:id", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN}), usersHandler.DeleteUser)
+	}
 	// ---- News
+	newsGroup := r.Group("/news", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_NEWS_EDITOR}))
+
 	r.GET("/news/number", cacheMiddleware, newsHandler.GetNumber)
 	r.GET("/news", cacheMiddleware, newsHandler.Get)
-	r.POST("/news", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.NewsEditor}), newsHandler.PostNews)
 	r.GET("/news/:id", cacheMiddleware, newsHandler.GetDesc)
-	r.PATCH("/news/:id", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.NewsEditor}), newsHandler.UpdateNews)
-	r.DELETE("/news/:id", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.NewsEditor}), newsHandler.DeleteNews)
+
+	newsGroup.POST("/", newsHandler.PostNews)
+	newsGroup.PATCH("/:id", newsHandler.UpdateNews)
+	newsGroup.DELETE("/:id", newsHandler.DeleteNews)
 	// ---- Agrarian
 	// ---- SSE (inject eventhandler channel for communication)
-	r.POST("/fields", authMiddleware.AuthorizeJWT([]string{domain.Admin}), fieldsHandler.PostParcelsAndEnclosures)
-	r.GET("/fields/refs", authMiddleware.AuthorizeJWT([]string{domain.Admin}), fieldsHandler.GetParcelRefs)
-	r.PATCH("/fields/refs", authMiddleware.AuthorizeJWT([]string{domain.Admin}), fieldsHandler.PostParcelRefs)
-	r.GET("/fields", authMiddleware.AuthorizeJWT([]string{domain.Admin, domain.Agrarian}), fieldsHandler.GetParcelsByUser)
+	agrarianGroup := r.Group("/", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_AGRARIAN}))
 
-	r.GET("/stream", func(c *gin.Context) {
-		chanStream := make(chan interface{}, 10)
-		// data, err := srv.getData()
-		// if err == NOT_FOUND {
-		// 	events.GetChannel() <- domain.EventIn {id, "ndvi", channel, payload}
-		// }
-		// else {
-		// 	chanStream <- data
-		// }
-		c.Stream(func(w io.Writer) bool {
-			if msg, ok := <-chanStream; ok {
-				c.SSEvent("message", msg)
-				// go srv.savetoLocalDatabase(msg.(domain.Parcel))
-				return true
-			}
-			return false
-		})
-	})
+	r.GET("/parcels/refs", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN}), parcelsHandler.GetUserParcels)
+	r.PATCH("/parcels/refs", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN}), parcelsHandler.PostParcelRefs)
+
+	agrarianGroup.GET("/parcels/summary", parcelsHandler.GetParcelsSummary)
+	agrarianGroup.GET("/sse/weather/daily", parcelsStreamingHandler.GetDailyWeather)
+	agrarianGroup.GET("/sse/weather/forecast", parcelsStreamingHandler.GetForecastWeather)
+	agrarianGroup.GET("/sse/weather/tempMap", parcelsStreamingHandler.GetWeatherTempMap)
+	agrarianGroup.GET("/enclosures", parcelsHandler.GetEnclosures)
+	agrarianGroup.GET("/cropStats", parcelsHandler.GetCropStats)
+	agrarianGroup.GET("/sse/ndvi", parcelsStreamingHandler.GetNDVI)
+	agrarianGroup.GET("/sse/ndvi/map", parcelsStreamingHandler.GetNDVIMap)
+	agrarianGroup.GET("/phytosantaries", parcelsHandler.GetPhytosanitaries)
+	agrarianGroup.GET("/fertilizers", parcelsHandler.GetFertilizers)
+	//TODO: add digital twin routes
 
 	return r
 }

@@ -3,32 +3,53 @@ package parcelssrv
 import (
 	"digital-twin/main-server/src/internal/core/domain"
 	"digital-twin/main-server/src/internal/core/ports"
+	"digital-twin/main-server/src/pkg/apperrors"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type service struct {
-	fieldsPersistenceRepository ports.ParcelsRepository
+	parcelsRepository ports.ParcelsRepository
 }
 
 func New(parcelsRepository ports.ParcelsRepository) *service {
 	return &service{
-		fieldsPersistenceRepository: parcelsRepository,
+		parcelsRepository: parcelsRepository,
 	}
 }
 
-func (srv *service) GetParcels(userId primitive.ObjectID, anyo int) ([]domain.Parcel, error) {
-	parcelRefs, err := srv.fieldsPersistenceRepository.GetParcelsRef(userId)
+func (srv *service) GetUserParcels(userId string) (domain.UserParcels, error) {
+	userIdObj, err := primitive.ObjectIDFromHex(userId)
 	if err != nil {
-		return []domain.Parcel{}, err
+		return domain.UserParcels{}, apperrors.ErrInvalidInput
 	}
-	return srv.fieldsPersistenceRepository.GetParcels(parcelRefs, anyo)
+	return srv.parcelsRepository.GetUserParcels(userIdObj)
 }
 
-func (srv *service) PostParcelsAndEnclosures(userId primitive.ObjectID, parcels []domain.ParcelRefs) error {
-	return srv.fieldsPersistenceRepository.PostParcelsAndEnclosures(userId, parcels)
+func (srv *service) PostUserParcels(userId string, enclosureIds []string) error {
+	userIdObj, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		return apperrors.ErrInvalidInput
+	}
+	return srv.parcelsRepository.PatchUserEnclosures(userIdObj, enclosureIds)
 }
 
-func (srv *service) GetParcelRefs(userId primitive.ObjectID, anyo int) ([]domain.ParcelRefs, error) {
-	return srv.fieldsPersistenceRepository.GetParcelsRef(userId)
+func (srv *service) GetEnclosures(enclosureIds []string) ([]domain.Parcel, error) {
+	return srv.parcelsRepository.GetParcels(enclosureIds)
+}
+
+func (srv *service) PostParcel(parcel domain.Parcel) error {
+	return srv.parcelsRepository.PostParcel(parcel)
+}
+
+func (srv *service) GetSummary(userId string) (domain.Summary, error) {
+	userIdObj, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		return domain.Summary{}, apperrors.ErrInvalidInput
+	}
+	userParcels, err := srv.parcelsRepository.GetUserParcels(userIdObj)
+	if err != nil {
+		return domain.Summary{}, err
+	}
+	return userParcels.Summary, err
 }

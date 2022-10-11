@@ -19,8 +19,12 @@ func (srv *service) FetchAll(numPage int64) ([]domain.News, error) {
 	return srv.newsrepository.FetchAll(numPage)
 }
 
-func (srv *service) Fetch(id primitive.ObjectID) (domain.News, error) {
-	return srv.newsrepository.Fetch(id)
+func (srv *service) Fetch(id string) (domain.News, error) {
+	idObj, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return domain.News{}, err
+	}
+	return srv.newsrepository.Fetch(idObj)
 }
 
 func (srv *service) FetchNumber() (int64, error) {
@@ -31,10 +35,18 @@ func (srv *service) PostNewNews(news domain.News) error {
 	return srv.newsrepository.PostNewNews(news)
 }
 
-func (srv *service) UpdateNews(id primitive.ObjectID, news domain.News) error {
-	return srv.newsrepository.UpdateNews(id, news)
+func (srv *service) UpdateNews(id string, news domain.News) error {
+	idObj, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	return srv.newsrepository.UpdateNews(idObj, news)
 }
 
-func (srv *service) DeleteNews(id primitive.ObjectID) error {
-	return srv.newsrepository.DeleteNews(id)
+func (srv *service) DeleteNews(id string) error {
+	idObj, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	return srv.newsrepository.DeleteNews(idObj)
 }

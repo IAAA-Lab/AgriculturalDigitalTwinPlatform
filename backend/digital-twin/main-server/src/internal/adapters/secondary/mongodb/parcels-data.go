@@ -1,9 +1,7 @@
 package mongodb
 
 import (
-	"context"
 	"digital-twin/main-server/src/internal/core/domain"
-	"digital-twin/main-server/src/pkg/apperrors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,89 +9,85 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (mc *mongodbConn) GetParcelsRef(userId primitive.ObjectID) ([]domain.ParcelRefs, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
-	defer cancel()
-	// Find parcels references of the user with [userId]
-	var userParcelsRefs []domain.ParcelRefs
-	pipeline := []bson.M{
-		{
-			"$match": bson.M{
-				"_id":     bson.M{"$eq": userId},
-				"parcels": bson.M{"$exists": true},
-			},
-		},
-		{
-			"$unwind": "$parcels",
-		},
-		{
-			"$project": bson.M{
-				"parcels": 1,
-				"_id":     0,
-			},
-		},
-		{
-			"$sort": bson.M{
-				"id": 1,
-			},
-		},
-		{
-			"$replaceRoot": bson.M{
-				"newRoot": "$parcels",
-			},
-		},
-	}
-	cursor, err := mc.db.Collection("User").Aggregate(ctx, pipeline)
-	if err != nil {
-		return []domain.ParcelRefs{}, apperrors.ErrNotFound
-	}
-	err = cursor.All(ctx, &userParcelsRefs)
-	if err != nil {
-		return []domain.ParcelRefs{}, apperrors.ErrNotFound
-	}
-	return userParcelsRefs, err
+func (mc *mongodbConn) GetUserParcels(userId primitive.ObjectID) (domain.UserParcels, error) {
+	filter := bson.M{"userId": bson.M{"$eq": userId}}
+	userParcels, err := mc.GetDocument(USER_PARCELS_COLLECTION, filter, nil)
+	return userParcels.(domain.UserParcels), err
 }
 
-func (mc *mongodbConn) PostParcelsAndEnclosures(userId primitive.ObjectID, parcelRefs []domain.ParcelRefs) error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
-	defer cancel()
+func (mc *mongodbConn) PostUserParcels(userParcels domain.UserParcels) error {
+	filter := bson.M{"userId": bson.M{"$eq": userParcels.UserID}}
+	update := bson.M{"$set": userParcels}
+	opts := options.Update().SetUpsert(true)
+	return mc.UpdateDocument(USER_PARCELS_COLLECTION, filter, update, opts)
+}
+
+func (mc *mongodbConn) PostParcelsSummary(userId primitive.ObjectID, summary domain.Summary) error {
+	filter := bson.M{"userId": bson.M{"$eq": userId}}
+	update := bson.M{"$set": bson.M{"summary": summary}}
+	return mc.UpdateDocument(USER_PARCELS_COLLECTION, filter, update, nil)
+}
+
+func (mc *mongodbConn) PatchUserEnclosures(userId primitive.ObjectID, enclosureIds []string) error {
+	filter := bson.M{"userId": bson.M{"$eq": userId}}
+	update := bson.M{"$addToSet": bson.M{"enclosureIds": enclosureIds}}
+	return mc.UpdateDocument(USER_PARCELS_COLLECTION, filter, update, nil)
+}
+
+func (mc *mongodbConn) GetForecastWeatherByIdema(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error) {
 	filter := bson.M{
-		"_id": bson.M{"$eq": userId},
+		"idema": bson.M{"$eq": idema},
+		"fint":  bson.M{"$gte": startDate, "$lte": endDate},
 	}
-	update := bson.M{
-		"$set": bson.M{
-			"parcels": parcelRefs,
-		},
-	}
-	_, err := mc.db.Collection("User").UpdateOne(ctx, filter, update)
-	return err
+	opts := options.Find().SetSort(bson.M{"fint": -1}).SetLimit(1)
+	forecast, err := mc.GetDocuments(WEATHER_COLLECTION, filter, opts)
+	return forecast.([]domain.ForecastWeather), err
 }
 
-func (mc *mongodbConn) GetParcels(parcelRefs []domain.ParcelRefs, anyo int) ([]domain.Parcel, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
-	defer cancel()
-	// Get the parcels info of [userParcelRefs]
-	var parcelIds []string
-	var enclosureIds []string
-	for _, x := range parcelRefs {
-		parcelIds = append(parcelIds, x.Id)
-		enclosureIds = append(enclosureIds, x.Enclosures.Ids...)
+func (mc *mongodbConn) GetForecastWeatherByParcel(parcelId string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error) {
+	filter := bson.M{
+		"parcelId": bson.M{"$eq": parcelId},
+		"fint":     bson.M{"$gte": startDate, "$lte": endDate},
 	}
-	var userParcels []domain.Parcel
+	opts := options.Find().SetSort(bson.M{"fint": -1}).SetLimit(1)
+	forecast, err := mc.GetDocuments(WEATHER_COLLECTION, filter, opts)
+	return forecast.([]domain.ForecastWeather), err
+}
+
+func (mc *mongodbConn) PostForecastWeather(forecastWeather []domain.ForecastWeather) error {
+	var fwIn []interface{}
+	for _, fw := range forecastWeather {
+		fwIn = append(fwIn, fw)
+	}
+	return mc.InsertDocuments(WEATHER_COLLECTION, fwIn, nil)
+}
+
+func (mc *mongodbConn) GetDailyWeatherByParcel(parcelId string, startDate time.Time, endDate time.Time) ([]domain.DailyWeather, error) {
+	filter := bson.M{
+		"parcelId": bson.M{"$eq": parcelId},
+		"date":     bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	opts := options.Find().SetSort(bson.M{"date": -1})
+	dailyWeather, err := mc.GetDocuments(WEATHER_COLLECTION, filter, opts)
+	return dailyWeather.([]domain.DailyWeather), err
+}
+
+func (mc *mongodbConn) PostDailyWeather(dailyWeather []domain.DailyWeather) error {
+	var dwIn []interface{}
+	for _, dw := range dailyWeather {
+		dwIn = append(dwIn, dw)
+	}
+	return mc.InsertDocuments(WEATHER_COLLECTION, dwIn, nil)
+}
+
+func (mc *mongodbConn) GetParcels(enclosureIds []string) ([]domain.Parcel, error) {
 	pipeline := []bson.M{
 		{
-			"$match": bson.M{
-				"id": bson.M{
-					"$in": parcelIds,
-				},
-			},
-		},
-		{
-			"$unwind": "$historic.enclosures",
+			"$unwind": "$enclosures",
 		},
 		{
 			"$match": bson.M{
-				"historic.enclosures.id": bson.M{
+				"enclosures.id": bson.M{
 					"$in": enclosureIds,
 				},
 			},
@@ -107,22 +101,20 @@ func (mc *mongodbConn) GetParcels(parcelRefs []domain.ParcelRefs, anyo int) ([]d
 				"ts": bson.M{
 					"$first": "$ts",
 				},
-				"historic": bson.M{
-					"$first": "$historic",
+				"geometry": bson.M{
+					"$first": "$geometry",
+				},
+				"properties": bson.M{
+					"$first": "$properties",
 				},
 				"enclosures": bson.M{
-					"$push": "$historic.enclosures",
+					"$push": "$enclosures",
 				},
 			},
 		},
 		{
 			"$set": bson.M{
-				"historic.enclosures": "$enclosures",
-			},
-		},
-		{
-			"$project": bson.M{
-				"enclosures": 0,
+				"enclosures": "$enclosures",
 			},
 		},
 		{
@@ -131,27 +123,199 @@ func (mc *mongodbConn) GetParcels(parcelRefs []domain.ParcelRefs, anyo int) ([]d
 			},
 		},
 	}
-	cursor, err := mc.db.Collection("Fields").Aggregate(ctx, pipeline)
-	if err != nil {
-		return []domain.Parcel{}, err
-	}
-	err = cursor.All(ctx, &userParcels)
-	if err != nil {
-		return []domain.Parcel{}, err
-	}
-	if len(userParcels) != len(parcelRefs) {
-		return []domain.Parcel{}, apperrors.ErrNotFound
-	}
+	parcelsIf, err := mc.GetDocument(PARCELS_COLLECTION, pipeline, nil)
+	return parcelsIf.([]domain.Parcel), err
 
-	return userParcels, err
 }
 
 func (mc *mongodbConn) PostParcel(parcel domain.Parcel) error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
-	defer cancel()
 	filter := bson.M{"id": bson.M{"$eq": parcel.Id}}
 	update := bson.M{"$set": parcel}
 	opts := options.Update().SetUpsert(true)
-	_, err := mc.db.Collection("Fields").UpdateOne(ctx, filter, update, opts)
-	return err
+	return mc.UpdateDocument(PARCELS_COLLECTION, filter, update, opts)
+}
+
+func (mc *mongodbConn) GetNDVIByEnclosures(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error) {
+	filter := bson.M{
+		"enclosureId": bson.M{"$in": enclosureIds},
+		"date":        bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	opts := options.Find().SetSort(bson.M{"date": -1})
+	ndvi, err := mc.GetDocuments(NDVI_COLLECTION, filter, opts)
+	return ndvi.([]domain.NDVI), err
+}
+
+func (mc *mongodbConn) PostNDVI(ndvi []domain.NDVI) error {
+	var ndviIn []interface{}
+	for _, nd := range ndvi {
+		ndviIn = append(ndviIn, nd)
+	}
+	return mc.InsertDocuments(NDVI_COLLECTION, ndviIn, nil)
+}
+
+func (mc *mongodbConn) GetFarmHolderById(id domain.FarmHolderId) (domain.FarmHolder, error) {
+	filter := bson.M{"id": bson.M{"$eq": id}}
+	opts := options.FindOne()
+	farmHolder, err := mc.GetDocument(FARM_COLLECTION, filter, opts)
+	return farmHolder.(domain.FarmHolder), err
+}
+
+func (mc *mongodbConn) PostFarmHolder(farmHolder domain.FarmHolder) error {
+	filter := bson.M{"id": bson.M{"$eq": farmHolder.Id}}
+	update := bson.M{"$set": farmHolder}
+	opts := options.Update().SetUpsert(true)
+	return mc.UpdateDocument(FARM_COLLECTION, filter, update, opts)
+}
+
+func (mc *mongodbConn) GetFertilizersByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error) {
+	filter := bson.M{
+		"enclosureId": bson.M{"$eq": enclosureId},
+		"date":        bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	opts := options.Find().SetSort(bson.M{"date": -1})
+	fertilizers, err := mc.GetDocuments(FERTILIZERS_COLLECTION, filter, opts)
+	return fertilizers.([]domain.Fertilizer), err
+}
+
+func (mc *mongodbConn) GetFertilizersByCrop(cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error) {
+	filter := bson.M{
+		"cropId": bson.M{"$eq": cropId},
+		"date":   bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	opts := options.Find().SetSort(bson.M{"date": -1})
+	fertilizers, err := mc.GetDocuments(FERTILIZERS_COLLECTION, filter, opts)
+	return fertilizers.([]domain.Fertilizer), err
+}
+
+func (mc *mongodbConn) GetFertilizersByEnclosureIdAndCrop(enclosureId string, cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error) {
+	filter := bson.M{
+		"enclosureId": bson.M{"$eq": enclosureId},
+		"cropId":      bson.M{"$eq": cropId},
+		"date":        bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	opts := options.Find().SetSort(bson.M{"date": -1})
+	fertilizers, err := mc.GetDocuments(FERTILIZERS_COLLECTION, filter, opts)
+	return fertilizers.([]domain.Fertilizer), err
+}
+
+func (mc *mongodbConn) PostFertilizers(fertilizer []domain.Fertilizer) error {
+	var fertilizerIn []interface{}
+	for _, f := range fertilizer {
+		fertilizerIn = append(fertilizerIn, f)
+	}
+	return mc.InsertDocuments(FERTILIZERS_COLLECTION, fertilizerIn, nil)
+}
+
+func (mc *mongodbConn) GetPhytosanitariesByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error) {
+	filter := bson.M{
+		"enclosureId": bson.M{"$eq": enclosureId},
+		"date":        bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	opts := options.Find().SetSort(bson.M{"date": -1})
+	phytosanitaries, err := mc.GetDocuments(PHYTOSANITARIES_COLLECTION, filter, opts)
+	return phytosanitaries.([]domain.Phytosanitary), err
+}
+
+func (mc *mongodbConn) GetPhytosanitariesByCrop(cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error) {
+	filter := bson.M{
+		"cropId": bson.M{"$eq": cropId},
+		"date":   bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	opts := options.Find().SetSort(bson.M{"date": -1})
+	phytosanitaries, err := mc.GetDocuments(PHYTOSANITARIES_COLLECTION, filter, opts)
+	return phytosanitaries.([]domain.Phytosanitary), err
+}
+
+func (mc *mongodbConn) GetPhytosanitariesByEnclosureIdAndCrop(enclosureId string, cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error) {
+	filter := bson.M{
+		"enclosureId": bson.M{"$eq": enclosureId},
+		"cropId":      bson.M{"$eq": cropId},
+		"date":        bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	opts := options.Find().SetSort(bson.M{"date": -1})
+	phytosanitaries, err := mc.GetDocuments(PHYTOSANITARIES_COLLECTION, filter, opts)
+	return phytosanitaries.([]domain.Phytosanitary), err
+}
+
+func (mc *mongodbConn) PostPhytosanitaries(phytosanitary []domain.Phytosanitary) error {
+	var phytosanitaryIn []interface{}
+	for _, p := range phytosanitary {
+		phytosanitaryIn = append(phytosanitaryIn, p)
+	}
+	return mc.InsertDocuments(PHYTOSANITARIES_COLLECTION, phytosanitaryIn, nil)
+}
+
+func (mc *mongodbConn) GetCropStatsByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error) {
+	filter := bson.M{
+		"enclosureId": bson.M{"$eq": enclosureId},
+		"date":        bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	opts := options.Find().SetSort(bson.M{"date": -1})
+	cropStats, err := mc.GetDocuments(CROPSTATS_COLLECTION, filter, opts)
+	return cropStats.([]domain.CropStats), err
+}
+
+func (mc *mongodbConn) GetCropStatsByCrop(cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.CropStats, error) {
+	filter := bson.M{
+		"cropId": bson.M{"$eq": cropId},
+		"date":   bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	opts := options.Find().SetSort(bson.M{"date": -1})
+	cropStats, err := mc.GetDocuments(CROPSTATS_COLLECTION, filter, opts)
+	return cropStats.([]domain.CropStats), err
+}
+
+func (mc *mongodbConn) GetCropStatsByEnclosureIdAndCrop(enclosureId string, cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.CropStats, error) {
+	filter := bson.M{
+		"enclosureId": bson.M{"$eq": enclosureId},
+		"cropId":      bson.M{"$eq": cropId},
+		"date":        bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	opts := options.Find().SetSort(bson.M{"date": -1})
+	cropStats, err := mc.GetDocuments(CROPSTATS_COLLECTION, filter, opts)
+	return cropStats.([]domain.CropStats), err
+}
+
+func (mc *mongodbConn) PostCropStats(cropStats []domain.CropStats) error {
+	var cropStatsIn []interface{}
+	for _, cs := range cropStats {
+		cropStatsIn = append(cropStatsIn, cs)
+	}
+	return mc.InsertDocuments(CROPSTATS_COLLECTION, cropStatsIn, nil)
+}
+
+func (mc *mongodbConn) GetSensorDataByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.SensorData, error) {
+	filter := bson.M{
+		"enclosureId": bson.M{"$eq": enclosureId},
+		"date":        bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	opts := options.Find().SetSort(bson.M{"date": -1})
+	sensorData, err := mc.GetDocuments(SENSOR_DATA_COLLECTION, filter, opts)
+	return sensorData.([]domain.SensorData), err
+}
+
+func (mc *mongodbConn) PostSensorData(sensorData []domain.SensorData) error {
+	var sensorDataIn []interface{}
+	for _, sd := range sensorData {
+		sensorDataIn = append(sensorDataIn, sd)
+	}
+	return mc.InsertDocuments(SENSOR_DATA_COLLECTION, sensorDataIn, nil)
+}
+
+func (mc *mongodbConn) GetNotificationsByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Notification, error) {
+	filter := bson.M{
+		"enclosureId": bson.M{"$eq": enclosureId},
+		"date":        bson.M{"$gte": startDate, "$lte": endDate},
+	}
+	opts := options.Find().SetSort(bson.M{"date": -1})
+	notifications, err := mc.GetDocuments(NOTIFICATIONS_COLLECTION, filter, opts)
+	return notifications.([]domain.Notification), err
+}
+
+func (mc *mongodbConn) PostNotifications(notifications []domain.Notification) error {
+	var notificationsIn []interface{}
+	for _, n := range notifications {
+		notificationsIn = append(notificationsIn, n)
+	}
+	return mc.InsertDocuments(NOTIFICATIONS_COLLECTION, notificationsIn, nil)
 }

@@ -5,7 +5,6 @@ import (
 	"digital-twin/main-server/src/internal/core/ports"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type HTTPHandler struct {
@@ -21,7 +20,7 @@ func NewHTTPHandler(usersService ports.UsersService) *HTTPHandler {
 func (hdl *HTTPHandler) CheckLogin(c *gin.Context) {
 	var user domain.User
 	c.BindJSON(&user)
-	user, err := hdl.usersService.CheckLogin(user.Username, user.Password)
+	user, err := hdl.usersService.CheckLogin(user.Email, user.Password)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
@@ -41,12 +40,8 @@ func (hdl *HTTPHandler) CreateNewUser(c *gin.Context) {
 }
 
 func (hdl *HTTPHandler) DeleteUser(c *gin.Context) {
-	id, err := primitive.ObjectIDFromHex(c.Param("id"))
-	if err != nil {
-		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
-		return
-	}
-	err = hdl.usersService.DeleteUser(id)
+	id := c.Param("id")
+	err := hdl.usersService.DeleteUser(id)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return

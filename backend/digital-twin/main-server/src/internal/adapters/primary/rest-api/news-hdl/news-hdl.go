@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type HTTPHandler struct {
@@ -36,11 +35,7 @@ func (hdl *HTTPHandler) Get(c *gin.Context) {
 }
 
 func (hdl *HTTPHandler) GetDesc(c *gin.Context) {
-	id, err := primitive.ObjectIDFromHex(c.Param("id"))
-	if err != nil {
-		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
-		return
-	}
+	id := c.Param("id")
 	desc, err := hdl.newsService.Fetch(id)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
@@ -76,15 +71,11 @@ func (hdl *HTTPHandler) PostNews(c *gin.Context) {
 }
 
 func (hdl *HTTPHandler) UpdateNews(c *gin.Context) {
-	id, err := primitive.ObjectIDFromHex(c.Param("id"))
-	if err != nil {
-		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
-		return
-	}
+	id := c.Param("id")
 	var news domain.News
 	c.BindJSON(&news)
 	news.Content = utils.EscapeHTMLBack(news.Content)
-	err = hdl.newsService.UpdateNews(id, news)
+	err := hdl.newsService.UpdateNews(id, news)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
@@ -93,12 +84,8 @@ func (hdl *HTTPHandler) UpdateNews(c *gin.Context) {
 }
 
 func (hdl *HTTPHandler) DeleteNews(c *gin.Context) {
-	id, err := primitive.ObjectIDFromHex(c.Param("id"))
-	if err != nil {
-		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
-		return
-	}
-	err = hdl.newsService.DeleteNews(id)
+	id := c.Param("id")
+	err := hdl.newsService.DeleteNews(id)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return

@@ -5,30 +5,68 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type NewsService interface {
 	FetchNumber() (int64, error)
 	FetchAll(numPage int64) ([]domain.News, error)
-	Fetch(id primitive.ObjectID) (domain.News, error)
+	Fetch(id string) (domain.News, error)
 	PostNewNews(news domain.News) error
-	UpdateNews(id primitive.ObjectID, news domain.News) error
-	DeleteNews(id primitive.ObjectID) error
+	UpdateNews(id string, news domain.News) error
+	DeleteNews(id string) error
 }
 
 type UsersService interface {
 	CheckLogin(username string, password string) (domain.User, error)
 	FetchAllUsers() ([]domain.User, error)
-	FetchUser(id primitive.ObjectID) (domain.User, error)
-	DeleteUser(id primitive.ObjectID) error
+	FetchUser(id string) (domain.User, error)
+	DeleteUser(id string) error
 	PostNewUser(user domain.User) error
 }
 
 type ParcelsService interface {
-	GetParcels(userId primitive.ObjectID, anyo int) ([]domain.Parcel, error)
-	PostParcelsAndEnclosures(userId primitive.ObjectID, parcels []domain.ParcelRefs) error
-	GetParcelRefs(userId primitive.ObjectID, anyo int) ([]domain.ParcelRefs, error)
+	// User parcels
+	GetUserParcels(userId string) (domain.UserParcels, error)
+	PostUserParcels(userParcels domain.UserParcels) error
+	GetSummary(userId string) (domain.Summary, error)
+	PostParcelsSummary(userId string, summary domain.Summary) error
+	PatchUserEnclosures(userId string, enclosureIds []string) error
+	// Weather
+	GetForecastWeatherByIdema(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error)
+	GetForecastWeatherByParcel(parcelId string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error)
+	PostForecastWeather(forecastWeather []domain.ForecastWeather) error
+	GetDailyWeatherByParcel(parcelId string, startDate time.Time, endDate time.Time) ([]domain.DailyWeather, error)
+	PostDailyWeather(dailyWeather []domain.DailyWeather) error
+	// Parcels
+	GetEnclosures(enclosureIds []string) ([]domain.Parcel, error)
+	PostParcels(parcel domain.Parcel) error
+	// NDVI
+	GetNDVIByEnclosures(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error)
+	PostNDVI(ndvi []domain.NDVI) error
+	// Farm
+	GetFarmHolderById(id domain.FarmHolderId) (domain.FarmHolder, error)
+	PostFarmHolder(farmHolder domain.FarmHolder) error
+	// Fertilizers
+	GetFertilizersByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
+	GetFertilizersByCrop(cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
+	GetFertilizersByEnclosureIdAndCrop(enclosureId string, cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
+	PostFertilizers(fertilizer []domain.Fertilizer) error
+	// Phytosanitaries
+	GetPhytosanitariesByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
+	GetPhytosanitariesByCrop(cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
+	GetPhytosanitariesByEnclosureIdAndCrop(enclosureId string, cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
+	PostPhytosanitaries(phytosanitary []domain.Phytosanitary) error
+	// Crops
+	GetCropStatsByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
+	GetCropStatsByCrop(cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
+	GetCropStatsByEnclosureIdAndCrop(enclosureId string, cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
+	PostCropStats(cropStats []domain.CropStats) error
+	// Sensors
+	GetSensorDataByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.SensorData, error)
+	PostSensorData(sensorData []domain.SensorData) error
+	// Notifications
+	GetNotificationsByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Notification, error)
+	PostNotifications(notifications []domain.Notification)
 }
 
 type JWTService interface {
