@@ -39,7 +39,7 @@ type ParcelsService interface {
 	PostDailyWeather(dailyWeather []domain.DailyWeather) error
 	// Parcels
 	GetEnclosures(enclosureIds []string) ([]domain.Parcel, error)
-	PostParcels(parcel domain.Parcel) error
+	PostParcel(parcel domain.Parcel) error
 	// NDVI
 	GetNDVIByEnclosures(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error)
 	PostNDVI(ndvi []domain.NDVI) error
@@ -66,7 +66,7 @@ type ParcelsService interface {
 	PostSensorData(sensorData []domain.SensorData) error
 	// Notifications
 	GetNotificationsByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Notification, error)
-	PostNotifications(notifications []domain.Notification)
+	PostNotifications(notifications []domain.Notification) error
 }
 
 type JWTService interface {

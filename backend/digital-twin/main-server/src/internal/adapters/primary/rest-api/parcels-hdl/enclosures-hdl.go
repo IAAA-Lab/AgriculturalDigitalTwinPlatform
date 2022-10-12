@@ -299,12 +299,12 @@ func (hdl *HTTPStreamHandler) GetNDVI(c *gin.Context) {
 	if err == apperrors.ErrNotFound {
 		hdl.eventHandlerChannelIn <- domain.EventIn{
 			ID:        uuid.UUID{},
-			EventType: domain.EVENT_TYPE_FORECAST_WEATHER,
+			EventType: domain.EVENT_TYPE_NDVI,
 			Channel:   chanStream,
 			Payload:   NDVIIn,
 		}
 	} else {
-		chanStream <- domain.EventOut{ErrorMessage: domain.EVENT_TYPE_FORECAST_WEATHER, Payload: data}
+		chanStream <- domain.EventOut{ErrorMessage: domain.EVENT_TYPE_NDVI, Payload: data}
 	}
 	c.Stream(func(w io.Writer) bool {
 		if msg, ok := <-chanStream; ok {
@@ -334,7 +334,7 @@ func (hdl *HTTPStreamHandler) GetNDVIMap(c *gin.Context) {
 	// The NDVI map is not stored in the local database, so it is sent to the event handler and to the bus
 	hdl.eventHandlerChannelIn <- domain.EventIn{
 		ID:        uuid.UUID{},
-		EventType: domain.EVENT_TYPE_FORECAST_WEATHER,
+		EventType: domain.EVENT_TYPE_NDVI_MAP,
 		Channel:   chanStream,
 		Payload:   NDVIMapIn,
 	}

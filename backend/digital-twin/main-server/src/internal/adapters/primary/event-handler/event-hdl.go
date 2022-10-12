@@ -5,6 +5,7 @@ import (
 	"digital-twin/main-server/src/internal/core/ports"
 	"digital-twin/main-server/src/pkg/apperrors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/goccy/go-json"
@@ -14,15 +15,15 @@ import (
 type EventHandler struct {
 	parcelsService ports.ParcelsService
 	memoryStorage  ports.CacheService
-	eventsInExt    ports.BusRepository
+	eventsBus      ports.BusRepository
 	eventsInInt    chan domain.EventIn
 }
 
-func NewEventHandler(parcelsService ports.ParcelsService, memoryStorage ports.CacheService, eventsIn ports.BusRepository) *EventHandler {
+func NewEventHandler(parcelsService ports.ParcelsService, memoryStorage ports.CacheService, eventsBus ports.BusRepository) *EventHandler {
 	return &EventHandler{
 		parcelsService: parcelsService,
 		memoryStorage:  memoryStorage,
-		eventsInExt:    eventsIn,
+		eventsBus:      eventsBus,
 		eventsInInt:    make(chan domain.EventIn, 100),
 	}
 }
@@ -39,7 +40,7 @@ var routingKeyMap = map[string]chan amqp091.Delivery{
 func (h *EventHandler) Start() {
 	// Open a goroutine for each consumer type
 	for routingKey, channel := range routingKeyMap {
-		go h.eventsInExt.Subscribe("event_handler", "digital_twin", routingKey, channel)
+		go h.eventsBus.Subscribe("event_handler", "digital_twin", routingKey, channel)
 	}
 	go func() {
 		for {
@@ -49,15 +50,16 @@ func (h *EventHandler) Start() {
 			case msgParcels := <-routingKeyMap[domain.EVENT_TYPE_PARCELS]:
 				eventExt, err := h.parseExternalEvents(msgParcels)
 				if err != nil {
-					fmt.Println("Error parsing external event: ", err)
+					log.Println("Error parsing external event: ", err)
 					continue
 				}
-				h.parcelsService.PostParcels(eventExt.Payload.(domain.Parcel))
+				// Supposed that one parcel is sent at a time
+				h.parcelsService.PostParcel(eventExt.Payload.(domain.Parcel))
 
 			case msgDailyWeather := <-routingKeyMap[domain.EVENT_TYPE_DAILY_WEATHER]:
 				eventExt, err := h.parseExternalEvents(msgDailyWeather)
 				if err != nil {
-					fmt.Println("Error parsing external event: ", err)
+					log.Println("Error parsing external event: ", err)
 					continue
 				}
 				h.parcelsService.PostDailyWeather(eventExt.Payload.([]domain.DailyWeather))
@@ -66,7 +68,7 @@ func (h *EventHandler) Start() {
 			case msgForecastWeather := <-routingKeyMap[domain.EVENT_TYPE_FORECAST_WEATHER]:
 				eventExt, err := h.parseExternalEvents(msgForecastWeather)
 				if err != nil {
-					fmt.Println("Error parsing external event: ", err)
+					log.Println("Error parsing external event: ", err)
 					continue
 				}
 				h.parcelsService.PostForecastWeather(eventExt.Payload.([]domain.ForecastWeather))
@@ -75,7 +77,7 @@ func (h *EventHandler) Start() {
 			case msgNDVI := <-routingKeyMap[domain.EVENT_TYPE_NDVI]:
 				eventExt, err := h.parseExternalEvents(msgNDVI)
 				if err != nil {
-					fmt.Println("Error parsing external event: ", err)
+					log.Println("Error parsing external event: ", err)
 					continue
 				}
 				h.parcelsService.PostNDVI(eventExt.Payload.([]domain.NDVI))
@@ -84,9 +86,10 @@ func (h *EventHandler) Start() {
 			case msgNDVIMap := <-routingKeyMap[domain.EVENT_TYPE_NDVI_MAP]:
 				eventExt, err := h.parseExternalEvents(msgNDVIMap)
 				if err != nil {
-					fmt.Println("Error parsing external event: ", err)
+					log.Println("Error parsing external event: ", err)
 					continue
 				}
+				// The NDVI map is not saved in the local database
 				h.sendBackToChannel(eventExt)
 			}
 		}
@@ -110,7 +113,7 @@ func (h *EventHandler) handleInternalEvents(msgInt domain.EventIn) {
 		return
 	}
 	// Send message to the external broker
-	h.eventsInExt.Publish("digital_twin", msgInt.EventType, msgToSend)
+	h.eventsBus.Publish("digital_twin", msgInt.EventType, msgToSend)
 	// Save event in cache
 	h.memoryStorage.Set(msgInt.ID.String(), string(msgToSend), 5*time.Minute)
 }
