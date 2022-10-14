@@ -346,3 +346,26 @@ func (hdl *HTTPStreamHandler) GetNDVIMap(c *gin.Context) {
 		return false
 	})
 }
+
+// func (hdl *HTTPStreamHandler) SseTest(c *gin.Context) {
+// 	chanStream := make(chan domain.EventOut, 10)
+// 	parcel := domain.Parcel{
+// 		Id: "334rm3434",
+// 		Ts: time.Now(),
+// 		Geometry: struct {
+// 			Type        string    "json:\"type\""
+// 			Coordinates []float64 "json:\"coordinates\""
+// 		}{
+// 			Type:        "Point",
+// 			Coordinates: []float64{0, 0},
+// 		},
+// 	}
+// 	chanStream <- domain.EventOut{ErrorMessage: "", Payload: parcel}
+// 	c.Stream(func(w io.Writer) bool {
+// 		if msg, ok := <-chanStream; ok {
+// 			c.SSEvent("message", msg)
+// 			return true
+// 		}
+// 		return false
+// 	})
+// }

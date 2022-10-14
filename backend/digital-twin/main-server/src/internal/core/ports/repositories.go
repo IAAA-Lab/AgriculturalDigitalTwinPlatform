@@ -82,7 +82,7 @@ type CacheRepository interface {
 
 type BusRepository interface {
 	Publish(topic string, routingKey string, message []byte) error
-	Subscribe(queueName string, exchangeName string, routingKey string, out chan<- amqp.Delivery)
+	Subscribe(queueName string, exchangeName string, routingKey string, out chan amqp.Delivery)
 }
 
 type FileStorageRepository interface {

@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"encoding/json"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 )
@@ -23,8 +25,8 @@ type EventIn struct {
 }
 
 type EventExt struct {
-	ID      string      `json:"_id,omitempty"`
-	Payload interface{} `json:"payload"`
+	ID      string          `json:"id,omitempty"`
+	Payload json.RawMessage `json:"payload"`
 }
 
 type EventOut struct {
@@ -41,7 +43,7 @@ type AuthCustomClaims struct {
 }
 
 type EncrytedData struct {
-	Data string `bson:"data"`
+	Data string `json:"data"`
 }
 
 // Misc

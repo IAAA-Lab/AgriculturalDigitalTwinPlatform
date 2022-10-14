@@ -79,8 +79,8 @@ type Enclosure struct {
 	Id       string    `json:"id"`
 	Ts       time.Time `json:"ts"`
 	Geometry struct {
-		Type        string    `json:"type"`
-		Coordinates []float64 `json:"coordinates"`
+		Type        string      `json:"type"`
+		Coordinates [][]float64 `json:"coordinates"`
 	} `json:"geometry"`
 	Properties struct {
 		ImageUri        string            `json:"imageUri"`

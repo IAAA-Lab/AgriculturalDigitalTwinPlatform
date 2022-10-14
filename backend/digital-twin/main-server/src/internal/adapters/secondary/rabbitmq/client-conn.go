@@ -106,7 +106,7 @@ func (r *RabbitMQConn) GetQueueBindedToExchangeWithRoutingKey(queueName string, 
 // 	return p, err
 // }
 
-func (r *RabbitMQConn) Subscribe(queueName string, exchangeName string, routingKey string, out chan<- amqp.Delivery) {
+func (r *RabbitMQConn) Subscribe(queueName string, exchangeName string, routingKey string, out chan amqp.Delivery) {
 	ch := r.GetChannel()
 	defer ch.Close()
 	q := r.GetQueueBindedToExchangeWithRoutingKey(queueName, exchangeName, routingKey)

@@ -170,6 +170,7 @@ func setupRouter() *gin.Engine {
 	agrarianGroup.GET("/sse/ndvi/map", parcelsStreamingHandler.GetNDVIMap)
 	agrarianGroup.GET("/phytosantaries", parcelsHandler.GetPhytosanitaries)
 	agrarianGroup.GET("/fertilizers", parcelsHandler.GetFertilizers)
+	// agrarianGroup.GET("/ssetest", parcelsStreamingHandler.SseTest)
 	//TODO: add digital twin routes
 
 	return r
@@ -204,15 +205,15 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r := setupRouter()
-	// m := setUpMonitoring(r)
+	m := setUpMonitoring(r)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	port := os.Getenv("PORT")
 
 	if port == "" {
 		port = "8080"
 	}
-	// go func() {
-	// 	_ = m.Run(":9090")
-	// }()
+	go func() {
+		_ = m.Run(":9090")
+	}()
 	r.Run(":" + port)
 }

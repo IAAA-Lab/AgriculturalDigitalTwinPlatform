@@ -17,6 +17,7 @@ type EventHandler struct {
 	memoryStorage  ports.CacheService
 	eventsBus      ports.BusRepository
 	eventsInInt    chan domain.EventIn
+	routingKeyMap  map[string]chan amqp091.Delivery
 }
 
 func NewEventHandler(parcelsService ports.ParcelsService, memoryStorage ports.CacheService, eventsBus ports.BusRepository) *EventHandler {
@@ -25,21 +26,20 @@ func NewEventHandler(parcelsService ports.ParcelsService, memoryStorage ports.Ca
 		memoryStorage:  memoryStorage,
 		eventsBus:      eventsBus,
 		eventsInInt:    make(chan domain.EventIn, 100),
+		routingKeyMap: map[string]chan amqp091.Delivery{
+			domain.EVENT_TYPE_PARCELS:          make(chan amqp091.Delivery, 50),
+			domain.EVENT_TYPE_DAILY_WEATHER:    make(chan amqp091.Delivery, 50),
+			domain.EVENT_TYPE_FORECAST_WEATHER: make(chan amqp091.Delivery, 50),
+			domain.EVENT_TYPE_NDVI:             make(chan amqp091.Delivery, 50),
+			domain.EVENT_TYPE_NDVI_MAP:         make(chan amqp091.Delivery, 50),
+		},
 	}
-}
-
-var routingKeyMap = map[string]chan amqp091.Delivery{
-	domain.EVENT_TYPE_PARCELS:          make(chan amqp091.Delivery, 50),
-	domain.EVENT_TYPE_DAILY_WEATHER:    make(chan amqp091.Delivery, 50),
-	domain.EVENT_TYPE_FORECAST_WEATHER: make(chan amqp091.Delivery, 50),
-	domain.EVENT_TYPE_NDVI:             make(chan amqp091.Delivery, 50),
-	domain.EVENT_TYPE_NDVI_MAP:         make(chan amqp091.Delivery, 50),
 }
 
 // Starts the event handler by listening to external events and internal events
 func (h *EventHandler) Start() {
 	// Open a goroutine for each consumer type
-	for routingKey, channel := range routingKeyMap {
+	for routingKey, channel := range h.routingKeyMap {
 		go h.eventsBus.Subscribe("event_handler", "digital_twin", routingKey, channel)
 	}
 	go func() {
@@ -47,44 +47,68 @@ func (h *EventHandler) Start() {
 			select {
 			case msgInt := <-h.eventsInInt:
 				h.handleInternalEvents(msgInt)
-			case msgParcels := <-routingKeyMap[domain.EVENT_TYPE_PARCELS]:
-				eventExt, err := h.parseExternalEvents(msgParcels)
+			case msgParcels := <-h.routingKeyMap[domain.EVENT_TYPE_PARCELS]:
+				eventExt, err := parseExternalEvents(msgParcels)
+				if err != nil {
+					log.Println("Error parsing external event: ", err)
+					continue
+				}
+				var parcel domain.Parcel
+				err = json.Unmarshal(eventExt.Payload, &parcel)
 				if err != nil {
 					log.Println("Error parsing external event: ", err)
 					continue
 				}
 				// Supposed that one parcel is sent at a time
-				h.parcelsService.PostParcel(eventExt.Payload.(domain.Parcel))
+				h.parcelsService.PostParcel(parcel)
 
-			case msgDailyWeather := <-routingKeyMap[domain.EVENT_TYPE_DAILY_WEATHER]:
-				eventExt, err := h.parseExternalEvents(msgDailyWeather)
+			case msgDailyWeather := <-h.routingKeyMap[domain.EVENT_TYPE_DAILY_WEATHER]:
+				eventExt, err := parseExternalEvents(msgDailyWeather)
 				if err != nil {
 					log.Println("Error parsing external event: ", err)
 					continue
 				}
-				h.parcelsService.PostDailyWeather(eventExt.Payload.([]domain.DailyWeather))
-				h.sendBackToChannel(eventExt)
-
-			case msgForecastWeather := <-routingKeyMap[domain.EVENT_TYPE_FORECAST_WEATHER]:
-				eventExt, err := h.parseExternalEvents(msgForecastWeather)
+				var dailyWeather []domain.DailyWeather
+				err = json.Unmarshal(eventExt.Payload, &dailyWeather)
 				if err != nil {
 					log.Println("Error parsing external event: ", err)
 					continue
 				}
-				h.parcelsService.PostForecastWeather(eventExt.Payload.([]domain.ForecastWeather))
+				h.parcelsService.PostDailyWeather(dailyWeather)
 				h.sendBackToChannel(eventExt)
 
-			case msgNDVI := <-routingKeyMap[domain.EVENT_TYPE_NDVI]:
-				eventExt, err := h.parseExternalEvents(msgNDVI)
+			case msgForecastWeather := <-h.routingKeyMap[domain.EVENT_TYPE_FORECAST_WEATHER]:
+				eventExt, err := parseExternalEvents(msgForecastWeather)
 				if err != nil {
 					log.Println("Error parsing external event: ", err)
 					continue
 				}
-				h.parcelsService.PostNDVI(eventExt.Payload.([]domain.NDVI))
+				var forecastWeather []domain.ForecastWeather
+				err = json.Unmarshal(eventExt.Payload, &forecastWeather)
+				if err != nil {
+					log.Println("Error parsing external event: ", err)
+					continue
+				}
+				h.parcelsService.PostForecastWeather(forecastWeather)
 				h.sendBackToChannel(eventExt)
 
-			case msgNDVIMap := <-routingKeyMap[domain.EVENT_TYPE_NDVI_MAP]:
-				eventExt, err := h.parseExternalEvents(msgNDVIMap)
+			case msgNDVI := <-h.routingKeyMap[domain.EVENT_TYPE_NDVI]:
+				eventExt, err := parseExternalEvents(msgNDVI)
+				if err != nil {
+					log.Println("Error parsing external event: ", err)
+					continue
+				}
+				var ndvi []domain.NDVI
+				err = json.Unmarshal(eventExt.Payload, &ndvi)
+				if err != nil {
+					log.Println("Error parsing external event: ", err)
+					continue
+				}
+				h.parcelsService.PostNDVI(ndvi)
+				h.sendBackToChannel(eventExt)
+
+			case msgNDVIMap := <-h.routingKeyMap[domain.EVENT_TYPE_NDVI_MAP]:
+				eventExt, err := parseExternalEvents(msgNDVIMap)
 				if err != nil {
 					log.Println("Error parsing external event: ", err)
 					continue
@@ -108,7 +132,7 @@ func (h *EventHandler) handleInternalEvents(msgInt domain.EventIn) {
 		fmt.Println("Error marshalling event: ", err)
 		msgInt.Channel <- domain.EventOut{
 			ErrorMessage: apperrors.ErrInvalidInput.Error(),
-			Payload:      "",
+			Payload:      nil,
 		}
 		return
 	}
@@ -118,8 +142,7 @@ func (h *EventHandler) handleInternalEvents(msgInt domain.EventIn) {
 	h.memoryStorage.Set(msgInt.ID.String(), string(msgToSend), 5*time.Minute)
 }
 
-func (h *EventHandler) parseExternalEvents(msgExt amqp091.Delivery) (domain.EventExt, error) {
-	fmt.Println("Received external event: ", string(msgExt.Body))
+func parseExternalEvents(msgExt amqp091.Delivery) (domain.EventExt, error) {
 	// Parse external event
 	var eventExt domain.EventExt
 	err := json.Unmarshal(msgExt.Body, &eventExt)
