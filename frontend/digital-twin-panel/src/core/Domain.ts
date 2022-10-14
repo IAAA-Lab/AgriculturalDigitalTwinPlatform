@@ -7,8 +7,8 @@ enum Role {
   AGRARIAN = "agrarian",
 }
 
-type Auth = {
-  user: string;
+type User = {
+  email: string;
   role: Role;
   user_id: string;
 };
@@ -111,7 +111,7 @@ type Result<T> = ResultSuccess<T> | ResultError;
 export type {
   Result,
   Characteristics as Features,
-  Auth,
+  User,
   CharacteristicState,
   Parcel,
   Enclosure,
