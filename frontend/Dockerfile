@@ -1,10 +1,3 @@
-# FROM node:13.12.0-alpine as landing
-# WORKDIR /usr/src/app
-# COPY frontend-landing-page/package*.json ./
-# RUN yarn install
-# COPY frontend-landing-page/ ./
-# RUN yarn run build-dev
-
 FROM node:17 as panel
 WORKDIR /usr/src/app
 COPY digital-twin-panel/package*.json ./
