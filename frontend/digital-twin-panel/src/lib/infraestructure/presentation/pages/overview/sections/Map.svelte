@@ -59,6 +59,7 @@
   .homeMap {
     grid-area: map;
     div {
+      min-height: 200px;
       aspect-ratio: 1 / 1;
     }
   }

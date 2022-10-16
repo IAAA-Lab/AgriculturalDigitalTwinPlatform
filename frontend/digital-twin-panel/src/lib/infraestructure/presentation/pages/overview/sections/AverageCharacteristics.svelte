@@ -1,13 +1,85 @@
 <script>
-  import Card from "../../../components/cards/Card.svelte";
+  import CardInner from "../../../components/cards/CardInner.svelte";
+  import StatsCard from "../../../components/cards/StatsCard.svelte";
+  import PieChart from "../../../components/charts/PieChart.svelte";
+  let characteristics = [
+    {
+      name: "Lluvia",
+      value: "3.5",
+      unit: "%",
+    },
+    {
+      name: "Viento",
+      value: "23",
+      unit: "km/h",
+    },
+    {
+      name: "Temperatura",
+      value: "23",
+      unit: "°C",
+    },
+  ];
 </script>
 
 <div class="avgCharacteristics">
-  <Card />
+  <h2 class="m-0 mb-8">Valores promedios</h2>
+  <div class="characteristics">
+    {#each characteristics as characteristic}
+      <div class="characteristic-item">
+        <StatsCard
+          statName={characteristic.name}
+          statValue={characteristic.value}
+          statUnit={characteristic.unit}
+        />
+      </div>
+    {/each}
+  </div>
+  <div class="characteristics-analytics mt-16">
+    <CardInner>
+      <div slot="header" class="characteristics-analytics-header ml-8">
+        <h3 class="m-0">Valores promedios por parcela</h3>
+        <select>
+          <option value="1">Parcela 1</option>
+          <option value="2">Parcela 2</option>
+          <option value="3">Parcela 3</option>
+        </select>
+      </div>
+      <div slot="body" class="p-8">
+        <div class="characteristics-analytics-chart">
+          <PieChart
+            data={characteristics.map((c) => c.value)}
+            labels={characteristics.map((c) => c.name)}
+          />
+        </div>
+      </div>
+    </CardInner>
+  </div>
 </div>
 
-<style>
+<style lang="scss">
   .avgCharacteristics {
     grid-area: avgCharacteristics;
+
+    .characteristics {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      .characteristic-item {
+        width: 100%;
+        max-width: 210px;
+        margin: 8px 0;
+      }
+    }
+
+    .characteristics-analytics-chart {
+      max-height: 200px;
+    }
+
+    .characteristics-analytics-header {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
   }
 </style>

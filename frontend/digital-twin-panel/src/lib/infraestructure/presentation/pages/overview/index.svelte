@@ -11,7 +11,7 @@
   <meta name="description" content="Overview" />
 </svelte:head>
 
-<div class="overview">
+<div class="overview mr-8">
   <Map />
   <AverageCharacteristics />
   <RangeCharacteristics />
@@ -22,7 +22,7 @@
 <style lang="scss">
   .overview {
     display: grid;
-    gap: 2rem;
+    gap: 0.75rem;
     grid-template-columns: auto;
     grid-template-areas:
       "map"
@@ -37,12 +37,12 @@
 
   @include media(">medium") {
     .overview {
-      grid-template-columns: 4fr 2fr;
+      grid-template-columns: 1.5fr 1fr;
       grid-template-areas:
         "map summary"
         "rangeCharacteristics summary"
         "avgCharacteristics summary"
-        "tables summary";
+        "tables tables";
       :global(.summary) {
         display: block;
       }

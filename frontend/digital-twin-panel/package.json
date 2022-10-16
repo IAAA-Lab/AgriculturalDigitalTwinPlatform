@@ -23,7 +23,7 @@
     "vite": "^3.1.0"
   },
   "dependencies": {
-    "svelte-chartjs": "^3.0.1",
+    "chart.js": "^3.9.1",
     "svelte-routing": "^1.6.0"
   }
 }

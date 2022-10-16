@@ -1,0 +1,59 @@
+<script>
+  import Card from "./Card.svelte";
+  export let statName = "-";
+  export let statValue = "-";
+  export let statUnit = "N/A";
+</script>
+
+<Card>
+  <div class="stats-card" slot="body">
+    <div class="stat-icon" />
+    <div class="ml-8 stat-content">
+      <h4 class="text-sm m-0">
+        {statName}
+      </h4>
+      <div class="stat-value-unit">
+        <h2 class="m-0">
+          {statValue}
+        </h2>
+        <span class="ml-8 text-xxs">
+          {statUnit}
+        </span>
+      </div>
+    </div>
+  </div>
+</Card>
+
+<style lang="scss">
+  .stats-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+
+    .stat-icon {
+      width: 70px;
+      height: 70px;
+      background: #ddf5dd;
+      border-radius: 10px;
+    }
+
+    .stat-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+
+      h2 {
+        color: rgb(35, 35, 35);
+      }
+
+      .stat-value-unit {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+</style>
