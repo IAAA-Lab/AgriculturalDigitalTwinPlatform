@@ -1,4 +1,7 @@
-<div class="card" />
+<div class="card">
+  <slot name="header" />
+  <slot name="body" />
+</div>
 
 <style lang="scss">
   .card {

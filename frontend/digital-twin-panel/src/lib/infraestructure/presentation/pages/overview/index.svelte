@@ -1,5 +1,4 @@
 <script>
-  import Card from "../../components/cards/Card.svelte";
   import AverageCharacteristics from "./sections/AverageCharacteristics.svelte";
   import Map from "./sections/Map.svelte";
   import RangeCharacteristics from "./sections/RangeCharacteristics.svelte";
@@ -20,20 +19,29 @@
   <Tables />
 </div>
 
-<style>
+<style lang="scss">
   .overview {
-    padding-right: 20px;
+    padding-right: 15px;
     padding-bottom: 15px;
     display: grid;
     gap: 1rem;
-    grid-template-columns: minmax(200px, 3fr) minmax(200px, 2.5fr) minmax(
-        200px,
-        2fr
-      );
+    grid-template-columns: 3fr 2.5fr 2fr;
     grid-template-rows: 3fr 2fr 3fr;
     grid-template-areas:
       "map avgCharacteristics summary"
       "rangeCharacteristics avgCharacteristics summary"
       "tables tables summary";
+  }
+
+  @include media("<medium") {
+    .overview {
+      gap: 0.5rem;
+      grid-template-areas:
+        "map"
+        "avgCharacteristics"
+        "rangeCharacteristics"
+        "tables"
+        "summary";
+    }
   }
 </style>

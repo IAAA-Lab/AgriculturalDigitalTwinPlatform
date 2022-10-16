@@ -24,10 +24,6 @@
     justify-content: space-between;
     align-items: center;
 
-    h2 {
-      margin: 0;
-    }
-
     nav {
       ul {
         display: flex;
