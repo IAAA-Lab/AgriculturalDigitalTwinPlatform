@@ -16,10 +16,8 @@
   .default-layout {
     display: grid;
     grid-template-columns: 1fr 8fr;
-    grid-template-rows: 1fr 13fr;
     grid-template-areas:
       "sidebar header"
-      "sidebar main"
       "sidebar main";
   }
 </style>

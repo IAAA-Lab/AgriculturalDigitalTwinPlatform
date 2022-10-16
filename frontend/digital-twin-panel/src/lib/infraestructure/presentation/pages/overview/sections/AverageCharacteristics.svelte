@@ -59,6 +59,8 @@
 <style lang="scss">
   .avgCharacteristics {
     grid-area: avgCharacteristics;
+    word-break: break-all;
+    word-wrap: break-word;
 
     .characteristics {
       display: flex;
@@ -78,6 +80,7 @@
     .characteristics-analytics-header {
       display: flex;
       flex-direction: row;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
     }

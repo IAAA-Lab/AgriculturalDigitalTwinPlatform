@@ -1,9 +1,13 @@
-<footer class="footer">Footer</footer>
+<footer class="footer text-xs">Copyright &copy; 2022 · GEDEFEC</footer>
 
 <style>
   .footer {
     position: absolute;
-    bottom: 0;
-    padding: 15px;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 </style>
