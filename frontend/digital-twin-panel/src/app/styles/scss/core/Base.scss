@@ -3,3 +3,8 @@ body {
   padding: 0;
   background: color-bg(bg-color);
 }
+
+.leaflet-container {
+  border-radius: 6px;
+  z-index: 0;
+}

@@ -23,7 +23,9 @@
   onMount(async () => {
     const leaflet = await import("leaflet");
 
-    map = leaflet.map(mapElement).setView([-104.99404, 39.75621], 5);
+    map = leaflet.map(mapElement);
+
+    map.fitBounds([geojsonFeature.geometry.coordinates]);
 
     leaflet
       .tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
