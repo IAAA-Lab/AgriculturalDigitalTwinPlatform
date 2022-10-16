@@ -55,6 +55,7 @@ type Characteristics struct {
 type Parcel struct {
 	Id       string    `json:"id"`
 	Ts       time.Time `json:"ts"`
+	Type     string    `json:"type"`
 	Geometry struct {
 		Type        string    `json:"type"`
 		Coordinates []float64 `json:"coordinates"`
@@ -72,12 +73,16 @@ type Parcel struct {
 			Zones []string `json:"zones"`
 		} `json:"protectedZones"`
 	} `json:"properties"`
-	Enclosures []Enclosure `json:"enclosures"`
+	Enclosures struct {
+		Type     string      `json:"type"`
+		Features []Enclosure `json:"enclosures"`
+	} `json:"enclosures"`
 }
 
 type Enclosure struct {
 	Id       string    `json:"id"`
 	Ts       time.Time `json:"ts"`
+	Type     string    `json:"type"`
 	Geometry struct {
 		Type        string      `json:"type"`
 		Coordinates [][]float64 `json:"coordinates"`

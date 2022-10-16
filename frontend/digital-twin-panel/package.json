@@ -12,6 +12,8 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.2",
     "@tsconfig/svelte": "^3.0.0",
+    "@types/leaflet": "^1.9.0",
+    "leaflet": "^1.9.2",
     "sass": "^1.55.0",
     "svelte": "^3.49.0",
     "svelte-check": "^2.8.1",

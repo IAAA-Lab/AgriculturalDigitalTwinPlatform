@@ -22,7 +22,7 @@
 <style lang="scss">
   .overview {
     display: grid;
-    gap: 1rem;
+    gap: 2rem;
     grid-template-columns: auto;
     grid-template-areas:
       "map"
@@ -53,6 +53,7 @@
     .overview {
       display: grid;
       grid-template-columns: 3fr 2.5fr 2fr;
+      grid-template-rows: 3fr 1fr 2fr;
       grid-template-areas:
         "map avgCharacteristics summary"
         "rangeCharacteristics avgCharacteristics summary"
