@@ -21,27 +21,45 @@
 
 <style lang="scss">
   .overview {
-    padding-right: 15px;
-    padding-bottom: 15px;
     display: grid;
     gap: 1rem;
-    grid-template-columns: 3fr 2.5fr 2fr;
-    grid-template-rows: 3fr 2fr 3fr;
+    grid-template-columns: auto;
     grid-template-areas:
-      "map avgCharacteristics summary"
-      "rangeCharacteristics avgCharacteristics summary"
-      "tables tables summary";
+      "map"
+      "avgCharacteristics"
+      "rangeCharacteristics"
+      "tables"
+      "summary";
+    :global(.summary) {
+      display: none;
+    }
   }
 
-  @include media("<medium") {
+  @include media(">medium") {
     .overview {
-      gap: 0.5rem;
+      grid-template-columns: 4fr 2fr;
       grid-template-areas:
-        "map"
-        "avgCharacteristics"
-        "rangeCharacteristics"
-        "tables"
-        "summary";
+        "map summary"
+        "rangeCharacteristics summary"
+        "avgCharacteristics summary"
+        "tables summary";
+      :global(.summary) {
+        display: block;
+      }
+    }
+  }
+
+  @include media(">large") {
+    .overview {
+      display: grid;
+      grid-template-columns: 3fr 2.5fr 2fr;
+      grid-template-areas:
+        "map avgCharacteristics summary"
+        "rangeCharacteristics avgCharacteristics summary"
+        "tables tables summary";
+      :global(.summary) {
+        display: block;
+      }
     }
   }
 </style>
