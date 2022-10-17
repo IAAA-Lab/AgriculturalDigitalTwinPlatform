@@ -5,17 +5,17 @@
   let characteristics = [
     {
       name: "Lluvia",
-      value: "3.5",
+      value: 3.5,
       unit: "%",
     },
     {
       name: "Viento",
-      value: "23",
+      value: 23,
       unit: "km/h",
     },
     {
       name: "Temperatura",
-      value: "23",
+      value: 23,
       unit: "°C",
     },
   ];

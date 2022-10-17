@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { numberWithCommas } from "../../../../core/utils";
   import CardInner from "./CardInner.svelte";
   import CardInnerPrimary from "./CardInnerPrimary.svelte";
 
@@ -23,7 +24,7 @@
   </div>
   <div slot="body" class="stat-body">
     <div class="value-unit">
-      <h2 class="m-0 fw-700">{value}</h2>
+      <h2 class="m-0 fw-700">{numberWithCommas(value)}</h2>
       <span class="text-sm {unit && 'ml-4'}">{unit}</span>
     </div>
     <div class="icon-diff">

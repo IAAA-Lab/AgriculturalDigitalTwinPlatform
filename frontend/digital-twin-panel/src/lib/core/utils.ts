@@ -13,4 +13,10 @@ const fixDefaultLeafletIcons = () => {
   });
 };
 
-export { fixDefaultLeafletIcons };
+const numberWithCommas = (num?: number) => {
+  return num! < 0
+    ? "N/A"
+    : Number(num).toLocaleString("es-ES", { maximumFractionDigits: 2 });
+};
+
+export { fixDefaultLeafletIcons, numberWithCommas };
