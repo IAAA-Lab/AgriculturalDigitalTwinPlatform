@@ -46,11 +46,11 @@
   });
 </script>
 
-<div class="homeMap">
+<section class="homeMap">
   <Card>
     <div slot="body" bind:this={mapElement} />
   </Card>
-</div>
+</section>
 
 <style lang="scss">
   @import "leaflet/dist/leaflet.css";

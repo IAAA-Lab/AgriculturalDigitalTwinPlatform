@@ -756,6 +756,11 @@ svelte-routing@^1.6.0:
   dependencies:
     svelte2tsx "^0.1.157"
 
+svelte-simple-datatables@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/svelte-simple-datatables/-/svelte-simple-datatables-0.2.3.tgz#ccb437392a9523749d062884d800bf8d74320a77"
+  integrity sha512-WsWbB66KzvpYN9r9WpRgXthGejsH2QFJfoRw/ssKw81Fn659IBMVzAZtOojR5mgEDZ2j24j4BJvoThcH8DXxwA==
+
 svelte2tsx@^0.1.157:
   version "0.1.193"
   resolved "https://registry.yarnpkg.com/svelte2tsx/-/svelte2tsx-0.1.193.tgz#16fe594898ef455e4f715ac317d219c9c757656b"

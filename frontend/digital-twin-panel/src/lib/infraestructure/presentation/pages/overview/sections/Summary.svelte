@@ -69,7 +69,7 @@
   let checked;
 </script>
 
-<div class="summary">
+<section class="summary">
   <Card>
     <div slot="header" class="pl-8">
       <div class="title mt-8">
@@ -113,7 +113,7 @@
       </CardInner>
     </div>
   </Card>
-</div>
+</section>
 
 <style lang="scss">
   .summary {

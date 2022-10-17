@@ -2,9 +2,9 @@
   import Card from "../../../components/cards/Card.svelte";
 </script>
 
-<div class="rangeCharacteristics">
+<section class="rangeCharacteristics">
   <Card />
-</div>
+</section>
 
 <style>
   .rangeCharacteristics {

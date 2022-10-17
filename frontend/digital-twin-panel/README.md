@@ -81,3 +81,7 @@ export default {
   }),
 };
 ```
+
+## Packages for svelte
+
+https://madewithsvelte.com/svelte-simple-datatables

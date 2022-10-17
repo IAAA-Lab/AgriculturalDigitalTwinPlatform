@@ -13,8 +13,8 @@
 
 <div class="overview mr-8">
   <Map />
-  <AverageCharacteristics />
   <RangeCharacteristics />
+  <AverageCharacteristics />
   <Summary />
   <Tables />
 </div>
@@ -28,8 +28,8 @@
       "map"
       "avgCharacteristics"
       "rangeCharacteristics"
-      "tables"
-      "summary";
+      "summary"
+      "tables";
     :global(.summary) {
       display: none;
     }

@@ -34,7 +34,7 @@
   };
 </script>
 
-<div class="avgCharacteristics">
+<section class="avgCharacteristics">
   <h2 class="m-0 mb-8">Valores promedios</h2>
   <div class="characteristics">
     {#each characteristics as characteristic}
@@ -69,7 +69,7 @@
       </div>
     </Card>
   </div>
-</div>
+</section>
 
 <style lang="scss">
   .avgCharacteristics {
