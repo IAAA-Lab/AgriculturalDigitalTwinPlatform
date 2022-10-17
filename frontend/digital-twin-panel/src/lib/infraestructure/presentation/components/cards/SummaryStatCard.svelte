@@ -10,10 +10,11 @@
   export let enclosureName: string;
   export let primary: boolean = false;
 
-  const diffColor = diff > 0 ? "text-color-success" : "text-color-error";
-  const diffIcon = diff > 0 ? "up" : "down";
+  let diffColor: string;
+  let diffIcon: string;
 
-  console.log(diffIcon);
+  $: diffColor = diff > 0 ? "text-color-success" : "text-color-error";
+  $: diffIcon = diff > 0 ? "up" : "down";
 </script>
 
 <svelte:component this={primary ? CardInnerPrimary : CardInner}>

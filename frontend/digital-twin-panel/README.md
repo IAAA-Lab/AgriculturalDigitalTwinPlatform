@@ -43,6 +43,41 @@ If you have state that's important to retain within a component, consider creati
 ```ts
 // store.ts
 // An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+import { writable } from "svelte/store";
+export default writable(0);
+```
+
+## Issues encountered
+
+### chart.js not resizing charts
+
+https://github.com/jtblin/angular-chart.js/issues/614
+
+### chart.js incompatibility when build to production
+
+```
+    // BUG: Await import because it doesn't work otherwise in production
+    // https://github.com/sveltejs/kit/issues/5535#issuecomment-1251881206
+    const { Chart, registerables } = await import("chart.js");
+    Chart.register(...registerables);
+```
+
+### setup scss files globally
+
+In the `svelte.config.js` the svelte preprocessor with the scss plugin needs to index scss files paths to be able expose it globally.
+
+```
+const filePath = dirname(fileURLToPath(import.meta.url));
+const sassPath = `${filePath}/src`;
+
+export default {
+  // Consult https://github.com/sveltejs/svelte-preprocess
+  // for more information about preprocessors
+  preprocess: sveltePreprocess({
+    scss: {
+      // Imports global scss files
+      prependData: `@import '${sassPath}/globals.scss';`,
+    },
+  }),
+};
 ```

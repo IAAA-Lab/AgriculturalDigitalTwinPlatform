@@ -27,3 +27,8 @@ select {
     filter: drop-shadow(0 0.5px 3px color(secondary));
   }
 }
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
