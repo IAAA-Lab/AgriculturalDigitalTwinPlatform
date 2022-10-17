@@ -1,6 +1,7 @@
 <script>
   import { onMount, onDestroy } from "svelte";
   import Card from "../../../components/cards/Card.svelte";
+  import leaflet from "leaflet";
 
   let mapElement;
   let map;
@@ -21,10 +22,7 @@
   };
 
   onMount(async () => {
-    const leaflet = await import("leaflet");
-
     map = leaflet.map(mapElement);
-
     map.fitBounds([geojsonFeature.geometry.coordinates]);
 
     leaflet

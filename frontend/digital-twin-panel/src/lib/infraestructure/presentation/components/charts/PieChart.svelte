@@ -1,14 +1,17 @@
 <script>
   import { onMount } from "svelte";
-  import Chart from "chart.js/auto/auto.js";
 
   export let data = [];
   export let labels = [];
 
   let chartCanvas;
 
-  onMount(() => {
+  onMount(async () => {
     const ctx = chartCanvas.getContext("2d");
+    // BUG: Await import because it doesn't work otherwise in production
+    // https://github.com/sveltejs/kit/issues/5535#issuecomment-1251881206
+    const { Chart, registerables } = await import("chart.js");
+    Chart.register(...registerables);
     new Chart(ctx, {
       type: "doughnut",
       data: {
