@@ -36,7 +36,7 @@
     .stat-icon {
       width: 70px;
       height: 70px;
-      background: #ddf5dd;
+      background: color-bg(primary);
       border-radius: 10px;
       display: flex;
       align-items: center;

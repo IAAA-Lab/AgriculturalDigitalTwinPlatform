@@ -30,12 +30,12 @@
         color: color(primary);
       }
       :global(i) {
-        color: color(primary) !important;
+        color: color(primary);
       }
     }
 
     &.selected {
-      background-color: rgb(221, 245, 221);
+      background-color: color-bg(primary);
       @extend .sidebar-option, :hover;
     }
   }

@@ -80,7 +80,7 @@
 }
 
 .text-color-success {
-  color: color(success);
+  color: color(success) !important;
 }
 
 .invert-color {
@@ -125,10 +125,6 @@
 // Helper class for box shadow
 .has-shadow {
   box-shadow: color-bg(shadow);
-}
-
-img.has-shadow {
-  //border-radius: $img-radius;
 }
 
 // Dividers
