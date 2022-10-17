@@ -1,9 +1,10 @@
 <script>
   export let text;
+  export let selected = false;
 </script>
 
-<div class="sidebar-option">
-  <div class="sidebar-option-icon mr-8">
+<div class="sidebar-option" class:selected>
+  <div class="sidebar-option-icon mr-16 pt-4">
     <slot />
   </div>
   <h3 class="sidebar-option-text m-0 text-sm">
@@ -24,12 +25,18 @@
     cursor: pointer;
     transition: all 0.2s ease-out;
 
-    &:hover,
-    &.selected {
-      background-color: rgb(221, 245, 221);
+    &:hover {
       h3 {
         color: color(primary);
       }
+      :global(i) {
+        color: color(primary) !important;
+      }
+    }
+
+    &.selected {
+      background-color: rgb(221, 245, 221);
+      @extend .sidebar-option, :hover;
     }
   }
 </style>

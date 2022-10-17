@@ -7,7 +7,9 @@
 
 <Card>
   <div class="stats-card" slot="body">
-    <div class="stat-icon" />
+    <div class="stat-icon">
+      <slot />
+    </div>
     <div class="ml-8 stat-content">
       <h4 class="text-sm m-0">
         {statName}
@@ -36,6 +38,14 @@
       height: 70px;
       background: #ddf5dd;
       border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      :global(i) {
+        font-size: 45px;
+        color: color(primary);
+      }
     }
 
     .stat-content {

@@ -7,7 +7,7 @@
   <nav>
     <ul>
       <li class="mt-8">
-        <i class="fi fi-rs-bell" />
+        <i class="fi fi-rr-bell" />
       </li>
       <li>
         <h3 class="user-settings text-sm m-0">jlaguna98@gmail.com</h3>

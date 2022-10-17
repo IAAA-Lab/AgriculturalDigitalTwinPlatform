@@ -1,5 +1,5 @@
 <script>
-  import CardInner from "../../../components/cards/CardInner.svelte";
+  import Card from "../../../components/cards/Card.svelte";
   import StatsCard from "../../../components/cards/StatsCard.svelte";
   import PieChart from "../../../components/charts/PieChart.svelte";
   let characteristics = [
@@ -19,6 +19,19 @@
       unit: "°C",
     },
   ];
+
+  const getIconByCharacteristic = (characteristic) => {
+    switch (characteristic.name) {
+      case "Lluvia":
+        return `<i class="fi fi-rr-raindrops" />`;
+      case "Viento":
+        return `<i class="fi fi-rr-wind" />`;
+      case "Temperatura":
+        return `<i class="fi fi-rr-temperature-low" />`;
+      default:
+        return `<i class="fi fi-rr-map-marker" />`;
+    }
+  };
 </script>
 
 <div class="avgCharacteristics">
@@ -30,12 +43,14 @@
           statName={characteristic.name}
           statValue={characteristic.value}
           statUnit={characteristic.unit}
-        />
+        >
+          {@html getIconByCharacteristic(characteristic)}
+        </StatsCard>
       </div>
     {/each}
   </div>
   <div class="characteristics-analytics mt-16">
-    <CardInner>
+    <Card>
       <div slot="header" class="characteristics-analytics-header ml-8">
         <h3 class="m-0">Valores promedios por parcela</h3>
         <select>
@@ -52,7 +67,7 @@
           />
         </div>
       </div>
-    </CardInner>
+    </Card>
   </div>
 </div>
 
