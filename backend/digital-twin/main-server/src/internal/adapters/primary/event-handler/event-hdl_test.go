@@ -44,7 +44,7 @@ func (m *MockedParcelsService) PostParcel(parcel domain.Parcel) error {
 func TestEventHandler_ParseExternalEvents(t *testing.T) {
 	// Prepare data
 	dataInRaw, err := ioutil.ReadFile("data-in.json")
-	var dataIn domain.EventExt
+	var dataIn domain.EventExtReceive
 	json.Unmarshal(dataInRaw, &dataIn)
 	if err != nil {
 		t.Error("Error reading file")
@@ -80,7 +80,7 @@ func TestEventHandler_SendExternalEvents(t *testing.T) {
 		t.Error("Error marshalling parcel")
 	}
 	// Prepare external event
-	parcel := domain.EventExt{
+	parcel := domain.EventExtReceive{
 		ID:      "123",
 		Payload: parcelMarsh,
 	}

@@ -18,6 +18,8 @@ dependencies {
     implementation 'org.apache.camel.quarkus:camel-quarkus-rabbitmq'
     implementation 'org.apache.camel.quarkus:camel-quarkus-rest'
     implementation 'org.apache.camel.quarkus:camel-quarkus-direct'
+    implementation 'org.apache.camel.quarkus:camel-quarkus-timer'
+    implementation 'org.apache.camel.quarkus:camel-quarkus-http'
     implementation 'io.quarkus:quarkus-arc'
     testImplementation 'io.quarkus:quarkus-junit5'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"

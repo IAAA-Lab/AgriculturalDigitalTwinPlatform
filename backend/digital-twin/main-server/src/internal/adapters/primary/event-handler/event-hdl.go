@@ -126,10 +126,15 @@ func (h *EventHandler) GetIntChannel() chan<- domain.EventIn {
 }
 
 func (h *EventHandler) handleInternalEvents(msgInt domain.EventIn) {
-	fmt.Println("Received internal event: ", msgInt)
-	msgToSend, err := json.Marshal(msgInt)
-	if err != nil {
-		fmt.Println("Error marshalling event: ", err)
+	// Prepare the event to be sent
+	msgToCache, err1 := json.Marshal(msgInt)
+	msgToSend, err2 := json.Marshal(domain.EventExtSend{
+		ID:      msgInt.ID.String(),
+		Payload: msgInt.Payload,
+	})
+	// Catch errors
+	if err1 != nil || err2 != nil {
+		fmt.Println("Error marshalling event")
 		msgInt.Channel <- domain.EventOut{
 			ErrorMessage: apperrors.ErrInvalidInput.Error(),
 			Payload:      nil,
@@ -139,17 +144,17 @@ func (h *EventHandler) handleInternalEvents(msgInt domain.EventIn) {
 	// Send message to the external broker
 	h.eventsBus.Publish("digital_twin", msgInt.EventType, msgToSend)
 	// Save event in cache
-	h.memoryStorage.Set(msgInt.ID.String(), string(msgToSend), 5*time.Minute)
+	h.memoryStorage.Set(msgInt.ID.String(), string(msgToCache), 5*time.Minute)
 }
 
-func parseExternalEvents(msgExt amqp091.Delivery) (domain.EventExt, error) {
+func parseExternalEvents(msgExt amqp091.Delivery) (domain.EventExtReceive, error) {
 	// Parse external event
-	var eventExt domain.EventExt
+	var eventExt domain.EventExtReceive
 	err := json.Unmarshal(msgExt.Body, &eventExt)
 	return eventExt, err
 }
 
-func (h *EventHandler) sendBackToChannel(eventExt domain.EventExt) {
+func (h *EventHandler) sendBackToChannel(eventExt domain.EventExtReceive) {
 	// Get event from memory by the event ID
 	eventSavedRaw, err := h.memoryStorage.Get(eventExt.ID)
 	errMsg := ""

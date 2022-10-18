@@ -24,9 +24,14 @@ type EventIn struct {
 	Payload   interface{}   `json:"payload"`
 }
 
-type EventExt struct {
+type EventExtReceive struct {
 	ID      string          `json:"id,omitempty"`
 	Payload json.RawMessage `json:"payload"`
+}
+
+type EventExtSend struct {
+	ID      string      `json:"id,omitempty"`
+	Payload interface{} `json:"payload"`
 }
 
 type EventOut struct {
