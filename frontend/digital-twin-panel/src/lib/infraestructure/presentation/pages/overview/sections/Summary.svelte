@@ -3,7 +3,7 @@
   import CardInner from "../../../components/cards/CardInner.svelte";
   import SummaryStatCard from "../../../components/cards/SummaryStatCard.svelte";
   import PieChart from "../../../components/charts/PieChart.svelte";
-  import ToggleSwitch from "../../../components/misc/ToggleSwitch.svelte";
+  import ToggleSwitch from "../../../components/basics/ToggleSwitch.svelte";
 
   const data = {
     best: [
