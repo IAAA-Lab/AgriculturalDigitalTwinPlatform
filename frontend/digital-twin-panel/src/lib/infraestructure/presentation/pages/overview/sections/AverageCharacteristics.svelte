@@ -81,10 +81,9 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
+      gap: 0.5rem;
       .characteristic-item {
-        width: 100%;
-        max-width: 210px;
-        margin: 8px 0;
+        flex: 200px;
       }
     }
 

@@ -83,7 +83,7 @@
     overflow-x: scroll;
 
     th:first-child {
-      width: 72px;
+      width: 100px;
     }
     td {
       text-align: center;
