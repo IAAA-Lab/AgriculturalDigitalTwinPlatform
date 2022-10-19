@@ -9,15 +9,15 @@ class DailyWeatherRoute : RouteBuilder() {
   data class RequestIn(val id: String, val payload: DailyWeatherReq)
   data class RequestOut(val id: String, val payload: DailyWeather)
 
-  val RABBITMQ_ROUTE =
-      "rabbitmq:{{rabbitmq.uri}}/{{rabbitmq.digital_twin.exchange}}?queue={{rabbitmq.weather.queue}}&routingKey={{rabbitmq.weather.daily.routing_key}}&autoDelete=false"
+  val RABBIMQ_ROUTE =
+      "rabbitmq:{{rabbitmq.digital_twin.exchange}}?queue={{rabbitmq.weather.queue}}&routingKey={{rabbitmq.weather.daily.routing_key}}&autoDelete=false"
   val AGROSLAB_URI = "{{agroslab.uri}}"
   val AGROSLAB_API_KEY = "{{agroslab.api_key}}"
 
   override fun configure() {
 
     // Consume request from RabbitMQ
-    from(RABBITMQ_ROUTE)
+    from(RABBIMQ_ROUTE)
         .log(LoggingLevel.INFO, "weather-daily", "Received message: \${body}")
         .unmarshal(JacksonDataFormat(RequestIn::class.java))
         .process { exchange: Exchange ->
@@ -41,5 +41,6 @@ class DailyWeatherRoute : RouteBuilder() {
         // Send response to RabbitMQ
         .marshal(JacksonDataFormat(RequestOut::class.java))
         .log(LoggingLevel.INFO, "weather-daily", "Sending message: \${body}")
-        .to(RABBITMQ_ROUTE)
+        .to(RABBIMQ_ROUTE)
+  }
 }
