@@ -20,10 +20,17 @@ enum CharacteristicState {
   NA = "NA",
 }
 
+type Characteristic = {
+  name: string;
+  value: number;
+  unit?: string;
+  state?: CharacteristicState;
+};
+
 type ResultSuccess<T> = { isError: false; data: T };
 type ResultError = { isError: true; error: CustomError };
 type Result<T> = ResultSuccess<T> | ResultError;
 
-export type { Result, User, CharacteristicState };
+export type { Result, User, CharacteristicState, Characteristic };
 
 export { Role };

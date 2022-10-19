@@ -1,6 +1,11 @@
-<script>
+<script lang="ts">
   import Card from "../../../components/cards/Card.svelte";
   import { Datatable } from "svelte-simple-datatables";
+  import Characteristics from "../../enclosures/overview/sections/Characteristics.svelte";
+  import type {
+    Characteristic,
+    CharacteristicState,
+  } from "src/lib/core/Domain";
   const settings = {
     columnFilter: true,
     labels: {
@@ -14,24 +19,31 @@
   };
   let rows;
 
-  const data = [
+  const data: Characteristic[] = [
     {
-      id: 1,
-      first_name: "John",
-      last_name: "Doe",
-      email: "jsdflkhkdsjh",
+      name: "Área",
+      value: 9345,
+      unit: "Ha",
     },
     {
-      id: 2,
-      first_name: "Jane",
-      last_name: "Doe",
-      email: "jsdflkhkdsjh",
+      name: "Pendiente media",
+      value: 23.5,
+      unit: "%",
     },
     {
-      id: 3,
-      first_name: "John",
-      last_name: "Doe",
-      email: "jsdflkhkdsjh",
+      name: "Coef. de regadío",
+      value: 53,
+      unit: "%",
+    },
+    {
+      name: "Área en uso",
+      value: 67,
+      unit: "%",
+    },
+    {
+      name: "Salud de las plantas",
+      value: 67,
+      unit: "%",
     },
   ];
 </script>
@@ -41,22 +53,24 @@
     <div slot="body" class="card-body">
       <Datatable {settings} {data} bind:dataRows={rows}>
         <thead>
-          <th data-key="id">ID</th>
-          <th data-key="first_name">First Name</th>
-          <th data-key="last_name">Last Name</th>
-          <th data-key="email">Email</th>
-        </thead>
-        <tbody>
+          <th class="text-sm" data-key="Nombre"> Nombre </th>
           {#if rows}
             {#each $rows as row}
-              <tr>
-                <td><span>{row.id}</span></td>
-                <td><span>{row.first_name}</span></td>
-                <td><span>{row.last_name}</span></td>
-                <td><span>{row.email}</span></td>
-              </tr>
+              <th class="text-sm" data-key={row.name}>
+                {row.name} ({row.unit})
+              </th>
             {/each}
           {/if}
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-xs"><span>23-34-21-1-2</span></td>
+            {#if rows}
+              {#each $rows as row}
+                <td class="text-xs"><span>{row.value} {row.unit}</span></td>
+              {/each}
+            {/if}
+          </tr>
         </tbody>
       </Datatable>
     </div>

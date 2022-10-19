@@ -53,7 +53,6 @@
     .overview {
       display: grid;
       grid-template-columns: 2.5fr 2.5fr 2fr;
-      grid-template-rows: 3fr 1fr 2fr;
       grid-template-areas:
         "map avgCharacteristics summary"
         "rangeCharacteristics avgCharacteristics summary"
