@@ -49,7 +49,7 @@
       </div>
     {/each}
   </div>
-  <div class="characteristics-analytics mt-16">
+  <div class="characteristics-analytics mt-8">
     <Card>
       <div slot="header" class="characteristics-analytics-header ml-8">
         <h3 class="m-0">Valores promedios por parcela</h3>

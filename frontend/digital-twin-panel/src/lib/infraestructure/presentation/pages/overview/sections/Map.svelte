@@ -2,9 +2,15 @@
   import { onMount, onDestroy } from "svelte";
   import Card from "../../../components/cards/Card.svelte";
   import leaflet from "leaflet";
+  import {
+    getColorList,
+    markerMapIconByColor,
+  } from "../../../../../core/utils";
 
   let mapElement;
   let map;
+
+  let i = 0;
 
   let geojsonFeature = {
     id: "22de",
@@ -21,9 +27,12 @@
     },
   };
 
+  const colorList = getColorList(1);
+  console.log(colorList);
+
   onMount(async () => {
     map = leaflet.map(mapElement);
-    map.fitBounds([geojsonFeature.geometry.coordinates]);
+    map.fitBounds([[39.75621, -104.99404]], 13);
 
     leaflet
       .tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -33,10 +42,19 @@
       .addTo(map);
 
     leaflet
-      .geoJSON(geojsonFeature)
+      .geoJSON(geojsonFeature, {
+        // Change marker
+        pointToLayer: function (feature, latlng) {
+          return leaflet.marker(latlng, {
+            icon: markerMapIconByColor(colorList[i++]),
+          });
+        },
+        coordsToLatLng: function (coords) {
+          return new leaflet.LatLng(coords[1], coords[0]);
+        },
+      })
       .addTo(map)
-      .bindPopup((e) => e.feature.properties.popupContent)
-      .openPopup();
+      .bindPopup((e) => e.feature.properties.popupContent);
   });
 
   onDestroy(async () => {
