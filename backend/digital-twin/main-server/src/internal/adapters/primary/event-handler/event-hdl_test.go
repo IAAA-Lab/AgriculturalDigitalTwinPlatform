@@ -4,7 +4,9 @@ import (
 	"digital-twin/main-server/src/internal/core/domain"
 	"digital-twin/main-server/src/internal/core/ports"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"reflect"
 	"sync"
 	"testing"
 
@@ -60,7 +62,7 @@ func TestEventHandler_ParseExternalEvents(t *testing.T) {
 		t.Error("Error parsing external event: ", err)
 	}
 	// Assertions
-	assert.Equal(t, dataIn, eventExtOut)
+	assert.True(t, reflect.DeepEqual(dataIn.Payload, eventExtOut.Payload), fmt.Sprintf("Expected: %v, got: %v", dataIn, eventExtOut))
 }
 
 func TestEventHandler_SendExternalEvents(t *testing.T) {

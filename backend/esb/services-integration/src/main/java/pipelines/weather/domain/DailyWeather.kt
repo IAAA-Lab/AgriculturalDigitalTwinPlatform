@@ -1,45 +1,45 @@
 data class DailyWeather(
-                val dataOrigin: Origin = Origin(),
-                val municipality: String = "",
-                val province: String = "",
-                val prediction: Prediction = Prediction(),
+        val dataOrigin: Origin = Origin(),
+        val municipality: String = "",
+        val province: String = "",
+        val prediction: Prediction = Prediction(),
 )
 
 data class Origin(
-                val producer: String = "",
-                val web: String = "",
-                val language: String = "",
-                val copyright: String = "",
-                val legalNote: String = "",
+        val producer: String = "",
+        val web: String = "",
+        val language: String = "",
+        val copyright: String = "",
+        val legalNote: String = "",
 )
 
 data class Prediction(val dia: List<Day> = listOf())
 
 data class Day(
-                val probPrec: List<PrecipitationProbability> = listOf(),
-                val snowQuoteProb: List<SnowQuoteProb> = listOf(),
-                val skyState: List<SkyState> = listOf(),
-                val wind: List<Wind> = listOf(),
-                val ta: RelativeHumidity = RelativeHumidity(),
-                val hr: RelativeHumidity = RelativeHumidity(),
-                val uvMax: Long? = null,
-                val date: String = ""
+        val probPrec: List<PrecipitationProbability> = listOf(),
+        val snowQuoteProb: List<SnowQuoteProb> = listOf(),
+        val skyState: List<SkyState> = listOf(),
+        val wind: List<Wind> = listOf(),
+        val ta: RelativeHumidity = RelativeHumidity(),
+        val hr: RelativeHumidity = RelativeHumidity(),
+        val uvMax: Long? = null,
+        val date: String = ""
 )
 
 data class SnowQuoteProb(val value: String = "", val period: String? = null)
 
 data class SkyState(
-                val value: String = "",
-                val periodo: String? = null,
-                val descripcion: String = ""
+        val value: String = "",
+        val periodo: String? = null,
+        val descripcion: String = ""
 )
 
 data class HrValue(val value: Long = 0, val hour: Long = 0)
 
 data class RelativeHumidity(
-                val max: Long = 0,
-                val min: Long = 0,
-                val dato: List<HrValue> = listOf()
+        val max: Long = 0,
+        val min: Long = 0,
+        val dato: List<HrValue> = listOf()
 )
 
 data class PrecipitationProbability(val value: Long = 0, val period: String? = null)

@@ -1,67 +1,45 @@
 import org.apache.camel.Exchange
 import org.apache.camel.LoggingLevel
 import org.apache.camel.builder.RouteBuilder
+import org.apache.camel.component.jackson.JacksonDataFormat
 import org.apache.camel.component.jackson.ListJacksonDataFormat
 
 class DailyWeatherRoute : RouteBuilder() {
 
-    data class RequestIn(val id: String, val payload: DailyWeatherReq)
-    data class RequesOut(val id: String, val payload: DailyWeather)
+  data class RequestIn(val id: String, val payload: DailyWeatherReq)
+  data class RequestOut(val id: String, val payload: DailyWeather)
 
-    override fun configure() {
+  val RABBITMQ_ROUTE =
+      "rabbitmq:{{rabbitmq.uri}}/{{rabbitmq.digital_twin.exchange}}?queue={{rabbitmq.weather.queue}}&routingKey={{rabbitmq.weather.daily.routing_key}}&autoDelete=false"
+  val AGROSLAB_URI = "{{agroslab.uri}}"
+  val AGROSLAB_API_KEY = "{{agroslab.api_key}}"
 
-        // FIX: Just to test the route
-        var bodyIn =
-                RequestIn(
-                        "1",
-                        DailyWeatherReq(
-                                operation = "aemetprediccionmunicipio",
-                                provincia = "50",
-                                municipio = "001",
-                                type = WeatherType.DAILY.value,
-                        ),
-                )
+  override fun configure() {
 
-        // Get request from RabbitMQ
-        // from("rabbitmq://localhost:5672/weather?queue=daily-weather&autoDelete=false&durable=true")
-        //         .log(LoggingLevel.INFO, "Received message from RabbitMQ: \${body}")
-        //         .unmarshal(JacksonDataFormat(RequestIn::class.java))
-        //         .setBody(constant(bodyIn))
-        //         // For recovering it later in the response
-        //         .setProperty("requestId", simple("\${body.id}"))
-        //         .to("direct:weatherIn")
-
-        // Call external service and process response
-        from("timer:foo?period=10000")
-                .setHeader("authorization", constant("{{agroslab.api_key}}"))
-                .setHeader(Exchange.HTTP_METHOD, constant("POST"))
-                .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-                // TODO: Id not working
-                .setProperty("requestId", body())
-                .setBody(constant(bodyIn.payload))
-                .marshal()
-                .json()
-                .to("{{agroslab.uri}}")
-                // Just for marshalling non utf-8 strange characters
-                .convertBodyTo(String::class.java, "utf-8")
-                .unmarshal(ListJacksonDataFormat(DailyWeatherResp::class.java))
-                .process { exchange: Exchange ->
-                    val payload = exchange.`in`.body as List<DailyWeatherResp>
-                    val convertedPayload = payload[0].toDailyWeather()
-                    // TODO: Id not working
-                    exchange.`in`.body =
-                            RequesOut(exchange.getProperty("requestId") as String, convertedPayload)
-                }
-                .to("direct:weatherOut")
-
-        // Send response back to RabbitMQ
-        from("direct:weatherOut")
-                .marshal()
-                .json()
-                .log(LoggingLevel.INFO, "Sending to RabbitMQ: \${body}")
-        // .to(
-        //
-        // "rabbitmq://localhost:5672/weather?queue=daily-weather&autoDelete=false&durable=true"
-        // )
-    }
+    // Consume request from RabbitMQ
+    from(RABBITMQ_ROUTE)
+        .log(LoggingLevel.INFO, "weather-daily", "Received message: \${body}")
+        .unmarshal(JacksonDataFormat(RequestIn::class.java))
+        .process { exchange: Exchange ->
+          val request = exchange.`in`.getBody(RequestIn::class.java)
+          // Save request id for later use
+          exchange.`in`.setHeader("id", request.id)
+        }
+        // Call Agroslab API
+        .setHeader("Accept", constant("application/json"))
+        .setHeader("authorization", constant(AGROSLAB_API_KEY))
+        .setHeader(Exchange.HTTP_METHOD, constant("POST"))
+        .to(AGROSLAB_URI)
+        .log(LoggingLevel.INFO, "weather-daily", "Response from Agroslab: \${body}")
+        .unmarshal(ListJacksonDataFormat(DailyWeather::class.java))
+        .process { exchange: Exchange ->
+          // Get request id from exchange headers
+          val id = exchange.`in`.getHeader("id", String::class.java)
+          val payload = exchange.`in`.getBody(List::class.java)
+          exchange.`in`.setBody(RequestOut(id, payload[0] as DailyWeather))
+        }
+        // Send response to RabbitMQ
+        .marshal(JacksonDataFormat(RequestOut::class.java))
+        .log(LoggingLevel.INFO, "weather-daily", "Sending message: \${body}")
+        .to(RABBITMQ_ROUTE)
 }

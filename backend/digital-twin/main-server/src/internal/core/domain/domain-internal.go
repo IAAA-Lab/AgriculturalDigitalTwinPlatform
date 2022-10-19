@@ -10,8 +10,8 @@ import (
 // Event types
 const (
 	EVENT_TYPE_PARCELS          = "parcels"
-	EVENT_TYPE_DAILY_WEATHER    = "dailyWeather"
-	EVENT_TYPE_FORECAST_WEATHER = "forecastWeather"
+	EVENT_TYPE_DAILY_WEATHER    = "daily_weather"
+	EVENT_TYPE_FORECAST_WEATHER = "forecast_weather"
 	EVENT_TYPE_NDVI             = "ndvi"
 	EVENT_TYPE_NDVI_MAP         = "ndviMap"
 )
