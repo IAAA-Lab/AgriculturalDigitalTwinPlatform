@@ -1,10 +1,9 @@
-<main class="main">
+<main class="main container-responsive">
   <slot />
 </main>
 
 <style>
   .main {
     grid-area: main;
-    padding: 10px;
   }
 </style>

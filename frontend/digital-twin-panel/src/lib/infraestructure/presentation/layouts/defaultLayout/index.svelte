@@ -16,7 +16,7 @@
   .default-layout {
     display: grid;
     grid-template-columns: 1fr 8fr;
-    grid-template-rows: 65px 1fr;
+    grid-template-rows: 50px 1fr;
     grid-template-areas:
       "sidebar header"
       "sidebar main";

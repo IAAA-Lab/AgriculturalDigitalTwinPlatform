@@ -3,6 +3,7 @@ enum AppRoutes {
   MAP = "/map",
   ANALYTICS = "/analytics",
   SIMULATION = "/simulation",
+  SETTINGS = "/settings",
 }
 
 export { AppRoutes };

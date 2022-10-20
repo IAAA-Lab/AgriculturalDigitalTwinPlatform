@@ -1,4 +1,6 @@
 <script lang="ts">
+  //TODO: look at this table: https://gridjs.io/docs/config/data
+
   import Card from "../../../components/cards/Card.svelte";
   import { Datatable } from "svelte-simple-datatables";
   import Characteristics from "../../enclosures/overview/sections/Characteristics.svelte";

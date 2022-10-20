@@ -24,6 +24,7 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+    margin-left: $main--padding__desktop;
 
     nav {
       ul {

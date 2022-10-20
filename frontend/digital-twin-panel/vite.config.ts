@@ -14,4 +14,10 @@ export default defineConfig({
       emitCss: true,
     }),
   ],
+  // For absolute imports https://dev.to/abdeldjalilhachimi/how-to-avoid-long-path-import-using-react-with-ts-and-vite-4e2h
+  resolve: {
+    alias: {
+      "@/src": `${__dirname}/src`,
+    },
+  },
 });

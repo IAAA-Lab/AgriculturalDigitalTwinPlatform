@@ -8,9 +8,12 @@
 </script>
 
 <aside class="sidebar">
-  <div class="logo-text">
-    <h3>GEDEFEC</h3>
-  </div>
+  <a href={AppRoutes.OVERVIEW}>
+    <div class="logo-text">
+      <img src="images/logo.svg" height={75} alt="logo" />
+      <h3>GEDEFEC</h3>
+    </div>
+  </a>
   <nav>
     <ul>
       <li>
@@ -50,6 +53,16 @@
           </SidebarOption>
         </Link>
       </li>
+      <li>
+        <Link to={AppRoutes.SETTINGS}>
+          <SidebarOption
+            text="Configuración"
+            selected={selected === AppRoutes.SETTINGS}
+          >
+            <i class="fi fi-rr-settings" />
+          </SidebarOption>
+        </Link>
+      </li>
     </ul>
   </nav>
   <Footer />
@@ -62,7 +75,7 @@
     top: 0;
     grid-area: sidebar;
     height: 100vh;
-    padding: 0px 20px 0px 20px;
+    padding: 0 15px;
 
     nav {
       display: flex;
@@ -79,6 +92,14 @@
           padding-bottom: 7px;
         }
       }
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 0.15rem;
     }
   }
 </style>
