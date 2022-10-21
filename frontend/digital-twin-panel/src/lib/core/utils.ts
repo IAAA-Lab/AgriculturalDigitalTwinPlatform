@@ -3,6 +3,18 @@ import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import leaflet from "leaflet";
 
+// Handle sidebar toggle
+const toggleSidebar = (hide: boolean = true) => {
+  const sidebar = document.getElementsByClassName("sidebar")[0];
+  console.log(sidebar);
+  if (hide) {
+    sidebar?.classList.toggle("not-active");
+    return;
+  }
+  // Toggle
+  sidebar?.classList.toggle("not-active");
+};
+
 // Fixes default icons of markers in leaflet
 const fixDefaultLeafletIcons = () => {
   delete leaflet.Icon.Default.prototype._getIconUrl;
@@ -80,4 +92,5 @@ export {
   numberWithCommas,
   markerMapIconByColor,
   getColorList,
+  toggleSidebar,
 };

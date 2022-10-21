@@ -4,10 +4,10 @@
 </script>
 
 <div class="sidebar-option" class:selected>
-  <div class="sidebar-option-icon mr-16 pt-4">
+  <div class="sidebar-option-icon pt-4 pl-4 pr-4">
     <slot />
   </div>
-  <h3 class="sidebar-option-text m-0 text-sm">
+  <h3 class="sidebar-option-text m-0 ml-16 text-sm">
     {text}
   </h3>
 </div>
@@ -20,7 +20,6 @@
     padding: 5px 0px 5px 10px;
     border-radius: 10px;
     width: 100%;
-    min-width: 100px;
 
     cursor: pointer;
     transition: all 0.2s ease-out;

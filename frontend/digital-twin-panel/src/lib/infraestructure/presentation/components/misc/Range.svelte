@@ -1,5 +1,6 @@
 <script lang="ts">
   export let value = 0;
+  export let height: number = 20;
 
   const LOW = value < 25;
   const MEDIUM = value >= 25 && value < 75;
@@ -20,13 +21,13 @@
   class="range-bar"
   style="--range-bar-width: {value}%; --range-bar-color: {getRangeBarColor(
     value
-  )};"
+  )}; --range-bar-height: {height}px"
 />
 
 <style lang="scss">
   .range-bar {
     width: 100%;
-    height: 20px;
+    height: var(--range-bar-height, 20px);
     background-color: rgb(220, 220, 220);
     border-radius: 10px;
     padding: 3px;

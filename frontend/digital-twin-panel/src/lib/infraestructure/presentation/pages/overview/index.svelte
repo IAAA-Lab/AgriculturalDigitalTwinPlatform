@@ -1,15 +1,11 @@
 <script>
+  import { onDestroy, onMount } from "svelte";
   import AverageCharacteristics from "./sections/AverageCharacteristics.svelte";
   import Map from "./sections/Map.svelte";
   import RangeCharacteristics from "./sections/RangeCharacteristics.svelte";
   import Summary from "./sections/Summary.svelte";
   import Tables from "./sections/Tables.svelte";
 </script>
-
-<svelte:head>
-  <title>Overview</title>
-  <meta name="description" content="Overview" />
-</svelte:head>
 
 <div class="overview mr-8">
   <Map />
@@ -23,12 +19,10 @@
   .overview {
     display: grid;
     gap: 0.75rem;
-    grid-template-columns: auto;
     grid-template-areas:
       "map"
       "avgCharacteristics"
       "rangeCharacteristics"
-      "summary"
       "tables";
     :global(.summary) {
       display: none;
@@ -46,6 +40,9 @@
       :global(.summary) {
         display: block;
       }
+    }
+    :global(.cupertino-pane-wrapper) {
+      display: none !important;
     }
   }
 

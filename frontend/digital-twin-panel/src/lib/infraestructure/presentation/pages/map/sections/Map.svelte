@@ -4,6 +4,7 @@
   import leaflet from "leaflet";
   import { getColorList } from "../../../../../core/utils";
 
+  let map;
   let mapElement;
   let i = 0;
 
@@ -58,7 +59,7 @@
   const colorList = getColorList(geojsonFeatures.features.length);
 
   onMount(async () => {
-    const map = leaflet.map(mapElement);
+    map = leaflet.map(mapElement);
 
     leaflet
       .tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {

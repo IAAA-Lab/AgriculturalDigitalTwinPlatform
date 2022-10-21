@@ -24,7 +24,7 @@
         };
       })
       .render()
-      .replace("svg", "svg width='100px' height='100px'");
+      .replace("svg", "svg width='75px' height='75px'");
     // Translate svg
   });
 </script>
@@ -33,10 +33,10 @@
   <div slot="body" class="body">
     {@html icon}
     <div class="content">
-      <p class="text-sm m-0 mb-8"><strong>{enclosureName}</strong></p>
+      <p class="text-sm mb-4"><strong>{enclosureName}</strong></p>
       <div class="row">
         <i class="fi fi-rr-map-marker" />
-        <p class="text-sm m-0 pl-8">{numberWithCommas(area)} Ha</p>
+        <p class="text-sm pl-8">{numberWithCommas(area)} Ha</p>
       </div>
       <div class="row">
         <i class="fi fi-rr-corn" />
@@ -44,7 +44,7 @@
       </div>
       <div class="pe">
         <i class="fi fi-rr-heart" />
-        <Range value={ndvi} />
+        <Range value={ndvi} height={12} />
         <p class="text-sm m-0"><strong>{ndvi} %</strong></p>
       </div>
     </div>

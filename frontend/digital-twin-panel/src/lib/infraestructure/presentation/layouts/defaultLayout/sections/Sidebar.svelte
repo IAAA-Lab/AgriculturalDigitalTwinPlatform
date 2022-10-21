@@ -7,11 +7,11 @@
   let selected = window.location.pathname;
 </script>
 
-<aside class="sidebar">
+<aside class="sidebar ml-16">
   <a href={AppRoutes.OVERVIEW}>
-    <div class="logo-text">
-      <img src="images/logo.svg" height={75} alt="logo" />
-      <h3>GEDEFEC</h3>
+    <div class="logo-text mb-32 mt-16">
+      <img src="images/logo.svg" height={45} alt="logo" />
+      <h3 class="m-0 pl-8">GEDEFEC</h3>
     </div>
   </a>
   <nav>
@@ -75,7 +75,6 @@
     top: 0;
     grid-area: sidebar;
     height: 100vh;
-    padding: 0 15px;
 
     nav {
       display: flex;
