@@ -1,7 +1,7 @@
 <script>
   import { CupertinoPane } from "cupertino-pane";
   import { onDestroy, onMount } from "svelte";
-  import Summary from "../../pages/overview/sections/Summary.svelte";
+  import Summary from "../sections/Summary.svelte";
 
   const settings = {
     parentElement: "body",

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Link } from "svelte-routing";
-  import SidebarOption from "../../../components/misc/SidebarOption.svelte";
+  import SidebarOption from "../components/SidebarOption.svelte";
   import Footer from "./Footer.svelte";
   import { AppRoutes } from "../../../../../../app/config/constants";
 

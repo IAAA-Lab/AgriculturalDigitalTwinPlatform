@@ -1,6 +1,6 @@
 <script>
   import { AppRoutes } from "@/src/app/config/constants";
-  import SummaryPopup from "../../../components/misc/SummaryPopup.svelte";
+  import SummaryPopup from "../../../pages/overview/components/SummaryPopup.svelte";
 </script>
 
 <header class="header ml-16">

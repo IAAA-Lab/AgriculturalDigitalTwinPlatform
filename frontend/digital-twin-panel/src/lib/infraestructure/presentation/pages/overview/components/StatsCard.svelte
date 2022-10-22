@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { numberWithCommas } from "../../../../core/utils";
-  import Card from "./Card.svelte";
+  import { numberWithCommas } from "../../../../../core/functions";
+  import Card from "../../../components/cards/Card.svelte";
   export let statName = "-";
   export let statValue: number;
   export let statUnit = "N/A";

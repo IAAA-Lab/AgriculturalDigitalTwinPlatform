@@ -2,7 +2,7 @@
   import { onMount, onDestroy } from "svelte";
   import Card from "../../../components/cards/Card.svelte";
   import leaflet from "leaflet";
-  import { getColorList } from "../../../../../core/utils";
+  import { getColorList } from "../../../../../core/functions";
 
   let map;
   let mapElement;

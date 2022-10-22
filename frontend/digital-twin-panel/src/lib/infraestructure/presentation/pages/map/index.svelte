@@ -2,8 +2,8 @@
   import Map from "./sections/Map.svelte";
   import Search from "./sections/Search.svelte";
   import { onDestroy, onMount } from "svelte";
-  import SearchPopup from "../../components/misc/SearchPopup.svelte";
-  import { IS_IN_MOBILE } from "@/src/lib/core/utils";
+  import SearchPopup from "./components/SearchPopup.svelte";
+  import { IS_IN_MOBILE } from "@/src/lib/core/functions";
 </script>
 
 <div class="map">

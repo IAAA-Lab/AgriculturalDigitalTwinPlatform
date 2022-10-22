@@ -7,7 +7,7 @@
   import type {
     Characteristic,
     CharacteristicState,
-  } from "src/lib/core/Domain";
+  } from "@/src/lib/core/Domain";
   const settings = {
     columnFilter: true,
     labels: {

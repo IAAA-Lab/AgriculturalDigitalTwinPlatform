@@ -2,7 +2,7 @@
   import Header from "./sections/Header.svelte";
   import Main from "./sections/Main.svelte";
   import { onMount } from "svelte";
-  import { IS_IN_MOBILE } from "@/src/lib/core/utils";
+  import { IS_IN_MOBILE } from "@/src/lib/core/functions";
   import Sidebar from "./sections/Sidebar.svelte";
 
   let SidebarComp = Sidebar;

@@ -1,7 +1,7 @@
 <script>
   import { CupertinoPane } from "cupertino-pane";
   import { onDestroy, onMount } from "svelte";
-  import Search from "../../pages/map/sections/Search.svelte";
+  import Search from "../sections/Search.svelte";
 
   const settings = {
     darkMode: true,

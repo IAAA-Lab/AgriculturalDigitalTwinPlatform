@@ -1,7 +1,7 @@
 <script>
-  import { getColorList } from "@/src/lib/core/utils";
+  import { getColorList } from "@/src/lib/core/functions";
   import Card from "../../../components/cards/Card.svelte";
-  import MapSearchCard from "../../../components/misc/MapSearchCard.svelte";
+  import MapSearchCard from "../components/MapSearchCard.svelte";
 
   const colorList = getColorList(2);
 

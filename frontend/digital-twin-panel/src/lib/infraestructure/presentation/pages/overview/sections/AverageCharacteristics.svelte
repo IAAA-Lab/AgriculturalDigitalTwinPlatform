@@ -1,6 +1,6 @@
 <script>
   import Card from "../../../components/cards/Card.svelte";
-  import StatsCard from "../../../components/cards/StatsCard.svelte";
+  import StatsCard from "../components/StatsCard.svelte";
   import PieChart from "../../../components/charts/PieChart.svelte";
   let characteristics = [
     {

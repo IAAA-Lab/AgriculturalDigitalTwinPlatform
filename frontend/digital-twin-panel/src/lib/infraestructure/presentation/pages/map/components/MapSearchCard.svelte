@@ -1,10 +1,10 @@
 <script lang="ts">
-  import CardInner from "../cards/CardInner.svelte";
-  import Range from "./Range.svelte";
+  import CardInner from "../../../components/cards/CardInner.svelte";
+  import Range from "../../../components/misc/Range.svelte";
   import geojson2svg from "geojson-to-svg";
   import { onMount } from "svelte";
-  import RangeCharacteristics from "../../pages/overview/sections/RangeCharacteristics.svelte";
-  import { numberWithCommas } from "@/src/lib/core/utils";
+  import RangeCharacteristics from "../../overview/sections/RangeCharacteristics.svelte";
+  import { numberWithCommas } from "@/src/lib/core/functions";
 
   export let enclosureName: string;
   export let area: number;

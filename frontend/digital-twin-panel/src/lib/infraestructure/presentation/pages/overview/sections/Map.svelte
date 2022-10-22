@@ -5,7 +5,7 @@
   import {
     getColorList,
     markerMapIconByColor,
-  } from "../../../../../core/utils";
+  } from "../../../../../core/functions";
 
   let mapElement;
   let map;

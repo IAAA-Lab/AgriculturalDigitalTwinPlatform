@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { numberWithCommas } from "../../../../core/utils";
-  import CardInner from "./CardInner.svelte";
-  import CardInnerPrimary from "./CardInnerPrimary.svelte";
+  import { numberWithCommas } from "../../../../../core/functions";
+  import CardInner from "../../../components/cards/CardInner.svelte";
+  import CardInnerPrimary from "../../../components/cards/CardInnerPrimary.svelte";
 
   export let title: string;
   export let value: number;

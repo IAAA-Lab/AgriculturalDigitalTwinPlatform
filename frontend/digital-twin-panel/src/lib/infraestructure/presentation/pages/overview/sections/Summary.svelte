@@ -1,9 +1,9 @@
 <script>
   import Card from "../../../components/cards/Card.svelte";
   import CardInner from "../../../components/cards/CardInner.svelte";
-  import SummaryStatCard from "../../../components/cards/SummaryStatCard.svelte";
   import PieChart from "../../../components/charts/PieChart.svelte";
   import ToggleSwitch from "../../../components/basics/ToggleSwitch.svelte";
+  import SummaryStatCard from "../components/SummaryStatCard.svelte";
 
   const data = {
     best: [
