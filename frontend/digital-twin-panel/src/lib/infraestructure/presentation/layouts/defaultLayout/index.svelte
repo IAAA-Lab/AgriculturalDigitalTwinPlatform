@@ -3,22 +3,20 @@
   import Main from "./sections/Main.svelte";
   import { onMount } from "svelte";
   import { IS_IN_MOBILE } from "@/src/lib/core/utils";
+  import Sidebar from "./sections/Sidebar.svelte";
 
-  let Sidebar;
+  let SidebarComp = Sidebar;
 
-  // Download the sidebar js dinamically depending on the screen size
   onMount(async () => {
     if (IS_IN_MOBILE) {
-      Sidebar = (await import("./sections/SidebarMobile.svelte")).default;
-    } else {
-      Sidebar = (await import("./sections/Sidebar.svelte")).default;
+      SidebarComp = (await import("./sections/SidebarMobile.svelte")).default;
     }
   });
 </script>
 
 <div class="default-layout">
   <Header />
-  <svelte:component this={Sidebar} />
+  <svelte:component this={SidebarComp} />
   <Main>
     <slot />
   </Main>
