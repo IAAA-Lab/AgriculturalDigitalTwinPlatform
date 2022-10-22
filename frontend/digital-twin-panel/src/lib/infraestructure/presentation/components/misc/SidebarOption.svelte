@@ -18,8 +18,8 @@
     align-items: center;
     justify-content: flex-start;
     padding: 5px 0px 5px 10px;
-    border-radius: 10px;
     width: 100%;
+    border-radius: 10px;
 
     cursor: pointer;
     transition: all 0.2s ease-out;

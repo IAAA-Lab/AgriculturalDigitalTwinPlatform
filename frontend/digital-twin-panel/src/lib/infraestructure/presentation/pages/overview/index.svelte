@@ -1,5 +1,4 @@
 <script>
-  import { onDestroy, onMount } from "svelte";
   import AverageCharacteristics from "./sections/AverageCharacteristics.svelte";
   import Map from "./sections/Map.svelte";
   import RangeCharacteristics from "./sections/RangeCharacteristics.svelte";

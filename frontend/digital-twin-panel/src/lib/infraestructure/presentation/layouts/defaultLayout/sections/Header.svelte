@@ -1,15 +1,9 @@
 <script>
   import { AppRoutes } from "@/src/app/config/constants";
   import SummaryPopup from "../../../components/misc/SummaryPopup.svelte";
-
-  const toggleSidebar = () => {
-    const sidebar = document.querySelector(".sidebar");
-    sidebar?.classList.toggle("not-active");
-  };
 </script>
 
 <header class="header ml-16">
-  <i class="fi fi-rr-menu-burger burguer" on:click={toggleSidebar} />
   <h1>{document.title}</h1>
   <nav>
     <ul>
@@ -34,14 +28,14 @@
     grid-area: header;
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: space-between;
     align-items: center;
+    padding-top: 16px;
 
     nav {
       ul {
         display: flex;
-        justify-content: right;
         align-items: center;
         list-style: none;
         margin: 0;
@@ -66,11 +60,6 @@
         color: grey;
       }
     }
-    .burguer {
-      margin-top: 8px;
-      cursor: pointer;
-      display: none;
-    }
 
     .notifications {
       cursor: pointer;
@@ -91,8 +80,9 @@
 
   @include media("<medium") {
     .header {
-      .burguer {
-        display: block;
+      justify-content: end;
+      h1 {
+        display: none;
       }
       .user-settings {
         display: none;

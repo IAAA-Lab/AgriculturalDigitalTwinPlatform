@@ -10,7 +10,7 @@
 <aside class="sidebar ml-16">
   <a href={AppRoutes.OVERVIEW}>
     <div class="logo-text mb-32 mt-16">
-      <img src="images/logo.svg" height={45} alt="logo" />
+      <img src="images/logo.png" height={45} alt="logo" />
       <h3 class="m-0 pl-8">GEDEFEC</h3>
     </div>
   </a>
@@ -99,6 +99,21 @@
       justify-content: flex-start;
       align-items: center;
       gap: 0.15rem;
+    }
+  }
+
+  @include media("<large") {
+    :global {
+      .sidebar {
+        .sidebar-option-text {
+          display: none;
+        }
+        .logo-text {
+          h3 {
+            display: none;
+          }
+        }
+      }
     }
   }
 </style>

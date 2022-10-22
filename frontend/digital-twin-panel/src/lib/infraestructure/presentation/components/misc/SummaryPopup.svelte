@@ -25,6 +25,10 @@
     }
   };
 
+  const closeSummaryPopup = () => {
+    summaryPopup.destroy({ animate: true });
+  };
+
   onMount(async () => {
     summaryPopup = new CupertinoPane(".summary-pop-up", settings);
   });
