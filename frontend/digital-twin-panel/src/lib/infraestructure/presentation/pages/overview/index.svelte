@@ -6,7 +6,7 @@
   import Tables from "./sections/Tables.svelte";
 </script>
 
-<div class="overview mr-8">
+<div class="overview mr-8 container-responsive">
   <Map />
   <RangeCharacteristics />
   <AverageCharacteristics />

@@ -1,25 +1,45 @@
 <script>
   import { getColorList } from "@/src/lib/core/utils";
   import Card from "../../../components/cards/Card.svelte";
-
   import MapSearchCard from "../../../components/misc/MapSearchCard.svelte";
 
   const colorList = getColorList(2);
+
+  let enclosures = ["Enclosure 1", "Enclosure 2", "Enclosure 3", "Enclosure 4"];
+  let search = "";
+
+  // Listener for the search input
+  $: {
+    enclosures = enclosures.filter((e) =>
+      e.toLowerCase().includes(search.toLowerCase())
+    );
+  }
 </script>
 
 <Card>
   <div slot="header">
     <h2 class="m-0 mb-8">Enclosures</h2>
   </div>
-  <div slot="body">
-    <div class="search">
-      <!-- TODO: Autocomplete -->
-      <input type="text" placeholder="Buscar..." />
+  <div slot="body" class="p-8">
+    <input
+      type="search"
+      bind:value={search}
+      placeholder="Buscar..."
+      style="width: 100%;"
+    />
+    <div class="search-more">
+      <span class="text-xs"
+        ><strong>{enclosures.length} resultados<strong /></strong></span
+      >
+      <div class="filter-order">
+        <i class="fi fi-rr-settings-sliders" />
+        <i class="fi fi-rr-sort-amount-down-alt" />
+      </div>
     </div>
     <br />
     <div class="enclosures">
       <MapSearchCard
-        enclosureName="Enclosure 1"
+        enclosureName="Rec#143-30-12-3-1-0"
         area={100}
         ndvi={87}
         geojsonFeature={{
@@ -42,7 +62,7 @@
         <div slot="crops" class="row" />
       </MapSearchCard>
       <MapSearchCard
-        enclosureName="Enclosure 2"
+        enclosureName="Rec#123-32-12-3-1-3"
         area={2345}
         ndvi={24}
         geojsonFeature={{
@@ -75,5 +95,21 @@
     gap: 0.8rem;
     padding-left: 5px;
     padding-right: 5px;
+  }
+
+  .search-more {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .filter-order {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    cursor: pointer;
   }
 </style>

@@ -1,9 +1,9 @@
-<main class="main container-responsive">
+<main>
   <slot />
 </main>
 
 <style>
-  .main {
+  main {
     grid-area: main;
   }
 </style>

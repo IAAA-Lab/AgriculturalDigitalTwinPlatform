@@ -101,6 +101,5 @@
 
   div {
     border: 8px solid color-bg(card);
-    min-width: 400px;
   }
 </style>

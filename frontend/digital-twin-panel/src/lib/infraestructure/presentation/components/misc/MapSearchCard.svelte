@@ -15,6 +15,7 @@
   let icon = null;
 
   onMount(() => {
+    // Convert geojson features to the svg image we see, imitating the ones in the map
     icon = geojson2svg()
       .data(geojsonFeature)
       .styles((e, i, a) => {
@@ -25,7 +26,6 @@
       })
       .render()
       .replace("svg", "svg width='75px' height='75px'");
-    // Translate svg
   });
 </script>
 
@@ -36,13 +36,13 @@
       <p class="text-sm mb-4"><strong>{enclosureName}</strong></p>
       <div class="row">
         <i class="fi fi-rr-map-marker" />
-        <p class="text-sm pl-8">{numberWithCommas(area)} Ha</p>
+        <p class="text-sm m-0 pl-8">{numberWithCommas(area)} Ha</p>
       </div>
       <div class="row">
         <i class="fi fi-rr-corn" />
         <slot name="crops" />
       </div>
-      <div class="pe">
+      <div class="ndvi">
         <i class="fi fi-rr-heart" />
         <Range value={ndvi} height={12} />
         <p class="text-sm m-0"><strong>{ndvi} %</strong></p>
@@ -63,7 +63,7 @@
       flex: 1;
     }
 
-    .pe {
+    .ndvi {
       display: flex;
       flex-direction: row;
       justify-content: center;
