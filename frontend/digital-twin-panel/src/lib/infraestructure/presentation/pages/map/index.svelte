@@ -19,7 +19,7 @@
   .map {
     display: grid;
     gap: 0.8rem;
-    height: calc(100vh - 10rem);
+    height: calc(100vh - 5rem);
     @extend .container-responsive;
     grid-template-columns: 1fr 350px;
   }
@@ -29,6 +29,7 @@
       padding: 0;
       margin-top: 16px;
       grid-template-columns: 1fr;
+      height: calc(100vh - 10rem);
     }
   }
 </style>
