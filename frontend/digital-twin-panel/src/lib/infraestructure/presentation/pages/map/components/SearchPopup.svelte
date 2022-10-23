@@ -1,11 +1,10 @@
 <script>
   import { CupertinoPane } from "cupertino-pane";
-  import { onDestroy, onMount } from "svelte";
+  import { onMount } from "svelte";
   import Search from "../sections/Search.svelte";
 
   const settings = {
     darkMode: true,
-    backdrop: true,
     upperThanTop: true,
     buttonDestroy: false,
   };
@@ -13,25 +12,34 @@
   let summaryPopup;
 
   onMount(async () => {
-    summaryPopup = new CupertinoPane(".search-pop-up", settings);
-    summaryPopup.present({ animate: true });
+    summaryPopup = await new CupertinoPane(".search-pop-up", settings).present({
+      animate: true,
+      transition: {
+        duration: 0.2,
+      },
+    });
     summaryPopup.disableDrag();
+    summaryPopup.moveToBreak("bottom");
+    // As drag doesn`t work correctly, we can move it by pressing the ---- button on top
     document.querySelector(".draggable").addEventListener("click", () => {
       if (summaryPopup.currentBreak() === "bottom") {
-        summaryPopup.backdrop({ show: true });
         summaryPopup.moveToBreak("top");
       } else {
-        summaryPopup.backdrop({ show: false });
         summaryPopup.moveToBreak("bottom");
       }
     });
-  });
-
-  onDestroy(() => {
-    summaryPopup.destroy();
+    // Destroy instance when component is destroyed
+    return () => summaryPopup.destroy();
   });
 </script>
 
 <div class="search-pop-up mt-16">
   <Search />
 </div>
+
+<style>
+  .search-pop-up {
+    position: absolute;
+    width: 100%;
+  }
+</style>
