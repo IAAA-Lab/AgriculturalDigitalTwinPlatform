@@ -78,8 +78,8 @@
       </div>
       <p class="text-xs">Última actualización: 2021-03-01 12:00</p>
     </div>
-    <div slot="body" class="summary-body">
-      <div class="summary-body-stats mb-16">
+    <div slot="body" class="body">
+      <div class="body-stats mb-16">
         {#each checked ? data.worse : data.best as stat, i}
           <SummaryStatCard
             title={stat.title}
@@ -100,7 +100,7 @@
             <option value="3">Parcela 3</option>
           </select>
         </div>
-        <div slot="body" class="summary-analytics-chart">
+        <div slot="body" class="analytics-chart">
           <PieChart
             labels={[
               "#20-123-23-3-4-1",
@@ -125,16 +125,16 @@
       justify-content: space-between;
     }
 
-    .summary-body {
+    .body {
       padding: 0px 5px 10px 5px;
     }
-    .summary-body-stats {
+    .body-stats {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       grid-gap: 0.75rem;
     }
 
-    .summary-analytics-chart {
+    .analytics-chart {
       max-height: 175px;
       padding: 5px;
     }

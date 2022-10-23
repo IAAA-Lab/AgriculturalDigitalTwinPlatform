@@ -1,5 +1,5 @@
 <script>
-  import { onMount, onDestroy } from "svelte";
+  import { onMount } from "svelte";
   import Card from "../../../components/cards/Card.svelte";
   import leaflet from "leaflet";
   import {
@@ -8,7 +8,6 @@
   } from "../../../../../core/functions";
 
   let mapElement;
-  let map;
   let i = 0;
 
   let geojsonFeatures = {
@@ -48,7 +47,7 @@
   const colorList = getColorList(geojsonFeatures.features.length);
 
   onMount(async () => {
-    map = leaflet.map(mapElement);
+    const map = leaflet.map(mapElement);
 
     leaflet
       .tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -59,12 +58,14 @@
 
     const features = leaflet
       .geoJSON(geojsonFeatures, {
-        // Change marker
+        // Change marker icon for each feature
         pointToLayer: function (feature, latlng) {
           return leaflet.marker(latlng, {
             icon: markerMapIconByColor(colorList[i++]),
           });
         },
+        // GeoJSON coords are in [lon, lat] order instead of [lat, lon]
+        // that Leaflet uses (by default), so reverse them
         coordsToLatLng: function (coords) {
           return new leaflet.LatLng(coords[0], coords[1]);
         },
@@ -72,17 +73,14 @@
       .addTo(map)
       .bindPopup((e) => e.feature.properties.popupContent);
 
+    // Fits map to all features present automatically
     map.fitBounds(features.getBounds(), { padding: [50, 50] });
-  });
 
-  onDestroy(async () => {
-    if (map) {
-      map.remove();
-    }
+    return () => map.remove();
   });
 </script>
 
-<section class="homeMap">
+<section>
   <Card>
     <div slot="body" bind:this={mapElement} />
   </Card>
@@ -90,7 +88,7 @@
 
 <style lang="scss">
   @import "leaflet/dist/leaflet.css";
-  .homeMap {
+  section {
     grid-area: map;
     div {
       min-height: 200px;

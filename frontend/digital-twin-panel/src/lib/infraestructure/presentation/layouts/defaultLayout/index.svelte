@@ -1,22 +1,25 @@
 <script>
   import Header from "./sections/Header.svelte";
   import Main from "./sections/Main.svelte";
-  import { onMount } from "svelte";
-  import { IS_IN_MOBILE } from "@/src/lib/core/functions";
   import Sidebar from "./sections/Sidebar.svelte";
+  import SidebarMobile from "./sections/SidebarMobile.svelte";
+  import { TABLET_WIDTH } from "@/src/app/config/constants";
 
-  let SidebarComp = Sidebar;
+  let mediaQueryMobile = window.matchMedia(`(max-width: ${TABLET_WIDTH}px)`);
+  let isInMobile = mediaQueryMobile.matches;
 
-  onMount(async () => {
-    if (IS_IN_MOBILE) {
-      SidebarComp = (await import("./sections/SidebarMobile.svelte")).default;
-    }
+  mediaQueryMobile.addEventListener("change", () => {
+    isInMobile = mediaQueryMobile.matches;
   });
 </script>
 
 <div class="default-layout">
   <Header />
-  <svelte:component this={SidebarComp} />
+  {#if isInMobile}
+    <SidebarMobile />
+  {:else}
+    <Sidebar />
+  {/if}
   <Main>
     <slot />
   </Main>

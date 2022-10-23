@@ -11,13 +11,10 @@
 
   let summaryPopup;
 
-  onMount(async () => {
-    summaryPopup = await new CupertinoPane(".search-pop-up", settings).present({
-      animate: true,
-      transition: {
-        duration: 0.2,
-      },
-    });
+  onMount(() => {
+    if (summaryPopup) return;
+    summaryPopup = new CupertinoPane(".search-pop-up", settings);
+    summaryPopup.present();
     summaryPopup.disableDrag();
     summaryPopup.moveToBreak("bottom");
     // As drag doesn`t work correctly, we can move it by pressing the ---- button on top

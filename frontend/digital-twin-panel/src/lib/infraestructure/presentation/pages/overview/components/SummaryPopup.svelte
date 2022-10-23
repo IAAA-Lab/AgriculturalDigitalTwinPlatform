@@ -25,10 +25,6 @@
     }
   };
 
-  const closeSummaryPopup = () => {
-    summaryPopup.destroy({ animate: true });
-  };
-
   onMount(async () => {
     summaryPopup = new CupertinoPane(".summary-pop-up", settings);
   });
@@ -38,7 +34,7 @@
   });
 </script>
 
-<i class="fi fi-rr-comment" on:click={toggleSummaryPopup} />
+<i class="fi fi-rr-comment summary-icon" on:click={toggleSummaryPopup} />
 <div class="summary-pop-up p-16 mb-16">
   <Summary />
 </div>
@@ -51,6 +47,11 @@
         cursor: pointer !important;
         z-index: 1000 !important;
       }
+    }
+    .summary-icon {
+      color: color(secondary);
+      cursor: pointer;
+      display: none;
     }
   }
 </style>

@@ -40,6 +40,7 @@
         display: block;
       }
     }
+    // Make summary-pop-up not display in large screens
     :global(.cupertino-pane-wrapper) {
       display: none !important;
     }
@@ -47,7 +48,6 @@
 
   @include media(">large") {
     .overview {
-      display: grid;
       grid-template-columns: 2.5fr 2.5fr 2fr;
       grid-template-areas:
         "map avgCharacteristics summary"

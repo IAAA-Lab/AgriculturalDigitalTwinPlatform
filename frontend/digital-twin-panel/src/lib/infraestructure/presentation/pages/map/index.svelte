@@ -2,12 +2,19 @@
   import Map from "./sections/Map.svelte";
   import Search from "./sections/Search.svelte";
   import SearchPopup from "./components/SearchPopup.svelte";
-  import { IS_IN_MOBILE } from "@/src/lib/core/functions";
+  import { TABLET_WIDTH } from "@/src/app/config/constants";
+
+  let mediaQueryMobile = window.matchMedia(`(max-width: ${TABLET_WIDTH}px)`);
+  let isInMobile = mediaQueryMobile.matches;
+
+  mediaQueryMobile.addEventListener("change", () => {
+    isInMobile = mediaQueryMobile.matches;
+  });
 </script>
 
 <div class="map">
   <Map />
-  {#if IS_IN_MOBILE}
+  {#if isInMobile}
     <SearchPopup />
   {:else}
     <Search />

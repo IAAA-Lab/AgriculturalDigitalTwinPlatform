@@ -1,0 +1,78 @@
+<script>
+  import { AppRoutes } from "../../../../../../app/config/constants";
+
+  import { Link } from "svelte-routing";
+  import SidebarOption from "../components/SidebarOption.svelte";
+  let selected = window.location.pathname;
+</script>
+
+<nav>
+  <ul>
+    <li>
+      <Link to={AppRoutes.OVERVIEW}>
+        <SidebarOption
+          text="Overview"
+          selected={selected === AppRoutes.OVERVIEW}
+        >
+          <i color="white" class="fi fi-rr-layout-fluid" />
+        </SidebarOption>
+      </Link>
+    </li>
+    <li>
+      <Link to={AppRoutes.MAP}>
+        <SidebarOption text="Mapa" selected={selected === AppRoutes.MAP}>
+          <i class="fi fi-rr-map" />
+        </SidebarOption>
+      </Link>
+    </li>
+    <li>
+      <Link to={AppRoutes.ANALYTICS}>
+        <SidebarOption
+          text="Análisis"
+          selected={selected === AppRoutes.ANALYTICS}
+        >
+          <i class="fi fi-rr-chart-pie-alt" />
+        </SidebarOption>
+      </Link>
+    </li>
+    <li>
+      <Link to={AppRoutes.SIMULATION}>
+        <SidebarOption
+          text="Gemelos digitales"
+          selected={selected === AppRoutes.SIMULATION}
+        >
+          <i class="fi fi-rr-chart-network" />
+        </SidebarOption>
+      </Link>
+    </li>
+    <li>
+      <Link to={AppRoutes.SETTINGS}>
+        <SidebarOption
+          text="Configuración"
+          selected={selected === AppRoutes.SETTINGS}
+        >
+          <i class="fi fi-rr-settings" />
+        </SidebarOption>
+      </Link>
+    </li>
+  </ul>
+</nav>
+
+<style lang="scss">
+  nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    white-space: nowrap;
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      li {
+        padding-bottom: 7px;
+      }
+    }
+  }
+</style>

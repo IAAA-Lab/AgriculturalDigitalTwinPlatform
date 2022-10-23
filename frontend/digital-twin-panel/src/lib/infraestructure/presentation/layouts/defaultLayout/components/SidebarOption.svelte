@@ -4,7 +4,7 @@
 </script>
 
 <div class="sidebar-option" class:selected>
-  <div class="sidebar-option-icon pt-4 pl-4 pr-4">
+  <div class="pt-4 pl-4 pr-4">
     <slot />
   </div>
   <h3 class="sidebar-option-text m-0 ml-16 text-sm">
@@ -25,10 +25,8 @@
     transition: all 0.2s ease-out;
 
     &:hover {
+      :global(i),
       h3 {
-        color: color(primary);
-      }
-      :global(i) {
         color: color(primary);
       }
     }

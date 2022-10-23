@@ -1,7 +1,12 @@
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   margin: 0;
   padding: 0;
   background: color-bg(bg-color);
+  -webkit-font-smoothing: antialiased;
 }
 
 .leaflet-container {

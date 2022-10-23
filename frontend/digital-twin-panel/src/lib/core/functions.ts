@@ -75,12 +75,23 @@ const getColorList = (n: number) => {
     : Colors.names.slice(0, n);
 };
 
-const IS_IN_MOBILE = window.innerWidth < 600;
+const getIconByCharacteristic = (characteristic) => {
+  switch (characteristic.name) {
+    case "Lluvia":
+      return `<i class="fi fi-rr-raindrops" />`;
+    case "Viento":
+      return `<i class="fi fi-rr-wind" />`;
+    case "Temperatura":
+      return `<i class="fi fi-rr-temperature-low" />`;
+    default:
+      return `<i class="fi fi-rr-map-marker" />`;
+  }
+};
 
 export {
   fixDefaultLeafletIcons,
   numberWithCommas,
   markerMapIconByColor,
   getColorList,
-  IS_IN_MOBILE,
+  getIconByCharacteristic,
 };

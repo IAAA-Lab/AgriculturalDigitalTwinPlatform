@@ -1,15 +1,3 @@
-// Hide elements, for screen readers only
-.screen-reader {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 // Reset lists style
 .list-reset {
   list-style: none;
@@ -18,19 +6,6 @@
   li {
     margin: 0;
   }
-}
-
-// Text alignment
-.ta-l {
-  text-align: left;
-}
-
-.ta-c {
-  text-align: center;
-}
-
-.ta-r {
-  text-align: right;
 }
 
 // Font weight
@@ -83,67 +58,13 @@
   color: color(success) !important;
 }
 
-.invert-color {
-  .text-color-high {
-    color: color(high-contrast-inverse);
-  }
-
-  .text-color-mid {
-    color: color(mid-contrast-inverse);
-  }
-
-  .text-color-low {
-    color: color(low-contrast-inverse);
-  }
-}
-
 // Text transform
 .tt-u {
   text-transform: uppercase;
 }
 
-// Images
-.image-full {
-  width: 100%;
-}
-
-.image-larger {
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 100vw;
-}
-
-// Helper class for coloured bg
-.has-bg-color {
-  position: relative;
-  background-color: color-bg(bg-color);
-  z-index: 0;
-}
-
-// Helper class for box shadow
-.has-shadow {
-  box-shadow: color-bg(shadow);
-}
-
-// Dividers
-.has-top-divider {
-  @include divider(before);
-}
-
 .has-bottom-divider {
   @include divider(after);
-}
-
-.invert-color {
-  .has-top-divider {
-    @include divider(before, inverse);
-  }
-
-  .has-bottom-divider {
-    @include divider(after, inverse);
-  }
 }
 
 // For centering content
@@ -159,25 +80,6 @@
 
   .button-group {
     justify-content: center;
-  }
-}
-
-// Responsive video
-.responsive-video {
-  position: relative;
-  padding-bottom: 56.25%; // 16:9
-  height: 0;
-
-  &.is-4-3 {
-    padding-bottom: 75%; // 4:3
-  }
-
-  iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
   }
 }
 
@@ -463,99 +365,7 @@
   padding-left: 32px;
 }
 
-// Spacing, spacers
-.spacer-4 {
-  padding-top: 4px;
-}
-
-.spacer-8 {
-  padding-top: 8px;
-}
-
-.spacer-12 {
-  padding-top: 12px;
-}
-
-.spacer-16 {
-  padding-top: 16px;
-}
-
-.spacer-24 {
-  padding-top: 24px;
-}
-
-.spacer-32 {
-  padding-top: 32px;
-}
-
-.spacer-48 {
-  padding-top: 48px;
-}
-
-.spacer-64 {
-  padding-top: 64px;
-}
-
 @include media("<=medium") {
-  .ta-l-mobile {
-    text-align: left;
-  }
-
-  .ta-c-mobile {
-    text-align: center;
-  }
-
-  .ta-r-mobile {
-    text-align: right;
-  }
-
-  .center-content-mobile {
-    text-align: center;
-
-    img,
-    svg,
-    video {
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .button-group {
-      justify-content: center;
-    }
-  }
-
-  // Spacing, spacers
-  .spacer-4-mobile {
-    padding-top: 4px;
-  }
-
-  .spacer-8-mobile {
-    padding-top: 8px;
-  }
-
-  .spacer-12-mobile {
-    padding-top: 12px;
-  }
-
-  .spacer-16-mobile {
-    padding-top: 16px;
-  }
-
-  .spacer-24-mobile {
-    padding-top: 24px;
-  }
-
-  .spacer-32-mobile {
-    padding-top: 32px;
-  }
-
-  .spacer-48-mobile {
-    padding-top: 48px;
-  }
-
-  .spacer-64-mobile {
-    padding-top: 64px;
-  }
 }
 
 @include media(">medium") {

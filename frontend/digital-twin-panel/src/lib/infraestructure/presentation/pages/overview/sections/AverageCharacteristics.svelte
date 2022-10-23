@@ -2,6 +2,7 @@
   import Card from "../../../components/cards/Card.svelte";
   import StatsCard from "../components/StatsCard.svelte";
   import PieChart from "../../../components/charts/PieChart.svelte";
+  import { getIconByCharacteristic } from "@/src/lib/core/functions";
   let characteristics = [
     {
       name: "Lluvia",
@@ -19,19 +20,6 @@
       unit: "°C",
     },
   ];
-
-  const getIconByCharacteristic = (characteristic) => {
-    switch (characteristic.name) {
-      case "Lluvia":
-        return `<i class="fi fi-rr-raindrops" />`;
-      case "Viento":
-        return `<i class="fi fi-rr-wind" />`;
-      case "Temperatura":
-        return `<i class="fi fi-rr-temperature-low" />`;
-      default:
-        return `<i class="fi fi-rr-map-marker" />`;
-    }
-  };
 </script>
 
 <section class="avgCharacteristics">
@@ -49,9 +37,9 @@
       </div>
     {/each}
   </div>
-  <div class="characteristics-analytics mt-16">
+  <div class="analytics mt-16">
     <Card>
-      <div slot="header" class="characteristics-analytics-header ml-8">
+      <div slot="header" class="analytics-header ml-8">
         <h3 class="m-0">Valores promedios por parcela</h3>
         <select>
           <option value="1">Parcela 1</option>
@@ -60,7 +48,7 @@
         </select>
       </div>
       <div slot="body" class="p-8">
-        <div class="characteristics-analytics-chart">
+        <div class="analytics-chart">
           <PieChart
             data={characteristics.map((c) => c.value)}
             labels={characteristics.map((c) => c.name)}
@@ -87,11 +75,11 @@
       }
     }
 
-    .characteristics-analytics-chart {
+    .analytics-chart {
       max-height: 200px;
     }
 
-    .characteristics-analytics-header {
+    .analytics-header {
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
