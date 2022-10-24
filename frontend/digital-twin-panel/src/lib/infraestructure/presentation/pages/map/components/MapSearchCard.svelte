@@ -4,7 +4,7 @@
   import geojson2svg from "geojson-to-svg";
   import { onMount } from "svelte";
   import RangeCharacteristics from "../../overview/sections/RangeCharacteristics.svelte";
-  import { numberWithCommas } from "@/src/lib/core/functions";
+  import { numberWithCommas } from "src/lib/core/functions";
 
   export let enclosureName: string;
   export let area: number;

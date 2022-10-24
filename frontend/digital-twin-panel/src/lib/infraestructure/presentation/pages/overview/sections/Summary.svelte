@@ -1,118 +1,66 @@
-<script>
+<script lang="ts">
   import Card from "../../../components/cards/Card.svelte";
   import CardInner from "../../../components/cards/CardInner.svelte";
   import PieChart from "../../../components/charts/PieChart.svelte";
   import ToggleSwitch from "../../../components/basics/ToggleSwitch.svelte";
   import SummaryStatCard from "../components/SummaryStatCard.svelte";
+  import { parcelsService } from "src/app/config/config";
 
-  const data = {
-    best: [
-      {
-        title: "Ganancias",
-        value: 23543,
-        unit: "€",
-        diff: 0.24,
-        enclosureName: "#20-123-23-3-4-1",
-      },
-      {
-        title: "Producción",
-        value: 2345,
-        unit: "Kg",
-        diff: 1.34,
-        enclosureName: "#234-123-22-3-4-1",
-      },
-      {
-        title: "Rendimiento",
-        value: 1456,
-        unit: "Kg/Ha",
-        diff: 0.86,
-        enclosureName: "#43-12-23-3-4-4",
-      },
-      {
-        title: "NDVI",
-        value: 90,
-        diff: 0.11,
-        enclosureName: "#5-123-23-4-4-9",
-      },
-    ],
-    worse: [
-      {
-        title: "Ganancias",
-        value: 124,
-        unit: "€",
-        diff: -0.44,
-        enclosureName: "#34-11-23-3-4-12",
-      },
-      {
-        title: "Producción",
-        value: 872,
-        unit: "Kg",
-        diff: -1.34,
-        enclosureName: "#234-123-22-3-4-1",
-      },
-      {
-        title: "Rendimiento",
-        value: 98,
-        unit: "Kg/Ha",
-        diff: -0.91,
-        enclosureName: "#43-12-23-3-4-4",
-      },
-      {
-        title: "NDVI",
-        value: 13,
-        diff: 0.24,
-        enclosureName: "#5-123-23-4-4-7",
-      },
-    ],
-  };
-
-  let checked;
+  let checked: boolean = false;
+  let selectedChartStat: string;
 </script>
 
 <section class="summary">
-  <Card>
-    <div slot="header" class="pl-8">
-      <div class="title mt-8">
-        <h2 class="m-0">Resumen</h2>
-        <ToggleSwitch bind:checked />
-      </div>
-      <p class="text-xs">Última actualización: 2021-03-01 12:00</p>
-    </div>
-    <div slot="body" class="body">
-      <div class="body-stats mb-16">
-        {#each checked ? data.worse : data.best as stat, i}
-          <SummaryStatCard
-            title={stat.title}
-            value={stat.value}
-            unit={stat.unit || ""}
-            diff={stat.diff}
-            enclosureName={stat.enclosureName}
-            primary={i === 0}
-          />
-        {/each}
-      </div>
-      <CardInner>
-        <div slot="header">
-          <h4 class="text-sm stat-header m-0">Stats promedios por parcela</h4>
-          <select>
-            <option value="1">NDVI</option>
-            <option value="2">Temperatura</option>
-            <option value="3">Parcela 3</option>
-          </select>
+  {#await parcelsService.getOverviewSummary("")}
+    <div>loading...</div>
+  {:then summary}
+    {@const statsSelected = checked ? summary.stats.bad : summary.stats.good}
+    <Card>
+      <div slot="header" class="pl-8">
+        <div class="title mt-8">
+          <h2 class="m-0">Resumen</h2>
+          <ToggleSwitch bind:checked />
         </div>
-        <div slot="body" class="analytics-chart">
-          <PieChart
-            labels={[
-              "#20-123-23-3-4-1",
-              "#20-123-23-3-4-2",
-              "#20-123-23-3-4-3",
-            ]}
-            data={[34, 23, 43]}
-          />
+        <p class="text-xs">Última actualización: 2021-03-01 12:00</p>
+      </div>
+      <div slot="body" class="body">
+        <div class="body-stats mb-16">
+          {#each statsSelected as stat, i}
+            <SummaryStatCard
+              title={stat.stat.name}
+              value={stat.stat.value}
+              unit={stat.stat.unit || ""}
+              diff={stat.diff}
+              enclosureName={stat.enclosureId}
+              primary={i === 0}
+            />
+          {/each}
         </div>
-      </CardInner>
-    </div>
-  </Card>
+        <CardInner>
+          <div slot="header">
+            <h4 class="text-sm stat-header m-0">Stats promedios por parcela</h4>
+            <select bind:value={selectedChartStat}>
+              {#each statsSelected.map((s) => s.stat.name) as statName}
+                <option value={statName}>{statName}</option>
+              {/each}
+            </select>
+          </div>
+          <div slot="body" class="analytics-chart">
+            <PieChart
+              labels={summary.stats.all
+                .filter((s) => s.stat.name === selectedChartStat)
+                .map((s) => s.enclosureId)}
+              data={summary.stats.all
+                .filter((s) => s.stat.name === selectedChartStat)
+                .map((s) => s.stat.value)}
+            />
+          </div>
+        </CardInner>
+      </div>
+    </Card>
+  {:catch error}
+    <div>{error}</div>
+  {/await}
 </section>
 
 <style lang="scss">

@@ -3,11 +3,7 @@
 
   import Card from "../../../components/cards/Card.svelte";
   import { Datatable } from "svelte-simple-datatables";
-  import Characteristics from "../../enclosures/overview/sections/Characteristics.svelte";
-  import type {
-    Characteristic,
-    CharacteristicState,
-  } from "@/src/lib/core/Domain";
+  import type { Characteristic } from "src/lib/core/Domain";
   const settings = {
     columnFilter: true,
     labels: {

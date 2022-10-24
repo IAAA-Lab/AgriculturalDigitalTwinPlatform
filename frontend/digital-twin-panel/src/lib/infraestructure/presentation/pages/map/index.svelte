@@ -2,7 +2,7 @@
   import Map from "./sections/Map.svelte";
   import Search from "./sections/Search.svelte";
   import SearchPopup from "./components/SearchPopup.svelte";
-  import { TABLET_WIDTH } from "@/src/app/config/constants";
+  import { TABLET_WIDTH } from "src/app/config/constants";
 
   let mediaQueryMobile = window.matchMedia(`(max-width: ${TABLET_WIDTH}px)`);
   let isInMobile = mediaQueryMobile.matches;
@@ -35,7 +35,7 @@
       padding: 0;
       margin-top: 16px;
       grid-template-columns: 1fr;
-      height: calc(100vh - 10rem);
+      height: calc(100vh - 5rem);
     }
   }
 </style>

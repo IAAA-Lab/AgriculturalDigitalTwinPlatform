@@ -1,50 +1,41 @@
 <script>
+  import Chart from "chart.js/auto/auto";
+  import { getColorList } from "src/lib/core/functions";
   import { onMount } from "svelte";
+  import config from "./config/PieChart.config";
 
   export let data = [];
   export let labels = [];
 
   let chartCanvas;
+  let myChart;
 
-  onMount(async () => {
+  $: if (myChart) {
+    myChart.data.datasets[0].data = data;
+    myChart.data.labels = labels;
+    myChart.data.datasets[0].backgroundColor = getColorList(data.length);
+    myChart.update();
+  }
+
+  const dataConfig = {
+    labels,
+    datasets: [
+      {
+        label: "Características",
+        data,
+        backgroundColor: getColorList(data.length),
+        hoverOffset: 4,
+      },
+    ],
+  };
+
+  const drawChart = async () => {
     const ctx = chartCanvas.getContext("2d");
-    // BUG: Await import because it doesn't work otherwise in production
-    // https://github.com/sveltejs/kit/issues/5535#issuecomment-1251881206
-    const { Chart, registerables } = await import("chart.js");
-    Chart.register(...registerables);
-    new Chart(ctx, {
-      type: "doughnut",
-      data: {
-        labels,
-        datasets: [
-          {
-            label: "Características",
-            data,
-            backgroundColor: ["#4c51bf", "#ed64a6", "#4299e1"],
-            hoverOffset: 4,
-          },
-        ],
-      },
-      options: {
-        cutout: "70%",
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "right",
-            labels: {
-              color: "#6b7280",
-              usePointStyle: true,
-              pointStyle: "rectRounded",
-              boxWidth: 10,
-              font: {
-                size: 14,
-              },
-            },
-          },
-        },
-      },
-    });
+    myChart = new Chart(ctx, { ...config, data: dataConfig });
+  };
+
+  onMount(() => {
+    drawChart();
   });
 </script>
 

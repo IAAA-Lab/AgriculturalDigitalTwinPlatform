@@ -9,41 +9,7 @@
 
   let mapElement;
   let i = 0;
-
-  let geojsonFeatures = {
-    type: "FeatureCollection",
-    features: [
-      {
-        id: "22de",
-        enclosures: [],
-        type: "Feature",
-        properties: {
-          name: "Coors Field",
-          amenity: "Baseball Stadium",
-          popupContent: "This is where the Rockies play!",
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [41.700972, -1.186698],
-        },
-      },
-      {
-        id: "22de",
-        enclosures: [],
-        type: "Feature",
-        properties: {
-          name: "Coors Field",
-          amenity: "Baseball Stadium",
-          popupContent: "This is where the Rockies play!",
-        },
-        geometry: {
-          type: "Point",
-          coordinates: [43.700972, -5.186698],
-        },
-      },
-    ],
-  };
-
+  export let geojsonFeatures;
   const colorList = getColorList(geojsonFeatures.features.length);
 
   onMount(async () => {
@@ -71,10 +37,10 @@
         },
       })
       .addTo(map)
-      .bindPopup((e) => e.feature.properties.popupContent);
+      .bindPopup((e) => e.feature.id);
 
     // Fits map to all features present automatically
-    map.fitBounds(features.getBounds(), { padding: [50, 50] });
+    map.fitBounds(features.getBounds(), { padding: [50, 50] }).setMaxZoom(10);
 
     return () => map.remove();
   });

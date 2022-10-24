@@ -1,30 +1,32 @@
-class CustomError {
-  cause?: Error;
-  message: string = "error";
-
-  constructor(cause?: Error) {
-    this.cause = cause;
-  }
+interface CustomError extends Error {
+  name: string;
+  message: string;
 }
 
-class LogoutError extends CustomError {
-  message = "Logout ha fallado";
-}
-class BackendError extends CustomError {
-  message = "Ocurrió un problema con el servidor";
-}
-class MustLoginAgainError extends CustomError {
-  message = "Debe volver a iniciar sesión otra vez";
-}
+const LogoutError: CustomError = {
+  name: "LogoutError",
+  message: "Error al cerrar sesión",
+};
 
-class MustRefreshSessionError extends CustomError {
-  message = "Debe volver a revalidar la sesión";
-}
+const ServerError: CustomError = {
+  name: "ServerError",
+  message: "Ocurrió un problema con el servidor",
+};
+
+const MustLoginAgainError: CustomError = {
+  name: "MustLoginAgainError",
+  message: "Debe volver a iniciar sesión",
+};
+
+const MustRefreshSessionError: CustomError = {
+  name: "MustRefreshSessionError",
+  message: "Debe refrescar la sesión",
+};
 
 export default CustomError;
 export {
   LogoutError,
-  BackendError,
+  ServerError,
   MustLoginAgainError,
   MustRefreshSessionError,
 };

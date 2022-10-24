@@ -1,14 +1,37 @@
-import { Result, User } from "../Domain";
+import type {
+  User,
+  DailyWeather,
+  NDVI,
+  Parcel,
+  Summary,
+  UserParcels,
+} from "../Domain";
 
-interface IFieldService {
-  // getParcels(): Promise<Result<Parcel[]>>;
+interface IParcelsService {
+  getUserParcels(userId: string): Promise<UserParcels>;
+  getEnclosures(enclosureIds: string[]): Promise<Parcel[]>;
+  getOverviewSummary(userId: string): Promise<Summary>;
+  getDailyWeather(
+    parcelId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<DailyWeather[]>;
+  getForecastWeather(
+    parcelId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<DailyWeather[]>;
+  getNDVI(
+    enclosureIds: string[],
+    startDate: Date,
+    endDate: Date
+  ): Promise<NDVI[]>;
 }
 
-interface IAuthService {
-  logout(): Promise<Result<boolean>>;
-  refresh(): Promise<Result<User>>;
-  validateLogin(): Promise<Result<boolean>>;
-  getAuth(): Result<User>;
+interface IUserService {
+  logout(): Promise<void>;
+  refresh(): Promise<void>;
+  validateLogin(): Promise<void>;
 }
 
-export type { IFieldService, IAuthService };
+export type { IParcelsService, IUserService };

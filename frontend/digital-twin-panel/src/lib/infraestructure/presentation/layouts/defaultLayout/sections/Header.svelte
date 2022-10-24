@@ -1,5 +1,5 @@
 <script>
-  import { AppRoutes } from "@/src/app/config/constants";
+  import { AppRoutes } from "src/app/config/constants";
   import SummaryPopup from "../../../pages/overview/components/SummaryPopup.svelte";
   import UserOptions from "../components/UserOptions.svelte";
 </script>

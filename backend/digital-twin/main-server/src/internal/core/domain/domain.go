@@ -38,11 +38,16 @@ type SummaryStat struct {
 	EnclosureId string          `json:"enclosureId"`
 	Stat        Characteristics `json:"stat"`
 	CropIds     []CropId        `json:"cropIds"`
+	Diff        Characteristics `json:"diff"`
 }
 
 type Summary struct {
 	//FIX: complete in the future...
-	Stats []SummaryStat `json:"stats"`
+	Stats struct {
+		All  []SummaryStat `json:"all"`
+		Bad  []SummaryStat `json:"bad"`
+		Good []SummaryStat `json:"good"`
+	} `json:"stats"`
 }
 
 type Characteristics struct {

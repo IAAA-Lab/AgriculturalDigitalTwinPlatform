@@ -1,5 +1,5 @@
 <script>
-  import { getColorList } from "@/src/lib/core/functions";
+  import { getColorList } from "src/lib/core/functions";
   import Card from "../../../components/cards/Card.svelte";
   import MapSearchCard from "../components/MapSearchCard.svelte";
 

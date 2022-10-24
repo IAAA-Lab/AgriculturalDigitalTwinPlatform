@@ -1,4 +1,7 @@
-<script>
+<script lang="ts">
+  import { parcelsService } from "src/app/config/config";
+  import type { Parcel, Result } from "src/lib/core/Domain";
+  import { onMount } from "svelte";
   import AverageCharacteristics from "./sections/AverageCharacteristics.svelte";
   import Map from "./sections/Map.svelte";
   import RangeCharacteristics from "./sections/RangeCharacteristics.svelte";
@@ -7,11 +10,22 @@
 </script>
 
 <div class="overview mr-8 container-responsive">
-  <Map />
-  <RangeCharacteristics />
-  <AverageCharacteristics />
-  <Summary />
-  <Tables />
+  {#await parcelsService.getEnclosures([])}
+    <div>loading...</div>
+  {:then parcels}
+    <Summary />
+    <AverageCharacteristics />
+    <RangeCharacteristics />
+    <Map
+      geojsonFeatures={{
+        type: "FeatureCollection",
+        features: parcels,
+      }}
+    />
+    <Tables />
+  {:catch error}
+    <div>{error.message}</div>
+  {/await}
 </div>
 
 <style lang="scss">

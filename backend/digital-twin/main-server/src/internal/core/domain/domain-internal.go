@@ -92,4 +92,5 @@ const (
 	Good   StateNames = "BIEN"
 	Medium StateNames = "MEDIO"
 	Bad    StateNames = "MAL"
+	NA     StateNames = "N/A"
 )

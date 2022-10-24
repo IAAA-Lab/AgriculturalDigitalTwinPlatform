@@ -1,4 +1,4 @@
-import CustomError from "./Exceptions";
+import type CustomError from "./Exceptions";
 
 enum Role {
   ADMIN = "admin",
@@ -8,12 +8,218 @@ enum Role {
 }
 
 type User = {
-  user: string;
-  role: Role;
-  user_id: string;
+  id?: string;
+  email: string;
+  password?: string;
+  role: string;
 };
 
-enum CharacteristicState {
+type UserParcels = {
+  id?: string;
+  userId: string;
+  ts: Date;
+  enclosureIds: string[];
+  summary: Summary;
+};
+
+type SummaryStat = {
+  enclosureId: string;
+  stat: Characteristics;
+  cropIds: CropId[];
+  diff: number;
+};
+
+type Summary = {
+  stats: {
+    all: SummaryStat[];
+    good: SummaryStat[];
+    bad: SummaryStat[];
+  };
+};
+
+type Characteristics = {
+  name: string;
+  value: number;
+  unit?: string;
+  state: StateNames;
+};
+
+type Parcel = {
+  id: string;
+  ts: Date;
+  type: string;
+  geometry: {
+    type: string;
+    coordinates: number[];
+  };
+  properties: {
+    address: {
+      zip: string;
+      municipality: string;
+      province: string;
+      ccaa: string;
+    };
+    idema: string;
+    protectedZones: {
+      type: string;
+      zones: string[];
+    }[];
+  };
+  enclosures: {
+    type: string;
+    enclosures: Enclosure[];
+  };
+};
+
+type Enclosure = {
+  id: string;
+  ts: Date;
+  type: string;
+  geometry: {
+    type: string;
+    coordinates: number[][];
+  };
+  properties: {
+    imageUri: string;
+    protectedArea: boolean;
+    characteristics: Characteristics[];
+    irrigationType: string;
+    useType: string;
+  };
+  cropIds: CropId[];
+};
+
+type Crop = {
+  name: string;
+  variety: string;
+  imageUri: string;
+  production: number;
+  area: number;
+  performance: number;
+  harvest: number;
+  characteristics: Characteristics[];
+};
+
+type CropId = {
+  name: string;
+  variety: string;
+  imageUri: string;
+};
+
+type Fertilizer = {
+  enclosureId: string;
+  crop: CropId;
+  name: string;
+  startDate: string;
+  quantity: number;
+};
+
+type Phytosanitary = {
+  enclosureId: string;
+  crop: CropId;
+  startDate: string;
+  endDate: string;
+  product: string;
+  registrationNumber: string;
+  plague: string;
+  area: number;
+  dosage: number;
+  efficacy: number;
+  hap: {
+    id: string;
+    description: string;
+    romaCode: string;
+    adquisitionDate: string;
+    lastInspectionDate: string;
+  };
+  had: {
+    id: string;
+    name: string;
+    nifCode: string;
+    ropoCode: string;
+    carnetType: string;
+  };
+};
+
+type CropStats = {
+  date: string;
+  enclosureId: string;
+  cropId: CropId;
+  stats: Characteristics[];
+};
+
+type NDVI = {
+  enclosureId: string;
+  date: string;
+  value: number;
+};
+
+type NDVIMap = {
+  type: string;
+  date: string;
+  imageUri: string;
+};
+
+type FarmHolder = {
+  name: string;
+  id: FarmHolderId;
+  address: {
+    zip: string;
+    municipality: string;
+    province: string;
+    ccaa: string;
+  };
+  phones: string[];
+  email: string;
+};
+
+type FarmHolderId = {
+  type: string;
+  code: string;
+};
+
+type ForecastWeather = {
+  type: string;
+  parcelId: string;
+  idema: string;
+  fint: string;
+  prec: number;
+  tamin: number;
+  tamax: number;
+  ta: number;
+  hr: number;
+  tpr: number;
+};
+
+type DailyWeather = {
+  type: string;
+  parcelId: string;
+  date: string;
+  dataOrigin: {
+    producer: string;
+    web: string;
+    copyrigth: string;
+    legalNote: string;
+  };
+  prediction: {
+    SkyState: weatherState[];
+    Prec: weatherState[];
+    ProbPrec: weatherState[];
+    Snow: weatherState[];
+    ProbSnow: weatherState[];
+    ProbStorm: weatherState[];
+    Ta: weatherState[];
+    Hr: weatherState[];
+    Wind: weatherState[];
+  };
+};
+
+type weatherState = {
+  hour: number;
+  value: number;
+};
+
+enum StateNames {
   GOOD = "BIEN",
   MEDIUM = "MEDIO",
   BAD = "MAL",
@@ -24,13 +230,33 @@ type Characteristic = {
   name: string;
   value: number;
   unit?: string;
-  state?: CharacteristicState;
+  state?: StateNames;
 };
 
-type ResultSuccess<T> = { isError: false; data: T };
-type ResultError = { isError: true; error: CustomError };
-type Result<T> = ResultSuccess<T> | ResultError;
+type Result<T> = { error?: CustomError; data?: T };
 
-export type { Result, User, CharacteristicState, Characteristic };
+export type {
+  Result,
+  User,
+  Characteristic,
+  Parcel,
+  Enclosure,
+  Crop,
+  CropId,
+  Fertilizer,
+  Phytosanitary,
+  CropStats,
+  NDVI,
+  NDVIMap,
+  FarmHolder,
+  FarmHolderId,
+  ForecastWeather,
+  DailyWeather,
+  weatherState,
+  UserParcels,
+  Summary,
+  SummaryStat,
+  Characteristics,
+};
 
-export { Role };
+export { Role, StateNames };

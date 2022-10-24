@@ -3,7 +3,7 @@
   import Main from "./sections/Main.svelte";
   import Sidebar from "./sections/Sidebar.svelte";
   import SidebarMobile from "./sections/SidebarMobile.svelte";
-  import { TABLET_WIDTH } from "@/src/app/config/constants";
+  import { TABLET_WIDTH } from "src/app/config/constants";
 
   let mediaQueryMobile = window.matchMedia(`(max-width: ${TABLET_WIDTH}px)`);
   let isInMobile = mediaQueryMobile.matches;

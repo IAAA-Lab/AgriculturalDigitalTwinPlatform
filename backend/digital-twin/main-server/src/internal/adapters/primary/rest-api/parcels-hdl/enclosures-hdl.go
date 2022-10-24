@@ -220,15 +220,16 @@ func (hdl *HTTPStreamHandler) GetDailyWeather(c *gin.Context) {
 		}
 		// If the info is in the local database, send it to the client
 	} else {
-		chanStream <- domain.EventOut{ErrorMessage: domain.EVENT_TYPE_DAILY_WEATHER, Payload: data}
+		c.JSON(200, data)
+		return
 	}
-	c.Stream(func(w io.Writer) bool {
-		if msg, ok := <-chanStream; ok {
-			c.SSEvent("message", msg)
-			return true
-		}
-		return false
-	})
+	// Send the info to the client
+	dailyWeather := <-chanStream
+	if dailyWeather.ErrorMessage != "" {
+		c.AbortWithStatusJSON(500, gin.H{"message": dailyWeather.ErrorMessage})
+		return
+	}
+	c.JSON(200, dailyWeather.Payload)
 }
 
 // -----------------------------------------------------------------------
