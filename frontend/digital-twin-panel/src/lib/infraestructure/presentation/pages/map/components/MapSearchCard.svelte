@@ -3,8 +3,7 @@
   import Range from "../../../components/misc/Range.svelte";
   import geojson2svg from "geojson-to-svg";
   import { onMount } from "svelte";
-  import RangeCharacteristics from "../../overview/sections/RangeCharacteristics.svelte";
-  import { numberWithCommas } from "src/lib/core/functions";
+  import { getRangeBarColor, numberWithCommas } from "src/lib/core/functions";
 
   export let enclosureName: string;
   export let area: number;
@@ -44,7 +43,7 @@
       </div>
       <div class="ndvi">
         <i class="fi fi-rr-heart" />
-        <Range value={ndvi} height={12} />
+        <Range value={ndvi} height={12} background={getRangeBarColor(ndvi)} />
         <p class="text-sm m-0"><strong>{ndvi} %</strong></p>
       </div>
     </div>

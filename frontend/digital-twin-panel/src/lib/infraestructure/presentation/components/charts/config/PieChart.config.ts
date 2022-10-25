@@ -1,6 +1,8 @@
-let config = {
+import type { ChartConfiguration } from "chart.js";
+
+let config: ChartConfiguration = {
   type: "doughnut",
-  data: {},
+  data: null,
   options: {
     cutout: "70%",
     responsive: true,

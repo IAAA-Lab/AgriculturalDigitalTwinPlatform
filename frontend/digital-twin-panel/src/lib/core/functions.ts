@@ -88,10 +88,21 @@ const getIconByCharacteristic = (characteristic) => {
   }
 };
 
+const getRangeBarColor = (value: number) => {
+  if (value < 25) {
+    return "red";
+  } else if (value >= 25 && value < 75) {
+    return "yellow";
+  } else {
+    return "green";
+  }
+};
+
 export {
   fixDefaultLeafletIcons,
   numberWithCommas,
   markerMapIconByColor,
   getColorList,
   getIconByCharacteristic,
+  getRangeBarColor,
 };
