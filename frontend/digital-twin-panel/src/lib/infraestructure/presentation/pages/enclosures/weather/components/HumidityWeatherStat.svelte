@@ -30,4 +30,8 @@
   .hum {
     grid-area: humidity;
   }
+
+  .chart-wrap {
+    height: 80px;
+  }
 </style>

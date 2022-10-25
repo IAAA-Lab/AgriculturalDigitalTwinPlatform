@@ -40,7 +40,7 @@
           <div slot="header">
             <h4 class="text-sm stat-header m-0">Stats promedios por parcela</h4>
             <select bind:value={selectedChartStat}>
-              {#each statsSelected.map((s) => s.stat.name) as statName}
+              {#each [...new Set(summary.stats.all.map((s) => s.stat.name))] as statName}
                 <option value={statName}>{statName}</option>
               {/each}
             </select>
