@@ -11,13 +11,9 @@ interface IParcelsService {
   getUserParcels(userId: string): Promise<UserParcels>;
   getEnclosures(enclosureIds: string[]): Promise<Parcel[]>;
   getOverviewSummary(userId: string): Promise<Summary>;
-  getDailyWeather(
-    parcelId: string,
-    startDate: Date,
-    endDate: Date
-  ): Promise<DailyWeather[]>;
+  getDailyWeather(parcelId: string): Promise<DailyWeather[]>;
   getForecastWeather(
-    parcelId: string,
+    idema: string,
     startDate: Date,
     endDate: Date
   ): Promise<DailyWeather[]>;

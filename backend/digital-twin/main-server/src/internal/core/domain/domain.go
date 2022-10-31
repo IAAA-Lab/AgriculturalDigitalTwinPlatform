@@ -203,34 +203,60 @@ type ForecastWeather struct {
 	Tpr      float32   `json:"tpr"`
 }
 
+type HistoricalWeather struct {
+	Type        string    `json:"type" default:"historicalWeather"`
+	ParcelId    string    `json:"parcelId"`
+	Idema       string    `json:"idema"`
+	Fint        time.Time `json:"fint"`
+	Prec        float32   `json:"prec"`
+	Tamin       float32   `json:"tamin"`
+	Tamax       float32   `json:"tamax"`
+	Tmed        float32   `json:"tmed"`
+	TaminTime   time.Time `json:"taminTime"`
+	TamaxTime   time.Time `json:"tamaxTime"`
+	WindSpeed   float32   `json:"windSpeed"`
+	WindDir     float32   `json:"windDir"`
+	WindGust    float32   `json:"windGust"`
+	WinGustTime time.Time `json:"windGustTime"`
+}
+
 type DailyWeather struct {
-	Type       string    `json:"type"`
-	ParcelId   string    `json:"parcelId"`
-	Date       time.Time `json:"date"`
-	DataOrigin struct {
+	Type         string `json:"type"`
+	ParcelId     string `json:"parcelId"`
+	Municipality string `json:"municipality"`
+	Province     string `json:"province"`
+	DataOrigin   struct {
 		Producer  string `json:"producer"`
 		Web       string `json:"web"`
 		Copyrigth string `json:"copyrigth"`
 		LegalNote string `json:"legalNote"`
+		Language  string `json:"language"`
 	} `json:"dataOrigin"`
 	Prediction struct {
-		SkyState  []weatherState
-		Prec      []weatherState
-		ProbPrec  []weatherState
-		Snow      []weatherState
-		ProbSnow  []weatherState
-		ProbStorm []weatherState
-		Ta        []weatherState
-		Hr        []weatherState
-		Wind      []weatherState
+		Day []struct {
+			SkyState []weatherState `json:"skyState"`
+			// ProbPrec      []weatherState `json:"probPrec"`
+			// SnowQuoteProb []weatherState `json:"snowQuoteProb"`
+			// ProbStorm []weatherState
+			Ta relativeHumidity `json:"ta"`
+			Hr relativeHumidity `json:"hr"`
+			// Wind  []weatherState   `json:"wind"`
+			UvMax float32 `json:"uvMax"`
+			Date  string  `json:"date"`
+		} `json:"day"`
 	} `json:"prediction"`
 }
 
 type weatherState struct {
-	Hour  int8    `json:"hour"`
-	Value float32 `json:"value"`
+	Value       string `json:"value"`
+	Period      string `json:"period"`
+	Description string `json:"description"`
 }
 
+type relativeHumidity struct {
+	Max float32 `json:"max"`
+	Min float32 `json:"min"`
+}
 type SensorData struct {
 	EnclosureId string          `json:"enclosureId"`
 	SensorId    string          `json:"sensorId"`

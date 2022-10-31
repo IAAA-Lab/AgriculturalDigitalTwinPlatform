@@ -1,20 +1,16 @@
-import com.rabbitmq.client.ConnectionFactory
 import javax.enterprise.context.ApplicationScoped
-import javax.enterprise.inject.Produces
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory
 
 // Same as Spring @Configuration
-@ApplicationScoped
 class RabbitmqConfig {
 
     // Same as Spring @Bean
-    @Produces
+    // TODO: Make a more complex factory with custom thread pool when needed
     @ApplicationScoped
-    fun connectionFactory(): ConnectionFactory {
-        val factory = ConnectionFactory()
-        factory.host = System.getenv("QUARKUS_RABBITMQ_HOST") ?: "localhost"
-        factory.port = System.getenv("QUARKUS_RABBITMQ_PORT")?.toInt() ?: 5672
-        factory.username = System.getenv("QUARKUS_RABBITMQ_USERNAME") ?: "guest"
-        factory.password = System.getenv("QUARKUS_RABBITMQ_PASSWORD") ?: "guest"
+    fun connectionFactory(): CachingConnectionFactory {
+        val factory = CachingConnectionFactory()
+        factory.host = "localhost"
+        factory.port = 5672
         return factory
     }
 }

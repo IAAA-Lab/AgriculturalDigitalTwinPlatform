@@ -29,6 +29,9 @@ func (m *mongodbConn) GetDocuments(collection string, filter interface{}, opts *
 		return results, apperrors.ErrInternal
 	}
 	err = cursor.All(ctx, &results)
+	if results == nil {
+		return results, apperrors.ErrNotFound
+	}
 	return results, err
 }
 
@@ -76,5 +79,8 @@ func (m *mongodbConn) AggregateDocuments(collection string, pipeline interface{}
 		return nil, err
 	}
 	err = cursor.All(ctx, results)
+	if results == nil {
+		return results, apperrors.ErrNotFound
+	}
 	return results, err
 }

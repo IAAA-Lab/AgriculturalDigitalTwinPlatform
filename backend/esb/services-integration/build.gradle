@@ -8,14 +8,13 @@ repositories {
     mavenCentral()
     mavenLocal()
 }
-
 dependencies {
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation enforcedPlatform("${quarkusPlatformGroupId}:quarkus-camel-bom:${quarkusPlatformVersion}")
     implementation 'org.apache.camel.quarkus:camel-quarkus-log'
     implementation 'org.apache.camel.quarkus:camel-quarkus-soap'
     implementation 'org.apache.camel.quarkus:camel-quarkus-jackson'
-    implementation 'org.apache.camel.quarkus:camel-quarkus-rabbitmq'
+    implementation 'org.apache.camel.quarkus:camel-quarkus-spring-rabbitmq'
     implementation 'org.apache.camel.quarkus:camel-quarkus-rest'
     implementation 'org.apache.camel.quarkus:camel-quarkus-direct'
     implementation 'org.apache.camel.quarkus:camel-quarkus-timer'

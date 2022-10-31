@@ -14,18 +14,17 @@ package main
 
 import (
 	"digital-twin/main-server/docs"
-	eventhdl "digital-twin/main-server/src/internal/adapters/primary/event-handler"
-	imageshdl "digital-twin/main-server/src/internal/adapters/primary/rest-api/images-hdl"
-	encryptionmw "digital-twin/main-server/src/internal/adapters/primary/rest-api/middleware/encryption-mw"
-	jwtmw "digital-twin/main-server/src/internal/adapters/primary/rest-api/middleware/jwt-mw"
-	newshdl "digital-twin/main-server/src/internal/adapters/primary/rest-api/news-hdl"
-	parcelshdl "digital-twin/main-server/src/internal/adapters/primary/rest-api/parcels-hdl"
-	usershdl "digital-twin/main-server/src/internal/adapters/primary/rest-api/users-hdl"
-	aes256repo "digital-twin/main-server/src/internal/adapters/secondary/aes-256"
-	localfilestoragerepo "digital-twin/main-server/src/internal/adapters/secondary/local-file-storage"
-	mongodb "digital-twin/main-server/src/internal/adapters/secondary/mongodb"
-	rabbitmqrepo "digital-twin/main-server/src/internal/adapters/secondary/rabbitmq"
-	redisrepo "digital-twin/main-server/src/internal/adapters/secondary/redis"
+	encryptionmw "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/middleware/encryption-mw"
+	aes256repo "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/middleware/encryption-mw/aes-256"
+	jwtmw "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/middleware/jwt-mw"
+	imageshdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/images-hdl"
+	newshdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/news-hdl"
+	parcelshdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/parcels"
+	usershdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/users-hdl"
+	redisrepo "digital-twin/main-server/src/internal/adapters/secondary/cache/redis"
+	"digital-twin/main-server/src/internal/adapters/secondary/esb/rabbitmq"
+	localfilestoragerepo "digital-twin/main-server/src/internal/adapters/secondary/file-storage/local-file-storage"
+	"digital-twin/main-server/src/internal/adapters/secondary/persistence/mongodb"
 	"digital-twin/main-server/src/internal/core/domain"
 	authsrv "digital-twin/main-server/src/internal/core/services/auth-srv"
 	cachesrv "digital-twin/main-server/src/internal/core/services/cache-srv"
@@ -85,6 +84,7 @@ func setupRouter() *gin.Engine {
 	encryptionMiddleware := encryptionmw.Init(encryptionService)
 
 	mongodbRepository := mongodb.NewMongodbConn(mongoUri, mongoDb, 10)
+	rabbitMQESB := rabbitmq.NewRabbitMQConn(rabbitMQURI)
 
 	newsService := newssrv.New(mongodbRepository)
 	newsHandler := newshdl.NewHTTPHandler(newsService)
@@ -92,7 +92,7 @@ func setupRouter() *gin.Engine {
 	usersService := userssrv.New(mongodbRepository)
 	usersHandler := usershdl.NewHTTPHandler(usersService)
 
-	parcelsService := parcelssrv.New(mongodbRepository)
+	parcelsService := parcelssrv.New(mongodbRepository, rabbitMQESB)
 	parcelsHandler := parcelshdl.NewHTTPHandler(parcelsService)
 
 	imagesRepository := localfilestoragerepo.NewLocalFileStorage("./images")
@@ -104,15 +104,13 @@ func setupRouter() *gin.Engine {
 	authService := authsrv.JWTAuthService(cacheService)
 	authMiddleware := jwtmw.Init(authService, usersService, os.Getenv("ENV_MODE"))
 
-	messageBrokerRepository := rabbitmqrepo.NewRabbitMQConn(rabbitMQURI)
-
 	cacheMiddleware := cache.CacheByRequestURI(persist.NewRedisStore(cacherepository.GetClient()), 10*time.Minute)
 
 	//Start event handler
-	eventHandler := eventhdl.NewEventHandler(parcelsService, cacheService, messageBrokerRepository)
-	eventHandler.Start()
+	// eventHandler := eventhdl.NewEventHandler(parcelsService, cacheService, rabbitMQESB)
+	// eventHandler.Start()
 
-	parcelsStreamingHandler := parcelshdl.NewHTTPStreamHandler(parcelsService, eventHandler.GetIntChannel())
+	// parcelsStreamingHandler := parcelshdl.NewHTTPStreamHandler(parcelsService, eventHandler.GetIntChannel())
 
 	r := gin.Default()
 	m := ginmetrics.GetMonitor()
@@ -161,13 +159,11 @@ func setupRouter() *gin.Engine {
 	r.PATCH("/parcels/refs", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN}), parcelsHandler.PostParcelRefs)
 
 	agrarianGroup.GET("/parcels/summary", parcelsHandler.GetParcelsSummary)
-	agrarianGroup.GET("/weather/daily", parcelsStreamingHandler.GetDailyWeather)
-	agrarianGroup.GET("/weather/forecast", parcelsStreamingHandler.GetForecastWeather)
-	agrarianGroup.GET("/weather/tempMap", parcelsStreamingHandler.GetWeatherTempMap)
+	agrarianGroup.GET("/weather/daily", parcelsHandler.GetDailyWeather)
+	agrarianGroup.GET("/weather/forecast", parcelsHandler.GetForecastWeather)
 	agrarianGroup.GET("/enclosures", parcelsHandler.GetEnclosures)
 	agrarianGroup.GET("/cropStats", parcelsHandler.GetCropStats)
-	agrarianGroup.GET("/ndvi", parcelsStreamingHandler.GetNDVI)
-	agrarianGroup.GET("/ndvi/map", parcelsStreamingHandler.GetNDVIMap)
+	agrarianGroup.GET("/ndvi", parcelsHandler.GetNDVI)
 	agrarianGroup.GET("/phytosantaries", parcelsHandler.GetPhytosanitaries)
 	agrarianGroup.GET("/fertilizers", parcelsHandler.GetFertilizers)
 	// agrarianGroup.GET("/ssetest", parcelsStreamingHandler.SseTest)

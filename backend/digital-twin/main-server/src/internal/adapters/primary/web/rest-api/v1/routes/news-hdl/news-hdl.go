@@ -1,7 +1,7 @@
 package newshdl
 
 import (
-	imageshdl "digital-twin/main-server/src/internal/adapters/primary/rest-api/images-hdl"
+	imageshdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/images-hdl"
 	"digital-twin/main-server/src/internal/core/domain"
 	"digital-twin/main-server/src/internal/core/ports"
 	"digital-twin/main-server/src/pkg/utils"

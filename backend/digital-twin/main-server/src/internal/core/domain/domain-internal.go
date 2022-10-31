@@ -24,16 +24,25 @@ type EventIn struct {
 	Payload   interface{}   `json:"payload"`
 }
 
-type EventExtReceive struct {
-	ID      string          `json:"id,omitempty"`
-	Payload json.RawMessage `json:"payload"`
+type AsyncEventExtReceive struct {
+	ID           string          `json:"id,omitempty"`
+	ErrorMessage string          `json:"errorMessage,omitempty"`
+	Payload      json.RawMessage `json:"payload"`
 }
 
-type EventExtSend struct {
+type SyncEventExtReceive struct {
+	ErrorMessage string          `json:"errorMessage,omitempty"`
+	Payload      json.RawMessage `json:"payload"`
+}
+
+type AsyncEventExtSend struct {
 	ID      string      `json:"id,omitempty"`
 	Payload interface{} `json:"payload"`
 }
 
+type SyncEventExtSend struct {
+	Payload interface{} `json:"payload"`
+}
 type EventOut struct {
 	ErrorMessage string      `json:"errorMessage"`
 	Payload      interface{} `json:"payload"`

@@ -4,9 +4,10 @@ import (
 	"digital-twin/main-server/src/internal/core/domain"
 	"time"
 
-	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+// ---- Domain specific interfaces ----
 
 type NewsRepository interface {
 	FetchNumber() (int64, error)
@@ -32,42 +33,57 @@ type ParcelsRepository interface {
 	PostParcelsSummary(userId primitive.ObjectID, summary domain.Summary) error
 	PatchUserEnclosures(userId primitive.ObjectID, enclosureIds []string) error
 	// Weather
-	GetForecastWeatherByIdema(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error)
-	GetForecastWeatherByParcel(parcelId string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error)
+	GetForecastWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error)
 	PostForecastWeather(forecastWeather []domain.ForecastWeather) error
-	GetDailyWeatherByParcel(parcelId string, startDate time.Time, endDate time.Time) ([]domain.DailyWeather, error)
-	PostDailyWeather(dailyWeather []domain.DailyWeather) error
+	GetDailyWeather(parcelId string, date time.Time) ([]domain.DailyWeather, error)
+	GetHistoricalWeather(parcelId string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error)
+	PostHistoricalWeather(historicalWeather []domain.HistoricalWeather) error
 	// Parcels
 	GetParcels(enclosureIds []string) ([]domain.Parcel, error)
 	PostParcel(parcel domain.Parcel) error
 	// NDVI
-	GetNDVIByEnclosures(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error)
+	GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error)
 	PostNDVI(ndvi []domain.NDVI) error
 	// Farm
-	GetFarmHolderById(id domain.FarmHolderId) (domain.FarmHolder, error)
+	GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder, error)
 	PostFarmHolder(farmHolder domain.FarmHolder) error
 	// Fertilizers
-	GetFertilizersByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
-	GetFertilizersByCrop(cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
-	GetFertilizersByEnclosureIdAndCrop(enclosureId string, cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
+	GetFertilizers(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
 	PostFertilizers(fertilizer []domain.Fertilizer) error
 	// Phytosanitaries
-	GetPhytosanitariesByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
-	GetPhytosanitariesByCrop(cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
-	GetPhytosanitariesByEnclosureIdAndCrop(enclosureId string, cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
+	GetPhytosanitaries(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
 	PostPhytosanitaries(phytosanitary []domain.Phytosanitary) error
 	// Crops
-	GetCropStatsByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
-	GetCropStatsByCrop(cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
-	GetCropStatsByEnclosureIdAndCrop(enclosureId string, cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
+	GetCropStats(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
 	PostCropStats(cropStats []domain.CropStats) error
 	// Sensors
-	GetSensorDataByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.SensorData, error)
+	GetSensorData(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.SensorData, error)
 	PostSensorData(sensorData []domain.SensorData) error
 	// Notifications
-	GetNotificationsByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Notification, error)
+	GetNotifications(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Notification, error)
 	PostNotifications(notifications []domain.Notification) error
 }
+
+type ParcelsESB interface {
+	// Parcels
+	GetParcels(enclosureIds []string) ([]domain.Parcel, error)
+	// Weather
+	GetForecastWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error)
+	GetDailyWeather(municipality string, province string) ([]domain.DailyWeather, error)
+	GetHistoricalWeather(parcelId string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error)
+	// NDVI
+	GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error)
+	// Farm
+	// TODO: get the hole farm, maybe asociated with the parcel
+	// Fertilizers
+	GetFertilizers(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
+	// Phytosanitaries
+	GetPhytosanitaries(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
+	// Crops
+	GetCropStats(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
+}
+
+// ---- Adapter specific interfaces ----
 
 type EncryptionRepository interface {
 	EncryptData(data string) (string, error)
@@ -78,11 +94,6 @@ type CacheRepository interface {
 	Get(key string) (string, error)
 	Set(key string, value string, exp time.Duration) error
 	Delete(key string) error
-}
-
-type BusRepository interface {
-	Publish(topic string, routingKey string, message []byte) error
-	Subscribe(queueName string, exchangeName string, routingKey string, out chan amqp.Delivery)
 }
 
 type FileStorageRepository interface {

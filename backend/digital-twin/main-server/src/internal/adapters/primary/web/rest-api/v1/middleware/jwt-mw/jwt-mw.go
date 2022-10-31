@@ -4,7 +4,6 @@ import (
 	"digital-twin/main-server/src/internal/core/domain"
 	"digital-twin/main-server/src/internal/core/ports"
 	"digital-twin/main-server/src/pkg/apperrors"
-	"fmt"
 	"strings"
 	"time"
 
@@ -25,7 +24,6 @@ func Init(authsrv ports.JWTService, usersrv ports.UsersService, envMode string) 
 
 func (srv *service) AuthorizeJWT(roles []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println(srv.envMode)
 		if srv.envMode == "LOCAL" {
 			c.Next()
 			return

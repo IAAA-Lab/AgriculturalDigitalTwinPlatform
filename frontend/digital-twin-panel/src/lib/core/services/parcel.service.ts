@@ -20,23 +20,18 @@ class ParcelsService implements IParcelsService {
   getOverviewSummary(userId: string): Promise<Summary> {
     return this.parcelsRepository.getOverviewSummary(userId);
   }
-  getDailyWeather(
-    parcelId: string,
-    startDate: Date,
-    endDate: Date
-  ): Promise<DailyWeather[]> {
-    return this.parcelsRepository.getDailyWeather(parcelId, startDate, endDate);
+  getDailyWeather(parcelId: string): Promise<DailyWeather[]> {
+    // Get the current day like this: 2022-10-31T00:00:00.000Z in ISO format
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    return this.parcelsRepository.getDailyWeather(parcelId, date);
   }
   getForecastWeather(
-    parcelId: string,
+    idema: string,
     startDate: Date,
     endDate: Date
   ): Promise<DailyWeather[]> {
-    return this.parcelsRepository.getForecastWeather(
-      parcelId,
-      startDate,
-      endDate
-    );
+    return this.parcelsRepository.getForecastWeather(idema, startDate, endDate);
   }
   getNDVI(
     enclosureIds: string[],

@@ -28,45 +28,29 @@ type ParcelsService interface {
 	// User parcels
 	GetUserParcels(userId string) (domain.UserParcels, error)
 	PostUserParcels(userParcels domain.UserParcels) error
-	GetSummary(userId string) (domain.Summary, error)
-	PostParcelsSummary(userId string, summary domain.Summary) error
 	PatchUserEnclosures(userId string, enclosureIds []string) error
+	GetSummary(userId string) (domain.Summary, error)
 	// Weather
-	GetForecastWeatherByIdema(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error)
-	GetForecastWeatherByParcel(parcelId string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error)
-	PostForecastWeather(forecastWeather []domain.ForecastWeather) error
-	GetDailyWeatherByParcel(parcelId string, startDate time.Time, endDate time.Time) ([]domain.DailyWeather, error)
-	PostDailyWeather(dailyWeather []domain.DailyWeather) error
+	GetForecastWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error)
+	GetDailyWeather(parcelId string, date time.Time) ([]domain.DailyWeather, error)
+	GetHistoricalWeather(parcelId string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error)
 	// Parcels
-	GetEnclosures(enclosureIds []string) ([]domain.Parcel, error)
-	PostParcel(parcel domain.Parcel) error
+	GetParcels(enclosureIds []string) ([]domain.Parcel, error)
 	// NDVI
-	GetNDVIByEnclosures(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error)
-	PostNDVI(ndvi []domain.NDVI) error
+	GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error)
+	//TODO: ask the esb for the NDVI Map provider
 	// Farm
-	GetFarmHolderById(id domain.FarmHolderId) (domain.FarmHolder, error)
-	PostFarmHolder(farmHolder domain.FarmHolder) error
+	GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder, error)
 	// Fertilizers
-	GetFertilizersByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
-	GetFertilizersByCrop(cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
-	GetFertilizersByEnclosureIdAndCrop(enclosureId string, cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
-	PostFertilizers(fertilizer []domain.Fertilizer) error
+	GetFertilizers(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
 	// Phytosanitaries
-	GetPhytosanitariesByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
-	GetPhytosanitariesByCrop(cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
-	GetPhytosanitariesByEnclosureIdAndCrop(enclosureId string, cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
-	PostPhytosanitaries(phytosanitary []domain.Phytosanitary) error
+	GetPhytosanitaries(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
 	// Crops
-	GetCropStatsByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
-	GetCropStatsByCrop(cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
-	GetCropStatsByEnclosureIdAndCrop(enclosureId string, cropId domain.CropId, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
-	PostCropStats(cropStats []domain.CropStats) error
+	GetCropStats(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
 	// Sensors
-	GetSensorDataByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.SensorData, error)
-	PostSensorData(sensorData []domain.SensorData) error
+	GetSensorData(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.SensorData, error)
 	// Notifications
-	GetNotificationsByEnclosureId(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Notification, error)
-	PostNotifications(notifications []domain.Notification) error
+	GetNotifications(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Notification, error)
 }
 
 type JWTService interface {
