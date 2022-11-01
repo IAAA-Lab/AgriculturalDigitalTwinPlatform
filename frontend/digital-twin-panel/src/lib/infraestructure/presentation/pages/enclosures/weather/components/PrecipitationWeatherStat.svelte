@@ -1,13 +1,13 @@
 <script>
-  import Range from "src/lib/infraestructure/presentation/components/misc/Range.svelte";
   import WeatherStat from "./WeatherStat.svelte";
+  export let probPrec = 0;
 </script>
 
 <div class="precipitation">
-  <WeatherStat title="Precipitación">
+  <WeatherStat title="Prob. Precipitación">
     <i slot="header-icon" class="fi fi-rr-umbrella pt-4" />
     <div slot="body" class="body">
-      <p class="text-sm m-0"><strong>44 mm</strong></p>
+      <p class="text-sm m-0"><strong>{probPrec} %</strong></p>
     </div>
   </WeatherStat>
 </div>

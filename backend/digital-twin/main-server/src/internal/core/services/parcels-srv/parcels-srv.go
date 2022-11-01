@@ -4,9 +4,7 @@ import (
 	"digital-twin/main-server/src/internal/core/domain"
 	"digital-twin/main-server/src/internal/core/ports"
 	"digital-twin/main-server/src/pkg/apperrors"
-	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -134,24 +132,20 @@ func (srv *service) GetHistoricalWeather(idema string, startDate time.Time, endD
 	return historicalWeather, nil
 }
 
-func (srv *service) GetDailyWeather(parcelId string, date time.Time) ([]domain.DailyWeather, error) {
+func (srv *service) GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error) {
 	dailyWeather, err := srv.persistence.GetDailyWeather(parcelId, date)
 	if err == nil {
 		return dailyWeather, nil
 	}
 	if err != apperrors.ErrNotFound {
-		return nil, err
+		return domain.DailyWeather{}, err
 	}
 	// If not found in localdatabase, get from local ESB
 	// Get province and municipality from parcelId
-	cuttedParcelId := strings.Split(parcelId, "-")
-	province := cuttedParcelId[0]
-	municipality := cuttedParcelId[1]
-	dailyWeather, err = srv.esb.GetDailyWeather(municipality, province)
+	dailyWeather, err = srv.esb.GetDailyWeather(parcelId)
 	if err != nil {
-		return nil, err
+		return domain.DailyWeather{}, err
 	}
-	fmt.Println(dailyWeather)
 	// No need to save in local database, because the historical weather is requested other way
 	return dailyWeather, nil
 }

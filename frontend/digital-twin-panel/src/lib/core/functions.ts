@@ -98,6 +98,20 @@ const getRangeBarColor = (value: number) => {
   }
 };
 
+const formattedTime = (time: string) => {
+  return time.split("T")[0];
+};
+
+const formattedDate = (time: Date) => {
+  return formattedTime(
+    time.toLocaleString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+  );
+};
+
 export {
   fixDefaultLeafletIcons,
   numberWithCommas,
@@ -105,4 +119,5 @@ export {
   getColorList,
   getIconByCharacteristic,
   getRangeBarColor,
+  formattedDate,
 };

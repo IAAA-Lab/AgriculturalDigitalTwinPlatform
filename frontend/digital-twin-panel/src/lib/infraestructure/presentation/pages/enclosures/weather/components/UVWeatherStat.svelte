@@ -3,14 +3,15 @@
   import WeatherStat from "./WeatherStat.svelte";
 
   const UV_MAX = 11;
+  export let uv;
 </script>
 
 <div class="uv">
-  <WeatherStat title="UV">
+  <WeatherStat title="UV máx">
     <i slot="header-icon" class="fi fi-rr-sun pt-4" />
     <div slot="body" class="body">
       <Range
-        value={5}
+        value={uv}
         height={10}
         to={UV_MAX}
         background="linear-gradient(
@@ -28,7 +29,7 @@
         rgba(255, 0, 0, 1) 100%
     )"
       />
-      <p class="text-sm m-0"><strong>5</strong></p>
+      <p class="text-sm m-0"><strong>{uv}</strong></p>
     </div>
   </WeatherStat>
 </div>

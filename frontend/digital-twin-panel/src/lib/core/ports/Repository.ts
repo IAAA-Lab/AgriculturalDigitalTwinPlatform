@@ -10,7 +10,7 @@ interface IParcelsRepository {
   getUserParcels(userId: string): Promise<UserParcels>;
   getEnclosures(enclosureIds: string[]): Promise<Parcel[]>;
   getOverviewSummary(userId: string): Promise<Summary>;
-  getDailyWeather(parcelId: string, date: Date): Promise<DailyWeather[]>;
+  getDailyWeather(parcelId: string, date: Date): Promise<DailyWeather>;
   getForecastWeather(
     idema: string,
     startDate: Date,

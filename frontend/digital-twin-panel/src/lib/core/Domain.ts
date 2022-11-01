@@ -194,29 +194,66 @@ type ForecastWeather = {
 type DailyWeather = {
   type: string;
   parcelId: string;
-  date: string;
-  dataOrigin: {
-    producer: string;
-    web: string;
-    copyrigth: string;
-    legalNote: string;
-  };
-  prediction: {
-    SkyState: weatherState[];
-    Prec: weatherState[];
-    ProbPrec: weatherState[];
-    Snow: weatherState[];
-    ProbSnow: weatherState[];
-    ProbStorm: weatherState[];
-    Ta: weatherState[];
-    Hr: weatherState[];
-    Wind: weatherState[];
-  };
+  municipality: string;
+  province: string;
+  dataOrigin: DataOrigin;
+  prediction: Prediction;
 };
 
-type weatherState = {
-  hour: number;
+type DataOrigin = {
+  producer: string;
+  web: string;
+  copyright: string;
+  legalNote: string;
+  language: string;
+};
+
+type Prediction = {
+  day: Day[];
+};
+
+type Day = {
+  skyState: SkyState[];
+  probPrec: ProbPrec[];
+  snowQuoteProb: SnowQuoteProb[];
+  ta: Hr;
+  hr: Hr;
+  wind: Wind[];
+  uvMax: number;
+  date: Date;
+};
+
+type Hr = {
+  max: number;
+  min: number;
+  data: Datum[];
+};
+
+type Datum = {
   value: number;
+  hour: number;
+};
+
+type ProbPrec = {
+  value: number;
+  period: string;
+};
+
+type SkyState = {
+  value: string;
+  period: string;
+  description: string;
+};
+
+type SnowQuoteProb = {
+  value: string;
+  period: string;
+};
+
+type Wind = {
+  direction: string;
+  vel: number;
+  period: string;
 };
 
 enum StateNames {
@@ -252,7 +289,6 @@ export type {
   FarmHolderId,
   ForecastWeather,
   DailyWeather,
-  weatherState,
   UserParcels,
   Summary,
   SummaryStat,

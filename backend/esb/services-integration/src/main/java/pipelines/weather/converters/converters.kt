@@ -1,22 +1,24 @@
-fun DailyWeatherReq.toAgroslabRequest() =
-                AgroslabRequest(
-                                provincia = this.province,
-                                municipio = this.municipality,
-                )
+fun DailyWeatherReq.toAgroslabRequest(): AgroslabRequest {
+        val parcel = parcelId.split("-")
+        return AgroslabRequest(provincia = parcel[0], municipio = parcel[1])
+}
 
-fun DailyWeatherResp.toDailyWeather() =
+fun DailyWeatherResp.toDailyWeather(parcelId: String) =
                 DailyWeather(
-                                dataOrigin = origen.toOrigen(),
+                                parcelId = parcelId,
+                                dataOrigin = origen.toOrigin(),
                                 municipality = nombre,
                                 province = provincia,
                                 prediction = prediccion.toPrediccion()
                 )
 
-fun Origen.toOrigen() =
+fun Origen.toOrigin() =
                 Origin(
                                 producer = productor,
                                 web = web,
                                 language = language,
+                                copyright = copyright,
+                                legalNote = notaLegal,
                 )
 
 fun Prediccion.toPrediccion() = Prediction(day = dia.map { it.toDay() })

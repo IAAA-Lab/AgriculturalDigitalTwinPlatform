@@ -4,8 +4,7 @@ enum class WeatherType(val value: String) {
 }
 
 data class DailyWeatherReq(
-                val municipality: String = "",
-                val province: String = "",
+                val parcelId: String = "",
                 val date: String = "",
 )
 

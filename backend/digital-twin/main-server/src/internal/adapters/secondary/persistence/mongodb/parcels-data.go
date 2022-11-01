@@ -73,17 +73,17 @@ func (mc *mongodbConn) PostHistoricalWeather(historicalWeather []domain.Historic
 	return mc.InsertDocuments(WEATHER_COLLECTION, hwIn, nil)
 }
 
-func (mc *mongodbConn) GetDailyWeather(parcelId string, date time.Time) ([]domain.DailyWeather, error) {
+func (mc *mongodbConn) GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error) {
 	filter := bson.M{
 		"parcelId": bson.M{"$eq": parcelId},
 		"date":     bson.M{"$eq": date},
 	}
-	opts := options.Find().SetSort(bson.M{"date": -1})
-	dailyWeather, err := mc.GetDocuments(WEATHER_COLLECTION, filter, opts)
+	opts := options.FindOne().SetSort(bson.M{"date": -1})
+	dailyWeather, err := mc.GetDocument(WEATHER_COLLECTION, filter, opts)
 	if err != nil {
-		return nil, err
+		return domain.DailyWeather{}, err
 	}
-	return dailyWeather.([]domain.DailyWeather), nil
+	return dailyWeather.(domain.DailyWeather), nil
 }
 
 func (mc *mongodbConn) PostDailyWeather(dailyWeather []domain.DailyWeather) error {

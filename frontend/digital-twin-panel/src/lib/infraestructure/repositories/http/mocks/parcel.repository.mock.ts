@@ -299,13 +299,12 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
       },
     });
   }
-  async getDailyWeather(parcelId: string, date: Date): Promise<DailyWeather[]> {
+  async getDailyWeather(parcelId: string, date: Date): Promise<DailyWeather> {
     return this.http
-      .get<DailyWeather[]>("weather/daily", {
+      .get<DailyWeather>("weather/daily", {
         params: {
           parcelId,
-          startDate: date,
-          endDate: date,
+          date,
         },
       })
       .then((response) => {

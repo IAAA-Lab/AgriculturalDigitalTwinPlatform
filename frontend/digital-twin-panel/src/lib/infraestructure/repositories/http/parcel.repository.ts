@@ -67,20 +67,16 @@ class HttpParcelsRepository implements IParcelsRepository {
         throw ServerError;
       });
   }
-  async getDailyWeather(
-    parcelId: string,
-    startDate: Date,
-    endDate: Date
-  ): Promise<DailyWeather[]> {
+  async getDailyWeather(parcelId: string, date: Date): Promise<DailyWeather> {
     return this.http
-      .get<DailyWeather[]>("weather/daily", {
+      .get<DailyWeather>("weather/daily", {
         params: {
           parcelId,
-          startDate,
-          endDate,
+          date,
         },
       })
       .then((response) => {
+        console.log({ response });
         if (response.status === 200) {
           return response.data;
         }

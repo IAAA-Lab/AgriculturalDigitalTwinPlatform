@@ -20,7 +20,7 @@
     labels,
     datasets: [
       {
-        label: "My First Dataset",
+        label: "",
         data,
         fill: false,
         borderColor: color,

@@ -4,6 +4,7 @@ import (
 	"context"
 	"digital-twin/main-server/src/internal/core/domain"
 	"digital-twin/main-server/src/pkg/apperrors"
+	"fmt"
 	"time"
 
 	"github.com/goccy/go-json"
@@ -29,7 +30,7 @@ func (r *RabbitMQConn) GetQueue(name string) *amqp.Queue {
 		name,
 		false,
 		false,
-		true,
+		false,
 		false,
 		nil,
 	)
@@ -127,7 +128,7 @@ func (r *RabbitMQConn) PublishAndWait(routingKey string, correlationId string, e
 	h, err := ch.Consume(
 		q.Name,
 		"",
-		true,
+		false,
 		false,
 		false,
 		false,
@@ -157,11 +158,14 @@ func (r *RabbitMQConn) PublishAndWait(routingKey string, correlationId string, e
 	}
 
 	for d := range h {
+		fmt.Println(len(h), d.CorrelationId, correlationId)
 		if d.CorrelationId == correlationId {
+			d.Ack(false)
 			var event domain.SyncEventExtReceive
 			err = json.Unmarshal(d.Body, &event)
 			return event, err
 		}
+		d.Ack(true)
 	}
 	return domain.SyncEventExtReceive{}, apperrors.ErrInternal
 }

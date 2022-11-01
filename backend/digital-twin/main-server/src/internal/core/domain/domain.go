@@ -228,35 +228,55 @@ type DailyWeather struct {
 	DataOrigin   struct {
 		Producer  string `json:"producer"`
 		Web       string `json:"web"`
-		Copyrigth string `json:"copyrigth"`
+		Copyright string `json:"copyright"`
 		LegalNote string `json:"legalNote"`
 		Language  string `json:"language"`
 	} `json:"dataOrigin"`
 	Prediction struct {
 		Day []struct {
-			SkyState []weatherState `json:"skyState"`
-			// ProbPrec      []weatherState `json:"probPrec"`
-			// SnowQuoteProb []weatherState `json:"snowQuoteProb"`
-			// ProbStorm []weatherState
-			Ta relativeHumidity `json:"ta"`
-			Hr relativeHumidity `json:"hr"`
-			// Wind  []weatherState   `json:"wind"`
-			UvMax float32 `json:"uvMax"`
-			Date  string  `json:"date"`
+			SkyState      []skyState       `json:"skyState"`
+			ProbPrec      []probPrec       `json:"probPrec"`
+			SnowQuoteProb []snowQuoteProb  `json:"snowQuoteProb"`
+			Ta            relativeHumidity `json:"ta"`
+			Hr            relativeHumidity `json:"hr"`
+			Wind          []wind           `json:"wind"`
+			UvMax         float32          `json:"uvMax"`
+			Date          string           `json:"date"`
 		} `json:"day"`
 	} `json:"prediction"`
 }
 
-type weatherState struct {
+type wind struct {
+	Direction string  `json:"direction"`
+	Vel       float32 `json:"vel"`
+	Period    string  `json:"period"`
+}
+
+type probPrec struct {
+	Value  float32 `json:"value"`
+	Period string  `json:"period"`
+}
+
+type skyState struct {
 	Value       string `json:"value"`
 	Period      string `json:"period"`
 	Description string `json:"description"`
 }
 
-type relativeHumidity struct {
-	Max float32 `json:"max"`
-	Min float32 `json:"min"`
+type snowQuoteProb struct {
+	Value  string `json:"value"`
+	Period string `json:"period"`
 }
+
+type relativeHumidity struct {
+	Max  float32 `json:"max"`
+	Min  float32 `json:"min"`
+	Data []struct {
+		Value float32 `json:"value"`
+		Hour  float32 `json:"hour"`
+	} `json:"data"`
+}
+
 type SensorData struct {
 	EnclosureId string          `json:"enclosureId"`
 	SensorId    string          `json:"sensorId"`

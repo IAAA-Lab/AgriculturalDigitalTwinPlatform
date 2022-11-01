@@ -51,9 +51,13 @@ import (
 func CorsConfig() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", os.Getenv("CLIENT_URI"))
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		if os.Getenv("ENV_MODE") != "LOCAL" {
+			c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		}
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PATCH, DELETE")
+		//NOTE: for the moment, we are not using redis cache, with this is enough
+		c.Writer.Header().Set("Cache-Control", "max-age=600")
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
 			return

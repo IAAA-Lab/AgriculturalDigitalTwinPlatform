@@ -14,14 +14,17 @@ type redissrv struct {
 func NewRedisConn(redisUri string) *redissrv {
 
 	if redisUri == "" {
-		redisUri = "redis://localhost:6379"
+		redisUri = "localhost:6379"
 	}
 
-	redisParsedUri, err := redis.ParseURL(redisUri)
-	redisClient := redis.NewClient(redisParsedUri)
-	if err != nil {
+	redisClient := redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	})
+
+	if err := redisClient.Ping(context.Background()).Err(); err != nil {
 		panic(err)
 	}
+
 	return &redissrv{client: redisClient}
 }
 

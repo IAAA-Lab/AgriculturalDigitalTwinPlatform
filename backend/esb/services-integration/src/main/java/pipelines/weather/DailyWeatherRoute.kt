@@ -8,7 +8,7 @@ import org.apache.camel.component.jackson.ListJacksonDataFormat
 class DailyWeatherRoute : RouteBuilder() {
 
   data class RequestIn(val payload: DailyWeatherReq? = null)
-  data class RequestOut(val errorMessage: String? = null, val payload: List<DailyWeather>)
+  data class RequestOut(val errorMessage: String? = null, val payload: DailyWeather)
 
   val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
   val RABBIMQ_ROUTE = "spring-rabbitmq:default?queues={{rabbitmq.weather.daily.routing_key}}"
@@ -23,11 +23,7 @@ class DailyWeatherRoute : RouteBuilder() {
         .log("Received request: \${body}")
         // Unmarshal and process request
         .unmarshal(JacksonDataFormat(RequestIn::class.java))
-        .process { exchange: Exchange ->
-          val request = exchange.`in`.getBody(RequestIn::class.java)
-          val agroslabRequest = request.payload?.toAgroslabRequest()
-          exchange.`in`.setBody(agroslabRequest, AgroslabRequest::class.java)
-        }
+        .process { processAgroslabRequest(it) }
         .marshal(JacksonDataFormat(AgroslabRequest::class.java))
         // Call Agroslab API
         .setHeader("Accept", constant("application/json"))
@@ -55,9 +51,18 @@ class DailyWeatherRoute : RouteBuilder() {
         .log("Sending response to RabbitMQ ...")
   }
 
+  fun processAgroslabRequest(exchange: Exchange) {
+    val request = exchange.`in`.getBody(RequestIn::class.java)
+    val agroslabRequest = request.payload?.toAgroslabRequest()
+    exchange.`in`.setBody(agroslabRequest, AgroslabRequest::class.java)
+    // To recover later
+    exchange.`in`.setHeader("parcelId", request.payload?.parcelId)
+  }
+
   fun convertToDomain(exchange: Exchange) {
     val payload = exchange.`in`.getBody(List::class.java)
-    var dailyWeather = payload.map { it as DailyWeatherResp }.map { it.toDailyWeather() }
+    val parcelId = exchange.`in`.getHeader("parcelId") as String
+    var dailyWeather = payload.map { it as DailyWeatherResp }.map { it.toDailyWeather(parcelId) }
     exchange.`in`.setBody(dailyWeather)
   }
 
@@ -72,6 +77,6 @@ class DailyWeatherRoute : RouteBuilder() {
     val todayWeather = dailyWeather[0].prediction.day.filter { it.date == today }
     dailyWeather[0].prediction.day = todayWeather
     // Set response back to exchange
-    exchange.`in`.setBody(RequestOut(payload = dailyWeather))
+    exchange.`in`.setBody(RequestOut(payload = dailyWeather[0]))
   }
 }

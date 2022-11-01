@@ -1,4 +1,6 @@
 <script>
+  import { parcelsService } from "src/app/config/config";
+  import { formattedDate } from "src/lib/core/functions";
   import HumidityWeatherStat from "../components/HumidityWeatherStat.svelte";
   import PrecipitationWeatherStat from "../components/PrecipitationWeatherStat.svelte";
   import TemperatureWeatherStat from "../components/TemperatureWeatherStat.svelte";
@@ -7,24 +9,43 @@
 </script>
 
 <section>
-  <div class="header mb-8">
-    <h2 class="m-0">Tiempo actual</h2>
-    <li class="fi fi-rr-arrow" />
-  </div>
-  <div class="main-preview mb-16">
-    <p class="m-0 text-sm">Córdoba, Andalucía, España</p>
-    <li class="fi fi-rr-cloud" />
-    <p class="m-0 text-4xl">12º</p>
-    <p class="m-0 text-sm">Nublado</p>
-  </div>
-  <div class="weather-stats">
-    <TemperatureWeatherStat />
-    <WindWeatherStat />
-    <HumidityWeatherStat />
-    <UvWeatherStat />
-    <PrecipitationWeatherStat />
-  </div>
-  <div class="footer" />
+  {#await parcelsService.getDailyWeather("45-137-0-0-9-23")}
+    <p>loading...</p>
+  {:then cw}
+    {@const pred = cw.prediction.day[0]}
+    <div class="header mb-8">
+      <h2 class="m-0">Tiempo diario</h2>
+      <p class="m-0 text-xs">{formattedDate(pred.date)}</p>
+    </div>
+    <div class="main-preview mb-16">
+      <p class="m-0 text-sm">
+        {cw.municipality},{cw.province}
+      </p>
+      <li class="fi fi-rr-cloud" />
+      <p class="m-0 text-4xl">{pred.ta.max}</p>
+      <p class="m-0 text-sm">{pred.skyState[2].description}</p>
+    </div>
+    <div class="weather-stats">
+      <TemperatureWeatherStat
+        minTa={pred.ta.min}
+        maxTa={pred.ta.max}
+        taData={pred.ta.data.map((v) => v.value)}
+        taLabels={pred.ta.data.map((v) => v.hour + ":00 h")}
+      />
+      <WindWeatherStat windSpeed={pred.wind[2].vel} />
+      <HumidityWeatherStat
+        minHr={pred.hr.min}
+        maxHr={pred.hr.max}
+        hrData={pred.hr.data.map((v) => v.value)}
+        hrLabels={pred.hr.data.map((v) => v.hour + ":00 h")}
+      />
+      <UvWeatherStat uv={pred.uvMax} />
+      <PrecipitationWeatherStat probPrec={pred.probPrec[2].value} />
+    </div>
+    <div class="footer" />
+  {:catch}
+    <p>error</p>
+  {/await}
 </section>
 
 <style>
@@ -39,7 +60,8 @@
 
   .header {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     justify-content: space-between;
   }
 

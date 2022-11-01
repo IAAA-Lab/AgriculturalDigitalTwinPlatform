@@ -32,7 +32,7 @@ type ParcelsService interface {
 	GetSummary(userId string) (domain.Summary, error)
 	// Weather
 	GetForecastWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error)
-	GetDailyWeather(parcelId string, date time.Time) ([]domain.DailyWeather, error)
+	GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error)
 	GetHistoricalWeather(parcelId string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error)
 	// Parcels
 	GetParcels(enclosureIds []string) ([]domain.Parcel, error)

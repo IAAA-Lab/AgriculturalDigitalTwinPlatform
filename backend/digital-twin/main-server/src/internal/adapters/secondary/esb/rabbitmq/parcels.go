@@ -87,27 +87,23 @@ func (r *RabbitMQConn) GetHistoricalWeather(idema string, startDate time.Time, e
 }
 
 type DailyWeatherReq struct {
-	Municipality string `json:"municipality"`
-	Province     string `json:"province"`
+	ParcelId string `json:"parcelId"`
 }
 
-func (r *RabbitMQConn) GetDailyWeather(municipality string, province string) ([]domain.DailyWeather, error) {
+func (r *RabbitMQConn) GetDailyWeather(parcelId string) (domain.DailyWeather, error) {
 	dailyWeatherRaw, err := r.PublishAndWait("weather.daily", uuid.New().String(), domain.SyncEventExtSend{
-		Payload: DailyWeatherReq{
-			Municipality: municipality,
-			Province:     province,
-		},
+		Payload: DailyWeatherReq{ParcelId: parcelId},
 	})
 	if err != nil {
-		return nil, err
+		return domain.DailyWeather{}, err
 	}
 	if dailyWeatherRaw.ErrorMessage != "" {
-		return nil, errors.New(dailyWeatherRaw.ErrorMessage)
+		return domain.DailyWeather{}, errors.New(dailyWeatherRaw.ErrorMessage)
 	}
-	var dailyWeather []domain.DailyWeather
+	var dailyWeather domain.DailyWeather
 	err = json.Unmarshal(dailyWeatherRaw.Payload, &dailyWeather)
 	if err != nil {
-		return nil, err
+		return domain.DailyWeather{}, err
 	}
 	return dailyWeather, nil
 }
