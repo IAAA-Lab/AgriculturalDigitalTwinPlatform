@@ -71,7 +71,37 @@ Image of the error
 
 #### Solution
 
+The temporal solution that is being used for the moment is just converting the body from the HTTP request to **utf-8** encoding.
+
+```
+.convertBodyTo(String::class.java, "utf-8")
+```
+
 ### Env variables and application properties
+
+Env variables are recognized automatically by the file name `.env`. The environment variables have to be with `QUARKUS_` prefix in order for Quarkus to recognize them. I personally preffer to map the .env variables to the `application.properties` file. This way, Apache Camel can load the variables by simple writing `{{<properties variable>}}`.
+
+### RabbitMQ
+
+#### Explanation
+
+#### Solution
+
+The solution was simply changing the `camel-quarkus-rabbitmq` package to `camel-quarkus-spring-rabbitmq`. This new package is better suited and literally recommended by Camel.
+
+This, way, as the default exchange and routing keys are used for routing, we can simply do this:
+
+```
+  val RABBIMQ_ROUTE = "spring-rabbitmq:default?queues={{rabbitmq.weather.daily.queue}}"
+```
+
+And the default exchange will route any routing key with the same name of the queues told make it really simple. When only have to get the rabbitmq request once, and not forward it again to the rpc queue. This is because the Camel exchange do it directly through its message properties:
+
+```
+MessageProperties [headers={}, correlationId=d088c20e-0b40-45ba-9c8f-8251867aa183, replyTo=amq.gen-2WAivGnv-UbRLplvFmwJAw, contentType=application/json, contentLength=0, redelivered=true, receivedExchange=, receivedRoutingKey=weather.daily, deliveryTag=1, consumerTag=amq.ctag-VMs1lEODM6SJUn5vua6vIA, consumerQueue=weather.daily])
+```
+
+Where the
 
 ## Utilities used
 

@@ -92,7 +92,7 @@ type DailyWeatherReq struct {
 }
 
 func (r *RabbitMQConn) GetDailyWeather(municipality string, province string) ([]domain.DailyWeather, error) {
-	dailyWeatherRaw, err := r.PublishAndWait("daily-weather", uuid.New().String(), domain.SyncEventExtSend{
+	dailyWeatherRaw, err := r.PublishAndWait("weather.daily", uuid.New().String(), domain.SyncEventExtSend{
 		Payload: DailyWeatherReq{
 			Municipality: municipality,
 			Province:     province,

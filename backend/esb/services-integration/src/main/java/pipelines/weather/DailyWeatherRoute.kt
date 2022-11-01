@@ -7,11 +7,10 @@ import org.apache.camel.component.jackson.ListJacksonDataFormat
 
 class DailyWeatherRoute : RouteBuilder() {
 
-  val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-
   data class RequestIn(val payload: DailyWeatherReq? = null)
   data class RequestOut(val errorMessage: String? = null, val payload: List<DailyWeather>)
 
+  val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
   val RABBIMQ_ROUTE = "spring-rabbitmq:default?queues={{rabbitmq.weather.daily.routing_key}}"
   val AGROSLAB_URI = "{{agroslab.uri}}"
   val AGROSLAB_API_KEY = "{{agroslab.api_key}}"
@@ -21,6 +20,7 @@ class DailyWeatherRoute : RouteBuilder() {
     // TODO: catch error
     // Consume request from RabbitMQ
     from(RABBIMQ_ROUTE)
+        .log("Received request: \${body}")
         // Unmarshal and process request
         .unmarshal(JacksonDataFormat(RequestIn::class.java))
         .process { exchange: Exchange ->
@@ -34,18 +34,25 @@ class DailyWeatherRoute : RouteBuilder() {
         .setHeader("Authorization", constant(AGROSLAB_API_KEY))
         .setHeader(Exchange.HTTP_METHOD, constant("POST"))
         .to(AGROSLAB_URI)
-        // Processresponse and send to RabbitMQ
+        // Process response and send to RabbitMQ
         .convertBodyTo(String::class.java, "utf-8")
         .unmarshal(ListJacksonDataFormat(DailyWeatherResp::class.java))
         .process { convertToDomain(it) }
-        .to("direct:save-to-data-lake")
+        .multicast()
         .to("direct:send-back-to-rabbitmq")
+    // TODO: unknown loop error (maybe removing rabbitmq header?)
+    // .to("direct:save-to-data-lake")
 
-    from("direct:save-to-data-lake").log("Saving to data lake").end()
+    from("direct:save-to-data-lake")
+        // camelMongoClient is a bean defined in the application.properties injected automatically
+        // by quarkus (quarkus.mongodb.connection-string)
+        .to("mongodb:camelMongoClient?database=test&collection=Data&operation=insert")
+        .log("Saving to data lake \${body}")
 
     from("direct:send-back-to-rabbitmq")
         .process { processAgroslabResponse(it) }
         .marshal(JacksonDataFormat(RequestOut::class.java))
+        .log("Sending response to RabbitMQ ...")
   }
 
   fun convertToDomain(exchange: Exchange) {
@@ -64,7 +71,7 @@ class DailyWeatherRoute : RouteBuilder() {
     val today = formatter.format(localDate.time)
     val todayWeather = dailyWeather[0].prediction.day.filter { it.date == today }
     dailyWeather[0].prediction.day = todayWeather
-    exchange.`in`.setBody(RequestOut(payload = dailyWeather))
     // Set response back to exchange
+    exchange.`in`.setBody(RequestOut(payload = dailyWeather))
   }
 }

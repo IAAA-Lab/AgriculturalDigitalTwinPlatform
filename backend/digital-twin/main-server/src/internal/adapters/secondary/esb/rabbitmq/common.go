@@ -123,7 +123,7 @@ func (r *RabbitMQConn) PublishAndWait(routingKey string, correlationId string, e
 	}
 	ch := r.GetChannel()
 	defer ch.Close()
-	q := r.GetQueue("")
+	q := r.GetQueue(routingKey + ".reply")
 	h, err := ch.Consume(
 		q.Name,
 		"",
