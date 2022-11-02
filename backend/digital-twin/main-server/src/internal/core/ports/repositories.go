@@ -69,7 +69,7 @@ type ParcelsESB interface {
 	GetParcels(enclosureIds []string) ([]domain.Parcel, error)
 	// Weather
 	GetForecastWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error)
-	GetDailyWeather(parcelId string) (domain.DailyWeather, error)
+	GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error)
 	GetHistoricalWeather(parcelId string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error)
 	// NDVI
 	GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error)

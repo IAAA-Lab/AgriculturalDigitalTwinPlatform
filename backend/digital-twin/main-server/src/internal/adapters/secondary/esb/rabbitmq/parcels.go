@@ -87,12 +87,13 @@ func (r *RabbitMQConn) GetHistoricalWeather(idema string, startDate time.Time, e
 }
 
 type DailyWeatherReq struct {
-	ParcelId string `json:"parcelId"`
+	ParcelId string    `json:"parcelId"`
+	Date     time.Time `json:"date"`
 }
 
-func (r *RabbitMQConn) GetDailyWeather(parcelId string) (domain.DailyWeather, error) {
+func (r *RabbitMQConn) GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error) {
 	dailyWeatherRaw, err := r.PublishAndWait("weather.daily", uuid.New().String(), domain.SyncEventExtSend{
-		Payload: DailyWeatherReq{ParcelId: parcelId},
+		Payload: DailyWeatherReq{ParcelId: parcelId, Date: date},
 	})
 	if err != nil {
 		return domain.DailyWeather{}, err

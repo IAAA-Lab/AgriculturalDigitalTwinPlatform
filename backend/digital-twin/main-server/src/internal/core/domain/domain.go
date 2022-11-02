@@ -221,60 +221,53 @@ type HistoricalWeather struct {
 }
 
 type DailyWeather struct {
-	Type         string `json:"type"`
-	ParcelId     string `json:"parcelId"`
-	Municipality string `json:"municipality"`
-	Province     string `json:"province"`
-	DataOrigin   struct {
-		Producer  string `json:"producer"`
-		Web       string `json:"web"`
-		Copyright string `json:"copyright"`
-		LegalNote string `json:"legalNote"`
-		Language  string `json:"language"`
-	} `json:"dataOrigin"`
-	Prediction struct {
-		Day []struct {
-			SkyState      []skyState       `json:"skyState"`
-			ProbPrec      []probPrec       `json:"probPrec"`
-			SnowQuoteProb []snowQuoteProb  `json:"snowQuoteProb"`
-			Ta            relativeHumidity `json:"ta"`
-			Hr            relativeHumidity `json:"hr"`
-			Wind          []wind           `json:"wind"`
-			UvMax         float32          `json:"uvMax"`
-			Date          string           `json:"date"`
-		} `json:"day"`
-	} `json:"prediction"`
+	Type         string       `json:"type"`
+	ParcelId     string       `json:"parcelId"`
+	Origin       origin       `json:"origin"`
+	ElaboratedAt string       `json:"elaboratedAt"`
+	Municipality string       `json:"municipality"`
+	Province     string       `json:"province"`
+	Prediction   []prediction `json:"prediction"`
 }
 
-type wind struct {
-	Direction string  `json:"direction"`
-	Vel       float32 `json:"vel"`
-	Period    string  `json:"period"`
+type origin struct {
+	Producer  string `json:"producer"`
+	Web       string `json:"web"`
+	Language  string `json:"language"`
+	Copyright string `json:"copyright"`
+	LegalNote string `json:"legalNote"`
 }
 
-type probPrec struct {
-	Value  float32 `json:"value"`
-	Period string  `json:"period"`
+type prediction struct {
+	SkyState  []skyState     `json:"skyState"`
+	Prec      []genericState `json:"prec"`
+	ProbPrec  []genericState `json:"probPrec"`
+	ProbStorm []genericState `json:"probStorm"`
+	Snow      []genericState `json:"snow"`
+	ProbSnow  []genericState `json:"probSnow"`
+	Ta        []genericState `json:"ta"`
+	Hr        []genericState `json:"hr"`
+	Wind      []windState    `json:"wind"`
+	Date      string         `json:"date"`
+	Dawn      string         `json:"dawn"`
+	Sunset    string         `json:"sunset"`
 }
 
 type skyState struct {
 	Value       string `json:"value"`
 	Period      string `json:"period"`
-	Description string `json:"description"`
+	Description string `json:"description,omitempty"`
+}
+type genericState struct {
+	Value  float32 `json:"value"`
+	Period string  `json:"period"`
 }
 
-type snowQuoteProb struct {
-	Value  string `json:"value"`
-	Period string `json:"period"`
-}
-
-type relativeHumidity struct {
-	Max  float32 `json:"max"`
-	Min  float32 `json:"min"`
-	Data []struct {
-		Value float32 `json:"value"`
-		Hour  float32 `json:"hour"`
-	} `json:"data"`
+type windState struct {
+	Direction string  `json:"direction"`
+	Period    string  `json:"period"`
+	Speed     float32 `json:"speed"`
+	Value     float32 `json:"value,omitempty"`
 }
 
 type SensorData struct {

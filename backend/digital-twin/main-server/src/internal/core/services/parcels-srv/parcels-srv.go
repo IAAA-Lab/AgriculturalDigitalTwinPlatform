@@ -133,16 +133,8 @@ func (srv *service) GetHistoricalWeather(idema string, startDate time.Time, endD
 }
 
 func (srv *service) GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error) {
-	dailyWeather, err := srv.persistence.GetDailyWeather(parcelId, date)
-	if err == nil {
-		return dailyWeather, nil
-	}
-	if err != apperrors.ErrNotFound {
-		return domain.DailyWeather{}, err
-	}
-	// If not found in localdatabase, get from local ESB
 	// Get province and municipality from parcelId
-	dailyWeather, err = srv.esb.GetDailyWeather(parcelId)
+	dailyWeather, err := srv.esb.GetDailyWeather(parcelId, date)
 	if err != nil {
 		return domain.DailyWeather{}, err
 	}

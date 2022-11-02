@@ -1,53 +1,91 @@
-data class DailyWeatherResp(
-        val origen: Origen = Origen(),
-        val elaborado: String = "",
-        val nombre: String = "",
-        val provincia: String = "",
-        val prediccion: Prediccion = Prediccion(),
-        val id: Long = 0,
-        val version: Double = 0.0
+import com.fasterxml.jackson.annotation.JsonProperty
+
+data class DailyWeatherAgroslabResp(
+                @JsonProperty("origen") val origen: Origen,
+                @JsonProperty("elaborado") val elaborado: String,
+                @JsonProperty("nombre") val nombre: String,
+                @JsonProperty("provincia") val provincia: String,
+                @JsonProperty("prediccion") val prediccion: Prediccion,
+                @JsonProperty("id") val id: String,
+                @JsonProperty("version") val version: String,
 )
 
 data class Origen(
-        val productor: String = "",
-        val web: String = "",
-        val enlace: String = "",
-        val language: String = "",
-        val copyright: String = "",
-        val notaLegal: String = "",
+                @JsonProperty("productor") val productor: String,
+                @JsonProperty("web") val web: String,
+                @JsonProperty("enlace") val enlace: String,
+                @JsonProperty("language") val language: String,
+                @JsonProperty("copyright") val copyright: String,
+                @JsonProperty("notaLegal") val notaLegal: String
 )
 
-data class Prediccion(val dia: List<Dia> = listOf())
+data class Prediccion(@JsonProperty("dia") val dia: List<Dia>)
 
 data class Dia(
-        val probPrecipitacion: List<ProbPrecipitacion> = listOf(),
-        val cotaNieveProv: List<CotaNieveProv> = listOf(),
-        val estadoCielo: List<EstadoCielo> = listOf(),
-        val viento: List<Viento> = listOf(),
-        val rachaMax: List<CotaNieveProv> = listOf(),
-        val temperatura: HumedadRelativa = HumedadRelativa(),
-        val sensTermica: HumedadRelativa = HumedadRelativa(),
-        val humedadRelativa: HumedadRelativa = HumedadRelativa(),
-        val uvMax: Long? = null,
-        val fecha: String = ""
+                @JsonProperty("estadoCielo") val estadoCielo: List<EstadoCielo>,
+                @JsonProperty("precipitacion") val precipitacion: List<Precipitacion>,
+                @JsonProperty("probPrecipitacion") val probPrecipitacion: List<ProbPrecipitacion>,
+                @JsonProperty("probTormenta") val probTormenta: List<ProbTormenta>,
+                @JsonProperty("nieve") val nieve: List<Nieve>,
+                @JsonProperty("probNieve") val probNieve: List<ProbNieve>,
+                @JsonProperty("temperatura") val temperatura: List<Temperatura>,
+                @JsonProperty("sensTermica") val sensTermica: List<SensTermica>,
+                @JsonProperty("humedadRelativa") val humedadRelativa: List<HumedadRelativa>,
+                @JsonProperty("vientoAndRachaMax") val vientoAndRachaMax: List<VientoAndRachaMax>,
+                @JsonProperty("fecha") val fecha: String,
+                @JsonProperty("orto") val orto: String,
+                @JsonProperty("ocaso") val ocaso: String,
 )
 
-data class CotaNieveProv(val value: String = "", val periodo: String? = null)
-
 data class EstadoCielo(
-        val value: String = "",
-        val periodo: String? = null,
-        val descripcion: String = ""
+                @JsonProperty("periodo") val periodo: String?,
+                @JsonProperty("value") val value: String,
+                @JsonProperty("descripcion") val descripcion: String,
 )
 
 data class HumedadRelativa(
-        val maxima: Long = 0,
-        val minima: Long = 0,
-        val dato: List<Dato> = listOf()
+                @JsonProperty("periodo") val periodo: String?,
+                @JsonProperty("value") val value: String,
 )
 
-data class Dato(val value: Long = 0, val hora: Long = 0)
+data class ProbPrecipitacion(
+                @JsonProperty("periodo") val periodo: String?,
+                @JsonProperty("value") val value: String,
+)
 
-data class ProbPrecipitacion(val value: Long = 0, val periodo: String? = null)
+data class Precipitacion(
+                @JsonProperty("periodo") val periodo: String?,
+                @JsonProperty("value") val value: String,
+)
 
-data class Viento(val direccion: String = "", val velocidad: Long = 0, val periodo: String? = null)
+data class ProbTormenta(
+                @JsonProperty("periodo") val periodo: String?,
+                @JsonProperty("value") val value: String,
+)
+
+data class Nieve(
+                @JsonProperty("periodo") val periodo: String?,
+                @JsonProperty("value") val value: String,
+)
+
+data class ProbNieve(
+                @JsonProperty("periodo") val periodo: String?,
+                @JsonProperty("value") val value: String,
+)
+
+data class SensTermica(
+                @JsonProperty("periodo") val periodo: String?,
+                @JsonProperty("value") val value: String,
+)
+
+data class Temperatura(
+                @JsonProperty("periodo") val periodo: String?,
+                @JsonProperty("value") val value: String,
+)
+
+data class VientoAndRachaMax(
+                @JsonProperty("periodo") val periodo: String?,
+                @JsonProperty("direccion") val direccion: List<String>? = null,
+                @JsonProperty("velocidad") val velocidad: List<String>? = null,
+                @JsonProperty("value") val value: String? = null,
+)

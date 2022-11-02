@@ -2,6 +2,7 @@ package redisrepo
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -22,7 +23,8 @@ func NewRedisConn(redisUri string) *redissrv {
 	})
 
 	if err := redisClient.Ping(context.Background()).Err(); err != nil {
-		panic(err)
+		// panic(err)
+		log.Println("Redis connection error: ", err)
 	}
 
 	return &redissrv{client: redisClient}

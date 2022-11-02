@@ -21,6 +21,8 @@ func RoundDecimals(num float32) float32 {
 	return float32(math.Floor(float64(num)*100) / 100)
 }
 
+// ------- NOT WORKING YET --------
+
 type filter struct {
 	Key string `json:"key"`
 	Op  string `json:"op,omitempty"`

@@ -1,49 +1,46 @@
 data class DailyWeather(
-        val type: String = "daily_weather",
-        val parcelId: String,
-        val dataOrigin: Origin = Origin(),
-        val municipality: String = "",
-        val province: String = "",
-        val prediction: Prediction = Prediction(),
+                val type: String = "daily_weather",
+                val parcelId: String = "",
+                val origin: Origin,
+                val elaboratedAt: String,
+                val municipality: String,
+                val province: String,
+                var prediction: List<Prediction>,
 )
 
 data class Origin(
-        val producer: String = "",
-        val web: String = "",
-        val language: String = "",
-        val copyright: String = "",
-        val legalNote: String = "",
+                val producer: String,
+                val web: String,
+                val language: String,
+                val copyright: String,
+                val legalNote: String
 )
 
-data class Prediction(var day: List<Day> = listOf())
-
-data class Day(
-        val probPrec: List<PrecipitationProbability> = listOf(),
-        val snowQuoteProb: List<SnowQuoteProb> = listOf(),
-        val skyState: List<SkyState> = listOf(),
-        val wind: List<Wind> = listOf(),
-        val ta: RelativeHumidity = RelativeHumidity(),
-        val hr: RelativeHumidity = RelativeHumidity(),
-        val uvMax: Long? = null,
-        val date: String = ""
+data class Prediction(
+                val skyState: List<SkyState>,
+                val prec: List<GenericState>,
+                val probPrec: List<GenericState>,
+                val probStorm: List<GenericState>,
+                val snow: List<GenericState>,
+                val probSnow: List<GenericState>,
+                val ta: List<GenericState>,
+                val hr: List<GenericState>,
+                val wind: List<WindState>,
+                val date: String,
+                val dawn: String,
+                val sunset: String
 )
 
-data class SnowQuoteProb(val value: String = "", val period: String? = null)
+data class SkyState(val value: String, val period: String?, val description: String)
 
-data class SkyState(
-        val value: String = "",
-        val period: String? = null,
-        val description: String = ""
+data class GenericState(
+                val value: Float,
+                val period: String?,
 )
 
-data class HrValue(val value: Long = 0, val hour: Long = 0)
-
-data class RelativeHumidity(
-        val max: Long = 0,
-        val min: Long = 0,
-        val data: List<HrValue> = listOf()
+data class WindState(
+                val direction: String,
+                val speed: Float,
+                val period: String?,
+                val value: Float,
 )
-
-data class PrecipitationProbability(val value: Long = 0, val period: String? = null)
-
-data class Wind(val direction: String = "", val vel: Long = 0, val period: String? = null)

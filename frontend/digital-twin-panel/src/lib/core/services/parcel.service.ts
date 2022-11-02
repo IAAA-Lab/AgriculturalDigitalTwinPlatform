@@ -24,7 +24,6 @@ class ParcelsService implements IParcelsService {
     // Get the current day like this: 2022-10-31T00:00:00.000Z in ISO format
     const date = new Date();
     date.setHours(0, 0, 0, 0);
-    console.log(parcelId);
     return this.parcelsRepository.getDailyWeather(parcelId, date);
   }
   getForecastWeather(

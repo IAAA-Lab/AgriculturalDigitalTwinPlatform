@@ -20,6 +20,7 @@ dependencies {
     implementation 'org.apache.camel.quarkus:camel-quarkus-timer'
     implementation 'org.apache.camel.quarkus:camel-quarkus-http'
     implementation 'org.apache.camel.quarkus:camel-quarkus-mongodb'
+    implementation 'org.apache.camel.quarkus:camel-quarkus-kotlin'
     implementation 'io.quarkus:quarkus-arc'
     testImplementation 'io.quarkus:quarkus-junit5'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"

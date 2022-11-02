@@ -1,53 +1,86 @@
+import kotlin.text.toFloat
+
 fun DailyWeatherReq.toAgroslabRequest(): AgroslabRequest {
         val parcel = parcelId.split("-")
         return AgroslabRequest(provincia = parcel[0], municipio = parcel[1])
 }
 
-fun DailyWeatherResp.toDailyWeather(parcelId: String) =
+fun DailyWeatherAgroslabResp.toDailyWeather(parcelId: String) =
                 DailyWeather(
                                 parcelId = parcelId,
-                                dataOrigin = origen.toOrigin(),
+                                elaboratedAt = elaborado,
                                 municipality = nombre,
                                 province = provincia,
-                                prediction = prediccion.toPrediccion()
+                                origin =
+                                                Origin(
+                                                                producer = origen.productor,
+                                                                web = origen.web,
+                                                                language = origen.language,
+                                                                legalNote = origen.notaLegal,
+                                                                copyright = origen.copyright
+                                                ),
+                                prediction = prediccion.dia.map { it.toPrediction() }
                 )
 
-fun Origen.toOrigin() =
-                Origin(
-                                producer = productor,
-                                web = web,
-                                language = language,
-                                copyright = copyright,
-                                legalNote = notaLegal,
-                )
-
-fun Prediccion.toPrediccion() = Prediction(day = dia.map { it.toDay() })
-
-fun Dia.toDay() =
-                Day(
-                                probPrec =
-                                                probPrecipitacion.map {
-                                                        it.toPrecipitationProbability()
-                                                },
-                                snowQuoteProb = cotaNieveProv.map { it.toSnowQuoteProb() },
+fun Dia.toPrediction() =
+                Prediction(
                                 skyState = estadoCielo.map { it.toSkyState() },
-                                wind = viento.map { it.toWind() },
-                                ta = temperatura.toRelativeHumidity(),
-                                hr = humedadRelativa.toRelativeHumidity(),
-                                uvMax = uvMax,
-                                date = fecha
+                                prec = precipitacion.map { it.toGenericState() },
+                                probPrec = probPrecipitacion.map { it.toGenericState() },
+                                probStorm = probTormenta.map { it.toGenericState() },
+                                snow = nieve.map { it.toGenericState() },
+                                probSnow = probNieve.map { it.toGenericState() },
+                                ta = temperatura.map { it.toGenericState() },
+                                hr = humedadRelativa.map { it.toGenericState() },
+                                wind = vientoAndRachaMax.map { it.toWindState() },
+                                date = fecha,
+                                dawn = orto,
+                                sunset = ocaso
                 )
 
-fun ProbPrecipitacion.toPrecipitationProbability() =
-                PrecipitationProbability(value = value, period = periodo)
+fun EstadoCielo.toSkyState(): SkyState {
+        return SkyState(value = value, period = periodo, description = descripcion)
+}
 
-fun CotaNieveProv.toSnowQuoteProb() = SnowQuoteProb(value = value, period = periodo)
+fun HumedadRelativa.toGenericState(): GenericState {
+        return GenericState(value = stringToFloat(value), period = periodo)
+}
 
-fun EstadoCielo.toSkyState() = SkyState(value = value, period = periodo, description = descripcion)
+fun Temperatura.toGenericState(): GenericState {
+        return GenericState(value = stringToFloat(value), period = periodo)
+}
 
-fun Viento.toWind() = Wind(direction = direccion, vel = velocidad, period = periodo)
+fun Precipitacion.toGenericState(): GenericState {
+        return GenericState(value = stringToFloat(value), period = periodo)
+}
 
-fun HumedadRelativa.toRelativeHumidity() =
-                RelativeHumidity(max = maxima, min = minima, data = dato.map { it.toHrValue() })
+fun ProbPrecipitacion.toGenericState(): GenericState {
+        return GenericState(value = stringToFloat(value), period = periodo)
+}
 
-fun Dato.toHrValue() = HrValue(value = value, hour = hora)
+fun ProbTormenta.toGenericState(): GenericState {
+        return GenericState(value = stringToFloat(value), period = periodo)
+}
+
+fun Nieve.toGenericState() = GenericState(value = stringToFloat(value), period = periodo)
+
+fun ProbNieve.toGenericState(): GenericState {
+        return GenericState(value = stringToFloat(value), period = periodo)
+}
+
+fun VientoAndRachaMax.toWindState() =
+                WindState(
+                                direction = direccion?.get(0) ?: "",
+                                speed = velocidad?.get(0)?.toFloat() ?: 0f,
+                                period = periodo,
+                                value = stringToFloat(value ?: "0")
+                )
+
+fun stringToFloat(value: String): Float {
+        try {
+                return value.toFloat()
+        } catch (e: Exception) {
+                // In cases where the value is "lp" (precipitacion despreciable) or "null"
+                return 0f
+        }
+}

@@ -194,66 +194,52 @@ type ForecastWeather = {
 type DailyWeather = {
   type: string;
   parcelId: string;
+  origin: origin;
+  elaboratedAt: string;
   municipality: string;
   province: string;
-  dataOrigin: DataOrigin;
-  prediction: Prediction;
+  prediction: prediction[];
 };
 
-type DataOrigin = {
+type origin = {
   producer: string;
   web: string;
+  language: string;
   copyright: string;
   legalNote: string;
-  language: string;
 };
 
-type Prediction = {
-  day: Day[];
+type prediction = {
+  skyState: skyState[];
+  prec: genericState[];
+  probPrec: genericState[];
+  probStorm: genericState[];
+  snow: genericState[];
+  probSnow: genericState[];
+  ta: genericState[];
+  hr: genericState[];
+  wind: windState[];
+  date: string;
+  dawn: string;
+  sunset: string;
 };
 
-type Day = {
-  skyState: SkyState[];
-  probPrec: ProbPrec[];
-  snowQuoteProb: SnowQuoteProb[];
-  ta: Hr;
-  hr: Hr;
-  wind: Wind[];
-  uvMax: number;
-  date: Date;
+type skyState = {
+  value: string;
+  period: string;
+  description?: string;
 };
 
-type Hr = {
-  max: number;
-  min: number;
-  data: Datum[];
-};
-
-type Datum = {
-  value: number;
-  hour: number;
-};
-
-type ProbPrec = {
+type genericState = {
   value: number;
   period: string;
 };
 
-type SkyState = {
-  value: string;
-  period: string;
-  description: string;
-};
-
-type SnowQuoteProb = {
-  value: string;
-  period: string;
-};
-
-type Wind = {
+type windState = {
   direction: string;
-  vel: number;
+  speed: number;
   period: string;
+  value?: number;
 };
 
 enum StateNames {
