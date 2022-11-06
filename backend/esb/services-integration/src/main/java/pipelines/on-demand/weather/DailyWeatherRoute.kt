@@ -13,7 +13,8 @@ class DailyWeatherRoute : RouteBuilder() {
   data class RequestOut(val errorMessage: String? = null, val payload: DailyWeather)
 
   val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-  val RABBIMQ_ROUTE = "spring-rabbitmq:default?queues={{rabbitmq.weather.daily.routing_key}}"
+  val RABBIMQ_ROUTE =
+      "spring-rabbitmq:default?queues={{rabbitmq.weather.daily.routing_key}}&exchangePattern=inOnly"
   val AGROSLAB_URI = "{{agroslab.uri}}"
   val AGROSLAB_API_KEY = "{{agroslab.api_key}}"
 
@@ -24,8 +25,8 @@ class DailyWeatherRoute : RouteBuilder() {
     from(RABBIMQ_ROUTE)
         .log("Received request: \${body}")
         .unmarshal(JacksonDataFormat(RequestIn::class.java))
-        .to("direct:request-to-web-service")
-    // .to("direct:request-to-data-lake")
+        //  .to("direct:request-to-web-service")
+        .to("direct:request-to-data-lake")
     // .choice()
     // .`when`(simple("\${body} == null"))
     // // TODO: set previous body, the received request
@@ -38,8 +39,7 @@ class DailyWeatherRoute : RouteBuilder() {
             MongoDbConstants.CRITERIA,
             constant(
                 Filters.and(
-                    Filters.eq("parcelId", "\${body.payload?.parcelId}"),
-                    Filters.eq("prediction.date", "\${body.payload?.date}")
+                    Filters.eq("type", "daily_weather"),
                 )
             )
         )
@@ -57,17 +57,13 @@ class DailyWeatherRoute : RouteBuilder() {
         // Process response and send to RabbitMQ
         .convertBodyTo(String::class.java, "utf-8")
         .unmarshal(ListJacksonDataFormat(DailyWeatherAgroslabResp::class.java))
-        .multicast()
-        // .parallelProcessing()
+        .wireTap("direct:save-to-data-lake")
         .to("direct:process-web-service-response")
-    // TODO: unknown loop error (maybe removing rabbitmq header?)
-    // .to("direct:save-to-data-lake")
 
     from("direct:save-to-data-lake")
         // camelMongoClient is a bean defined in the application.properties
-        // injected
-        // automatically
-        // by quarkus (quarkus.mongodb.connection-string)
+        // injected automatically by quarkus (quarkus.mongodb.connection-string)
+        .process { processSaveToDataLake(it) }
         .to("mongodb:camelMongoClient?database=test&collection=Data&operation=insert")
         .log("Saving to data lake \${body}")
         .stop()
@@ -102,5 +98,11 @@ class DailyWeatherRoute : RouteBuilder() {
     dailyWeather[0].prediction = todayWeather
     // Set response back to exchange
     exchange.`in`.setBody(RequestOut(payload = dailyWeather[0]))
+  }
+
+  fun processSaveToDataLake(exchange: Exchange) {
+    val payload = exchange.`in`.getBody(List::class.java) as List<DailyWeatherAgroslabResp>
+    payload.forEach { it.type = "daily_weather" }
+    exchange.`in`.setBody(payload)
   }
 }
