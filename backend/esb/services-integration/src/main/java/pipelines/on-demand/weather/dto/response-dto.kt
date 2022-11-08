@@ -1,7 +1,8 @@
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class DailyWeatherAgroslabResp(
-    @JsonProperty("type") var type: String? = "daily_weather",
     @JsonProperty("origen") val origen: Origen,
     @JsonProperty("elaborado") val elaborado: String,
     @JsonProperty("nombre") val nombre: String,
