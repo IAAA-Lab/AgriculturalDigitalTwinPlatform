@@ -1,3 +1,5 @@
+package weather.domain
+
 data class DailyWeather(
     val type: String = "daily_weather",
     val parcelId: String = "",

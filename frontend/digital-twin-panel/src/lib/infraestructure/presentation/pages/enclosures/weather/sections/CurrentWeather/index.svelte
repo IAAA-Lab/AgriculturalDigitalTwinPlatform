@@ -15,40 +15,45 @@
   {#await parcelsService.getDailyWeather("45-137-0-0-9-23")}
     <p>loading...</p>
   {:then cw}
-    {@const pred = cw.prediction[0]}
-    <CurrentWeatherHeader
-      date={cw.elaboratedAt}
-      address={cw.municipality + ", " + cw.province}
-      ta={pred.ta.find((t) => t.period == currentHour)?.value}
-      skyState={pred.skyState.find((t) => t.period == currentHour)?.description}
-    />
-    <div class="weather-stats mb-16">
-      <TemperatureWeatherStat
-        minTa={Math.max(...pred.ta.map((ta) => ta.value))}
-        maxTa={Math.min(...pred.ta.map((ta) => ta.value))}
-        taData={pred.ta.map((v) => v.value)}
-        taLabels={pred.ta.map((v) => v.period + ":00 h")}
+    {#if !cw}
+      <p>error</p>
+    {:else}
+      {@const pred = cw.prediction[0]}
+      <CurrentWeatherHeader
+        date={cw.elaboratedAt}
+        address={cw.municipality + ", " + cw.province}
+        ta={pred.ta.find((t) => t.period == currentHour)?.value}
+        skyState={pred.skyState.find((t) => t.period == currentHour)
+          ?.description}
       />
-      <WindWeatherStat
-        windSpeed={pred.wind.find((t) => t.period == currentHour)?.speed}
+      <div class="weather-stats mb-16">
+        <TemperatureWeatherStat
+          minTa={Math.max(...pred.ta.map((ta) => ta.value))}
+          maxTa={Math.min(...pred.ta.map((ta) => ta.value))}
+          taData={pred.ta.map((v) => v.value)}
+          taLabels={pred.ta.map((v) => v.period + ":00 h")}
+        />
+        <WindWeatherStat
+          windSpeed={pred.wind.find((t) => t.period == currentHour)?.speed}
+        />
+        <HumidityWeatherStat
+          minHr={pred.hr.find((t) => t.period == currentHour)?.value}
+          maxHr={pred.hr.find((t) => t.period == currentHour)?.value}
+          hrData={pred.hr.map((v) => v.value)}
+          hrLabels={pred.hr.map((v) => v.period + ":00 h")}
+        />
+        <!-- <UvWeatherStat uv={pred.} /> -->
+        <PrecipitationWeatherStat
+          probPrec={pred.probPrec.find((t) => t.period == currentHour)?.value}
+        />
+      </div>
+      <CurrentWeatherFooter
+        producer={cw.origin.producer}
+        web={cw.origin.web}
+        copyright={cw.origin.copyright}
+        legalNote={cw.origin.legalNote}
       />
-      <HumidityWeatherStat
-        minHr={pred.hr.find((t) => t.period == currentHour)?.value}
-        maxHr={pred.hr.find((t) => t.period == currentHour)?.value}
-        hrData={pred.hr.map((v) => v.value)}
-        hrLabels={pred.hr.map((v) => v.period + ":00 h")}
-      />
-      <!-- <UvWeatherStat uv={pred.} /> -->
-      <PrecipitationWeatherStat
-        probPrec={pred.probPrec.find((t) => t.period == currentHour)?.value}
-      />
-    </div>
-    <CurrentWeatherFooter
-      producer={cw.origin.producer}
-      web={cw.origin.web}
-      copyright={cw.origin.copyright}
-      legalNote={cw.origin.legalNote}
-    />
+    {/if}
   {:catch}
     <p>error</p>
   {/await}

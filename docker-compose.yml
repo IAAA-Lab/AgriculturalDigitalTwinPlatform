@@ -2,41 +2,31 @@ version: "3.8"
 
 services:
 
-  frontend-landing-page:
-    build: frontend/frontend-landing-page
-    volumes:
-      - ./frontend-landing-page:/app
-      - /app/node_modules
-    ports:
-      - "3000:3000"
-    stdin_open: true
-    env_file:
-      - frontend/frontend-landing-page/secrets/.env.local
-    depends_on:
-      - digital-twin-panel
-  images-server:
-    build: images-server
-    volumes:
-      - ./images-server:/app:rw
-      - /app/node_modules
-    ports:
-      - "3500:3500"
-    stdin_open: true
-    env_file:
-      - images-server/secrets/.env.local
-  digital-twin-panel:
-    build: frontend/digital-twin-panel
-    volumes:
-      - ./digital-twin-panel:/app
-      - /app/node_modules
-    ports:
-      - "3001:3001"
-    stdin_open: true
-    env_file:
-      - frontend/digital-twin-panel/secrets/.env.local
-    depends_on:
-      - images-server
-      - backend
+  # frontend-landing-page:
+  #   build: frontend/frontend-landing-page
+  #   volumes:
+  #     - ./frontend-landing-page:/app
+  #     - /app/node_modules
+  #   ports:
+  #     - "3000:3000"
+  #   stdin_open: true
+  #   env_file:
+  #     - frontend/frontend-landing-page/secrets/.env.local
+  #   depends_on:
+  #     - digital-twin-panel
+  # digital-twin-panel:
+  #   build: frontend/digital-twin-panel
+  #   volumes:
+  #     - ./digital-twin-panel:/app
+  #     - /app/node_modules
+  #   ports:
+  #     - "3001:3001"
+  #   stdin_open: true
+  #   env_file:
+  #     - frontend/digital-twin-panel/secrets/.env.local
+  #   depends_on:
+  #     - images-server
+  #     - backend
   backend:
     build: backend
     container_name: gin-server
@@ -51,7 +41,7 @@ services:
     command: go run ./src/internal/cmd/main.go
     restart: always
     depends_on:
-        - 'mongo'
+        # - 'mongo'
         - 'redis'
   redis:
     image: redis
@@ -62,22 +52,22 @@ services:
     volumes:
         - ./redis/redisdata:/data
     command: redis-server
-  mongo:
-      build: ./mongodb
-      container_name: mongo
-      ports:
-          - '27018:27017'
-      volumes:
-          - ./mongodata:/data/db
-      restart: always
-      env_file:
-      - mongodb/secrets/.env
-  mongo_express:
-      image: mongo-express
-      container_name: mongo_express
-      depends_on:
-          - 'mongo'
-      ports:
-          - '8081:8081'
-      restart: always
+#   mongo:
+#       build: ./mongodb
+#       container_name: mongo
+#       ports:
+#           - '27018:27017'
+#       volumes:
+#           - ./mongodata:/data/db
+#       restart: always
+#       env_file:
+#       - mongodb/secrets/.env
+#   mongo_express:
+#       image: mongo-express
+#       container_name: mongo_express
+#       depends_on:
+#           - 'mongo'
+#       ports:
+#           - '8081:8081'
+#       restart: always
       

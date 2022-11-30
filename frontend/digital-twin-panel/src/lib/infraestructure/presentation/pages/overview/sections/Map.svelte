@@ -2,15 +2,12 @@
   import { onMount } from "svelte";
   import Card from "../../../components/cards/Card.svelte";
   import leaflet from "leaflet";
-  import {
-    getColorList,
-    markerMapIconByColor,
-  } from "../../../../../core/functions";
+  import { getColorList } from "../../../../../core/functions";
 
   let mapElement;
   let i = 0;
-  export let geojsonFeatures;
-  const colorList = getColorList(geojsonFeatures.features.length);
+  export let parcels;
+  const colorList = getColorList(parcels.length);
 
   onMount(async () => {
     const map = leaflet.map(mapElement);
@@ -22,25 +19,31 @@
       })
       .addTo(map);
 
+    const geojsonFeatures = {
+      type: "FeatureCollection",
+      features: parcels,
+    };
+
+    console.log(geojsonFeatures);
+
     const features = leaflet
       .geoJSON(geojsonFeatures, {
-        // Change marker icon for each feature
-        pointToLayer: function (feature, latlng) {
-          return leaflet.marker(latlng, {
-            icon: markerMapIconByColor(colorList[i++]),
-          });
-        },
-        // GeoJSON coords are in [lon, lat] order instead of [lat, lon]
-        // that Leaflet uses (by default), so reverse them
-        coordsToLatLng: function (coords) {
-          return new leaflet.LatLng(coords[0], coords[1]);
+        style: (feature) => {
+          return {
+            fillColor: colorList[i++],
+            weight: 2,
+            opacity: 1,
+            color: "black",
+            fillOpacity: 0.7,
+            pane: "markerPane",
+          };
         },
       })
       .addTo(map)
       .bindPopup((e) => e.feature.id);
 
     // Fits map to all features present automatically
-    map.fitBounds(features.getBounds(), { padding: [50, 50] }).setMaxZoom(10);
+    map.fitBounds(features.getBounds(), { padding: [25, 25] }).setMaxZoom(17);
 
     return () => map.remove();
   });

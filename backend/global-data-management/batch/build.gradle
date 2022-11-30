@@ -21,6 +21,9 @@ dependencies {
     implementation 'org.apache.camel.quarkus:camel-quarkus-http'
     implementation 'org.apache.camel.quarkus:camel-quarkus-mongodb'
     implementation 'org.apache.camel.quarkus:camel-quarkus-kotlin'
+    implementation 'org.apache.camel.quarkus:camel-quarkus-cron'
+    implementation 'org.apache.camel.quarkus:camel-quarkus-quartz'
+    implementation 'org.apache.camel.quarkus:camel-quarkus-file'
     implementation 'io.quarkus:quarkus-arc'
     testImplementation 'io.quarkus:quarkus-junit5'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"

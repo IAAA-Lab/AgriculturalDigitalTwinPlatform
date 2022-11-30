@@ -1,8 +1,8 @@
 <script>
   import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
   import WeatherStat from "./WeatherStat.svelte";
-  export let minHr;
-  export let maxHr;
+  export let minHr = "--";
+  export let maxHr = "--";
   export let hrData;
   export let hrLabels;
 </script>

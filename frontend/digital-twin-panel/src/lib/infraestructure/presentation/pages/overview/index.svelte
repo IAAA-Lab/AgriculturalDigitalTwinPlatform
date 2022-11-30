@@ -16,12 +16,7 @@
     <Summary />
     <AverageCharacteristics />
     <RangeCharacteristics />
-    <Map
-      geojsonFeatures={{
-        type: "FeatureCollection",
-        features: parcels,
-      }}
-    />
+    <Map {parcels} />
     <Tables />
   {:catch error}
     <div>{error.message}</div>

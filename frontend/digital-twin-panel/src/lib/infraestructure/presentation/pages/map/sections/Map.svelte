@@ -3,60 +3,14 @@
   import Card from "../../../components/cards/Card.svelte";
   import leaflet from "leaflet";
   import { getColorList } from "../../../../../core/functions";
+  import { parcelsService } from "src/app/config/config";
 
+  export let enclosures = [];
   let map;
   let mapElement;
   let i = 0;
 
-  let geojsonFeatures = {
-    type: "FeatureCollection",
-    features: [
-      {
-        id: "22de",
-        enclosures: [],
-        type: "Feature",
-        properties: {
-          name: "Coors Field",
-          amenity: "Baseball Stadium",
-          popupContent: "This is where the Rockies play!",
-        },
-        geometry: {
-          type: "Polygon",
-          coordinates: [
-            [
-              [41.700972, -1.186698],
-              [43.700972, -5.186698],
-              [43.700972, -1.186698],
-              [41.700972, -1.186698],
-            ],
-          ],
-        },
-      },
-      {
-        id: "22de",
-        enclosures: [],
-        type: "Feature",
-        properties: {
-          name: "Coors Field",
-          amenity: "Baseball Stadium",
-          popupContent: "This is where the Rockies play!",
-        },
-        geometry: {
-          type: "Polygon",
-          coordinates: [
-            [
-              [44.700972, -0.186698],
-              [44.700972, -7.186698],
-              [43.700972, -0.186698],
-              [41.700972, -4.186698],
-            ],
-          ],
-        },
-      },
-    ],
-  };
-
-  const colorList = getColorList(geojsonFeatures.features.length);
+  const colorList = getColorList(enclosures.length);
 
   onMount(async () => {
     map = leaflet.map(mapElement);
@@ -67,6 +21,11 @@
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       })
       .addTo(map);
+
+    const geojsonFeatures = {
+      type: "FeatureCollection",
+      features: enclosures,
+    };
 
     const features = leaflet
       .geoJSON(geojsonFeatures, {
@@ -84,7 +43,7 @@
       .addTo(map)
       .bindPopup((e) => e.feature.properties.popupContent);
 
-    map.fitBounds(features.getBounds(), { padding: [50, 50] });
+    map.fitBounds(features.getBounds(), { padding: [25, 25] });
   });
 
   onDestroy(async () => {

@@ -24,7 +24,7 @@ const parcelsRepositoryMock = new HttpParcelsRepositoryMock(
   digitalTwinHttpInstance
 );
 const parcelsRepository = new HttpParcelsRepository(digitalTwinHttpInstance);
-const parcelsService = new ParcelsService(parcelsRepository);
+const parcelsService = new ParcelsService(parcelsRepositoryMock);
 
 // User use cases
 const localStorage = new LocalStorageRepository(window.localStorage);

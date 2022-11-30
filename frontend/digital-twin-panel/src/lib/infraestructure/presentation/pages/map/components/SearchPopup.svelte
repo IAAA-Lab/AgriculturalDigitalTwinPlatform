@@ -31,7 +31,7 @@
 </script>
 
 <div class="search-pop-up mt-16">
-  <Search />
+  <slot />
 </div>
 
 <style>

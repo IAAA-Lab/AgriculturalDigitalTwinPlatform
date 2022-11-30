@@ -50,7 +50,7 @@ type Parcel = {
   type: string;
   geometry: {
     type: string;
-    coordinates: number[];
+    coordinates: number[][][];
   };
   properties: {
     address: {
@@ -67,7 +67,7 @@ type Parcel = {
   };
   enclosures: {
     type: string;
-    enclosures: Enclosure[];
+    features: Enclosure[];
   };
 };
 
@@ -77,12 +77,24 @@ type Enclosure = {
   type: string;
   geometry: {
     type: string;
-    coordinates: number[][];
+    coordinates: number[][][];
   };
   properties: {
     imageUri: string;
     protectedArea: boolean;
-    characteristics: Characteristics[];
+    ndvi: {
+      value: number;
+      state: StateNames;
+    };
+    area: {
+      value: number;
+      unit: string;
+    };
+    usedArea: {
+      value: number;
+      unit: string;
+    };
+
     irrigationType: string;
     useType: string;
   };

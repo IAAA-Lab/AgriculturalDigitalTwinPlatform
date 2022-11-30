@@ -1,0 +1,976 @@
+{
+  "Farm": {
+    "FarmHolder": {
+      "Name": "PISTACYL S.L",
+      "Identifier_Code": [
+        {
+          "Type": "N. Registro de Explotaciones Autonomico",
+          "Code": "0847030810"
+        }
+      ],
+      "Address": {
+        "Street": "LAGARTILLOS,2",
+        "Village": "POZAL DE GALLINAS",
+        "Province": "VALLADOLID",
+        "ZIP": "47450"
+      },
+      "Phone": ["637812948"],
+      "Email": ""
+    },
+    "HeatlhAdvisor": [
+      {
+        "HAd_Id": "37",
+        "Name": "NAVAS GARRIDO, VICTOR",
+        "NIF_Code": "12342065N",
+        "ROPO_Code": "07/47/05604",
+        "Carnet Type": "Basic"
+      },
+      {
+        "HAd_Id": "67",
+        "Name": "PAREDES GARCIA JUAN RAMON",
+        "NIF_Code": "12343911H",
+        "ROPO_Code": "07/47/05604",
+        "Carnet Type": "Basic"
+      },
+      {
+        "HAd_Id": "57",
+        "Name": "PEREZ HERAS,CARLOS",
+        "NIF_Code": "12337236J",
+        "ROPO_Code": "07/47/01256",
+        "Carnet Type": "Basic"
+      },
+      {
+        "HAd_Id": "73",
+        "Name": "VELASCO PEREZ DAVID",
+        "NIF_Code": "71181253W",
+        "ROPO_Code": "07/47/05604",
+        "Carnet Type": "Basic"
+      }
+    ]
+  },
+  "HeatlhApplicator": [
+    {
+      "HAp_Id": "42",
+      "Description": "ATOMIZADOR BALVEN 1500AR E0349BCR",
+      "ROMA_Code": "475050006598",
+      "Adquisition_Date": "30/12/2015",
+      "Last_Inspection_Date": "09/05/2019"
+    },
+    {
+      "HAp_Id": "55",
+      "Description": "ATOMIZADOR E0351BCR",
+      "ROMA_Code": "475050006597",
+      "Adquisition_Date": "30/12/2015",
+      "Last_Inspection_Date": "17/06/2019"
+    },
+    {
+      "HAp_Id": "56",
+      "Description": "ATOMIZADOR E3428BGY",
+      "IROMA_Code": "475050009441",
+      "Adquisition_Date": "10/08/2018",
+      "Last_Inspection_Date": "14/08/2018"
+    },
+    {
+      "HAp_Id": "52",
+      "Description": "BOMBA INYECTORA FERTIRRIGACION 200 L",
+      "ROMA_Code": "",
+      "Adquisition_Date": "",
+      "Last_Inspection_Date": ""
+    }
+  ],
+  "Exploitation Parcel": [
+    {
+      "Parcel_Id": "29",
+      "CAP_Code": {
+        "Province": {
+          "Province_Code": "47",
+          "Province_Name": ""
+        },
+        "Municipality": {
+          "Municipality_Code": "96",
+          "Municipality_Name": "MORALEJA DE LAS PANADERAS"
+        },
+        "Agregate": "",
+        "Zone": "",
+        "Polygon": "5",
+        "Parcel": "20",
+        "Enclosure": "1"
+      },
+      "Use": "FS",
+      "Official_Area": "13.63",
+      "Used_Area": "13.63",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Rainfed_Irrigated": "Irrigated",
+      "Protected_Area?": "N"
+    },
+    {
+      "Parcel_Id": "27",
+      "CAP_Code": {
+        "Province": {
+          "Province_Code": "47",
+          "Province_Name": ""
+        },
+        "Municipality": {
+          "Municipality_Code": "124",
+          "Municipality_Name": "POZAL DE GALLINAS"
+        },
+        "Agregate": "",
+        "Zone": "",
+        "Polygon": "5",
+        "Parcel": "5170",
+        "Enclosure": "2"
+      },
+      "Use": "TA",
+      "Official_Area": "0.73",
+      "Used_Area": "0.73",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Rainfed_Irrigated": "Irrigated",
+      "Protected_Area?": "N"
+    },
+    {
+      "Parcel_Id": "27",
+      "CAP_Code": {
+        "Province": {
+          "Province_Code": "47",
+          "Province_Name": ""
+        },
+        "Municipality": {
+          "Municipality_Code": "124",
+          "Municipality_Name": "POZAL DE GALLINAS"
+        },
+        "Agregate": "",
+        "Zone": "",
+        "Polygon": "4",
+        "Parcel": "560",
+        "Enclosure": "1"
+      },
+      "Use": "FS",
+      "Official_Area": "2.14",
+      "Used_Area": "2.14",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Rainfed_Irrigated": "Irrigated",
+      "Protected_Area?": "N"
+    },
+    {
+      "Parcel_Id": "26",
+      "CAP_Code": {
+        "Province": {
+          "Province_Code": "47",
+          "Province_Name": ""
+        },
+        "Municipality": {
+          "Municipality_Code": "124",
+          "Municipality_Name": "POZAL DE GALLINAS"
+        },
+        "Agregate": "",
+        "Zone": "",
+        "Polygon": "5",
+        "Parcel": "585",
+        "Enclosure": "2"
+      },
+      "Use": "VI",
+      "Official_Area": "1.46",
+      "Used_Area": "1.46",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Rainfed_Irrigated": "Irrigated",
+      "Protected_Area?": "N"
+    },
+    {
+      "Parcel_Id": "26",
+      "CAP_Code": {
+        "Province": {
+          "Province_Code": "47",
+          "Province_Name": ""
+        },
+        "Municipality": {
+          "Municipality_Code": "124",
+          "Municipality_Name": "POZAL DE GALLINAS"
+        },
+        "Agregate": "",
+        "Zone": "",
+        "Polygon": "5",
+        "Parcel": "5221",
+        "Enclosure": "1"
+      },
+      "Use": "FS",
+      "Official_Area": "3.4",
+      "Used_Area": "3.4",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Rainfed_Irrigated": "Irrigated",
+      "Protected_Area?": "N"
+    },
+    {
+      "Parcel_Id": "26",
+      "CAP_Code": {
+        "Province": {
+          "Province_Code": "47",
+          "Province_Name": ""
+        },
+        "Municipality": {
+          "Municipality_Code": "124",
+          "Municipality_Name": "POZAL DE GALLINAS"
+        },
+        "Agregate": "",
+        "Zone": "",
+        "Polygon": "5",
+        "Parcel": "5226",
+        "Enclosure": "1"
+      },
+      "Use": "FS",
+      "Official_Area": "1.12",
+      "Used_Area": "1.12",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Rainfed_Irrigated": "Irrigated",
+      "Protected_Area?": "N"
+    },
+    {
+      "Parcel_Id": "28",
+      "CAP_Code": {
+        "Province": {
+          "Province_Code": "47",
+          "Province_Name": ""
+        },
+        "Municipality": {
+          "Municipality_Code": "124",
+          "Municipality_Name": "POZAL DE GALLINAS"
+        },
+        "Agregate": "",
+        "Zone": "",
+        "Polygon": "1",
+        "Parcel": "70",
+        "Enclosure": "1"
+      },
+      "Use": "FS",
+      "Official_Area": "4.35",
+      "Used_Area": "4.35",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Rainfed_Irrigated": "Irrigated",
+      "Protected_Area?": "N"
+    },
+    {
+      "Parcel_Id": "28",
+      "CAP_Code": {
+        "Province": {
+          "Province_Code": "47",
+          "Province_Name": ""
+        },
+        "Municipality": {
+          "Municipality_Code": "124",
+          "Municipality_Name": "POZAL DE GALLINAS"
+        },
+        "Agregate": "",
+        "Zone": "",
+        "Polygon": "1",
+        "Parcel": "71",
+        "Enclosure": "1"
+      },
+      "Use": "FS",
+      "Official_Area": "0.81",
+      "Used_Area": "0.81",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Rainfed_Irrigated": "Irrigated",
+      "Protected_Area?": "N"
+    },
+    {
+      "Parcel_Id": "28",
+      "CAP_Code": {
+        "Province": {
+          "Province_Code": "47",
+          "Province_Name": ""
+        },
+        "Municipality": {
+          "Municipality_Code": "124",
+          "Municipality_Name": "POZAL DE GALLINAS"
+        },
+        "Agregate": "",
+        "Zone": "",
+        "Polygon": "1",
+        "Parcel": "74",
+        "Enclosure": "1"
+      },
+      "Use": "FS",
+      "Official_Area": "5.34",
+      "Used_Area": "5.34",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Rainfed_Irrigated": "Irrigated",
+      "Protected_Area?": "N"
+    },
+    {
+      "Parcel_Id": "28",
+      "CAP_Code": {
+        "Province": {
+          "Province_Code": "47",
+          "Province_Name": ""
+        },
+        "Municipality": {
+          "Municipality_Code": "124",
+          "Municipality_Name": "POZAL DE GALLINAS"
+        },
+        "Agregate": "",
+        "Zone": "",
+        "Polygon": "1",
+        "Parcel": "77",
+        "Enclosure": "1"
+      },
+      "Use": "FS",
+      "Official_Area": "2.17",
+      "Used_Area": "2.17",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Rainfed_Irrigated": "Irrigated",
+      "Protected_Area?": "N"
+    },
+    {
+      "Parcel_Id": "30",
+      "CAP_Code": {
+        "Province": {
+          "Province_Code": "47",
+          "Province_Name": ""
+        },
+        "Municipality": {
+          "Municipality_Code": "96",
+          "Municipality_Name": "MORALEJA DE LAS PANADERAS"
+        },
+        "Agregate": "",
+        "Zone": "",
+        "Polygon": "5",
+        "Parcel": "25",
+        "Enclosure": "1"
+      },
+      "Use": "FS",
+      "Official_Area": "6.07",
+      "Used_Area": "6.07",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Rainfed_Irrigated": "Irrigated",
+      "Protected_Area?": "N"
+    }
+  ],
+  "Phytosanitary_Action": [
+    {
+      "Parcel_Id": "28",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "04/03/2021",
+      "Problem": "MOJANTE",
+      "Area": "12",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "NO_FITO",
+        "Commercial_Name": "SUPORTER"
+      },
+      "Dosage": "1",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "28",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "4/03/2021",
+      "Problem": "MALAS HIERBAS VIVACES",
+      "Area": "12",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "25449",
+        "Commercial_Name": "THOR GOLD"
+      },
+      "Dosage": "4",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "29",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "05/03/2021",
+      "Problem": "MOJANTE",
+      "Area": "14.67",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "NO_FITO",
+        "Commercial_Name": "SUPORTER"
+      },
+      "Dosage": "1",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "29",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "05/03/2021",
+      "Problem": "MALAS HIERBAS VIVACES",
+      "Area": "14.67",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "25449",
+        "Commercial_Name": "THOR GOLD"
+      },
+      "Dosage": "4",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "29",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "08/03/2021",
+      "Problem": "MOJANTE",
+      "Area": "14.67",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "NO_FITO",
+        "Commercial_Name": "SUPORTER"
+      },
+      "Dosage": "1",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "29",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "09/03/2021",
+      "Problem": "MALAS HIERBAS VIVACES",
+      "Area": "14.67",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "25449",
+        "Commercial_Name": "THOR GOLD"
+      },
+      "Dosage": "4",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "27",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "11/03/2021",
+      "Problem": "MOJANTE",
+      "Area": "4",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "NO_FITO",
+        "Commercial_Name": "SUPORTER"
+      },
+      "Dosage": "1",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "27",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "11/03/2021",
+      "Problem": "MALAS HIERBAS VIVACES",
+      "Area": "4",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "25449",
+        "Commercial_Name": "THOR GOLD"
+      },
+      "Dosage": "4",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "30",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "11/03/2021",
+      "Problem": "MOJANTE",
+      "Area": "12.8",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "NO_FITO",
+        "Commercial_Name": "SUPORTER"
+      },
+      "Dosage": "1",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "30",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "11/03/2021",
+      "Problem": "MALAS HIERBAS VIVACES",
+      "Area": "12.8",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "25449",
+        "Commercial_Name": "THOR GOLD"
+      },
+      "Dosage": "4",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "26",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "29/03/2021",
+      "Problem": "ALTERNARIA",
+      "Area": "4.97",
+      "HAd_Id": "37",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "24039",
+        "Commercial_Name": "CUPROSAN WG"
+      },
+      "Dosage": "1",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "27",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "29/03/2021",
+      "Problem": "ALTERNARIA",
+      "Area": "4",
+      "HAd_Id": "37",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "24039",
+        "Commercial_Name": "CUPROSAN WG"
+      },
+      "Dosage": "1",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "28",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "29/03/2021",
+      "Problem": "ALTERNARIA",
+      "Area": "12",
+      "HAd_Id": "37",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "24039",
+        "Commercial_Name": "CUPROSAN WG"
+      },
+      "Dosage": "1",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "29",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "30/03/2021",
+      "Problem": "ALTERNARIA",
+      "Area": "14.67",
+      "HAd_Id": "37",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "24039",
+        "Commercial_Name": "CUPROSAN WG"
+      },
+      "Dosage": "1",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "30",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "30/03/2021",
+      "Problem": "ALTERNARIA",
+      "Area": "12.8",
+      "HAd_Id": "37",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "24039",
+        "Commercial_Name": "CUPROSAN WG"
+      },
+      "Dosage": "1",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "28",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "06/05/2021",
+      "Problem": "PULGONES",
+      "Area": "12",
+      "HAd_Id": "73",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "25882",
+        "Commercial_Name": "Stamina®"
+      },
+      "Dosage": "0.06",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "28",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "07/05/2021",
+      "Problem": "MALAS HIERBAS VIVACES",
+      "Area": "12",
+      "HAd_Id": "67",
+      "HAp_Id": "55",
+      "Phytosanitary": {
+        "Registration_Number": "25449",
+        "Commercial_Name": "THOR GOLD"
+      },
+      "Dosage": "8",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "26",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "14/05/2021",
+      "Problem": "PULGONES",
+      "Area": "4.97",
+      "HAd_Id": "73",
+      "HAp_Id": "56",
+      "Phytosanitary": {
+        "Registration_Number": "25882",
+        "Commercial_Name": "Stamina®"
+      },
+      "Dosage": "0.06",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "27",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "14/05/2021",
+      "Problem": "PULGONES",
+      "Area": "4",
+      "HAd_Id": "73",
+      "HAp_Id": "56",
+      "Phytosanitary": {
+        "Registration_Number": "25882",
+        "Commercial_Name": "Stamina®"
+      },
+      "Dosage": "0.06",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "29",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "14/05/2021",
+      "Problem": "PULGONES",
+      "Area": "14.67",
+      "HAd_Id": "73",
+      "HAp_Id": "56",
+      "Phytosanitary": {
+        "Registration_Number": "25882",
+        "Commercial_Name": "Stamina®"
+      },
+      "Dosage": "0.06",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "28",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "17/05/2021",
+      "Problem": "ESCLEROTINIA",
+      "Area": "12",
+      "HAd_Id": "73",
+      "HAp_Id": "56",
+      "Phytosanitary": {
+        "Registration_Number": "",
+        "Commercial_Name": "CONTANS WG"
+      },
+      "Dosage": "2",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "26",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "26/05/2021",
+      "Problem": "ESCLEROTINIA",
+      "Area": "4.97",
+      "HAd_Id": "73",
+      "HAp_Id": "56",
+      "Phytosanitary": {
+        "Registration_Number": "",
+        "Commercial_Name": "CONTANS WG"
+      },
+      "Dosage": "2",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "27",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "26/05/2021",
+      "Problem": "ESCLEROTINIA",
+      "Area": "4",
+      "HAd_Id": "73",
+      "HAp_Id": "56",
+      "Phytosanitary": {
+        "Registration_Number": "",
+        "Commercial_Name": "CONTANS WG"
+      },
+      "Dosage": "2",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "28",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "23/07/2021",
+      "Problem": "MOJANTE",
+      "Area": "12",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "NO_FITO",
+        "Commercial_Name": "SUPORTER"
+      },
+      "Dosage": "0.2",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "28",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "23/07/2021",
+      "Problem": "MALAS HIERBAS VIVACES",
+      "Area": "12",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "25449",
+        "Commercial_Name": "THOR GOLD"
+      },
+      "Dosage": "8",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "29",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "27/07/2021",
+      "Problem": "MOJANTE",
+      "Area": "14.67",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "NO_FITO",
+        "Commercial_Name": "SUPORTER"
+      },
+      "Dosage": "0.2",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "29",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "27/07/2021",
+      "Problem": "MALAS HIERBAS VIVACES",
+      "Area": "14.67",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "25449",
+        "Commercial_Name": "THOR GOLD"
+      },
+      "Dosage": "8",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "30",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "29/07/2021",
+      "Problem": "MOJANTE",
+      "Area": "12.8",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "NO_FITO",
+        "Commercial_Name": "SUPORTER"
+      },
+      "Dosage": "0.2",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "30",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "29/07/2021",
+      "Problem": "MALAS HIERBAS VIVACES",
+      "Area": "12.8",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "25449",
+        "Commercial_Name": "THOR GOLD"
+      },
+      "Dosage": "8",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "26",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "30/07/2021",
+      "Problem": "MOJANTE",
+      "Area": "4.97",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "NO_FITO",
+        "Commercial_Name": "SUPORTER"
+      },
+      "Dosage": "0.2",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "26",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "30/07/2021",
+      "Problem": "MALAS HIERBAS VIVACES",
+      "Area": "4.97",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "25449",
+        "Commercial_Name": "THOR GOLD"
+      },
+      "Dosage": "6",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "27",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "02/08/2021",
+      "Problem": "MOJANTE",
+      "Area": "4",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "NO_FITO",
+        "Commercial_Name": "SUPORTER"
+      },
+      "Dosage": "0.2",
+      "Efficacy": "Good"
+    },
+    {
+      "Parcel_Id": "27",
+      "Crop": {
+        "Species": "PISTACHO",
+        "Variety": "KERMAN"
+      },
+      "Date": "02/08/2021",
+      "Problem": "MALAS HIERBAS VIVACES",
+      "Area": "4",
+      "HAd_Id": "67",
+      "HAp_Id": "42",
+      "Phytosanitary": {
+        "Registration_Number": "25449",
+        "Commercial_Name": "THOR GOLD"
+      },
+      "Dosage": "6",
+      "Efficacy": "Good"
+    }
+  ]
+}

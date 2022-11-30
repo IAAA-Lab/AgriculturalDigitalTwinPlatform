@@ -41,7 +41,10 @@ func (mc *mongodbConn) GetForecastWeather(idema string, startDate time.Time, end
 	}
 	opts := options.Find().SetSort(bson.M{"fint": -1}).SetLimit(1)
 	forecast, err := mc.GetDocuments(WEATHER_COLLECTION, filter, opts)
-	return forecast.([]domain.ForecastWeather), err
+	if err != nil {
+		return nil, err
+	}
+	return forecast.([]domain.ForecastWeather), nil
 }
 
 func (mc *mongodbConn) PostForecastWeather(forecastWeather []domain.ForecastWeather) error {
@@ -138,8 +141,10 @@ func (mc *mongodbConn) GetParcels(enclosureIds []string) ([]domain.Parcel, error
 		},
 	}
 	parcelsIf, err := mc.GetDocument(PARCELS_COLLECTION, pipeline, nil)
-	return parcelsIf.([]domain.Parcel), err
-
+	if err != nil {
+		return nil, err
+	}
+	return parcelsIf.([]domain.Parcel), nil
 }
 
 func (mc *mongodbConn) PostParcel(parcel domain.Parcel) error {
@@ -156,7 +161,10 @@ func (mc *mongodbConn) GetNDVI(enclosureIds []string, startDate time.Time, endDa
 	}
 	opts := options.Find().SetSort(bson.M{"date": -1})
 	ndvi, err := mc.GetDocuments(NDVI_COLLECTION, filter, opts)
-	return ndvi.([]domain.NDVI), err
+	if err != nil {
+		return nil, err
+	}
+	return ndvi.([]domain.NDVI), nil
 }
 
 func (mc *mongodbConn) PostNDVI(ndvi []domain.NDVI) error {
@@ -171,7 +179,10 @@ func (mc *mongodbConn) GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder,
 	filter := bson.M{"id": bson.M{"$eq": id}}
 	opts := options.FindOne()
 	farmHolder, err := mc.GetDocument(FARM_COLLECTION, filter, opts)
-	return farmHolder.(domain.FarmHolder), err
+	if err != nil {
+		return domain.FarmHolder{}, err
+	}
+	return farmHolder.(domain.FarmHolder), nil
 }
 
 func (mc *mongodbConn) PostFarmHolder(farmHolder domain.FarmHolder) error {
@@ -188,7 +199,10 @@ func (mc *mongodbConn) GetFertilizers(enclosureId string, startDate time.Time, e
 	}
 	opts := options.Find().SetSort(bson.M{"date": -1})
 	fertilizers, err := mc.GetDocuments(FERTILIZERS_COLLECTION, filter, opts)
-	return fertilizers.([]domain.Fertilizer), err
+	if err != nil {
+		return nil, err
+	}
+	return fertilizers.([]domain.Fertilizer), nil
 }
 
 func (mc *mongodbConn) PostFertilizers(fertilizer []domain.Fertilizer) error {
@@ -206,7 +220,10 @@ func (mc *mongodbConn) GetPhytosanitaries(enclosureId string, startDate time.Tim
 	}
 	opts := options.Find().SetSort(bson.M{"date": -1})
 	phytosanitaries, err := mc.GetDocuments(PHYTOSANITARIES_COLLECTION, filter, opts)
-	return phytosanitaries.([]domain.Phytosanitary), err
+	if err != nil {
+		return nil, err
+	}
+	return phytosanitaries.([]domain.Phytosanitary), nil
 }
 
 func (mc *mongodbConn) PostPhytosanitaries(phytosanitary []domain.Phytosanitary) error {
@@ -224,7 +241,10 @@ func (mc *mongodbConn) GetCropStats(enclosureId string, startDate time.Time, end
 	}
 	opts := options.Find().SetSort(bson.M{"date": -1})
 	cropStats, err := mc.GetDocuments(CROPSTATS_COLLECTION, filter, opts)
-	return cropStats.([]domain.CropStats), err
+	if err != nil {
+		return nil, err
+	}
+	return cropStats.([]domain.CropStats), nil
 }
 
 func (mc *mongodbConn) PostCropStats(cropStats []domain.CropStats) error {
@@ -242,7 +262,10 @@ func (mc *mongodbConn) GetSensorData(enclosureId string, startDate time.Time, en
 	}
 	opts := options.Find().SetSort(bson.M{"date": -1})
 	sensorData, err := mc.GetDocuments(SENSOR_DATA_COLLECTION, filter, opts)
-	return sensorData.([]domain.SensorData), err
+	if err != nil {
+		return nil, err
+	}
+	return sensorData.([]domain.SensorData), nil
 }
 
 func (mc *mongodbConn) PostSensorData(sensorData []domain.SensorData) error {
@@ -260,7 +283,10 @@ func (mc *mongodbConn) GetNotifications(enclosureId string, startDate time.Time,
 	}
 	opts := options.Find().SetSort(bson.M{"date": -1})
 	notifications, err := mc.GetDocuments(NOTIFICATIONS_COLLECTION, filter, opts)
-	return notifications.([]domain.Notification), err
+	if err != nil {
+		return nil, err
+	}
+	return notifications.([]domain.Notification), nil
 }
 
 func (mc *mongodbConn) PostNotifications(notifications []domain.Notification) error {

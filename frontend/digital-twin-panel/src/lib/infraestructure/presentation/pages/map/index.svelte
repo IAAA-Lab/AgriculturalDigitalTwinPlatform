@@ -3,6 +3,7 @@
   import Search from "./sections/Search.svelte";
   import SearchPopup from "./components/SearchPopup.svelte";
   import { TABLET_WIDTH } from "src/app/config/constants";
+  import { parcelsService } from "src/app/config/config";
 
   let mediaQueryMobile = window.matchMedia(`(max-width: ${TABLET_WIDTH}px)`);
   let isInMobile = mediaQueryMobile.matches;
@@ -13,12 +14,24 @@
 </script>
 
 <div class="map">
-  <Map />
-  {#if isInMobile}
-    <SearchPopup />
-  {:else}
-    <Search />
-  {/if}
+  {#await parcelsService.getEnclosures([])}
+    <h1>Cargando...</h1>
+  {:then parcels}
+    <Map enclosures={parcels.flatMap((parcel) => parcel.enclosures.features)} />
+    {#if isInMobile}
+      <SearchPopup>
+        <Search
+          enclosures={parcels.flatMap((parcel) => parcel.enclosures.features)}
+        />
+      </SearchPopup>
+    {:else}
+      <Search
+        enclosures={parcels.flatMap((parcel) => parcel.enclosures.features)}
+      />
+    {/if}
+  {:catch}
+    <h1>Ups! Algo salió mal</h1>
+  {/await}
 </div>
 
 <style lang="scss">
@@ -27,7 +40,7 @@
     gap: 0.8rem;
     height: calc(100vh - 5rem);
     @extend .container-responsive;
-    grid-template-columns: 1fr 350px;
+    grid-template-columns: 1fr 400px;
   }
 
   @include media("<=medium") {

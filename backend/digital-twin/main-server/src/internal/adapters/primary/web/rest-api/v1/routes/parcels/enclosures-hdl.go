@@ -84,6 +84,7 @@ type ParcelsIn struct {
 func (hdl *HTTPHandler) GetEnclosures(c *gin.Context) {
 	var enclosuresIn ParcelsIn
 	err := c.ShouldBind(&enclosuresIn)
+	fmt.Println(enclosuresIn)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
 		return

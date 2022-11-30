@@ -24,7 +24,7 @@
         };
       })
       .render()
-      .replace("svg", "svg width='75px' height='75px'");
+      .replace("svg", "svg width='100px' height='100px'");
   });
 </script>
 

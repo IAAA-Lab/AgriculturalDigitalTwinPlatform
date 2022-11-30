@@ -1,13 +1,13 @@
 <script>
   import { formattedDate } from "src/lib/core/functions";
-  export let date;
-  export let address;
-  export let ta = 0;
-  export let skyState;
+  export let date = "--";
+  export let address = "--";
+  export let ta = "--";
+  export let skyState = "--";
 </script>
 
 <div class="header mb-8">
-  <h2 class="m-0">Tiempo diario</h2>
+  <h2 class="m-0">Tiempo actual</h2>
   <time class="m-0 text-xs">{formattedDate(date)}</time>
 </div>
 <div class="main-preview mb-16">
@@ -15,7 +15,7 @@
     {address}
   </p>
   <li class="fi fi-rr-cloud" />
-  <p class="m-0 fw-700 temp">{ta}</p>
+  <p class="m-0 fw-700 temp">{ta} °</p>
   <p class="m-0 text-sm skyState">{skyState}</p>
 </div>
 

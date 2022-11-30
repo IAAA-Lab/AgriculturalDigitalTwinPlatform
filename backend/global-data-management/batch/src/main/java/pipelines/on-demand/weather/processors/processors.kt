@@ -1,7 +1,15 @@
+package weather.processors
+
 import com.mongodb.client.model.Filters
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import org.apache.camel.Exchange
 import org.apache.camel.component.mongodb.MongoDbConstants
+import weather.converters.*
+import weather.domain.*
+import weather.dto.*
+
+val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 
 fun saveParcelIdForLater(exchange: Exchange) {
   val parcelId = exchange.`in`.getBody(RequestIn::class.java).payload?.parcelId

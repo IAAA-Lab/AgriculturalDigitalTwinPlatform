@@ -1,4 +1,8 @@
+package weather.converters
+
 import kotlin.text.toFloat
+import weather.domain.*
+import weather.dto.*
 
 fun DailyWeatherReq.toAgroslabRequest(): AgroslabRequest {
         val parcel = parcelId.split("-")

@@ -1,6 +1,6 @@
 <script>
   import WeatherStat from "./WeatherStat.svelte";
-  export let windSpeed = 0;
+  export let windSpeed = "--";
 </script>
 
 <div class="wind">

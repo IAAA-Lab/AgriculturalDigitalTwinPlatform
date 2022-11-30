@@ -1,7 +1,12 @@
 version: "3.8"
 
 services:
-
+  rabbitmq:
+        image: rabbitmq:3-management
+        container_name: rabbitmq
+        ports:
+            - 5672:5672
+            - 15672:15672
   prometheus:
     image: prom/prometheus:latest
     volumes:
@@ -26,23 +31,24 @@ services:
       - prometheus
     
   backend:
-    build: backend/main-server
+    build: backend/digital-twin/main-server
     env_file:
-      - backend/main-server/secrets/.env.development
+      - backend/digital-twin/main-server/secrets/.env.development
     environment:
       - GIN_MODE=release
       - ENV_MODE=DOCKER
     volumes:
-      - ./backend/main-server:/gin-server
+      - ./backend/digital-twin/main-server:/gin-server
     command: go run ./src/internal/cmd/main.go
     depends_on:
-      - redis
-      - mongo
-  frontend:
-    build: frontend
-    restart: always
-    ports:
-      - "5081:80"
+      - rabbitmq
+      # - redis
+      # - mongo
+  # frontend:
+  #   build: frontend
+  #   restart: always
+  #   ports:
+  #     - "5081:80"
   #   volumes:
   #     - ./data/certbot/conf:/etc/letsencrypt
   #     - ./data/certbot/www:/var/www/certbot:ro
@@ -54,25 +60,25 @@ services:
   #     - ./data/certbot/conf:/etc/letsencrypt:rw
   #     - ./data/certbot/www:/var/www/certbot:rw
   #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-  mongo:
-    build: ./mongodb
-    container_name: mongo
-    ports:
-        - '27018:27017'
-    volumes:
-        - ./mongodb/mongodata:/data/db
-    restart: always
-    env_file:
-      - mongodb/secrets/.env
-  redis:
-    image: redis
-    container_name: redis
-    restart: always
-    ports:
-        - "6379:6379"
-    volumes:
-        - ./redis/redisdata:/data
-    command: redis-server
+  # mongo:
+  #   build: ./mongodb
+  #   container_name: mongo
+  #   ports:
+  #       - '27018:27017'
+  #   volumes:
+  #       - ./mongodb/mongodata:/data/db
+  #   restart: always
+  #   env_file:
+  #     - mongodb/secrets/.env
+  # redis:
+  #   image: redis
+  #   container_name: redis
+  #   restart: always
+  #   ports:
+  #       - "6379:6379"
+  #   volumes:
+  #       - ./redis/redisdata:/data
+  #   command: redis-server
     
 volumes:
   grafana-data:

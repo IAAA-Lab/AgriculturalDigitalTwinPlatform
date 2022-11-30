@@ -1,6 +1,6 @@
 <script>
   import WeatherStat from "./WeatherStat.svelte";
-  export let probPrec = 0;
+  export let probPrec = "--";
 </script>
 
 <div class="precipitation">
