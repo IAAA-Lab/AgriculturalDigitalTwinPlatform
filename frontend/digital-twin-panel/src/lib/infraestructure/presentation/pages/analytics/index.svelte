@@ -1,5 +1,5 @@
 <script>
-  import CurrentWeather from "../enclosures/weather/sections/CurrentWeather/index.svelte";
+  import CurrentWeather from "../enclosures/overview/sections/CurrentWeather/index.svelte";
 </script>
 
 <h1>Analytics</h1>

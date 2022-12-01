@@ -7,7 +7,7 @@
     left: 0;
     width: 100%;
     display: flex;
-    justify-content: center;
+    margin-left: 1rem;
     align-items: center;
   }
 </style>

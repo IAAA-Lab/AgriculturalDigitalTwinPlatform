@@ -4,6 +4,11 @@ enum AppRoutes {
   ANALYTICS = "/analytics",
   SIMULATION = "/simulation",
   SETTINGS = "/settings",
+  ENCLOSURE = "/enclosure",
+  ENCLOSURE_OVERVIEW = "/enclosure/:id",
+  ENCLOSURE_MAP = "/enclosure/:id/map",
+  ENCLOSURE_WEATHER = "/enclosure/:id/weather",
+  ENCLOSURE_CROPS = "/enclosure/:id/crops",
 }
 
 const ACCESS_TOKEN_KEY = "access_token";

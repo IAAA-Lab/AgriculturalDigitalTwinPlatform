@@ -211,6 +211,14 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
                   value: 642,
                   unit: "ha",
                 },
+                slope: {
+                  value: 2,
+                  unit: "%",
+                },
+                irrigation: {
+                  value: 80,
+                  unit: "%",
+                },
               },
               cropIds: [
                 {
@@ -356,6 +364,14 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
                 usedArea: {
                   value: 2000,
                   unit: "ha",
+                },
+                slope: {
+                  value: 2,
+                  unit: "%",
+                },
+                irrigation: {
+                  value: 80,
+                  unit: "%",
                 },
               },
               cropIds: [

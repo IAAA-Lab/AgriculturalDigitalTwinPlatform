@@ -9,49 +9,42 @@
 <nav>
   <ul>
     <li>
-      <Link to={AppRoutes.OVERVIEW}>
+      <Link to={AppRoutes.ENCLOSURE_OVERVIEW}>
         <SidebarOption
-          text="Overview"
-          selected={selected === AppRoutes.OVERVIEW}
+          text="Recinto"
+          selected={selected === AppRoutes.ENCLOSURE_OVERVIEW}
         >
-          <i color="white" class="fi fi-rr-layout-fluid" />
+          <i class="fi fi-rr-location-alt" />
         </SidebarOption>
       </Link>
     </li>
     <li>
-      <Link to={AppRoutes.MAP}>
-        <SidebarOption text="Mapa" selected={selected === AppRoutes.MAP}>
+      <Link to={AppRoutes.ENCLOSURE_CROPS}>
+        <SidebarOption
+          text="Plantas"
+          selected={selected === AppRoutes.ENCLOSURE_CROPS}
+        >
+          <i class="fi fi-rr-wheat" />
+        </SidebarOption>
+      </Link>
+    </li>
+    <li>
+      <Link to={AppRoutes.ENCLOSURE_WEATHER}>
+        <SidebarOption
+          text="Tiempo"
+          selected={selected === AppRoutes.ENCLOSURE_WEATHER}
+        >
+          <i class="fi fi-rr-clouds-sun" />
+        </SidebarOption>
+      </Link>
+    </li>
+    <li>
+      <Link to={AppRoutes.ENCLOSURE_MAP}>
+        <SidebarOption
+          text="Mapa"
+          selected={selected === AppRoutes.ENCLOSURE_MAP}
+        >
           <i class="fi fi-rr-map" />
-        </SidebarOption>
-      </Link>
-    </li>
-    <li>
-      <Link to={AppRoutes.ANALYTICS}>
-        <SidebarOption
-          text="Análisis"
-          selected={selected === AppRoutes.ANALYTICS}
-        >
-          <i class="fi fi-rr-chart-pie-alt" />
-        </SidebarOption>
-      </Link>
-    </li>
-    <li>
-      <Link to={AppRoutes.SIMULATION}>
-        <SidebarOption
-          text="Simulaciones"
-          selected={selected === AppRoutes.SIMULATION}
-        >
-          <i class="fi fi-rr-chart-network" />
-        </SidebarOption>
-      </Link>
-    </li>
-    <li>
-      <Link to={AppRoutes.SETTINGS}>
-        <SidebarOption
-          text="Configuración"
-          selected={selected === AppRoutes.SETTINGS}
-        >
-          <i class="fi fi-rr-settings" />
         </SidebarOption>
       </Link>
     </li>

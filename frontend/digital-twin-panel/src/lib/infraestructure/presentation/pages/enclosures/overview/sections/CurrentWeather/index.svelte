@@ -61,12 +61,11 @@
 
 <style>
   section {
-    width: 350px;
     background: #ccdbf0;
     border: 2px solid #ffffff;
     border-radius: 10px;
-    margin-left: 40px;
     padding: 15px;
+    grid-area: weather;
   }
   .weather-stats {
     display: grid;

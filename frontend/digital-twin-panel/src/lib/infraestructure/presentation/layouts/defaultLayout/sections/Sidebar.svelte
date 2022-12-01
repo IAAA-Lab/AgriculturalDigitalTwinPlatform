@@ -2,21 +2,40 @@
   import Footer from "./Footer.svelte";
   import SidebarNavBar from "../components/SidebarNavBar.svelte";
   import LogoText from "../components/LogoText.svelte";
+  import SidebarNavBarInner from "../components/SidebarNavBarInner.svelte";
 </script>
 
-<aside class="sidebar ml-16">
-  <LogoText />
-  <SidebarNavBar />
-  <Footer />
-</aside>
+<div class="sidebar-wrapper">
+  <aside class="sidebar ml-16">
+    <LogoText />
+    <SidebarNavBar />
+    <Footer />
+  </aside>
+  <aside class="inner-sidebar">
+    <SidebarNavBarInner />
+  </aside>
+</div>
 
 <style lang="scss">
-  aside {
+  .sidebar-wrapper {
+    display: flex;
+    flex-direction: row;
+    column-gap: 0.5rem;
     position: -webkit-sticky;
     position: sticky;
     top: 0;
-    grid-area: sidebar;
     height: 100vh;
+    overflow: hidden;
+    grid-area: sidebar;
+  }
+  aside {
+    &.inner-sidebar {
+      padding-top: 4.7rem;
+      background-color: #ecddd3;
+      padding-right: 20px;
+      padding-left: 10px;
+      height: 100%;
+    }
   }
 
   @include media("<large") {

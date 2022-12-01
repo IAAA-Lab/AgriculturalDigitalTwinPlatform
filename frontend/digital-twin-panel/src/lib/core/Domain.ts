@@ -90,6 +90,14 @@ type Enclosure = {
       value: number;
       unit: string;
     };
+    slope: {
+      value: number;
+      unit: string;
+    };
+    irrigation: {
+      value: number;
+      unit: string;
+    };
     usedArea: {
       value: number;
       unit: string;

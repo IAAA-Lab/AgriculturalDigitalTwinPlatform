@@ -8,9 +8,9 @@
 
 <Router>
   {#each routes as route}
-    <Route path={route.path}>
+    <Route path={route.path} let:params>
       <svelte:component this={route.layout}>
-        <svelte:component this={route.component} />
+        <svelte:component this={route.component} {...params} />
       </svelte:component>
     </Route>
   {/each}

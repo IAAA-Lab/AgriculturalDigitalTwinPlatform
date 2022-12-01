@@ -18,6 +18,7 @@
     background: rgb(220, 220, 220);
     border-radius: 10px;
     padding: 3px;
+    overflow: hidden;
 
     &:before {
       content: "";

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Enclosure } from "src/lib/core/Domain";
   import { getColorList } from "src/lib/core/functions";
+  import { Link } from "svelte-routing";
   import Card from "../../../components/cards/Card.svelte";
   import MapSearchCard from "../components/MapSearchCard.svelte";
 
@@ -40,15 +41,17 @@
     <br />
     <div class="enclosures">
       {#each enclosures as enclosure, i}
-        <MapSearchCard
-          enclosureName={enclosure.id}
-          area={enclosure.properties.area.value}
-          ndvi={enclosure.properties.ndvi.value}
-          geojsonFeature={enclosure}
-          color={colorList[i]}
-        >
-          <div slot="crops" class="row" />
-        </MapSearchCard>
+        <Link to={`/enclosure/${enclosure.id}`}>
+          <MapSearchCard
+            enclosureName={enclosure.id}
+            area={enclosure.properties.area.value}
+            ndvi={enclosure.properties.ndvi.value}
+            geojsonFeature={enclosure}
+            color={colorList[i]}
+          >
+            <div slot="crops" class="row" />
+          </MapSearchCard>
+        </Link>
       {/each}
     </div>
   </div>
