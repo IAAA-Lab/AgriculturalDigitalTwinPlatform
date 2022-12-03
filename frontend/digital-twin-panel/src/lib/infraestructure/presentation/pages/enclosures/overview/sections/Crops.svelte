@@ -1,6 +1,7 @@
 <script>
   import Card from "src/lib/infraestructure/presentation/components/cards/Card.svelte";
   import CardInner from "src/lib/infraestructure/presentation/components/cards/CardInner.svelte";
+  import { Link } from "svelte-routing";
   import CropCard from "../components/CropCard.svelte";
 </script>
 
@@ -9,7 +10,9 @@
     <h3 slot="header" class="m-0 mb-16">Plantas cultivadas</h3>
     <div slot="body">
       <div class="crops__wrapper">
-        <CropCard />
+        <Link to="/enclosure/1/crops">
+          <CropCard />
+        </Link>
       </div>
     </div>
   </Card>

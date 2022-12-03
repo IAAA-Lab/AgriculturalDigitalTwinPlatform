@@ -1,7 +1,7 @@
 <script lang="ts">
-  export let value = 0;
+  export let value: number;
   export let height: number = 20;
-  export let background: string = "";
+  export let background: string = "grey";
   export let to: number = 100;
 </script>
 

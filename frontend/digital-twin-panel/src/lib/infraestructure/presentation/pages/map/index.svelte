@@ -13,7 +13,7 @@
   });
 </script>
 
-<div class="map">
+<section>
   {#await parcelsService.getEnclosures([])}
     <h1>Cargando...</h1>
   {:then parcels}
@@ -32,19 +32,20 @@
   {:catch}
     <h1>Ups! Algo salió mal</h1>
   {/await}
-</div>
+</section>
 
 <style lang="scss">
-  .map {
+  section {
     display: grid;
     gap: 0.8rem;
     height: calc(100vh - 5rem);
     @extend .container-responsive;
     grid-template-columns: 1fr 400px;
+    overflow: scroll;
   }
 
   @include media("<large") {
-    .map {
+    section {
       padding: 0;
       margin-top: 16px;
       grid-template-columns: 1fr;

@@ -1,7 +1,5 @@
 <script lang="ts">
   import { parcelsService } from "src/app/config/config";
-  import type { Parcel, Result } from "src/lib/core/Domain";
-  import { onMount } from "svelte";
   import AverageCharacteristics from "./sections/AverageCharacteristics.svelte";
   import Map from "./sections/Map.svelte";
   import RangeCharacteristics from "./sections/RangeCharacteristics.svelte";

@@ -60,5 +60,7 @@
 
   div {
     border: 8px solid color-bg(card);
+    min-width: 300px;
+    min-height: 200px;
   }
 </style>
