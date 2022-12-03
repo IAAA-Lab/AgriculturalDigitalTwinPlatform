@@ -43,7 +43,7 @@
     grid-template-columns: 1fr 400px;
   }
 
-  @include media("<=medium") {
+  @include media("<large") {
     .map {
       padding: 0;
       margin-top: 16px;

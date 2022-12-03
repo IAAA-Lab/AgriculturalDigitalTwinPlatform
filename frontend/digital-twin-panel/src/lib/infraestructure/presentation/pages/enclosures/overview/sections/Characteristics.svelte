@@ -24,9 +24,7 @@
     grid-area: characteristics;
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
     column-gap: 1rem;
-    row-gap: 1rem;
     overflow-y: scroll;
   }
 

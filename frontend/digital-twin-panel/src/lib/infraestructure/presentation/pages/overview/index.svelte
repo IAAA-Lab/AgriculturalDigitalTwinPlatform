@@ -37,24 +37,6 @@
     }
   }
 
-  @include media(">medium") {
-    .overview {
-      grid-template-columns: 1.5fr 1fr;
-      grid-template-areas:
-        "map summary"
-        "rangeCharacteristics summary"
-        "avgCharacteristics summary"
-        "tables tables";
-      :global(.summary) {
-        display: block;
-      }
-    }
-    // Make summary-pop-up not display in large screens
-    :global(.cupertino-pane-wrapper) {
-      display: none !important;
-    }
-  }
-
   @include media(">large") {
     .overview {
       grid-template-columns: 2.5fr 2.5fr 2fr;
@@ -65,6 +47,9 @@
       :global(.summary) {
         display: block;
       }
+    }
+    :global(.cupertino-pane-wrapper) {
+      display: none !important;
     }
   }
 </style>

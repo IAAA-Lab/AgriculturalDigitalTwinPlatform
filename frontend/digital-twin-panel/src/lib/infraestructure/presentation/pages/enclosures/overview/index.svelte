@@ -91,7 +91,7 @@
     }
   }
 
-  @include media(">medium") {
+  @include media(">large") {
     .overview {
       grid-template-columns: 1.1fr 1fr 0.85fr;
       grid-template-areas:

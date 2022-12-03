@@ -1,4 +1,4 @@
-<div class="card">
+<div class={`card ${$$props.class}`}>
   <slot name="header" />
   <slot name="body" />
 </div>

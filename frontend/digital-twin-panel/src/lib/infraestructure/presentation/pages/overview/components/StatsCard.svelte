@@ -58,7 +58,7 @@
       .stat-value-unit {
         display: flex;
         flex-direction: row;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         align-items: center;
         justify-content: center;
       }

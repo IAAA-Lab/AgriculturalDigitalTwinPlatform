@@ -1,7 +1,7 @@
 <script lang="ts">
   import Card from "../../../components/cards/Card.svelte";
   import CardInner from "../../../components/cards/CardInner.svelte";
-  import PieChart from "../../../components/charts/PieChart.svelte";
+  import PieChart from "../../../components/charts/DoughnutChart.svelte";
   import ToggleSwitch from "../../../components/basics/ToggleSwitch.svelte";
   import SummaryStatCard from "../components/SummaryStatCard.svelte";
   import { parcelsService } from "src/app/config/config";

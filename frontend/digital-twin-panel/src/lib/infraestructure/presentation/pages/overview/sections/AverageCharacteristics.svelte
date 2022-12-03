@@ -1,7 +1,7 @@
 <script>
   import Card from "../../../components/cards/Card.svelte";
   import StatsCard from "../components/StatsCard.svelte";
-  import PieChart from "../../../components/charts/PieChart.svelte";
+  import PieChart from "../../../components/charts/DoughnutChart.svelte";
   import { getIconByCharacteristic } from "src/lib/core/functions";
   let characteristics = [
     {

@@ -16,7 +16,7 @@
     width: 100%;
     height: var(--range-bar-height, 20px);
     background: rgb(220, 220, 220);
-    border-radius: 10px;
+    border-radius: 5px;
     padding: 3px;
     overflow: hidden;
 
@@ -26,7 +26,7 @@
       width: var(--range-bar-width, 50%);
       height: 100%;
       background: var(--range-bar-color, rgb(220, 220, 220));
-      border-radius: 8px;
+      border-radius: 3px;
     }
   }
 </style>

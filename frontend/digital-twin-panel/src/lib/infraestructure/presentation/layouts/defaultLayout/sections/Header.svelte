@@ -48,10 +48,12 @@
     }
   }
 
-  @include media("<medium") {
+  @include media("<large") {
+    .header {
+      justify-content: end !important;
+    }
     :global {
       .header {
-        justify-content: end !important;
         h1,
         .user-options {
           display: none;
