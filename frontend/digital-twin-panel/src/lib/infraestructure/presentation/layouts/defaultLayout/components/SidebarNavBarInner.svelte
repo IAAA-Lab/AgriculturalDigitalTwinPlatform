@@ -1,48 +1,59 @@
-<script>
-  import { AppRoutes } from "../../../../../../app/config/constants";
+<script lang="ts">
+  import {
+    AppRoutes,
+    ENCLOSURE_CROPS_REGEX,
+    ENCLOSURE_MAP_REGEX,
+    ENCLOSURE_OVERVIEW_REGEX,
+    ENCLOSURE_WEATHER_REGEX,
+  } from "../../../../../../app/config/constants";
 
   import { Link } from "svelte-routing";
   import SidebarOption from "../components/SidebarOption.svelte";
+  import { selectedEnclosure } from "src/app/config/stores/selectedEnclosure";
   let selected = window.location.pathname;
+
+  export let notShow = true;
+  // Do not show the sidebar if there is no enclosure selected
+  $: notShow = Object.values(AppRoutes).includes(selected as AppRoutes);
 </script>
 
-<nav>
+<nav class:active={notShow}>
   <ul>
     <li>
-      <Link to={AppRoutes.ENCLOSURE_OVERVIEW}>
+      <Link to={`/enclosure/${$selectedEnclosure}`}>
         <SidebarOption
           text="Recinto"
-          selected={selected === AppRoutes.ENCLOSURE_OVERVIEW}
+          selected={ENCLOSURE_OVERVIEW_REGEX.test(selected)}
         >
           <i class="fi fi-rr-location-alt" />
         </SidebarOption>
       </Link>
     </li>
     <li>
-      <Link to={AppRoutes.ENCLOSURE_CROPS}>
+      <Link to={`/enclosure/${$selectedEnclosure}/crops`}>
         <SidebarOption
           text="Plantas"
-          selected={selected === AppRoutes.ENCLOSURE_CROPS}
+          selected={ENCLOSURE_CROPS_REGEX.test(selected)}
         >
           <i class="fi fi-rr-wheat" />
         </SidebarOption>
       </Link>
     </li>
     <li>
-      <Link to={AppRoutes.ENCLOSURE_WEATHER}>
+      <Link to={`/enclosure/${$selectedEnclosure}/weather`}>
         <SidebarOption
           text="Tiempo"
-          selected={selected === AppRoutes.ENCLOSURE_WEATHER}
+          selected={ENCLOSURE_WEATHER_REGEX.test(selected)}
         >
           <i class="fi fi-rr-clouds-sun" />
         </SidebarOption>
       </Link>
     </li>
     <li>
-      <Link to={AppRoutes.ENCLOSURE_MAP}>
+      <Link to={`/enclosure/${$selectedEnclosure}/map`}>
         <SidebarOption
           text="Mapa"
-          selected={selected === AppRoutes.ENCLOSURE_MAP}
+          selected={ENCLOSURE_MAP_REGEX.test(selected)}
         >
           <i class="fi fi-rr-map" />
         </SidebarOption>
@@ -66,6 +77,10 @@
       li {
         padding-bottom: 7px;
       }
+    }
+
+    &.active {
+      display: none;
     }
   }
 </style>

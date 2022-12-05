@@ -12,7 +12,7 @@
 <section>
   <Card>
     <h6 slot="header" class="m-0 mb-8">Área en uso (Ha)</h6>
-    <div slot="body">
+    <svelte:fragment slot="body">
       <CardInner>
         <div slot="body" class="value__unit">
           <Range
@@ -28,7 +28,7 @@
           </h3>
         </div>
       </CardInner>
-    </div>
+    </svelte:fragment>
   </Card>
 </section>
 

@@ -2,8 +2,6 @@
 .container-sm,
 .container-xs,
 .container-responsive {
-  padding: $container--padding__mobile;
-
   @include media(">small") {
     padding: $container--padding__desktop;
   }

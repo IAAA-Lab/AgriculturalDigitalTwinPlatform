@@ -36,6 +36,9 @@
 
   onMount(() => {
     drawChart();
+    return () => {
+      myChart?.destroy();
+    };
   });
 </script>
 

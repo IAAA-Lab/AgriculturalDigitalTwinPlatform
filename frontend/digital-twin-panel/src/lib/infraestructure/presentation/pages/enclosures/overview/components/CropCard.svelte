@@ -1,4 +1,5 @@
 <script>
+  import { IMAGES_SERVER_URL } from "src/app/config/config";
   import CardInner from "src/lib/infraestructure/presentation/components/cards/CardInner.svelte";
 </script>
 
@@ -6,11 +7,12 @@
   <div slot="body" class="crop">
     <div class="crop__header">
       <img
-        src="https://images.unsplash.com/photo-1589988020929-8e8b0b0b1b1a?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FyZCUyMGJhY2slMjBjb3Jwb3JhdGlvbnxlbnwwfDB8MHx8&ixlib=rb-1.2.1&w=1000&q=80"
+        src={`${IMAGES_SERVER_URL}/pistachio.png`}
         alt="crop"
         class="crop__image"
+        style="max-width: 100px;"
       />
-      <h4 class="m-0">Maíz</h4>
+      <h4 class="m-0">PISTACHO</h4>
       <span class="text-xs">Pystacil</span>
     </div>
     <div class="crop__divider" />

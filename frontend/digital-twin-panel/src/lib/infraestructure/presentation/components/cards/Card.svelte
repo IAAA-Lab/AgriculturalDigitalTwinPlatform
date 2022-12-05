@@ -6,7 +6,7 @@
 <style lang="scss">
   .card {
     background: color-bg(card);
-    border: 1px solid rgba(152, 230, 144, 0.4);
+    border: 2px solid rgba(189, 202, 187, 0.764);
     border-radius: 10px;
     padding: 10px;
   }

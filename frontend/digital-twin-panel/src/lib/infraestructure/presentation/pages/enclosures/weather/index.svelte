@@ -4,8 +4,11 @@
   import DailyWeather from "./sections/DailyWeather.svelte";
   import ForecastWeather from "./sections/ForecastWeather.svelte";
   import TempMap from "./sections/TempMap.svelte";
+
+  export let id;
 </script>
 
+<h1 class="title">Recinto#{id} · Tiempo</h1>
 <div class="container-responsive">
   <CurrentWeather />
   <DailyWeather />

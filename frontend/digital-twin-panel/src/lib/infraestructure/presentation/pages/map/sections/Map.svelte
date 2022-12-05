@@ -3,7 +3,6 @@
   import Card from "../../../components/cards/Card.svelte";
   import leaflet from "leaflet";
   import { getColorList } from "../../../../../core/functions";
-  import { parcelsService } from "src/app/config/config";
 
   export let enclosures = [];
   let map;
@@ -53,14 +52,18 @@
   });
 </script>
 
-<div bind:this={mapElement} />
+<Card>
+  <svelte:fragment slot="body">
+    <div bind:this={mapElement} />
+  </svelte:fragment>
+</Card>
 
 <style lang="scss">
   @import "leaflet/dist/leaflet.css";
 
   div {
-    border: 8px solid color-bg(card);
     min-width: 300px;
-    min-height: 200px;
+    min-height: 350px;
+    height: 100%;
   }
 </style>

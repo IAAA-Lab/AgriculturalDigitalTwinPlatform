@@ -20,9 +20,8 @@
     padding: 5px 0px 5px 10px;
     width: 100%;
     border-radius: 10px;
-
+    // background-color: #fbfbfb;
     cursor: pointer;
-    transition: all 0.2s ease-out;
 
     &:hover {
       :global(i),
@@ -32,6 +31,7 @@
     }
 
     &.selected {
+      transition: background-color 5s ease-out;
       background-color: color-bg(primary);
       @extend .sidebar-option, :hover;
     }

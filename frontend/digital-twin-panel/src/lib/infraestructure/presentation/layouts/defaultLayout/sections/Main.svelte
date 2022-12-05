@@ -5,5 +5,6 @@
 <style>
   main {
     grid-area: main;
+    position: relative;
   }
 </style>

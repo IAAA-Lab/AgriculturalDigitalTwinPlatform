@@ -20,7 +20,7 @@
   .sidebar-wrapper {
     display: flex;
     flex-direction: row;
-    column-gap: 0.5rem;
+    column-gap: 1.2rem;
     position: -webkit-sticky;
     position: sticky;
     top: 0;

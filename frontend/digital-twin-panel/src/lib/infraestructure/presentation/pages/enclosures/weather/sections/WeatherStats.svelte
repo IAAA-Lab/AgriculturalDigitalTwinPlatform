@@ -1,10 +1,8 @@
 <script>
   import WeatherCard from "src/lib/infraestructure/presentation/components/cards/WeatherCard.svelte";
   import BarChart from "src/lib/infraestructure/presentation/components/charts/BarChart.svelte";
-  import DoughnutChart from "src/lib/infraestructure/presentation/components/charts/DoughnutChart.svelte";
   import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
-  import PieChart from "src/lib/infraestructure/presentation/components/charts/PieChart.svelte";
-  import Range from "src/lib/infraestructure/presentation/components/misc/Range.svelte";
+  import config from "src/lib/infraestructure/presentation/components/charts/config/LineChart.config";
 </script>
 
 <section>
@@ -42,7 +40,7 @@
       </div>
       <div slot="body" class="body">
         <img
-          src="images/compass.svg"
+          src="/images/compass.svg"
           alt="wind direction"
           height="100"
           width="100"
@@ -76,18 +74,40 @@
       <div slot="body" class="body">
         <div style="max-height: 250px; min-height: 100px; width: 100%;">
           <LineChart
-            data={[22.1, 12.12, 43.1, 12.1, 12.1, 0.0, 12.9, 0.0]}
             labels={[
-              "2021-05-01",
-              "2021-05-02",
-              "2021-05-03",
-              "2021-05-04",
-              "2021-05-05",
-              "2021-05-06",
-              "2021-05-07",
-              "2021-05-08",
+              "20-10-2020",
+              "21-10-2020",
+              "22-10-2020",
+              "23-10-2020",
+              "24-10-2020",
+              "25-10-2020",
+              "26-10-2020",
             ]}
-            color="blue"
+            datasets={[
+              {
+                data: [11, 20, 23, 2, 31, 2, 44, 23, 2],
+                label: "Ganancias",
+                fill: true,
+                backgroundColor: function (context) {
+                  const chart = context.chart;
+                  const { ctx, chartArea } = chart;
+                  if (!chartArea) {
+                    return null;
+                  }
+                  const gradient = ctx.createLinearGradient(
+                    0,
+                    chartArea.bottom,
+                    0,
+                    chartArea.top
+                  );
+                  gradient.addColorStop(0, "rgb(204, 219, 240, 0.7)");
+                  gradient.addColorStop(0.8, "rgba(22, 22, 104,1)");
+                  return gradient;
+                },
+                tension: 0.2,
+              },
+            ]}
+            {config}
           />
         </div>
         <div class="temp__min__max">

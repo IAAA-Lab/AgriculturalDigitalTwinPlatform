@@ -1,10 +1,12 @@
 <script>
   import { parcelsService } from "src/app/config/config";
-  import Card from "../../../components/cards/Card.svelte";
   import Map from "./sections/Map.svelte";
   import Stats from "./sections/Stats.svelte";
+
+  export let id;
 </script>
 
+<h1 class="title">Recinto#{id} · Mapa</h1>
 <div class="container-responsive">
   {#await parcelsService.getEnclosures([])}
     <h2>Cargando...</h2>

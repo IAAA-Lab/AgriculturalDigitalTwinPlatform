@@ -17,7 +17,7 @@
     {@const statsSelected = checked ? summary.stats.bad : summary.stats.good}
     <Card>
       <div slot="header" class="pl-8">
-        <div class="title mt-8">
+        <div class="summary__title mt-8">
           <h2 class="m-0">Resumen</h2>
           <ToggleSwitch bind:checked />
         </div>
@@ -37,14 +37,14 @@
           {/each}
         </div>
         <CardInner>
-          <div slot="header">
+          <svelte:fragment slot="header">
             <h4 class="text-sm stat-header m-0">Stats promedios por parcela</h4>
             <select bind:value={selectedChartStat}>
               {#each [...new Set(summary.stats.all.map((s) => s.stat.name))] as statName}
                 <option value={statName}>{statName}</option>
               {/each}
             </select>
-          </div>
+          </svelte:fragment>
           <div slot="body" class="analytics-chart">
             <PieChart
               labels={summary.stats.all
@@ -67,7 +67,7 @@
   .summary {
     grid-area: summary;
 
-    .title {
+    .summary__title {
       display: flex;
       align-items: center;
       justify-content: space-between;

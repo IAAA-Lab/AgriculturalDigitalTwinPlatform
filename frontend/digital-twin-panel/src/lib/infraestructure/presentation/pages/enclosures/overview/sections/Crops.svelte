@@ -8,13 +8,13 @@
 <section>
   <Card>
     <h3 slot="header" class="m-0 mb-16">Plantas cultivadas</h3>
-    <div slot="body">
+    <svelte:fragment slot="body">
       <div class="crops__wrapper">
         <Link to="/enclosure/1/crops">
           <CropCard />
         </Link>
       </div>
-    </div>
+    </svelte:fragment>
   </Card>
 </section>
 

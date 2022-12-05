@@ -60,10 +60,6 @@
 
 <style lang="scss">
   nav {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
     white-space: nowrap;
 
     ul {

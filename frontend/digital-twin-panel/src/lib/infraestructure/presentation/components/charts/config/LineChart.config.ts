@@ -24,9 +24,6 @@ let config: ChartConfiguration = {
           drawBorder: false,
           display: false,
         },
-        ticks: {
-          display: false,
-        },
       },
       y: {
         grid: {

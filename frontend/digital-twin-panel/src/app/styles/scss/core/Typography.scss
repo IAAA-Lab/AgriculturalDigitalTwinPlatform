@@ -356,3 +356,16 @@ strong {
 .recharts-legend-wrapper {
   @include font-size(xs);
 }
+
+.title {
+  position: absolute;
+  top: -50px;
+  left: 20px;
+
+  @include media("<large") {
+    display: none;
+    * {
+      display: none;
+    }
+  }
+}

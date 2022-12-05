@@ -13,7 +13,8 @@
   });
 </script>
 
-<section>
+<h1 class="title">Mapa</h1>
+<section class="container-responsive">
   {#await parcelsService.getEnclosures([])}
     <h1>Cargando...</h1>
   {:then parcels}
@@ -39,7 +40,6 @@
     display: grid;
     gap: 0.8rem;
     height: calc(100vh - 5rem);
-    @extend .container-responsive;
     grid-template-columns: 1fr 400px;
     overflow: scroll;
   }

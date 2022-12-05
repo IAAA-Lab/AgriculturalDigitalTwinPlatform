@@ -11,11 +11,17 @@
       <CardInner>
         <div slot="body" class="p-8 body">
           <ForecastWeatherItem />
+          <div class="divider" />
           <ForecastWeatherItem />
+          <div class="divider" />
           <ForecastWeatherItem />
+          <div class="divider" />
           <ForecastWeatherItem />
+          <div class="divider" />
           <ForecastWeatherItem />
+          <div class="divider" />
           <ForecastWeatherItem />
+          <div class="divider" />
           <ForecastWeatherItem />
         </div>
       </CardInner>
@@ -33,7 +39,13 @@
   .body {
     display: flex;
     flex-direction: column;
-    row-gap: 1rem;
+    row-gap: 0.7rem;
     overflow: scroll;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background-color: rgb(195, 195, 195);
   }
 </style>

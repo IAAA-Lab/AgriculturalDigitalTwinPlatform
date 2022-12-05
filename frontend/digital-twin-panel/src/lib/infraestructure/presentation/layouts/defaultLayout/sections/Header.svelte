@@ -4,8 +4,7 @@
   import UserOptions from "../components/UserOptions.svelte";
 </script>
 
-<header class="header ml-16">
-  <h1>{document.title}</h1>
+<header class="ml-16">
   <nav>
     <ul>
       {#if window.location.pathname === AppRoutes.OVERVIEW}
@@ -24,12 +23,12 @@
 </header>
 
 <style lang="scss">
-  .header {
+  header {
     grid-area: header;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     padding-top: 16px;
 
@@ -49,11 +48,8 @@
   }
 
   @include media("<large") {
-    .header {
-      justify-content: end !important;
-    }
     :global {
-      .header {
+      header {
         h1,
         .user-options {
           display: none;

@@ -11,6 +11,12 @@ enum AppRoutes {
   ENCLOSURE_CROPS = "/enclosure/:id/crops",
 }
 
+// Create enclosure routes regex
+const ENCLOSURE_OVERVIEW_REGEX = /^\/enclosure\/[^\/]+$/;
+const ENCLOSURE_MAP_REGEX = /\/enclosure\/.+\/map/;
+const ENCLOSURE_WEATHER_REGEX = /\/enclosure\/.+\/weather/;
+const ENCLOSURE_CROPS_REGEX = /\/enclosure\/.+\/crops/;
+
 const ACCESS_TOKEN_KEY = "access_token";
 const REFRESH_TOKEN_KEY = "refresh_token";
 
@@ -25,4 +31,8 @@ export {
   DESKTOP_WIDTH,
   ACCESS_TOKEN_KEY,
   REFRESH_TOKEN_KEY,
+  ENCLOSURE_OVERVIEW_REGEX,
+  ENCLOSURE_MAP_REGEX,
+  ENCLOSURE_WEATHER_REGEX,
+  ENCLOSURE_CROPS_REGEX,
 };

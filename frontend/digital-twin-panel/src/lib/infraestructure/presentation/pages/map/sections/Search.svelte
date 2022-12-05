@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { selectedEnclosure } from "src/app/config/stores/selectedEnclosure";
   import type { Enclosure } from "src/lib/core/Domain";
   import { getColorList } from "src/lib/core/functions";
   import { Link } from "svelte-routing";
@@ -16,12 +17,14 @@
   //     e.toLowerCase().includes(search.toLowerCase())
   //   );
   // }
+
+  const setSelectedEnclosure = async (enclosureId: string) => {
+    selectedEnclosure.set(enclosureId);
+  };
 </script>
 
 <Card>
-  <div slot="header">
-    <h2 class="m-0 mb-8">Enclosures</h2>
-  </div>
+  <h2 class="m-0 mb-8" slot="header">Enclosures</h2>
   <div slot="body" class="p-8">
     <input
       type="search"

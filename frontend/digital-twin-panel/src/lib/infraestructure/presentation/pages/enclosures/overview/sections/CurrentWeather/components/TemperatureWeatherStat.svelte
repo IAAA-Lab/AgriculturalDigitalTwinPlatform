@@ -10,7 +10,7 @@
 <div class="temp">
   <WeatherStat title="Temperatura">
     <i slot="header-icon" class="fi fi-rr-temperature-low pt-4" />
-    <div slot="body">
+    <svelte:fragment slot="body">
       <div class="chart-wrap">
         <LineChart data={taData} labels={taLabels} color="#5C8CD3" />
       </div>
@@ -18,7 +18,7 @@
         <span style="color: #E54C4C;">Mín: {minTa} °</span>
         <span style="color: #524EF4;">Máx: {maxTa} °</span>
       </div>
-    </div>
+    </svelte:fragment>
   </WeatherStat>
 </div>
 

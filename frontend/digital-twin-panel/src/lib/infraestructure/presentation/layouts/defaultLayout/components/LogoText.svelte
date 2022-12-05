@@ -4,7 +4,7 @@
 
 <a href={AppRoutes.OVERVIEW}>
   <div class="logo-text mb-32 mt-16">
-    <img src="images/logo.png" height={45} alt="logo" />
+    <img src="/images/logo.png" height={45} alt="logo" />
     <h3 class="m-0 pl-8">GEDEFEC</h3>
   </div>
 </a>

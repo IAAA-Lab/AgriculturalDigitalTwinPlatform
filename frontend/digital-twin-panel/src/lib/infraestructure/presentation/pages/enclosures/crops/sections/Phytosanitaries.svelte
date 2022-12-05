@@ -6,6 +6,7 @@
   import DoughnutChart from "src/lib/infraestructure/presentation/components/charts/DoughnutChart.svelte";
   import Tables from "../../../overview/sections/Tables.svelte";
   import PieChart from "src/lib/infraestructure/presentation/components/charts/PieChart.svelte";
+  import Table from "src/lib/infraestructure/presentation/components/tables/Table.svelte";
 </script>
 
 <Card>
@@ -15,7 +16,11 @@
   </div>
   <div slot="body" class="body m-16">
     <div class="table__wrapper">
-      <Tables />
+      <CardInner>
+        <div slot="body" style="height: 300px;">
+          <Table data={[]} />
+        </div>
+      </CardInner>
     </div>
     <CardInner class="chart__pie__wrapper">
       <h4 slot="header" class="m-0">Eficacia</h4>

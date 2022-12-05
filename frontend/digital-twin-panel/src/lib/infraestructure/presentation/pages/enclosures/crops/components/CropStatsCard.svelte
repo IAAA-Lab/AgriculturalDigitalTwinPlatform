@@ -3,6 +3,9 @@
   import CardInner from "src/lib/infraestructure/presentation/components/cards/CardInner.svelte";
   import CardInnerPrimary from "src/lib/infraestructure/presentation/components/cards/CardInnerPrimary.svelte";
   import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
+  import config from "src/lib/infraestructure/presentation/components/charts/config/LineChartNoBg.config";
+  import cropStatsChartConfig from "../config/cropStatsChart.config";
+  import cropStatsPrimaryChartConfig from "../config/cropStatsPrimaryChart.config";
 
   export let title: string;
   export let value: number;
@@ -36,9 +39,14 @@
     </div>
     <div class="chart">
       <LineChart
-        data={[2, 2, 2, 2, 3]}
-        labels={["we", "d", "sd", "sd", "wds"]}
-        color={"orange"}
+        labels={["80", "80", "80", "80", "80", "80", "80"]}
+        datasets={[
+          {
+            ...(primary ? cropStatsPrimaryChartConfig : cropStatsChartConfig),
+            data: [11, 20, 23, 2, 31, 2, 44, 23, 2],
+          },
+        ]}
+        {config}
       />
     </div>
   </div>

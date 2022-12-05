@@ -49,12 +49,16 @@
   });
 </script>
 
-<div bind:this={mapElement} />
+<Card>
+  <svelte:fragment slot="body">
+    <div bind:this={mapElement} />
+  </svelte:fragment>
+</Card>
 
 <style lang="scss">
   @import "leaflet/dist/leaflet.css";
   div {
-    border: 8px solid color-bg(card);
     min-height: 200px;
+    height: 100%;
   }
 </style>

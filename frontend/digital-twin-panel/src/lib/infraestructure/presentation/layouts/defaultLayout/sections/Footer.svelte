@@ -4,7 +4,7 @@
   .footer {
     position: absolute;
     bottom: 10px;
-    left: 0;
+    left: -10px;
     width: 100%;
     display: flex;
     margin-left: 1rem;

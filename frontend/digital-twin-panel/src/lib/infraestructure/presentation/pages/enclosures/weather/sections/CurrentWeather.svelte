@@ -11,7 +11,7 @@
 
 <section>
   <WeatherCard>
-    <div slot="body">
+    <svelte:fragment slot="body">
       <CurrentWeatherHeader
         date={cw.elaboratedAt}
         address={cw.municipality + ", " + cw.province}
@@ -26,7 +26,7 @@
         copyright={cw.origin?.copyright}
         legalNote={cw.origin?.legalNote}
       />
-    </div>
+    </svelte:fragment>
   </WeatherCard>
 </section>
 
