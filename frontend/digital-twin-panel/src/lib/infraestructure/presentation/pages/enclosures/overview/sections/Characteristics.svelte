@@ -9,7 +9,7 @@
   {#each sensorStats as stat}
     <div class="card">
       <StatsCard
-        statName={"Juan"}
+        statName={stat?.name}
         statValue={stat?.value}
         statUnit={stat?.unit}
       >

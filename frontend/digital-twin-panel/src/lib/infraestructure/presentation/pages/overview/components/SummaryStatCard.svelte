@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { IMAGES_SERVER_URL } from "src/app/config/config";
+  import type { CropId } from "src/lib/core/Domain";
   import { numberWithCommas } from "../../../../../core/functions";
   import CardInner from "../../../components/cards/CardInner.svelte";
   import CardInnerPrimary from "../../../components/cards/CardInnerPrimary.svelte";
@@ -8,6 +10,7 @@
   export let unit: string = "";
   export let diff: number;
   export let enclosureName: string;
+  export let crops: CropId[];
   export let primary: boolean = false;
 
   let diffColor: string;
@@ -29,8 +32,12 @@
       <span class="text-sm {unit && 'ml-4'}">{unit}</span>
     </div>
     <div class="icon-diff">
-      <div class="icon" />
-      <span class="diff text-xs {diffColor}">
+      <img
+        src={`${IMAGES_SERVER_URL}/${crops[0].name}.png`}
+        alt="planta"
+        height="35"
+      />
+      <span class="diff text-xs {diffColor} fw-700">
         <i class="fi fi-rr-angle-small-{diffIcon} {diffColor}" />
         {diff}
       </span>
@@ -69,5 +76,13 @@
     .enclosure {
       color: rgb(36, 36, 36) !important;
     }
+  }
+
+  .icon-diff {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    column-gap: 0.25rem;
   }
 </style>

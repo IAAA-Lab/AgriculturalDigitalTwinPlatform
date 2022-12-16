@@ -6,6 +6,7 @@
 
   export let data = [];
   export let labels = [];
+  export let colors = [];
 
   let chartCanvas;
   let myChart;
@@ -13,7 +14,7 @@
   $: if (myChart) {
     myChart.data.datasets[0].data = data;
     myChart.data.labels = labels;
-    myChart.data.datasets[0].backgroundColor = getColorList(data.length);
+    myChart.data.datasets[0].backgroundColor = colors;
     myChart.update();
   }
 
@@ -23,7 +24,7 @@
       {
         label: "Características",
         data,
-        backgroundColor: getColorList(data.length),
+        backgroundColor: colors,
         hoverOffset: 4,
       },
     ],

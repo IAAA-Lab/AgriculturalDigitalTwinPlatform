@@ -244,6 +244,7 @@ type NDVIIn struct {
 func (hdl *HTTPHandler) GetNDVI(c *gin.Context) {
 	var ndviIn NDVIIn
 	err := c.ShouldBind(&ndviIn)
+	fmt.Println(ndviIn)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
 		return

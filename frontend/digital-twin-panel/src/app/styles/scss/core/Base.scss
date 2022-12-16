@@ -15,7 +15,7 @@ body {
 }
 
 select {
-  border: 1px solid #e5e7eb;
+  border: 2px solid #e5e7eb;
   border-radius: 0.375rem;
   padding: 2px 10px;
   color: #4b5563;
@@ -54,5 +54,49 @@ input[type="search"] {
   &:focus {
     border: 2px solid color(primary);
     outline: none;
+  }
+}
+
+input[type="date"] {
+  padding: 0px 10px;
+  box-sizing: border-box;
+  border-radius: 9px;
+  border: 2px solid #e5e7eb;
+  background-color: white;
+  transition: all 0.2s ease-in-out;
+  @include font-size(sm);
+
+  &:hover {
+    filter: drop-shadow(0 0.5px 3px color(secondary));
+  }
+
+  &:focus {
+    filter: drop-shadow(0 0.5px 3px color(secondary));
+    outline: none;
+  }
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  box-shadow: 0 0.5px 3px #e5e7eb;
+  white-space: nowrap;
+
+  th {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: #f3f4f6;
+    color: #4b5563;
+  }
+
+  td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    @extend .text-sm;
   }
 }

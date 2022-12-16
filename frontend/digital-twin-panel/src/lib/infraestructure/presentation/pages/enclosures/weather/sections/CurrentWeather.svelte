@@ -1,16 +1,17 @@
 <script>
+  import { getWeatherIcon } from "src/lib/core/functions";
   import WeatherCard from "src/lib/infraestructure/presentation/components/cards/WeatherCard.svelte";
   import CurrentWeatherFooter from "../../overview/sections/CurrentWeather/components/CurrentWeatherFooter.svelte";
 
   import CurrentWeatherHeader from "../../overview/sections/CurrentWeather/components/CurrentWeatherHeader.svelte";
 
-  let cw = {};
-  let pred = {};
-  let currentHour = 0;
+  export let cw;
+  const pred = cw.prediction[0];
+  let currentHour = new Date().getHours();
 </script>
 
 <section>
-  <WeatherCard>
+  <WeatherCard class="current__wc">
     <svelte:fragment slot="body">
       <CurrentWeatherHeader
         date={cw.elaboratedAt}
@@ -18,7 +19,13 @@
         ta={pred.ta?.find((t) => t.period == currentHour)?.value}
         skyState={pred.skyState?.find((t) => t.period == currentHour)
           ?.description}
-      />
+      >
+        <svelte:fragment slot="icon">
+          {@html getWeatherIcon(
+            pred.skyState?.find((t) => t.period == currentHour)?.description
+          )}
+        </svelte:fragment>
+      </CurrentWeatherHeader>
       <br />
       <CurrentWeatherFooter
         producer={cw.origin?.producer}
@@ -30,9 +37,15 @@
   </WeatherCard>
 </section>
 
-<style>
+<style lang="scss">
   section {
     grid-area: current-weather;
-    max-width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    :global(.current__wc) {
+      max-width: 300px;
+    }
   }
 </style>

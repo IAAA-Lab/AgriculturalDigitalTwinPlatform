@@ -1,0 +1,22 @@
+.badge {
+  display: inline-block;
+  padding: 0.4em 0.75em;
+  font-size: 70%;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+
+  &.under-construction {
+    background-color: rgb(235, 184, 32);
+    color: white;
+  }
+
+  &.coming-soon {
+    background-color: rgb(225, 116, 239);
+    color: white;
+  }
+}

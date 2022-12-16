@@ -5,23 +5,27 @@ import type {
   Parcel,
   Summary,
   UserParcels,
+  ForecastWeather,
+  HistoricalWeather,
 } from "../Domain";
 
 interface IParcelsService {
   getUserParcels(userId: string): Promise<UserParcels>;
   getEnclosures(enclosureIds: string[]): Promise<Parcel[]>;
   getOverviewSummary(userId: string): Promise<Summary>;
-  getDailyWeather(parcelId: string): Promise<DailyWeather>;
-  getForecastWeather(
+  getHistoricalWeather(
     idema: string,
     startDate: Date,
     endDate: Date
-  ): Promise<DailyWeather[]>;
+  ): Promise<HistoricalWeather[]>;
+  getDailyWeather(parcelId: string): Promise<DailyWeather>;
+  getForecastWeather(parcelId: string): Promise<ForecastWeather[]>;
   getNDVI(
     enclosureIds: string[],
     startDate: Date,
     endDate: Date
   ): Promise<NDVI[]>;
+  getCropStats(enclosureId: string): Promise<any[]>;
 }
 
 interface IUserService {

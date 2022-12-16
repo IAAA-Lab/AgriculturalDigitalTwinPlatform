@@ -17,7 +17,6 @@ type User = {
 type UserParcels = {
   id?: string;
   userId: string;
-  ts: Date;
   enclosureIds: string[];
   summary: Summary;
 };
@@ -30,6 +29,7 @@ type SummaryStat = {
 };
 
 type Summary = {
+  ts: Date;
   stats: {
     all: SummaryStat[];
     good: SummaryStat[];
@@ -126,31 +126,42 @@ type CropId = {
   imageUri: string;
 };
 
+type CropStat = {
+  enclosureId: string;
+  cropId: CropId;
+  stats: {
+    title: string;
+    value: number;
+    diff: number;
+    unit?: string;
+  };
+};
+
 type Fertilizer = {
   enclosureId: string;
   crop: CropId;
   name: string;
-  startDate: string;
+  startDate: Date;
   quantity: number;
 };
 
 type Phytosanitary = {
   enclosureId: string;
   crop: CropId;
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
   product: string;
   registrationNumber: string;
   plague: string;
   area: number;
   dosage: number;
-  efficacy: number;
+  efficacy: string;
   hap: {
     id: string;
     description: string;
     romaCode: string;
-    adquisitionDate: string;
-    lastInspectionDate: string;
+    adquisitionDate: Date;
+    lastInspectionDate: Date;
   };
   had: {
     id: string;
@@ -159,13 +170,6 @@ type Phytosanitary = {
     ropoCode: string;
     carnetType: string;
   };
-};
-
-type CropStats = {
-  date: string;
-  enclosureId: string;
-  cropId: CropId;
-  stats: Characteristics[];
 };
 
 type NDVI = {
@@ -198,17 +202,34 @@ type FarmHolderId = {
   code: string;
 };
 
-type ForecastWeather = {
+type HistoricalWeather = {
   type: string;
   parcelId: string;
-  idema: string;
-  fint: string;
+  tmed: number;
   prec: number;
+  tmin: number;
+  tminTime: string;
+  tmax: number;
+  tmaxTime: string;
+  windSpeed: number;
+  windGust: number;
+  windGustTime: string;
+  date: string;
+};
+
+type ForecastWeather = {
+  type: string;
+  skyState: skyState;
+  parcelId: string;
+  probPrec: number;
+  snowProb: number;
   tamin: number;
   tamax: number;
-  ta: number;
-  hr: number;
-  tpr: number;
+  hrMin: number;
+  hrMax: number;
+  windSpeed: number;
+  uvMax: number;
+  date: Date;
 };
 
 type DailyWeather = {
@@ -218,7 +239,7 @@ type DailyWeather = {
   elaboratedAt: string;
   municipality: string;
   province: string;
-  prediction: prediction[];
+  prediction: Prediction[];
 };
 
 type origin = {
@@ -229,7 +250,7 @@ type origin = {
   legalNote: string;
 };
 
-type prediction = {
+type Prediction = {
   skyState: skyState[];
   prec: genericState[];
   probPrec: genericState[];
@@ -288,7 +309,7 @@ export type {
   CropId,
   Fertilizer,
   Phytosanitary,
-  CropStats,
+  CropStat,
   NDVI,
   NDVIMap,
   FarmHolder,
@@ -299,6 +320,8 @@ export type {
   Summary,
   SummaryStat,
   Characteristics,
+  Prediction,
+  HistoricalWeather,
 };
 
 export { Role, StateNames };

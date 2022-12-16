@@ -7,11 +7,13 @@
   export let datasets: any[];
   export let color: string = "blue";
   export let config: any = {};
+  export let title: string = "";
 
   let chartCanvas;
   let myChart;
 
   $: if (myChart) {
+    myChart.options.plugins.title.text = title;
     myChart.data.datasets.forEach((dataset, i) => {
       dataset.data = datasets[i].data;
     });

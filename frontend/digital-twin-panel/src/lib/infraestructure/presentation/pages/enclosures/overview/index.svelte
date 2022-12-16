@@ -10,6 +10,8 @@
   import { selectedEnclosure } from "src/app/config/stores/selectedEnclosure";
   import Page404 from "../../error/Page404.svelte";
   import ProtectedAreaCard from "./components/ProtectedAreaCard.svelte";
+  import Loading from "../../../components/misc/Loading.svelte";
+  import Error from "../../../components/misc/Error.svelte";
 
   export let id;
   // Set enclosure id to store (global state) in memory
@@ -18,68 +20,43 @@
 
 <div class="title">
   <h1>Recinto#{id}</h1>
-  <ProtectedAreaCard />
+  <!-- <ProtectedAreaCard /> -->
 </div>
 <div class="overview mr-8 container-responsive">
   {#await parcelsService.getEnclosures([])}
-    <div>loading...</div>
+    <Loading />
   {:then parcels}
     {@const parcel = parcels.find((enc) =>
       enc.enclosures.features.some((e) => e.id === id)
     )}
     {@const enclosure = parcel?.enclosures.features.find((e) => e.id === id)}
     {#if !enclosure}
-      <Page404 />
+      <Error />
     {:else}
-      <Map parcels={[parcel]} />
+      <div class="map__crops__wrapper">
+        <Map parcels={[parcel]} />
+        <Crops enclosureId={id} cropId={enclosure.cropIds[0]} />
+      </div>
       <Characteristics
         sensorStats={[
-          enclosure.properties.area,
-          enclosure.properties.irrigation,
-          enclosure.properties.slope,
+          { ...enclosure.properties.area, name: "Área" },
+          { ...enclosure.properties.irrigation, name: "Regadío" },
+          { ...enclosure.properties.slope, name: "Inclinación" },
         ]}
       />
       <SensorStats
         sensorStats={[
-          enclosure.properties.area,
-          enclosure.properties.irrigation,
-          enclosure.properties.slope,
+          { name: "Humedad", value: 50, unit: "%" },
+          { name: "Temperatura", value: 4, unit: "ºC" },
+          { name: "PH", value: 7, unit: "" },
         ]}
       />
       <UsedArea
         usedArea={enclosure.properties.usedArea.value}
         totalArea={enclosure.properties.area.value}
       />
-      <Crops />
-      <Ndvi
-        ndviValues={[
-          {
-            date: "2021-01-01",
-            value: 50,
-          },
-          {
-            date: "2021-01-02",
-            value: 60,
-          },
-          {
-            date: "2021-01-03",
-            value: 70,
-          },
-          {
-            date: "2021-01-04",
-            value: 80,
-          },
-          {
-            date: "2021-01-05",
-            value: 90,
-          },
-          {
-            date: "2021-01-06",
-            value: 43,
-          },
-        ]}
-      />
-      <CurrentWeather />
+      <Ndvi enclosureId={id} />
+      <CurrentWeather enclosureId={id} />
     {/if}
   {:catch error}
     <div>{error.message}</div>
@@ -87,6 +64,12 @@
 </div>
 
 <style lang="scss">
+  .map__crops__wrapper {
+    grid-area: map-crops;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
   .title {
     display: flex;
     flex-direction: row;
@@ -97,11 +80,10 @@
     display: grid;
     gap: 0.75rem;
     grid-template-areas:
-      "map"
+      "map-crops"
       "characteristics"
       "sensor-stats"
       "used-area"
-      "crops"
       "ndvi"
       "weather";
 
@@ -112,13 +94,13 @@
 
   @include media(">large") {
     .overview {
-      grid-template-columns: 1.1fr 1fr 0.85fr;
+      grid-template-columns: 1.1fr 1fr 0.7fr;
       grid-template-areas:
-        "map characteristics characteristics"
-        "map sensor-stats sensor-stats"
-        "map used-area weather"
-        "map crops weather"
-        "ndvi crops weather";
+        "map-crops characteristics characteristics"
+        "map-crops sensor-stats sensor-stats"
+        "map-crops used-area weather"
+        "map-crops ndvi weather"
+        "crops ndvi weather";
 
       :global(.summary) {
         display: block;

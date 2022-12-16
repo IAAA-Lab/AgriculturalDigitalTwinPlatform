@@ -1,0 +1,134 @@
+.modal,
+.modal::before {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+}
+
+.modal {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  padding: 20px;
+  z-index: 40;
+
+  &::before,
+  .modal-inner {
+    display: none;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    background-color: color-bg(modal-outer);
+  }
+
+  &.is-active {
+    display: flex;
+
+    &::before,
+    .modal-inner {
+      display: flex;
+    }
+
+    .modal-inner {
+      animation: slideUpInModal 0.15s ease-in-out both;
+    }
+
+    &::before {
+      animation: slideUpInModalBg 0.15s ease-in-out both;
+    }
+  }
+}
+
+.modal-inner {
+  border-radius: 10px;
+  width: 100%;
+  height: 100%;
+  max-width: $modal--max-width;
+  max-height: $modal--max-height;
+  overflow: hidden;
+  background: color-bg(modal);
+
+  @include media("<small") {
+    height: auto;
+  }
+}
+
+.modal-close {
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 0;
+  cursor: pointer;
+  position: absolute;
+  right: $modal-close-position;
+  top: $modal-close-position;
+  width: $modal-close-icon--size;
+  height: $modal-close-icon--size;
+
+  &::before,
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -($modal-close-icon--thickness * 0.5);
+    margin-left: -($modal-close-icon--size * 0.5);
+    width: $modal-close-icon--size;
+    height: $modal-close-icon--thickness;
+    background: color-icon(modal);
+    border-radius: $modal-close-icon--radius;
+  }
+
+  &::before {
+    transform: rotate(225deg);
+  }
+
+  &::after {
+    transform: rotate(-45deg);
+  }
+
+  &:hover {
+    &::before,
+    &::after {
+      background: color-icon(modal-hover);
+    }
+  }
+}
+
+@include media(">medium") {
+  .modal-content {
+    padding-top: $modal--inner-padding-v__desktop;
+    padding-bottom: $modal--inner-padding-v__desktop;
+    padding-left: $modal--inner-padding-h__desktop;
+    padding-right: $modal--inner-padding-h__desktop;
+  }
+}
+
+@keyframes slideUpInModal {
+  0% {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUpInModalBg {
+  0% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

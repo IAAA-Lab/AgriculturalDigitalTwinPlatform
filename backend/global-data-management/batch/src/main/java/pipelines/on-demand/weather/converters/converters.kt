@@ -6,7 +6,12 @@ import weather.dto.*
 
 fun DailyWeatherReq.toAgroslabRequest(): AgroslabRequest {
         val parcel = parcelId.split("-")
-        return AgroslabRequest(provincia = parcel[0], municipio = parcel[1])
+        var municipio = parcel[1]
+        // TODO: corregir cuando tenga longitud 1
+        if (parcel[1].length < 3) {
+                municipio = "0" + municipio
+        }
+        return AgroslabRequest(provincia = parcel[0], municipio = municipio)
 }
 
 fun DailyWeatherAgroslabResp.toDailyWeather(parcelId: String) =

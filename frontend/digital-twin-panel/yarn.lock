@@ -1526,10 +1526,10 @@ svelte-routing@^1.6.0:
   dependencies:
     svelte2tsx "^0.1.157"
 
-svelte-simple-datatables@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/svelte-simple-datatables/-/svelte-simple-datatables-0.2.3.tgz#ccb437392a9523749d062884d800bf8d74320a77"
-  integrity sha512-WsWbB66KzvpYN9r9WpRgXthGejsH2QFJfoRw/ssKw81Fn659IBMVzAZtOojR5mgEDZ2j24j4BJvoThcH8DXxwA==
+svelte-table@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/svelte-table/-/svelte-table-0.5.2.tgz#dfc29f4584ed38de0f625a3191356d6e3b9126dc"
+  integrity sha512-zHqcKuBRB89rwcXyVkteeq+DSzVfb/Dq+As63Su5MvMvbDl4dJGDfBLIEYdZK9x9u3o0Um8Vdq4hfnojdCzANA==
 
 svelte2tsx@^0.1.157:
   version "0.1.193"

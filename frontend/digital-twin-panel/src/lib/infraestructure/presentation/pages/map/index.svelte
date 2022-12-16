@@ -4,6 +4,8 @@
   import SearchPopup from "./components/SearchPopup.svelte";
   import { TABLET_WIDTH } from "src/app/config/constants";
   import { parcelsService } from "src/app/config/config";
+  import Loading from "../../components/misc/Loading.svelte";
+  import Error from "../../components/misc/Error.svelte";
 
   let mediaQueryMobile = window.matchMedia(`(max-width: ${TABLET_WIDTH}px)`);
   let isInMobile = mediaQueryMobile.matches;
@@ -16,7 +18,7 @@
 <h1 class="title">Mapa</h1>
 <section class="container-responsive">
   {#await parcelsService.getEnclosures([])}
-    <h1>Cargando...</h1>
+    <Loading />
   {:then parcels}
     <Map enclosures={parcels.flatMap((parcel) => parcel.enclosures.features)} />
     {#if isInMobile}
@@ -31,7 +33,7 @@
       />
     {/if}
   {:catch}
-    <h1>Ups! Algo salió mal</h1>
+    <Error />
   {/await}
 </section>
 

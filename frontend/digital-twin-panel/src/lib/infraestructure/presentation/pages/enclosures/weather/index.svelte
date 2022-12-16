@@ -4,16 +4,26 @@
   import DailyWeather from "./sections/DailyWeather.svelte";
   import ForecastWeather from "./sections/ForecastWeather.svelte";
   import TempMap from "./sections/TempMap.svelte";
+  import Error from "../../../components/misc/Error.svelte";
+  import { parcelsService } from "src/app/config/config";
+  import Loading from "../../../components/misc/Loading.svelte";
 
   export let id;
 </script>
 
 <h1 class="title">Recinto#{id} · Tiempo</h1>
 <div class="container-responsive">
-  <CurrentWeather />
-  <DailyWeather />
-  <WeatherStats />
-  <ForecastWeather />
+  {#await parcelsService.getDailyWeather(id)}
+    <Loading />
+  {:then cw}
+    {@const pred = cw.prediction[0]}
+    <CurrentWeather {cw} />
+    <DailyWeather ta={pred.ta} skyState={pred.skyState} />
+    <WeatherStats pred={cw.prediction[0]} />
+  {:catch error}
+    <Error errorMessage={error.message} />
+  {/await}
+  <ForecastWeather enclosureId={id} />
   <TempMap />
 </div>
 

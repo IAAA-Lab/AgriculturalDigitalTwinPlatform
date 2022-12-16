@@ -5,39 +5,14 @@
   import type { Characteristic } from "src/lib/core/Domain";
   import Table from "../../../components/tables/Table.svelte";
 
-  const data: Characteristic[] = [
-    {
-      name: "Área",
-      value: 9345,
-      unit: "Ha",
-    },
-    {
-      name: "Pendiente media",
-      value: 23.5,
-      unit: "%",
-    },
-    {
-      name: "Coef. de regadío",
-      value: 53,
-      unit: "%",
-    },
-    {
-      name: "Área en uso",
-      value: 67,
-      unit: "%",
-    },
-    {
-      name: "Salud de las plantas",
-      value: 67,
-      unit: "%",
-    },
-  ];
+  export let rows;
+  export let columns;
 </script>
 
 <section>
   <Card>
     <div slot="body" class="card-body">
-      <Table {data} />
+      <Table {rows} {columns} />
     </div>
   </Card>
 </section>
@@ -48,7 +23,8 @@
     overflow: hidden;
 
     div {
-      height: 300px;
+      height: 250px;
+      overflow: scroll;
     }
   }
 </style>

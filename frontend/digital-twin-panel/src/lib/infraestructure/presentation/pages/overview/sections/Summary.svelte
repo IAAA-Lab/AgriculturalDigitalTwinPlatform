@@ -5,6 +5,10 @@
   import ToggleSwitch from "../../../components/basics/ToggleSwitch.svelte";
   import SummaryStatCard from "../components/SummaryStatCard.svelte";
   import { parcelsService } from "src/app/config/config";
+  import { Link } from "svelte-routing";
+  import { formattedDate } from "src/lib/core/functions";
+  import Loading from "../../../components/misc/Loading.svelte";
+  import Error from "../../../components/misc/Error.svelte";
 
   let checked: boolean = false;
   let selectedChartStat: string;
@@ -12,38 +16,45 @@
 
 <section class="summary">
   {#await parcelsService.getOverviewSummary("")}
-    <div>loading...</div>
+    <Loading />
   {:then summary}
     {@const statsSelected = checked ? summary.stats.bad : summary.stats.good}
     <Card>
-      <div slot="header" class="pl-8">
+      <svelte:fragment slot="header">
         <div class="summary__title mt-8">
           <h2 class="m-0">Resumen</h2>
           <ToggleSwitch bind:checked />
         </div>
-        <p class="text-xs">Última actualización: 2021-03-01 12:00</p>
-      </div>
+        <p class="text-xs">Última actualización: {formattedDate(summary.ts)}</p>
+      </svelte:fragment>
       <div slot="body" class="body">
         <div class="body-stats mb-16">
           {#each statsSelected as stat, i}
-            <SummaryStatCard
-              title={stat.stat.name}
-              value={stat.stat.value}
-              unit={stat.stat.unit || ""}
-              diff={stat.diff}
-              enclosureName={stat.enclosureId}
-              primary={i === 0}
-            />
+            <Link to={`/enclosure/${stat.enclosureId}`}>
+              <SummaryStatCard
+                title={stat.stat.name}
+                value={stat.stat.value}
+                unit={stat.stat.unit || ""}
+                diff={stat.diff}
+                enclosureName={stat.enclosureId}
+                crops={stat.cropIds}
+                primary={i === 0}
+              />
+            </Link>
           {/each}
         </div>
         <CardInner>
           <svelte:fragment slot="header">
-            <h4 class="text-sm stat-header m-0">Stats promedios por parcela</h4>
-            <select bind:value={selectedChartStat}>
-              {#each [...new Set(summary.stats.all.map((s) => s.stat.name))] as statName}
-                <option value={statName}>{statName}</option>
-              {/each}
-            </select>
+            <div class="header__wrapper">
+              <h4 class="text-sm stat-header m-0 mr-16">
+                Stats promedios por parcela
+              </h4>
+              <select bind:value={selectedChartStat}>
+                {#each [...new Set(summary.stats.all.map((s) => s.stat.name))] as statName}
+                  <option value={statName}>{statName}</option>
+                {/each}
+              </select>
+            </div>
           </svelte:fragment>
           <div slot="body" class="analytics-chart">
             <PieChart
@@ -59,13 +70,19 @@
       </div>
     </Card>
   {:catch error}
-    <div>{error}</div>
+    <Error />
   {/await}
 </section>
 
 <style lang="scss">
   .summary {
     grid-area: summary;
+
+    .header__wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
     .summary__title {
       display: flex;

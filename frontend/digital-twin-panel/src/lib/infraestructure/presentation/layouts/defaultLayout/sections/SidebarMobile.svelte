@@ -5,9 +5,9 @@
   import LogoText from "../components/LogoText.svelte";
   import SidebarToggle from "../components/SidebarToggle.svelte";
   import SidebarNavBarInner from "../components/SidebarNavBarInner.svelte";
+  import { AppRoutes } from "src/app/config/constants";
 
   let closed = true;
-  let collapsed = false;
 
   const closeSidebar = () => {
     closed = true;
@@ -15,6 +15,11 @@
   const toggleSidebar = () => {
     closed = !closed;
   };
+
+  let selected = window.location.pathname;
+
+  let show = true;
+  $: show = Object.values(AppRoutes).includes(selected as AppRoutes);
 </script>
 
 <div use:outsideClick={closeSidebar}>
@@ -22,13 +27,13 @@
     <SidebarToggle />
   </div>
   <div class="sidebar__wrapper" class:closed>
-    <aside class="sidebar" class:collapsed>
+    <aside class="sidebar" class:collapsed={!show}>
       <LogoText />
       <SidebarNavBar />
       <Footer />
     </aside>
-    <aside class="sidebar__inner">
-      <SidebarNavBarInner bind:notShow={collapsed} />
+    <aside class="sidebar__inner" class:active={show}>
+      <SidebarNavBarInner />
     </aside>
   </div>
 </div>
@@ -50,20 +55,32 @@
     }
   }
 
-  .sidebar {
-  }
   aside {
     height: 100%;
     background-color: #f5ebe5;
     border-radius: 10px;
     padding: 10px;
+  }
 
-    &.sidebar__inner {
-      padding-top: 5.25rem;
-      background-color: #ecddd3;
-      padding-right: 20px;
-      padding-left: 10px;
-      height: 100%;
+  .sidebar {
+    &.collapsed {
+      :global {
+        .sidebar-option-text,
+        h3 {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .sidebar__inner {
+    padding-top: 5.25rem;
+    background-color: #ecddd3;
+    padding-right: 20px;
+    padding-left: 10px;
+    height: 100%;
+    &.active {
+      display: none;
     }
   }
 </style>

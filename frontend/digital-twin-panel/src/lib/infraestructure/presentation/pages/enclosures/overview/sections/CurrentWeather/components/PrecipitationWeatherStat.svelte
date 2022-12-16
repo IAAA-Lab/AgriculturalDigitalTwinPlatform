@@ -4,7 +4,7 @@
 </script>
 
 <div class="precipitation">
-  <WeatherStat title="Prob. Precipitación">
+  <WeatherStat title="Prob. precipitación">
     <i slot="header-icon" class="fi fi-rr-umbrella pt-4" />
     <div slot="body" class="body">
       <p class="text-sm m-0"><strong>{probPrec} %</strong></p>

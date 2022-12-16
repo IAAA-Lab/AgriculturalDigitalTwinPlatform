@@ -1,6 +1,11 @@
-<script>
+<script lang="ts">
   import { IMAGES_SERVER_URL } from "src/app/config/config";
+  import type { CropId } from "src/lib/core/Domain";
+  import { getIconByCropStats } from "src/lib/core/functions";
   import CardInner from "src/lib/infraestructure/presentation/components/cards/CardInner.svelte";
+
+  export let crop: CropId;
+  export let cropStats: any[];
 </script>
 
 <CardInner>
@@ -13,26 +18,16 @@
         style="max-width: 100px;"
       />
       <h4 class="m-0">PISTACHO</h4>
-      <span class="text-xs">Pystacil</span>
+      <span class="text-xs">{crop.variety}</span>
     </div>
     <div class="crop__divider" />
     <div class="crop__body">
-      <div class="crop__body__item">
-        <i class="fi fi-rr-tractor" />
-        <span class="text-xs m-0">23.345,24 Kg </span>
-      </div>
-      <div class="crop__body__item">
-        <i class="fi fi-rr-map-marker" />
-        <span class="text-xs m-0">78,9 Ha </span>
-      </div>
-      <div class="crop__body__item">
-        <i class="fi fi-rr-stats" />
-        <span class="text-xs m-0">1.635 Kg/Ha </span>
-      </div>
-      <div class="crop__body__item">
-        <i class="fi fi-rr-hand-holding-seeding" />
-        <span class="text-xs m-0">654 </span>
-      </div>
+      {#each cropStats as stat}
+        <div class="crop__body__item">
+          {@html getIconByCropStats(stat.title)}
+          <span class="text-xs m-0">{stat.value} {stat.unit || ""} </span>
+        </div>
+      {/each}
     </div>
   </div>
 </CardInner>

@@ -3,7 +3,7 @@
   import Card from "../../../components/cards/Card.svelte";
   export let statName = "-";
   export let statValue: number;
-  export let statUnit = "N/A";
+  export let statUnit = "";
 </script>
 
 <Card>

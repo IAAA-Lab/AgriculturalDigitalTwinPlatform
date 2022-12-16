@@ -43,7 +43,12 @@
       </div>
       <div class="ndvi">
         <i class="fi fi-rr-heart" />
-        <Range value={ndvi} height={12} background={getRangeBarColor(ndvi)} />
+        <Range
+          value={ndvi}
+          to={1}
+          height={12}
+          background={getRangeBarColor(ndvi)}
+        />
         <p class="text-sm m-0"><strong>{ndvi} %</strong></p>
       </div>
     </div>
@@ -61,7 +66,6 @@
     .content {
       flex: 1;
     }
-
     .ndvi {
       display: flex;
       flex-direction: row;

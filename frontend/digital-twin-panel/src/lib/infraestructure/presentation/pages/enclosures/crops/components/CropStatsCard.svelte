@@ -12,6 +12,8 @@
   export let unit: string = "";
   export let diff: number;
   export let primary: boolean = false;
+  export let datasets: number[] = [];
+  export let labels: string[] = [];
 
   let diffColor: string;
   let diffIcon: string;
@@ -39,11 +41,11 @@
     </div>
     <div class="chart">
       <LineChart
-        labels={["80", "80", "80", "80", "80", "80", "80"]}
+        {labels}
         datasets={[
           {
             ...(primary ? cropStatsPrimaryChartConfig : cropStatsChartConfig),
-            data: [11, 20, 23, 2, 31, 2, 44, 23, 2],
+            data: datasets,
           },
         ]}
         {config}

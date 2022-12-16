@@ -3,6 +3,7 @@ package rabbitmq
 import (
 	"digital-twin/main-server/src/internal/core/domain"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/goccy/go-json"
@@ -92,6 +93,7 @@ type DailyWeatherReq struct {
 }
 
 func (r *RabbitMQConn) GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error) {
+	fmt.Println(parcelId)
 	dailyWeatherRaw, err := r.PublishAndWait("weather.daily", uuid.New().String(), domain.SyncEventExtSend{
 		Payload: DailyWeatherReq{ParcelId: parcelId, Date: date},
 	})
@@ -110,17 +112,17 @@ func (r *RabbitMQConn) GetDailyWeather(parcelId string, date time.Time) (domain.
 }
 
 type NDVIReq struct {
-	EnclousureIds []string  `json:"enclousureIds"`
-	StartDate     time.Time `json:"startDate"`
-	EndDate       time.Time `json:"endDate"`
+	EnclosureIds []string  `json:"enclosureIds"`
+	StartDate    time.Time `json:"startDate"`
+	EndDate      time.Time `json:"endDate"`
 }
 
-func (r *RabbitMQConn) GetNDVI(enclousureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error) {
-	ndviRaw, err := r.PublishAndWait("ndvi.get", uuid.New().String(), domain.SyncEventExtSend{
+func (r *RabbitMQConn) GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error) {
+	ndviRaw, err := r.PublishAndWait("ndvi", uuid.New().String(), domain.SyncEventExtSend{
 		Payload: NDVIReq{
-			EnclousureIds: enclousureIds,
-			StartDate:     startDate,
-			EndDate:       endDate,
+			EnclosureIds: enclosureIds,
+			StartDate:    startDate,
+			EndDate:      endDate,
 		},
 	})
 	if err != nil {

@@ -1,30 +1,44 @@
-<script>
+<script lang="ts">
+  import App from "src/App.svelte";
+  import { parcelsService } from "src/app/config/config";
+  import { getWeatherIcon } from "src/lib/core/functions";
   import CardInner from "src/lib/infraestructure/presentation/components/cards/CardInner.svelte";
   import WeatherCard from "src/lib/infraestructure/presentation/components/cards/WeatherCard.svelte";
+  import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
+  import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
   import ForecastWeatherItem from "../components/ForecastWeatherItem.svelte";
+
+  export let enclosureId: String;
+  let aux = enclosureId.split("-");
+  aux.pop();
+  const parcelId = aux.join("-");
 </script>
 
 <section>
   <WeatherCard>
     <h3 class="m-0 mb-8" slot="header">Previsión (7 días)</h3>
     <div slot="body" style="overflow: hidden;">
-      <CardInner>
-        <div slot="body" class="p-8 body">
-          <ForecastWeatherItem />
-          <div class="divider" />
-          <ForecastWeatherItem />
-          <div class="divider" />
-          <ForecastWeatherItem />
-          <div class="divider" />
-          <ForecastWeatherItem />
-          <div class="divider" />
-          <ForecastWeatherItem />
-          <div class="divider" />
-          <ForecastWeatherItem />
-          <div class="divider" />
-          <ForecastWeatherItem />
-        </div>
-      </CardInner>
+      {#await parcelsService.getForecastWeather(parcelId)}
+        <Loading />
+      {:then forecast}
+        <CardInner>
+          <div slot="body" class="p-8 body">
+            {#each forecast as f, i}
+              <ForecastWeatherItem day={f.date} minTa={f.tamin} maxTa={f.tamax}>
+                <svelte:fragment slot="icon">
+                  {@html getWeatherIcon(f.skyState.description)}
+                </svelte:fragment>
+              </ForecastWeatherItem>
+              {#if i < forecast.length - 1}
+                <div class="divider" />
+              {/if}
+            {/each}
+          </div>
+        </CardInner>
+      {:catch error}
+        <div>{error.message}</div>
+        <Error />
+      {/await}
     </div>
   </WeatherCard>
 </section>

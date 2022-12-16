@@ -2,41 +2,64 @@
   import WeatherCard from "src/lib/infraestructure/presentation/components/cards/WeatherCard.svelte";
   import BarChart from "src/lib/infraestructure/presentation/components/charts/BarChart.svelte";
   import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
-  import config from "src/lib/infraestructure/presentation/components/charts/config/LineChart.config";
+  import config from "../components/config/tempLineChart.config";
+  import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
+  import { parcelsService } from "src/app/config/config";
+  import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
+  import { onMount } from "svelte";
+
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - 7);
+  const endDate = new Date();
+
+  let hidden = true;
+
+  export let pred;
+
+  onMount(() => {
+    setTimeout(() => {
+      hidden = false;
+    }, 500);
+  });
 </script>
 
 <section>
   <div>
-    <WeatherCard class="child">
-      <div slot="header" class="header">
-        <i class="fi fi-rr-cloud-showers-heavy" />
-        <p class="m-0 text-xs">Precipitaciones (Últimos 7 días)</p>
-      </div>
-      <div
-        slot="body"
-        class="body"
-        style="max-height: 200px; min-height: 100px;"
-      >
-        <BarChart
-          data={[22.1, 12.12, 43.1, 12.1, 12.1, 0.0, 12.9, 0.0]}
-          labels={[
-            "2021-05-01",
-            "2021-05-02",
-            "2021-05-03",
-            "2021-05-04",
-            "2021-05-05",
-            "2021-05-06",
-            "2021-05-07",
-            "2021-05-08",
-          ]}
-          color="blue"
-        />
-      </div>
-    </WeatherCard>
+    {#if hidden}
+      <Loading />
+    {:else}
+      <WeatherCard class="child">
+        <div slot="header" class="header">
+          <i class="fi fi-rr-cloud-showers-heavy" />
+          <p class="m-0 text-sm">Precipitaciones (Últimos 7 días)</p>
+        </div>
+        <div
+          slot="body"
+          class="body"
+          style="max-height: 200px; min-height: 100px;"
+        >
+          <BarChart
+            data={[22.1, 12.12, 43.1, 12.1, 12.1, 0.0, 12.9, 0.0]}
+            labels={[
+              "2021-05-01",
+              "2021-05-02",
+              "2021-05-03",
+              "2021-05-04",
+              "2021-05-05",
+              "2021-05-06",
+              "2021-05-07",
+              "2021-05-08",
+            ]}
+            color="blue"
+            yAxisLabel="Precipitación (mm)"
+          />
+        </div>
+      </WeatherCard>
+    {/if}
     <WeatherCard class="child">
       <div slot="header" class="header">
         <i class="fi fi-rr-wind" />
-        <p class="m-0 text-xs">Viento</p>
+        <p class="m-0 text-sm">Viento</p>
       </div>
       <div slot="body" class="body">
         <img
@@ -45,48 +68,33 @@
           height="100"
           width="100"
         />
-        <p class="text-m m-0"><strong>12 km/h</strong></p>
+        <p class="text-m m-0"><strong>{pred.wind[0].speed} km/h</strong></p>
       </div>
     </WeatherCard>
     <WeatherCard class="child">
       <div slot="header" class="header">
         <i class="fi fi-rr-sun" />
-        <p class="m-0 text-xs">UV</p>
+        <p class="m-0 text-sm">UV</p>
       </div>
       <div slot="body" class="body">
         <br />
-        <input
-          type="range"
-          class="slider"
-          min="0"
-          max="10"
-          value="5"
-          disabled
-        />
-        <p class="text-m m-0"><strong>4</strong></p>
+        <input type="range" class="slider" min="0" max="10" value="1" />
+        <p class="text-m m-0"><strong>1</strong></p>
       </div></WeatherCard
     >
     <WeatherCard class="child">
       <div slot="header" class="header">
         <i class="fi fi-rr-temperature-high" />
-        <p class="m-0 text-xs">Temperatura</p>
+        <p class="m-0 text-sm">Temperatura</p>
       </div>
       <div slot="body" class="body">
-        <div style="max-height: 250px; min-height: 100px; width: 100%;">
+        <div style="max-height: 250px; min-height: 150px; width: 100%;">
           <LineChart
-            labels={[
-              "20-10-2020",
-              "21-10-2020",
-              "22-10-2020",
-              "23-10-2020",
-              "24-10-2020",
-              "25-10-2020",
-              "26-10-2020",
-            ]}
+            labels={pred.ta.map((ta) => ta.period)}
             datasets={[
               {
-                data: [11, 20, 23, 2, 31, 2, 44, 23, 2],
-                label: "Ganancias",
+                data: pred.ta.map((ta) => ta.value),
+                label: "",
                 fill: true,
                 backgroundColor: function (context) {
                   const chart = context.chart;
@@ -100,10 +108,12 @@
                     0,
                     chartArea.top
                   );
-                  gradient.addColorStop(0, "rgb(204, 219, 240, 0.7)");
-                  gradient.addColorStop(0.8, "rgba(22, 22, 104,1)");
+                  gradient.addColorStop(0, "#267DF3");
+                  gradient.addColorStop(0.6, "#F34A26");
                   return gradient;
                 },
+                borderWidth: 3,
+                borderColor: "#2F3030",
                 tension: 0.2,
               },
             ]}
@@ -111,8 +121,14 @@
           />
         </div>
         <div class="temp__min__max">
-          <p class="text-sm m-0"><strong>Min: 22.1 °C</strong></p>
-          <p class="text-sm m-0"><strong>Max: 43.1 °C</strong></p>
+          <p class="text-sm m-0">
+            <strong>Min: {Math.min(...pred.ta.map((ta) => ta.value))} °C</strong
+            >
+          </p>
+          <p class="text-sm m-0">
+            <strong>Max: {Math.max(...pred.ta.map((ta) => ta.value))} °C</strong
+            >
+          </p>
         </div>
       </div>
     </WeatherCard>

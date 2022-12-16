@@ -1,6 +1,7 @@
 <script>
   import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
   import WeatherStat from "./WeatherStat.svelte";
+  import config from "./config/weatherStatsLineChart.config";
   export let minTa;
   export let maxTa;
   export let taData;
@@ -12,7 +13,19 @@
     <i slot="header-icon" class="fi fi-rr-temperature-low pt-4" />
     <svelte:fragment slot="body">
       <div class="chart-wrap">
-        <LineChart data={taData} labels={taLabels} color="#5C8CD3" />
+        <LineChart
+          labels={taLabels}
+          datasets={[
+            {
+              borderWidth: 3,
+              borderColor: "#414242",
+              tension: 0.5,
+              pointRadius: 1,
+              data: taData,
+            },
+          ]}
+          {config}
+        />
       </div>
       <div class="min-max text-xs mt-4">
         <span style="color: #E54C4C;">Mín: {minTa} °</span>
@@ -30,7 +43,7 @@
   }
 
   .chart-wrap {
-    max-height: 80px;
+    height: 125px;
   }
 
   .temp {

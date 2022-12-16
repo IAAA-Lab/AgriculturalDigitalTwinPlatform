@@ -5,7 +5,7 @@ let config: ChartConfiguration = {
   data: null,
   options: {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: false,
@@ -25,6 +25,7 @@ let config: ChartConfiguration = {
         },
       },
       y: {
+        min: 0,
         grid: {
           drawBorder: false,
           display: false,

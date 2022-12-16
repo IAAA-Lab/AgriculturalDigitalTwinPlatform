@@ -6,36 +6,29 @@
 
   export let usedArea = 0;
   export let totalArea = 1;
-  console.log(usedArea, totalArea);
 </script>
 
-<section>
-  <Card>
-    <h6 slot="header" class="m-0 mb-8">Área en uso (Ha)</h6>
-    <svelte:fragment slot="body">
-      <CardInner>
-        <div slot="body" class="value__unit">
-          <Range
-            value={usedArea}
-            to={totalArea}
-            background={getRangeBarColor(usedArea)}
-          />
-          <h3 class="m-0">
-            <strong
-              >{((usedArea / totalArea) * 100).toPrecision(4)} %<strong
-              /></strong
-            >
-          </h3>
-        </div>
-      </CardInner>
-    </svelte:fragment>
-  </Card>
-</section>
+<Card>
+  <h6 slot="header" class="m-0 mb-8">Área en uso (Ha)</h6>
+  <svelte:fragment slot="body">
+    <CardInner>
+      <div slot="body" class="value__unit">
+        <Range
+          value={usedArea}
+          to={totalArea}
+          background={getRangeBarColor(usedArea)}
+        />
+        <h3 class="m-0">
+          <strong
+            >{((usedArea / totalArea) * 100).toPrecision(4)} %<strong /></strong
+          >
+        </h3>
+      </div>
+    </CardInner>
+  </svelte:fragment>
+</Card>
 
 <style>
-  section {
-    grid-area: used-area;
-  }
   .value__unit {
     display: flex;
     justify-content: space-between;

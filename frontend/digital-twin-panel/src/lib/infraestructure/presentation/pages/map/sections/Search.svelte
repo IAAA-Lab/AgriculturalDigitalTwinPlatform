@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { IMAGES_SERVER_URL } from "src/app/config/config";
   import { selectedEnclosure } from "src/app/config/stores/selectedEnclosure";
   import type { Enclosure } from "src/lib/core/Domain";
   import { getColorList } from "src/lib/core/functions";
@@ -9,6 +10,7 @@
   const colorList = getColorList(2);
 
   export let enclosures: Enclosure[] = [];
+  console.log(enclosures);
   let search = "";
 
   // Listener for the search input
@@ -17,10 +19,6 @@
   //     e.toLowerCase().includes(search.toLowerCase())
   //   );
   // }
-
-  const setSelectedEnclosure = async (enclosureId: string) => {
-    selectedEnclosure.set(enclosureId);
-  };
 </script>
 
 <Card>
@@ -52,7 +50,13 @@
             geojsonFeature={enclosure}
             color={colorList[i]}
           >
-            <div slot="crops" class="row" />
+            <img
+              slot="crops"
+              src={`${IMAGES_SERVER_URL}/${enclosure.cropIds?.at(0).name}.png`}
+              alt="crops"
+              height="30"
+              class="ml-8"
+            />
           </MapSearchCard>
         </Link>
       {/each}

@@ -34,7 +34,11 @@ let config: ChartConfiguration = {
         display: false,
       },
       title: {
-        display: false,
+        display: true,
+        font: {
+          size: 16,
+          weight: "bold",
+        },
       },
     },
     scales: {
@@ -47,6 +51,14 @@ let config: ChartConfiguration = {
       y: {
         grid: {
           drawBorder: false,
+        },
+        title: {
+          display: true,
+          text: "Crops",
+          font: {
+            size: 14,
+            weight: "bold",
+          },
         },
       },
     },

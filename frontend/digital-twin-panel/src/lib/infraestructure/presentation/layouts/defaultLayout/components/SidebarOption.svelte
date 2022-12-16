@@ -17,11 +17,8 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    padding: 5px 0px 5px 10px;
-    width: 100%;
+    padding: 5px 10px 5px 10px;
     border-radius: 10px;
-    // background-color: #fbfbfb;
-    cursor: pointer;
 
     &:hover {
       :global(i),

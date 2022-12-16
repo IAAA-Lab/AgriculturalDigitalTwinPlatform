@@ -1,6 +1,8 @@
 <script>
   import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
   import WeatherStat from "./WeatherStat.svelte";
+  import config from "./config/weatherStatsLineChart.config";
+
   export let minHr = "--";
   export let maxHr = "--";
   export let hrData;
@@ -12,7 +14,19 @@
     <i slot="header-icon" class="fi fi-rr-humidity pt-4" />
     <div slot="body" class="body">
       <div class="chart-wrap">
-        <LineChart data={hrData} labels={hrLabels} color="#5C8CD3" />
+        <LineChart
+          labels={hrLabels}
+          datasets={[
+            {
+              borderWidth: 3,
+              borderColor: "#414242",
+              tension: 0.5,
+              pointRadius: 1,
+              data: hrData,
+            },
+          ]}
+          {config}
+        />
       </div>
       <p class="text-sm m-0"><strong>{minHr} %</strong></p>
     </div>
@@ -32,6 +46,6 @@
   }
 
   .chart-wrap {
-    height: 80px;
+    height: 110px;
   }
 </style>

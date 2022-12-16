@@ -8,9 +8,9 @@
 
 <h1 class="title">Recinto#{id} · Plantas</h1>
 <div class="container-responsive">
-  <CropStats />
+  <CropStats enclosureId={id} />
   <br />
-  <Phytosanitaries />
+  <Phytosanitaries enclosureId={id} />
   <br />
   <Fertilizers />
 </div>

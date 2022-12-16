@@ -12,7 +12,7 @@ let config: ChartConfiguration = {
       },
       title: {
         display: true,
-        text: "NDVI (Últimos 30 días)",
+        text: "",
         font: {
           size: 14,
         },
@@ -24,8 +24,14 @@ let config: ChartConfiguration = {
           drawBorder: false,
           display: false,
         },
+        ticks: {
+          autoSkip: true,
+          maxTicksLimit: 6,
+        },
       },
       y: {
+        min: -15,
+        max: 50,
         grid: {
           drawBorder: false,
         },

@@ -83,18 +83,159 @@ const getIconByCharacteristic = (characteristic) => {
       return `<i class="fi fi-rr-wind" />`;
     case "Temperatura":
       return `<i class="fi fi-rr-temperature-low" />`;
+    case "Humedad":
+      return `<i class="fi fi-rr-humidity" />`;
+    case "Regadío":
+      return `<i class="fi fi-rr-water" />`;
+    case "Altitud":
+      return `<i class="fi fi-rr-elevation" />`;
+    case "Coef. de regadío":
+      return `<i class="fi fi-rr-water" />`;
+    case "NDVI medio":
+      return `<i class="fi fi-rr-leaf" />`;
+    case "Pendiente media":
+      return `<i class="fi fi-rr-mountains"></i>`;
     default:
       return `<i class="fi fi-rr-map-marker" />`;
   }
 };
 
 const getRangeBarColor = (value: number) => {
-  if (value < 25) {
+  if (value < 0.25) {
     return "red";
-  } else if (value >= 25 && value < 75) {
+  } else if (value >= 0.25 && value < 0.75) {
     return "yellow";
   } else {
     return "green";
+  }
+};
+
+const getWeatherIcon = (description: string) => {
+  console.log({ description });
+  //aemet icons
+  switch (description) {
+    case "Despejado":
+      return `<i class="fi fi-rr-sun" />`;
+    case "Poco nuboso":
+      return `<i class="fi fi-rr-cloud-sun" />`;
+    case "Nuboso":
+      return `<i class="fi fi-rr-cloud" />`;
+    case "Intervalos nubosos":
+      return `<i class="fi fi-rr-cloud-sun" />`;
+    case "Cubierto":
+      return `<i class="fi fi-rr-cloud" />`;
+    case "Nubes altas":
+      return `<i class="fi fi-rr-cloud" />`;
+    case "Muy nuboso":
+      return `<i class="fi fi-rr-cloud" />`;
+    case "Nubes bajas":
+      return `<i class="fi fi-rr-cloud" />`;
+    case "Nubes medias":
+      return `<i class="fi fi-rr-cloud" />`;
+    case "Nubes altas":
+      return `<i class="fi fi-rr-cloud" />`;
+    case "Nubes muy bajas":
+      return `<i class="fi fi-rr-cloud" />`;
+    case "Nubes muy medias":
+      return `<i class="fi fi-rr-cloud" />`;
+    case "Nubes muy altas":
+      return `<i class="fi fi-rr-cloud" />`;
+    case "Nubes":
+      return `<i class="fi fi-rr-cloud" />`;
+    case "Intervalos nubosos con lluvia":
+      return `<i class="fi fi-rr-cloud-rain" />`;
+    case "Intervalos nubosos con lluvia escasa":
+      return `<i class="fi fi-rr-cloud-rain" />`;
+    case "Intervalos nubosos con nieve":
+      return `<i class="fi fi-rr-cloud-snow" />`;
+    case "Intervalos nubosos con nieve escasa":
+      return `<i class="fi fi-rr-cloud-snow" />`;
+    case "Intervalos nubosos con tormenta":
+      return `<i class="fi fi-rr-cloud-lightning" />`;
+    case "Intervalos nubosos con tormenta escasa":
+      return `<i class="fi fi-rr-cloud-lightning" />`;
+    case "Intervalos nubosos con aguanieve":
+      return `<i class="fi fi-rr-cloud-hail" />`;
+    case "Intervalos nubosos con aguanieve escasa":
+      return `<i class="fi fi-rr-cloud-hail" />`;
+    case "Intervalos nubosos con lluvia y tormenta":
+      return `<i class="fi fi-rr-cloud-lightning" />`;
+    case "Intervalos nubosos con nieve y tormenta":
+      return `<i class="fi fi-rr-cloud-lightning" />`;
+    case "Nuboso con lluvia":
+      return `<i class="fi fi-rr-cloud-rain" />`;
+    case "Nuboso con lluvia escasa":
+      return `<i class="fi fi-rr-cloud-rain" />`;
+    case "Nuboso con nieve":
+      return `<i class="fi fi-rr-cloud-snow" />`;
+    case "Nuboso con nieve escasa":
+      return `<i class="fi fi-rr-cloud-snow" />`;
+    case "Nuboso con tormenta":
+      return `<i class="fi fi-rr-cloud-lightning" />`;
+    case "Nuboso con tormenta escasa":
+      return `<i class="fi fi-rr-cloud-lightning" />`;
+    case "Nuboso con aguanieve":
+      return `<i class="fi fi-rr-cloud-hail" />`;
+    case "Nuboso con aguanieve escasa":
+      return `<i class="fi fi-rr-cloud-hail" />`;
+    case "Nuboso con lluvia y tormenta":
+      return `<i class="fi fi-rr-cloud-lightning" />`;
+    case "Nuboso con nieve y tormenta":
+      return `<i class="fi fi-rr-cloud-lightning" />`;
+    case "Cubierto con lluvia":
+      return `<i class="fi fi-rr-cloud-rain" />`;
+    case "Cubierto con lluvia escasa":
+      return `<i class="fi fi-rr-cloud-rain" />`;
+    case "Cubierto con nieve":
+      return `<i class="fi fi-rr-cloud-snow" />`;
+    case "Cubierto con nieve escasa":
+      return `<i class="fi fi-rr-cloud-snow" />`;
+    case "Cubierto con tormenta":
+      return `<i class="fi fi-rr-cloud-lightning" />`;
+    case "Cubierto con tormenta escasa":
+      return `<i class="fi fi-rr-cloud-lightning" />`;
+    case "Cubierto con aguanieve":
+      return `<i class="fi fi-rr-cloud-hail" />`;
+    case "Cubierto con aguanieve escasa":
+      return `<i class="fi fi-rr-cloud-hail" />`;
+    case "Cubierto con lluvia y tormenta":
+      return `<i class="fi fi-rr-cloud-lightning" />`;
+    case "Cubierto con nieve y tormenta":
+      return `<i class="fi fi-rr-cloud-lightning" />`;
+    case "Despejado":
+      return `<i class="fi fi-rr-sun" />`;
+    case "Despejado y viento":
+      return `<i class="fi fi-rr-sun" />`;
+    case "Despejado y poco viento":
+      return `<i class="fi fi-rr-sun" />`;
+    case "Despejado y mucho viento":
+      return `<i class="fi fi-rr-sun" />`;
+    case "Niebla ":
+      console.log("HOLAAAA");
+      return `<i class="fi fi-rr-fog" />`;
+    case "Bruma":
+      return `<i class="fi fi-rr-fog" />`;
+    case "Calima":
+      return `<i class="fi fi-rr-fog" />`;
+    default:
+      return `<i class="fi fi-rr-cloud" />`;
+  }
+};
+
+const getIconByCropStats = (title: string) => {
+  switch (title) {
+    case "Área":
+      return `<i class="fi fi-rr-map-marker" />`;
+    case "Ganancias":
+      return `<i class="fi fi-rr-money" />`;
+    case "Rendimiento":
+      return `<i class="fi fi-rr-stats" />`;
+    case "Cosecha":
+      return `<i class="fi fi-rr-hand-holding-seeding" />`;
+    case "Producción":
+      return `<i class="fi fi-rr-tractor" />`;
+    default:
+      return `<i class="fi fi-rr-map-marker" />`;
   }
 };
 
@@ -103,13 +244,7 @@ const formattedTime = (time: string) => {
 };
 
 const formattedDate = (time: Date) => {
-  return formattedTime(
-    time.toLocaleString("es-ES", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  );
+  return time.getDate() + "" + (time.getMonth() + 1) + "/" + time.getFullYear();
 };
 
 export {
@@ -120,4 +255,7 @@ export {
   getIconByCharacteristic,
   getRangeBarColor,
   formattedDate,
+  getWeatherIcon,
+  formattedTime,
+  getIconByCropStats,
 };

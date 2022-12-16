@@ -1,5 +1,7 @@
 <script>
   import { parcelsService } from "src/app/config/config";
+  import Error from "../../../components/misc/Error.svelte";
+  import Loading from "../../../components/misc/Loading.svelte";
   import Map from "./sections/Map.svelte";
   import Stats from "./sections/Stats.svelte";
 
@@ -8,20 +10,8 @@
 
 <h1 class="title">Recinto#{id} · Mapa</h1>
 <div class="container-responsive">
-  {#await parcelsService.getEnclosures([])}
-    <h2>Cargando...</h2>
-  {:then parcels}
-    {@const parcel = parcels.find((enc) =>
-      enc.enclosures.features.some((e) => e.id === "47-124-0-0-4-560-1")
-    )}
-    {@const enclosure = parcel.enclosures.features.find(
-      (e) => e.id === "47-124-0-0-4-560-1"
-    )}
-    <Map parcels={[enclosure]} />
-    <Stats />
-  {:catch}
-    <h2>error</h2>
-  {/await}
+  <Map enclosureId={id} />
+  <Stats enclosureId={id} />
 </div>
 
 <style lang="scss">

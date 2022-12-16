@@ -1,15 +1,24 @@
 import type { AxiosInstance } from "axios";
 import axios from "axios";
 import type {
+  CropStat,
   DailyWeather,
+  Fertilizer,
+  ForecastWeather,
+  HistoricalWeather,
   NDVI,
   Parcel,
+  Phytosanitary,
   Summary,
   UserParcels,
 } from "src/lib/core/Domain";
 import { StateNames } from "src/lib/core/Domain";
 import { ServerError } from "src/lib/core/Exceptions";
 import type { IParcelsRepository } from "src/lib/core/ports/Repository";
+
+function wait(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
 
 class HttpParcelsRepositoryMock implements IParcelsRepository {
   constructor(private readonly http: AxiosInstance) {}
@@ -36,6 +45,7 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
       });
   }
   async getEnclosures(enclosureIds: string[]): Promise<Parcel[]> {
+    await wait(140);
     return Promise.resolve<Parcel[]>([
       {
         id: "47-124-0-0-4-560",
@@ -200,30 +210,30 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
                 irrigationType: "Furrow",
                 useType: "Fruit trees",
                 ndvi: {
-                  value: 52,
+                  value: 0.12,
                   state: StateNames.MEDIUM,
                 },
                 area: {
-                  value: 1987,
+                  value: 2.222,
                   unit: "ha",
                 },
                 usedArea: {
-                  value: 642,
+                  value: 2.034,
                   unit: "ha",
                 },
                 slope: {
-                  value: 2,
+                  value: 35,
                   unit: "%",
                 },
                 irrigation: {
-                  value: 80,
+                  value: 0,
                   unit: "%",
                 },
               },
               cropIds: [
                 {
-                  name: "Pistacho",
-                  variety: "Pistacho 3",
+                  name: "pistachio",
+                  variety: "KERMAN",
                   imageUri: "https://picsum.photos/200",
                 },
               ],
@@ -354,30 +364,30 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
                 irrigationType: "Furrow",
                 useType: "Fruit trees",
                 ndvi: {
-                  value: 85,
+                  value: 0.087,
                   state: StateNames.GOOD,
                 },
                 area: {
-                  value: 2300,
+                  value: 6.2002,
                   unit: "ha",
                 },
                 usedArea: {
-                  value: 2000,
+                  value: 6.123,
                   unit: "ha",
                 },
                 slope: {
-                  value: 2,
+                  value: 14,
                   unit: "%",
                 },
                 irrigation: {
-                  value: 80,
+                  value: 100,
                   unit: "%",
                 },
               },
               cropIds: [
                 {
-                  name: "Pistacho",
-                  variety: "Pistacho 3",
+                  name: "pistachio",
+                  variety: "KERMAN",
                   imageUri: "https://picsum.photos/200",
                 },
               ],
@@ -388,15 +398,17 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
     ]);
   }
   async getOverviewSummary(userId: string): Promise<Summary> {
+    await wait(130);
     return Promise.resolve<Summary>({
+      ts: new Date(),
       stats: {
         all: [
           {
-            enclosureId: "123-34-23-1-3-5",
+            enclosureId: "47-96-0-0-5-25-1",
             cropIds: [
               {
-                name: "Maíz",
-                variety: "Maíz 1",
+                name: "pistachio",
+                variety: "KERMAN",
                 imageUri: "https://picsum.photos/200",
               },
             ],
@@ -408,16 +420,11 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
             diff: 1.34,
           },
           {
-            enclosureId: "123-34-23-2-3-5",
+            enclosureId: "47-124-0-0-4-560-1",
             cropIds: [
               {
-                name: "Pistacho",
-                variety: "Pistacho 3",
-                imageUri: "https://picsum.photos/200",
-              },
-              {
-                name: "Nuez",
-                variety: "Nuez 1",
+                name: "pistachio",
+                variety: "KERMAN",
                 imageUri: "https://picsum.photos/200",
               },
             ],
@@ -429,47 +436,14 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
             },
             diff: -1.04,
           },
-          {
-            enclosureId: "123-34-23-1-3-5",
-            cropIds: [
-              {
-                name: "Maíz",
-                variety: "Maíz 1",
-                imageUri: "https://picsum.photos/200",
-              },
-            ],
-            stat: {
-              name: "NDVI",
-              value: 0.4,
-              state: StateNames.MEDIUM,
-            },
-            diff: 0.34,
-          },
-          {
-            enclosureId: "123-34-23-1-3-6",
-            cropIds: [
-              {
-                name: "Maíz",
-                variety: "Maíz 1",
-                imageUri: "https://picsum.photos/200",
-              },
-            ],
-            stat: {
-              name: "Rendimiento",
-              value: 764,
-              unit: "kg/Ha",
-              state: StateNames.BAD,
-            },
-            diff: 0.12,
-          },
         ],
         good: [
           {
-            enclosureId: "123-34-23-1-3-5",
+            enclosureId: "47-96-0-0-5-25-1",
             cropIds: [
               {
-                name: "Maíz",
-                variety: "Maíz 1",
+                name: "pistachio",
+                variety: "KERMAN",
                 imageUri: "https://picsum.photos/200",
               },
             ],
@@ -480,35 +454,13 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
             },
             diff: 1.34,
           },
-          {
-            enclosureId: "123-34-23-2-3-5",
-            cropIds: [
-              {
-                name: "Pistacho",
-                variety: "Pistacho 3",
-                imageUri: "https://picsum.photos/200",
-              },
-              {
-                name: "Nuez",
-                variety: "Nuez 1",
-                imageUri: "https://picsum.photos/200",
-              },
-            ],
-            stat: {
-              name: "Producción",
-              value: 1241,
-              unit: "kg",
-              state: StateNames.BAD,
-            },
-            diff: 1.44,
-          },
         ],
         bad: [
           {
-            enclosureId: "123-34-23-1-3-5",
+            enclosureId: "47-124-0-0-4-560-1",
             cropIds: [
               {
-                name: "Maíz",
+                name: "walnut",
                 variety: "Maíz 1",
                 imageUri: "https://picsum.photos/200",
               },
@@ -518,13 +470,13 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
               value: 0.4,
               state: StateNames.MEDIUM,
             },
-            diff: 1.12,
+            diff: 0.23,
           },
           {
-            enclosureId: "123-34-23-1-3-6",
+            enclosureId: "47-124-0-0-4-560-1",
             cropIds: [
               {
-                name: "Maíz",
+                name: "pistachio",
                 variety: "Maíz 1",
                 imageUri: "https://picsum.photos/200",
               },
@@ -541,6 +493,66 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
       },
     });
   }
+
+  async getHistoricalWeather(
+    parcelId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<HistoricalWeather[]> {
+    const initdate =
+      startDate.getDate() +
+      "-" +
+      (startDate.getMonth() + 1) +
+      "-" +
+      startDate.getFullYear();
+    const enddate =
+      endDate.getDate() +
+      "-" +
+      (endDate.getMonth() + 1) +
+      "-" +
+      endDate.getFullYear();
+    return axios
+      .post(
+        "",
+        {
+          operation: "aemetclimatologiadiaria",
+          initdate,
+          enddate,
+          idema: "2536D",
+        },
+        {
+          headers: {
+            Authorization: "",
+          },
+          withCredentials: true,
+        }
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          return response.data.map((item: any) => {
+            return {
+              type: "historical",
+              parcelId,
+              date: item.date,
+              tmed: item.tmed,
+              prec: item.prec,
+              tmin: item.tmin,
+              tminTime: item.horatmin,
+              tmax: item.tmax,
+              tmaxTime: item.horatmax,
+              windSpeed: item.velmedia,
+              windGust: item.racha,
+              windGustTime: item.horaracha,
+            };
+          });
+        }
+        throw ServerError;
+      })
+      .catch((_) => {
+        throw ServerError;
+      });
+  }
+
   async getDailyWeather(parcelId: string, date: Date): Promise<DailyWeather> {
     return this.http
       .get<DailyWeather>("weather/daily", {
@@ -559,22 +571,64 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
         throw ServerError;
       });
   }
-  async getForecastWeather(
-    parcelId: string,
-    startDate: Date,
-    endDate: Date
-  ): Promise<DailyWeather[]> {
-    return this.http
-      .get<DailyWeather[]>("weather/forecast", {
-        params: {
-          parcelId,
-          startDate,
-          endDate,
+  async getForecastWeather(parcelId: string): Promise<ForecastWeather[]> {
+    // return this.http
+    //   .get<DailyWeather[]>("weather/forecast", {
+    //     params: {
+    //       parcelId,
+    //       startDate,
+    //       endDate,
+    //     },
+    //   })
+
+    const province = parcelId.split("-")[0];
+    const municipality =
+      parcelId.split("-")[1].length < 3
+        ? "0" + parcelId.split("-")[1]
+        : parcelId.split("-")[1];
+    return axios
+      .post(
+        "",
+        {
+          operation: "aemetprediccionmunicipio",
+          provincia: province,
+          municipio: municipality,
+          type: "diaria",
         },
-      })
+        {
+          headers: {
+            Authorization: "",
+          },
+          withCredentials: true,
+        }
+      )
       .then((response) => {
         if (response.status === 200) {
-          return response.data;
+          try {
+            const data = response.data[0].prediccion.dia.map((day: any) => {
+              return {
+                type: "forecast",
+                parcelId,
+                date: new Date(day.fecha),
+                skyState: {
+                  value: day.estadoCielo[0].value,
+                  period: day.estadoCielo[0].periodo,
+                  description: day.estadoCielo[0].descripcion,
+                },
+                tamin: day.temperatura.minima,
+                tamax: day.temperatura.maxima,
+                hrMin: day.humedadRelativa.minima,
+                hrMax: day.humedadRelativa.maxima,
+                windSpeed: day.viento[0].velocidad,
+                probPrec: day.probPrecipitacion[0].value,
+                uvMax: day.uvMax,
+                snowProb: day.cotaNieveProv[0].value,
+              };
+            });
+            return data;
+          } catch (error) {
+            console.log("error", error);
+          }
         }
         throw ServerError;
       })
@@ -587,23 +641,606 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
     startDate: Date,
     endDate: Date
   ): Promise<NDVI[]> {
-    return this.http
-      .get<NDVI[]>("ndvi", {
-        params: {
-          enclosureIds,
-          startDate,
-          endDate,
+    // return this.http
+    //   .get<NDVI[]>("ndvi", {
+    //     params: {
+    //       enclosureIds: enclosureIds.join(","),
+    //       startDate,
+    //       endDate,
+    //     },
+    //   })
+    const initdate =
+      startDate.getDate() +
+      "-" +
+      (startDate.getMonth() + 1) +
+      "-" +
+      startDate.getFullYear();
+    const enddate =
+      endDate.getDate() +
+      "-" +
+      (endDate.getMonth() + 1) +
+      "-" +
+      endDate.getFullYear();
+    return axios
+      .post(
+        "",
+        {
+          operation: "getndviindexmeanvaluezone",
+          id: enclosureIds.join(","),
+          initdate: initdate,
+          enddate: enddate,
         },
-      })
+        {
+          headers: {
+            Authorization: "",
+          },
+          withCredentials: true,
+        }
+      )
       .then((response) => {
+        // map over json array and convert key to value
+        const ndvi: NDVI[] = response.data.respuesta.map((item: any) => {
+          return {
+            enclosureId: enclosureIds[0],
+            value: Object.values(item)[0] < 0 ? 0 : Object.values(item)[0],
+            date: Object.keys(item)[0],
+          };
+        });
+        console.log({ ndvi });
         if (response.status === 200) {
-          return response.data;
+          return ndvi;
         }
         throw ServerError;
       })
       .catch((_) => {
         throw ServerError;
       });
+  }
+
+  async getPhytosanitaries(
+    enclosureId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<Phytosanitary[]> {
+    await wait(250);
+    return [
+      {
+        enclosureId: "47-96-0-0-5-25-1",
+        crop: {
+          name: "PISTACHO",
+          variety: "KERMAN",
+          imageUri: "/crops/pistachio.png",
+        },
+        startDate: new Date("03/11/2021"),
+        endDate: new Date("04-01-2021"),
+        product: "SUPORTER",
+        registrationNumber: "123456789",
+        plague: "MOJANTE",
+        area: 12.8,
+        dosage: 1,
+        efficacy: "Good",
+        hap: {
+          id: "42",
+          description: "ATOMIZADOR BALVEN 1500AR E0349BCR",
+          romaCode: "475050006598",
+          adquisitionDate: new Date("30-12-2015"),
+          lastInspectionDate: new Date("09-05-2019"),
+        },
+        had: {
+          id: "37",
+          name: "NAVAS GARRIDO, VICTOR",
+          nifCode: "12342065N",
+          ropoCode: "07/47/05604",
+          carnetType: "Basic",
+        },
+      },
+      {
+        enclosureId: "47-96-0-0-5-25-1",
+        crop: {
+          name: "PISTACHO",
+          variety: "KERMAN",
+          imageUri: "/crops/pistachio.png",
+        },
+        startDate: new Date("03-11-2021"),
+        endDate: new Date("04-01-2021"),
+        product: "THOR GOLD",
+        registrationNumber: "25449",
+        plague: "MALAS HIERBAS VIVACES",
+        area: 12.8,
+        dosage: 4,
+        efficacy: "Good",
+        hap: {
+          id: "42",
+          description: "ATOMIZADOR BALVEN 1500AR E0349BCR",
+          romaCode: "475050006598",
+          adquisitionDate: new Date("30-12-2015"),
+          lastInspectionDate: new Date("09-05-2019"),
+        },
+        had: {
+          id: "37",
+          name: "NAVAS GARRIDO, VICTOR",
+          nifCode: "12342065N",
+          ropoCode: "07/47/05604",
+          carnetType: "Basic",
+        },
+      },
+      {
+        enclosureId: "47-96-0-0-5-25-1",
+        crop: {
+          name: "PISTACHO",
+          variety: "KERMAN",
+          imageUri: "/crops/pistachio.png",
+        },
+        startDate: new Date("03/30/2021"),
+        endDate: new Date("04-01-2021"),
+        product: "CUPROSAN WG",
+        registrationNumber: "123456789",
+        plague: "ALTERNARIA",
+        area: 12.8,
+        dosage: 1,
+        efficacy: "Good",
+        hap: {
+          id: "42",
+          description: "ATOMIZADOR BALVEN 1500AR E0349BCR",
+          romaCode: "475050006598",
+          adquisitionDate: new Date("30-12-2015"),
+          lastInspectionDate: new Date("09-05-2019"),
+        },
+        had: {
+          id: "37",
+          name: "NAVAS GARRIDO, VICTOR",
+          nifCode: "12342065N",
+          ropoCode: "07/47/05604",
+          carnetType: "Basic",
+        },
+      },
+      {
+        enclosureId: "47-96-0-0-5-25-1",
+        crop: {
+          name: "PISTACHO",
+          variety: "KERMAN",
+          imageUri: "/crops/pistachio.png",
+        },
+        startDate: new Date("07/29/2021"),
+        endDate: new Date("04-01-2021"),
+        product: "SUPORTER",
+        registrationNumber: "123456789",
+        plague: "MOJANTE",
+        area: 12.8,
+        dosage: 0.2,
+        efficacy: "Good",
+        hap: {
+          id: "42",
+          description: "ATOMIZADOR BALVEN 1500AR E0349BCR",
+          romaCode: "475050006598",
+          adquisitionDate: new Date("30-12-2015"),
+          lastInspectionDate: new Date("09-05-2019"),
+        },
+        had: {
+          id: "37",
+          name: "NAVAS GARRIDO, VICTOR",
+          nifCode: "12342065N",
+          ropoCode: "07/47/05604",
+          carnetType: "Basic",
+        },
+      },
+      {
+        enclosureId: "47-96-0-0-5-25-1",
+        crop: {
+          name: "PISTACHO",
+          variety: "KERMAN",
+          imageUri: "/crops/pistachio.png",
+        },
+        startDate: new Date("07/29/2021"),
+        endDate: new Date("04-01-2021"),
+        product: "THOR GOLD",
+        registrationNumber: "123456789",
+        plague: "MALAS HIERBAS VIVACES",
+        area: 12.8,
+        dosage: 8,
+        efficacy: "Good",
+        hap: {
+          id: "42",
+          description: "ATOMIZADOR BALVEN 1500AR E0349BCR",
+          romaCode: "475050006598",
+          adquisitionDate: new Date("30-12-2015"),
+          lastInspectionDate: new Date("09-05-2019"),
+        },
+        had: {
+          id: "37",
+          name: "NAVAS GARRIDO, VICTOR",
+          nifCode: "12342065N",
+          ropoCode: "07/47/05604",
+          carnetType: "Basic",
+        },
+      },
+      {
+        enclosureId: "47-124-0-0-4-560-1",
+        crop: {
+          name: "Pistacho",
+          variety: "KERMAN",
+          imageUri: "/crops/pistachio.png",
+        },
+        startDate: new Date("03/11/2021"),
+        endDate: new Date("04-01-2021"),
+        product: "SUPORTER",
+        registrationNumber: "NO_FITO",
+        plague: "MOJANTE",
+        area: 4,
+        dosage: 1,
+        efficacy: "Good",
+        hap: {
+          id: "42",
+          description: "ATOMIZADOR BALVEN 1500AR E0349BCR",
+          romaCode: "475050006598",
+          adquisitionDate: new Date("30-12-2015"),
+          lastInspectionDate: new Date("09-05-2019"),
+        },
+        had: {
+          id: "37",
+          name: "NAVAS GARRIDO, VICTOR",
+          nifCode: "12342065N",
+          ropoCode: "07/47/05604",
+          carnetType: "Basic",
+        },
+      },
+      {
+        enclosureId: "47-124-0-0-4-560-1",
+        crop: {
+          name: "Pistacho",
+          variety: "KERMAN",
+          imageUri: "/crops/pistachio.png",
+        },
+        startDate: new Date("03/11/2021"),
+        endDate: new Date("04-01-2021"),
+        product: "THOR GOLD",
+        registrationNumber: "NO_FITO",
+        plague: "MALAS HIERBAS VIVACES",
+        area: 4,
+        dosage: 4,
+        efficacy: "Good",
+        hap: {
+          id: "42",
+          description: "ATOMIZADOR BALVEN 1500AR E0349BCR",
+          romaCode: "475050006598",
+          adquisitionDate: new Date("30-12-2015"),
+          lastInspectionDate: new Date("09-05-2019"),
+        },
+        had: {
+          id: "37",
+          name: "NAVAS GARRIDO, VICTOR",
+          nifCode: "12342065N",
+          ropoCode: "07/47/05604",
+          carnetType: "Basic",
+        },
+      },
+      {
+        enclosureId: "47-124-0-0-4-560-1",
+        crop: {
+          name: "Pistacho",
+          variety: "KERMAN",
+          imageUri: "/crops/pistachio.png",
+        },
+        startDate: new Date("03/29/2021"),
+        endDate: new Date("04-01-2021"),
+        product: "CUPROSAN WG",
+        registrationNumber: "NO_FITO",
+        plague: "ALTERNARIA",
+        area: 4,
+        dosage: 1,
+        efficacy: "Good",
+        hap: {
+          id: "42",
+          description: "ATOMIZADOR BALVEN 1500AR E0349BCR",
+          romaCode: "475050006598",
+          adquisitionDate: new Date("30-12-2015"),
+          lastInspectionDate: new Date("09-05-2019"),
+        },
+        had: {
+          id: "37",
+          name: "NAVAS GARRIDO, VICTOR",
+          nifCode: "12342065N",
+          ropoCode: "07/47/05604",
+          carnetType: "Basic",
+        },
+      },
+      {
+        enclosureId: "47-124-0-0-4-560-1",
+        crop: {
+          name: "Pistacho",
+          variety: "KERMAN",
+          imageUri: "/crops/pistachio.png",
+        },
+        startDate: new Date("05/14/2021"),
+        endDate: new Date("04-01-2021"),
+        product: "Stamina®",
+        registrationNumber: "NO_FITO",
+        plague: "PULGONES",
+        area: 4,
+        dosage: 0.06,
+        efficacy: "Good",
+        hap: {
+          id: "42",
+          description: "ATOMIZADOR BALVEN 1500AR E0349BCR",
+          romaCode: "475050006598",
+          adquisitionDate: new Date("30-12-2015"),
+          lastInspectionDate: new Date("09-05-2019"),
+        },
+        had: {
+          id: "37",
+          name: "NAVAS GARRIDO, VICTOR",
+          nifCode: "12342065N",
+          ropoCode: "07/47/05604",
+          carnetType: "Basic",
+        },
+      },
+      {
+        enclosureId: "47-124-0-0-4-560-1",
+        crop: {
+          name: "Pistacho",
+          variety: "KERMAN",
+          imageUri: "/crops/pistachio.png",
+        },
+        startDate: new Date("05/26/2021"),
+        endDate: new Date("04-01-2021"),
+        product: "CONTANS EG",
+        registrationNumber: "NO_FITO",
+        plague: "ESCLEROTINIA",
+        area: 4,
+        dosage: 2,
+        efficacy: "Good",
+        hap: {
+          id: "42",
+          description: "ATOMIZADOR BALVEN 1500AR E0349BCR",
+          romaCode: "475050006598",
+          adquisitionDate: new Date("30-12-2015"),
+          lastInspectionDate: new Date("09-05-2019"),
+        },
+        had: {
+          id: "37",
+          name: "NAVAS GARRIDO, VICTOR",
+          nifCode: "12342065N",
+          ropoCode: "07/47/05604",
+          carnetType: "Basic",
+        },
+      },
+      {
+        enclosureId: "47-124-0-0-4-560-1",
+        crop: {
+          name: "Pistacho",
+          variety: "KERMAN",
+          imageUri: "/crops/pistachio.png",
+        },
+        startDate: new Date("08/02/2021"),
+        endDate: new Date("04-01-2021"),
+        product: "SUPORTER",
+        registrationNumber: "NO_FITO",
+        plague: "MOJANTE",
+        area: 4,
+        dosage: 0.2,
+        efficacy: "Good",
+        hap: {
+          id: "42",
+          description: "ATOMIZADOR BALVEN 1500AR E0349BCR",
+          romaCode: "475050006598",
+          adquisitionDate: new Date("30-12-2015"),
+          lastInspectionDate: new Date("09-05-2019"),
+        },
+        had: {
+          id: "37",
+          name: "NAVAS GARRIDO, VICTOR",
+          nifCode: "12342065N",
+          ropoCode: "07/47/05604",
+          carnetType: "Basic",
+        },
+      },
+      {
+        enclosureId: "47-124-0-0-4-560-1",
+        crop: {
+          name: "Pistacho",
+          variety: "KERMAN",
+          imageUri: "/crops/pistachio.png",
+        },
+        startDate: new Date("08/02/2021"),
+        endDate: new Date("04-01-2021"),
+        product: "THOR GOLD",
+        registrationNumber: "NO_FITO",
+        plague: "MALAS HIERBAS VIVACES",
+        area: 4,
+        dosage: 6,
+        efficacy: "Good",
+        hap: {
+          id: "42",
+          description: "ATOMIZADOR BALVEN 1500AR E0349BCR",
+          romaCode: "475050006598",
+          adquisitionDate: new Date("30-12-2015"),
+          lastInspectionDate: new Date("09-05-2019"),
+        },
+        had: {
+          id: "37",
+          name: "NAVAS GARRIDO, VICTOR",
+          nifCode: "12342065N",
+          ropoCode: "07/47/05604",
+          carnetType: "Basic",
+        },
+      },
+    ].sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+  }
+
+  async getFertilizers(
+    enclosureId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<Fertilizer[]> {
+    throw new Error("Method not implemented.");
+  }
+
+  async getCropStats(enclosureId: string): Promise<any[]> {
+    await wait(160);
+    switch (enclosureId) {
+      case "47-124-0-0-4-560-1":
+        return [
+          {
+            title: "Ganancias",
+            unit: "€",
+            value: 2345.35,
+            diff: 0.34,
+            datasets: [2002.23, 2000.23, 2212.23, 2011.32, 2111.23, 2345.35],
+            labels: [
+              "07-12-2022",
+              "06-12-2022",
+              "05-12-2022",
+              "04-12-2022",
+              "03-12-2022",
+              "02-12-2022",
+            ],
+          },
+          {
+            title: "Producción",
+            unit: "Kg",
+            value: 342.45,
+            diff: -0.72,
+            datasets: [30, 10, 20, 30, 32, 50, 24],
+            labels: [
+              "07-12-2022",
+              "06-12-2022",
+              "05-12-2022",
+              "04-12-2022",
+              "03-12-2022",
+              "02-12-2022",
+              "01-12-2022",
+            ],
+          },
+          {
+            title: "Rendimiento",
+            value: 168.47,
+            diff: -0.21,
+            datasets: [99.23, 123.21, 111.43, 97.29, 124.23, 189.29, 168.47],
+            labels: [
+              "07-12-2022",
+              "06-12-2022",
+              "05-12-2022",
+              "04-12-2022",
+              "03-12-2022",
+              "02-12-2022",
+              "01-12-2022",
+            ],
+          },
+          {
+            title: "Área",
+            value: 2.03,
+            diff: 0.05,
+            datasets: [2.002, 2.001, 2.002, 2.003, 2.004, 2.005, 2.006, 2.007],
+            labels: [
+              "07-12-2022",
+              "06-12-2022",
+              "05-12-2022",
+              "04-12-2022",
+              "03-12-2022",
+              "02-12-2022",
+              "01-12-2022",
+              "30-11-2022",
+            ],
+          },
+          {
+            title: "Cosecha",
+            value: 12453,
+            diff: 0.23,
+            datasets: [13234, 12321, 11111, 9922, 12345, 11234, 12453],
+            labels: [
+              "07-12-2022",
+              "06-12-2022",
+              "05-12-2022",
+              "04-12-2022",
+              "03-12-2022",
+              "02-12-2022",
+              "01-12-2022",
+            ],
+          },
+        ];
+      case "47-96-0-0-5-25-1":
+        return [
+          {
+            title: "Ganancias",
+            unit: "€",
+            value: 4233.21,
+            diff: 0.34,
+            datasets: [4200.32, 3900.22, 2001.23, 5432.34, 3453.23, 4233.21],
+            labels: [
+              "07-12-2022",
+              "06-12-2022",
+              "05-12-2022",
+              "04-12-2022",
+              "03-12-2022",
+              "02-12-2022",
+            ],
+          },
+          {
+            title: "Producción",
+            unit: "Kg",
+            value: 898.13,
+            diff: -0.72,
+            datasets: [873, 982, 555, 343, 432, 432, 898],
+            labels: [
+              "07-12-2022",
+              "06-12-2022",
+              "05-12-2022",
+              "04-12-2022",
+              "03-12-2022",
+              "02-12-2022",
+              "01-12-2022",
+            ],
+          },
+          {
+            title: "Rendimiento",
+            value: 145.32,
+            diff: 0.53,
+            unit: "Kg/Ha",
+            datasets: [172.23, 123.24, 200.12, 139.23, 102.23, 145.32],
+            labels: [
+              "07-12-2022",
+              "06-12-2022",
+              "05-12-2022",
+              "04-12-2022",
+              "03-12-2022",
+              "02-12-2022",
+            ],
+          },
+          {
+            title: "Área",
+            value: 6.18,
+            unit: "Ha",
+            diff: 0.34,
+            datasets: [5.87, 5.87, 5.87, 6.02, 6.02, 6.1, 6.1, 6.1, 6.18],
+            labels: [
+              "07-12-2022",
+              "06-12-2022",
+              "05-12-2022",
+              "04-12-2022",
+              "03-12-2022",
+              "02-12-2022",
+              "01-12-2022",
+              "30-11-2022",
+              "29-11-2022",
+            ],
+          },
+          {
+            title: "Cosecha",
+            value: 38534,
+            diff: 0.34,
+            datasets: [43221, 34321, 54321, 23422, 38534, 35342, 38534],
+            labels: [
+              "07-12-2022",
+              "06-12-2022",
+              "05-12-2022",
+              "04-12-2022",
+              "03-12-2022",
+              "02-12-2022",
+              "01-12-2022",
+            ],
+          },
+        ];
+    }
   }
 }
 

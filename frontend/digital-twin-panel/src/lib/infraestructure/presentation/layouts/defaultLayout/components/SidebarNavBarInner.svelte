@@ -11,13 +11,9 @@
   import SidebarOption from "../components/SidebarOption.svelte";
   import { selectedEnclosure } from "src/app/config/stores/selectedEnclosure";
   let selected = window.location.pathname;
-
-  export let notShow = true;
-  // Do not show the sidebar if there is no enclosure selected
-  $: notShow = Object.values(AppRoutes).includes(selected as AppRoutes);
 </script>
 
-<nav class:active={notShow}>
+<nav>
   <ul>
     <li>
       <Link to={`/enclosure/${$selectedEnclosure}`}>
@@ -77,10 +73,6 @@
       li {
         padding-bottom: 7px;
       }
-    }
-
-    &.active {
-      display: none;
     }
   }
 </style>

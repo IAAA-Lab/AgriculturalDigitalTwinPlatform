@@ -1,36 +1,48 @@
 <script>
-  import CardInner from "src/lib/infraestructure/presentation/components/cards/CardInner.svelte";
   import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
   import CropStatsCard from "../components/CropStatsCard.svelte";
-  import config from "src/lib/infraestructure/presentation/components/charts/config/LineChart.config";
+  import config from "../config/selectedCropStat.config";
   import Card from "src/lib/infraestructure/presentation/components/cards/Card.svelte";
+  import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
+  import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
+  import { parcelsService } from "src/app/config/config";
+
+  let selectedCropStat = {};
+  export let enclosureId;
 </script>
 
 <section>
   <div class="crop__stats__wrapper">
-    <CropStatsCard
-      primary
-      title={"Ganancias"}
-      unit="€"
-      value={23456}
-      diff={0.34}
-    />
-    <CropStatsCard title={"Producción"} unit="Kg" value={365343} diff={-0.72} />
-    <CropStatsCard title={"Rendimiento"} value={365343} diff={0.34} />
-    <CropStatsCard title={"Área"} value={365343} diff={0.34} />
-    <CropStatsCard title={"Cosecha"} value={365343} diff={0.34} />
+    {#await parcelsService.getCropStats(enclosureId)}
+      <Loading />
+    {:then cropStats}
+      {#each cropStats as cropStat}
+        <button on:click={() => (selectedCropStat = cropStat)}>
+          <CropStatsCard
+            title={cropStat.title}
+            value={cropStat.value}
+            unit={cropStat.unit}
+            diff={cropStat.diff}
+            datasets={cropStat.datasets}
+            labels={cropStat.labels}
+            primary={selectedCropStat.title === cropStat.title}
+          />
+        </button>
+      {/each}
+    {:catch}
+      <Error />
+    {/await}
   </div>
   <br />
   <Card class="chart__wrapper">
     <div slot="body" class="chart">
       <LineChart
-        labels={["80", "80", "80", "80", "80", "80", "80"]}
+        labels={selectedCropStat.labels}
         datasets={[
           {
-            label: "Ganancias",
-            data: [12, 19, 3, 5, 2, 3],
+            label: "",
+            data: selectedCropStat.datasets,
             fill: true,
-            borderColor: "#fc9b68",
             backgroundColor: function (context) {
               const chart = context.chart;
               const { ctx, chartArea } = chart;
@@ -44,12 +56,16 @@
                 chartArea.top
               );
               gradient.addColorStop(0, "rgba(255,255,255,0.7)");
-              gradient.addColorStop(0.8, "rgba(252, 155, 104,1)");
+              gradient.addColorStop(0.6, "rgba(252, 155, 104,1)");
               return gradient;
             },
+            borderWidth: 3,
+            borderColor: "#414242",
             tension: 0.2,
           },
         ]}
+        title="{selectedCropStat?.title || ''} ({selectedCropStat?.unit ||
+          ''}) por fecha"
         {config}
       />
     </div>
@@ -65,5 +81,12 @@
 
   .chart {
     height: 300px;
+  }
+
+  button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
   }
 </style>

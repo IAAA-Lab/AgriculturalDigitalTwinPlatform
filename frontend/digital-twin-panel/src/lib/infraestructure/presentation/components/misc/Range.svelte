@@ -19,6 +19,7 @@
     border-radius: 5px;
     padding: 3px;
     overflow: hidden;
+    min-width: 70px;
 
     &:before {
       content: "";

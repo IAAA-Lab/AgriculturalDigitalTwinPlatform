@@ -61,6 +61,10 @@
 <style lang="scss">
   nav {
     white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
     ul {
       list-style: none;

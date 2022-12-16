@@ -1,5 +1,8 @@
 <script>
   import { parcelsService } from "src/app/config/config";
+  import { getWeatherIcon } from "src/lib/core/functions";
+  import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
+  import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
   import CurrentWeatherFooter from "./components/CurrentWeatherFooter.svelte";
   import CurrentWeatherHeader from "./components/CurrentWeatherHeader.svelte";
   import HumidityWeatherStat from "./components/HumidityWeatherStat.svelte";
@@ -9,14 +12,15 @@
   import WindWeatherStat from "./components/WindWeatherStat.svelte";
 
   let currentHour = new Date().getHours();
+  export let enclosureId;
 </script>
 
 <section>
-  {#await parcelsService.getDailyWeather("45-137-0-0-9-23")}
-    <p>loading...</p>
+  {#await parcelsService.getDailyWeather(enclosureId)}
+    <Loading />
   {:then cw}
     {#if !cw}
-      <p>error</p>
+      <Error />
     {:else}
       {@const pred = cw.prediction[0]}
       <CurrentWeatherHeader
@@ -25,13 +29,19 @@
         ta={pred.ta.find((t) => t.period == currentHour)?.value}
         skyState={pred.skyState.find((t) => t.period == currentHour)
           ?.description}
-      />
+      >
+        <svelte:fragment slot="icon">
+          {@html getWeatherIcon(
+            pred.skyState?.find((t) => t.period == currentHour)?.description
+          )}
+        </svelte:fragment>
+      </CurrentWeatherHeader>
       <div class="weather-stats mb-16">
         <TemperatureWeatherStat
-          minTa={Math.max(...pred.ta.map((ta) => ta.value))}
-          maxTa={Math.min(...pred.ta.map((ta) => ta.value))}
+          minTa={Math.min(...pred.ta.map((ta) => ta.value))}
+          maxTa={Math.max(...pred.ta.map((ta) => ta.value))}
           taData={pred.ta.map((v) => v.value)}
-          taLabels={pred.ta.map((v) => v.period + ":00 h")}
+          taLabels={pred.ta.map((v) => v.period)}
         />
         <WindWeatherStat
           windSpeed={pred.wind.find((t) => t.period == currentHour)?.speed}
@@ -40,12 +50,10 @@
           minHr={pred.hr.find((t) => t.period == currentHour)?.value}
           maxHr={pred.hr.find((t) => t.period == currentHour)?.value}
           hrData={pred.hr.map((v) => v.value)}
-          hrLabels={pred.hr.map((v) => v.period + ":00 h")}
+          hrLabels={pred.hr.map((v) => v.period)}
         />
         <!-- <UvWeatherStat uv={pred.} /> -->
-        <PrecipitationWeatherStat
-          probPrec={pred.probPrec.find((t) => t.period == currentHour)?.value}
-        />
+        <PrecipitationWeatherStat probPrec={pred.probPrec[0].value} />
       </div>
       <CurrentWeatherFooter
         producer={cw.origin.producer}
@@ -55,11 +63,11 @@
       />
     {/if}
   {:catch}
-    <p>error</p>
+    <Error />
   {/await}
 </section>
 
-<style>
+<style lang="scss">
   section {
     background: #ccdbf0;
     border: 2px solid #ffffff;
