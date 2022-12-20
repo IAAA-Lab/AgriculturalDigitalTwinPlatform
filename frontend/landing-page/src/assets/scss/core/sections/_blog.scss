@@ -1,0 +1,21 @@
+.blog {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  .left {
+    flex: 1;
+  }
+
+  .right {
+    flex: 3;
+  }
+
+  .twitter {
+    margin-top: 6rem;
+    margin-bottom: 2rem;
+  }
+
+  @include media("<large") {
+    flex-direction: column-reverse;
+  }
+}

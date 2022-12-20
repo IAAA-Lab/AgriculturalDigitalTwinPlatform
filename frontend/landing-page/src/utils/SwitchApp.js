@@ -20,7 +20,7 @@ export const SwitchApp = ({ initScroll }) => {
         props.protected ? (
           <PrivateRoute {...props} key={props.path} />
         ) : (
-          <AppRoute {...props} key={props.path} />
+          props.path && <AppRoute {...props} key={props.path} />
         )
       )}
       <AppRoute path="*" component={Page404} />

@@ -3,7 +3,7 @@ import React from "react";
 import Hero from "../components/sections/Hero";
 import FeaturesSplit from "../components/sections/FeaturesSplit";
 import { Financing } from "../components/sections/Financing";
-import Testimonial from "../components/sections/Testimonial";
+import Testimonial from "../components/sections/Contact";
 import { ScrollToTop } from "../components/layout/partials/ScrollToTop";
 import { PhasesContextWrapper } from "../context/PhasesContextProvider";
 import Phases from "../components/sections/Phases";
@@ -21,7 +21,6 @@ const Home = () => {
       <PhasesContextWrapper>
         <Phases />
       </PhasesContextWrapper>
-      <Financing bottomDivider />
       <Testimonial />
       <ScrollToTop />
     </>

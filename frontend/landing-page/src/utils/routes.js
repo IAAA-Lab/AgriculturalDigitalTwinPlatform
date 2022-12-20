@@ -22,15 +22,20 @@ const getRoutes = ({ role, logged }) => {
       },
       {
         exact: true,
-        path: "/blog",
-        name: "Noticias",
-        component: Blog,
-        layout: LayoutDefault,
+        ref: "phases",
+        name: "Fases",
       },
       {
-        path: "/blog/:id",
-        component: SingleNew,
+        exact: true,
+        path: "/blog",
+        component: Blog,
         layout: LayoutDefault,
+        name: "Noticias",
+      },
+      {
+        exact: true,
+        ref: "contact",
+        name: "Contacto",
       },
     ];
   switch (role) {

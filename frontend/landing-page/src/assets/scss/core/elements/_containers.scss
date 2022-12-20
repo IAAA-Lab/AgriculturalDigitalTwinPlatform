@@ -1,4 +1,5 @@
 .container,
+.container-xl,
 .container-sm,
 .container-xs {
   margin: 0 auto;
@@ -10,6 +11,10 @@
     padding-left: $container--padding__desktop;
     padding-right: $container--padding__desktop;
   }
+}
+
+.container-xl {
+  max-width: $container--width-boxed + ($container--padding__desktop * 2);
 }
 
 .container {

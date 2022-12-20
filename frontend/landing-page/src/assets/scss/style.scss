@@ -50,6 +50,8 @@
 
 @import "core/elements/badges";
 
+@import "core/elements/contact-card";
+
 /*--------------------------------------------------------------
 # Forms
 --------------------------------------------------------------*/
@@ -114,7 +116,7 @@
 # Pagination
 --------------------------------------------------------------*/
 @import "core/sections/pagination";
-
+@import "core/sections/blog";
 @import "core/sections/login";
 /*--------------------------------------------------------------
 # Features split

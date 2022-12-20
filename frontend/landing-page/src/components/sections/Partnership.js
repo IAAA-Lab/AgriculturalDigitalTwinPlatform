@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React from "react";
 import SectionHeader from "./partials/SectionHeader";
 
-export const Partnership = ({ className, partners, ...props }) => {
+export const Partnership = ({ className, partners, phase, ...props }) => {
   const outerClasses = classNames("features-tiles section", className);
 
   const innerClasses = classNames(
@@ -13,8 +13,7 @@ export const Partnership = ({ className, partners, ...props }) => {
 
   const sectionHeader = {
     title: "Socios",
-    paragraph:
-      "El consorcio que lleva a cabo el proyecto está formado por un total de siete entidades: dos clústers, un centro tecnológico, dos pymes y una startup de base tecnológica y una empresa agroalimentaria.",
+    paragraph: `El consorcio que lleva a cabo la ${phase} del proyecto está formado por las siguientes entidades.`,
   };
 
   return (

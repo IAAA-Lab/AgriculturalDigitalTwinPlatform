@@ -65,8 +65,8 @@ const FeaturesSplit = ({
                 className="split-item-content center-content-mobile reveal-from-left"
                 data-reveal-container=".split-item"
               >
-                <div className="text-xs text-color-primary tt-u mb-8">
-                  <strong>Fase 1 · </strong> AEI-010500-2021b-122
+                <div className="text-xs text-color-primary fw-600 tt-u mb-8">
+                  Fase 1
                 </div>
                 <h3 className="mt-0 mb-12">Modelo e identificación de datos</h3>
                 <p className="m-0">
@@ -99,8 +99,8 @@ const FeaturesSplit = ({
                 )}
                 data-reveal-container=".split-item"
               >
-                <div className="text-xs text-color-primary tt-u mb-8">
-                  <strong>Fase 2 · </strong> AEI-010500-2022b-61
+                <div className="text-xs text-color-primary fw-600 tt-u mb-8">
+                  Fase 2
                 </div>
                 <h3 className="mt-0 mb-12">Automatización y realimentación</h3>
                 <p className="m-0">
@@ -132,8 +132,8 @@ const FeaturesSplit = ({
                 className="split-item-content center-content-mobile reveal-from-left"
                 data-reveal-container=".split-item"
               >
-                <div className="text-xs text-color-primary tt-u mb-8">
-                  <strong>Fase 3</strong>
+                <div className="text-xs text-color-primary tt-u fw-600  mb-8">
+                  Fase 3
                 </div>
                 <h3 className="mt-0 mb-12">Red de gemelos</h3>
                 <p className="m-0">

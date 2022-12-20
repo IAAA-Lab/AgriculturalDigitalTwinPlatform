@@ -32,6 +32,13 @@
   }
 }
 
+.tiles-wrap-spread {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, auto));
+  grid-gap: 1.5rem;
+  justify-content: flex-start;
+}
+
 .tiles-item-inner {
   display: flex;
   flex-wrap: wrap;
@@ -82,6 +89,5 @@
 .twitter-tweet,
 .twitter-tweet-rendered {
   width: 100% !important;
-  border: 3px solid color(primary);
   border-radius: 15px;
 }

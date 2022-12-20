@@ -8,10 +8,13 @@ export const NewsSection = ({ className, ...props }) => {
 
   return (
     <section {...props} className={outerClasses}>
-      <div className="container">
+      <div className="container" style={{ padding: "1rem" }}>
         <div className={innerClasses}>
-          <h3 className="reveal-from-bottom mt-0">Noticias relacionadas</h3>
-          <div className="reveal-from-bottom pagination" data-reveal-delay="50">
+          <h3 className="reveal-from-bottom">Noticias relacionadas</h3>
+          <div
+            className="reveal-from-bottom pagination pt-32"
+            data-reveal-delay="50"
+          >
             <PaginatedItems itemsPerPage={6} />
           </div>
         </div>

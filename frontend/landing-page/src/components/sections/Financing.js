@@ -3,7 +3,13 @@ import React from "react";
 import Image from "../elements/Image";
 import SectionHeader from "./partials/SectionHeader";
 
-export const Financing = ({ className, bottomDivider, ...props }) => {
+export const Financing = ({
+  className,
+  bottomDivider,
+  numExpte,
+  phase,
+  ...props
+}) => {
   const outerClasses = classNames("features-tiles section", className);
 
   const innerClasses = classNames(
@@ -15,8 +21,7 @@ export const Financing = ({ className, bottomDivider, ...props }) => {
 
   const sectionHeader = {
     title: "Financiación",
-    paragraph:
-      "El proyecto GEDEFEC está apoyado por la convocatoria de octubre de 2021, de apoyo a AAEEII del Ministerio de Industria, Comercio y Turismo, financiada por la Unión Europea – Next Generation EU (Nº Expte: AEI-010500-2021b-122).",
+    paragraph: `El proyecto GEDEFEC ${phase} está apoyado por la convocatoria de octubre de 2021, de apoyo a AAEEII del Ministerio de Industria, Comercio y Turismo, financiada por la Unión Europea – Next Generation EU (Nº Expte: ${numExpte}).`,
   };
 
   const logosPath = [

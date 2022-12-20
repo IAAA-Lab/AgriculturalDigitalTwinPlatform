@@ -14,6 +14,7 @@ const defaultProps = {
 const FeaturesTiles = ({
   objectives,
   illustration,
+  phase,
   className,
   topOuterDivider,
   bottomOuterDivider,
@@ -34,7 +35,7 @@ const FeaturesTiles = ({
   );
 
   const innerClasses = classNames(
-    "features-tiles-inner section-inner",
+    "features-tiles-inner section-inner pt-0",
     topDivider && "has-top-divider",
     bottomDivider && "has-bottom-divider"
   );
@@ -46,8 +47,7 @@ const FeaturesTiles = ({
 
   const sectionHeader = {
     title: "Objetivos",
-    paragraph:
-      "Los objetivos de la fase son los que se muestran a continuación.",
+    paragraph: `Los objetivos de la ${phase} son los que se muestran a continuación.`,
   };
 
   return (

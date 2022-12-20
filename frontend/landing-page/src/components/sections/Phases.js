@@ -3,6 +3,7 @@ import React, { useContext, useRef } from "react";
 import { PhasesContext } from "../../context/contexts";
 import Badge from "../elements/Badge";
 import FeaturesTiles from "./FeaturesTiles";
+import { Financing } from "./Financing";
 import PhasesNavBar from "./partials/PhasesNavBar";
 import { Partnership } from "./Partnership";
 
@@ -110,21 +111,24 @@ const Phases = () => {
   const ref = useRef(null);
 
   return (
-    <div className="center-content">
+    <section className="center-content" id="phases">
       <div ref={ref} />
       <PhasesNavBar ref={ref} />
-      <Badge className={classNames(phases[currentPhase].stateKey, "mt-16")}>
-        {phases[currentPhase].state}
-      </Badge>
-      <span className="text-xs ml-16" style={{ whiteSpace: "nowrap" }}>
-        Código: <strong>{phases[currentPhase].code}</strong>
-      </span>
       <FeaturesTiles
         objectives={phases[currentPhase].objectives}
         illustration={phases[currentPhase].illustration}
+        phase={phases[currentPhase].title}
       />
-      <Partnership partners={phases[currentPhase].partners} />
-    </div>
+      <Partnership
+        partners={phases[currentPhase].partners}
+        phase={phases[currentPhase].title}
+      />
+      <Financing
+        numExpte={phases[currentPhase].code}
+        phase={phases[currentPhase].title}
+        bottomDivider
+      />
+    </section>
   );
 };
 

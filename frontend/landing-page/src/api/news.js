@@ -2,6 +2,116 @@ import { API_URL, NEWS_UPLOAD_URL } from "../config/api";
 import { escapeHtml } from "../utils/functions";
 
 const fetchAllNews = async (numPage) => {
+  return [
+    {
+      Title: "Pepe",
+      Id: "wfdwed",
+      little_description: "dsdsd djsdhgfuysgdf suhdf ui",
+      Date: "2022-12-11",
+      read_min: 2,
+      Image:
+        "https://www.tooltyp.com/wp-content/uploads/2014/10/1900x920-8-beneficios-de-usar-imagenes-en-nuestros-sitios-web.jpg",
+    },
+    {
+      Title: "Pepe",
+      Id: "wfdwed",
+      little_description: "dsdsd djsdhgfuysgdf suhdf ui",
+      Date: "2022-12-11",
+      read_min: 2,
+      Image:
+        "https://www.tooltyp.com/wp-content/uploads/2014/10/1900x920-8-beneficios-de-usar-imagenes-en-nuestros-sitios-web.jpg",
+    },
+    {
+      Title: "Pepe",
+      Id: "wfdwed",
+      little_description: "dsdsd djsdhgfuysgdf suhdf ui",
+      Date: "2022-12-11",
+      read_min: 2,
+      Image:
+        "https://www.tooltyp.com/wp-content/uploads/2014/10/1900x920-8-beneficios-de-usar-imagenes-en-nuestros-sitios-web.jpg",
+    },
+    {
+      Title: "Pepe",
+      Id: "wfdwed",
+      little_description: "dsdsd djsdhgfuysgdf suhdf ui",
+      Date: "2022-12-11",
+      read_min: 2,
+      Image:
+        "https://www.tooltyp.com/wp-content/uploads/2014/10/1900x920-8-beneficios-de-usar-imagenes-en-nuestros-sitios-web.jpg",
+    },
+    {
+      Title: "Pepe",
+      Id: "wfdwed",
+      little_description: "dsdsd djsdhgfuysgdf suhdf ui",
+      Date: "2022-12-11",
+      read_min: 2,
+      Image:
+        "https://www.tooltyp.com/wp-content/uploads/2014/10/1900x920-8-beneficios-de-usar-imagenes-en-nuestros-sitios-web.jpg",
+    },
+    {
+      Title: "Pepe",
+      Id: "wfdwed",
+      little_description: "dsdsd djsdhgfuysgdf suhdf ui",
+      Date: "2022-12-11",
+      read_min: 2,
+      Image:
+        "https://www.tooltyp.com/wp-content/uploads/2014/10/1900x920-8-beneficios-de-usar-imagenes-en-nuestros-sitios-web.jpg",
+    },
+    {
+      Title: "Pepe",
+      Id: "wfdwed",
+      little_description: "dsdsd djsdhgfuysgdf suhdf ui",
+      Date: "2022-12-11",
+      read_min: 2,
+      Image:
+        "https://www.tooltyp.com/wp-content/uploads/2014/10/1900x920-8-beneficios-de-usar-imagenes-en-nuestros-sitios-web.jpg",
+    },
+    {
+      Title: "Pepe",
+      Id: "wfdwed",
+      little_description: "dsdsd djsdhgfuysgdf suhdf ui",
+      Date: "2022-12-11",
+      read_min: 2,
+      Image:
+        "https://www.tooltyp.com/wp-content/uploads/2014/10/1900x920-8-beneficios-de-usar-imagenes-en-nuestros-sitios-web.jpg",
+    },
+    {
+      Title: "Pepe",
+      Id: "wfdwed",
+      little_description: "dsdsd djsdhgfuysgdf suhdf ui",
+      Date: "2022-12-11",
+      read_min: 2,
+      Image:
+        "https://www.tooltyp.com/wp-content/uploads/2014/10/1900x920-8-beneficios-de-usar-imagenes-en-nuestros-sitios-web.jpg",
+    },
+    {
+      Title: "Pepe",
+      Id: "wfdwed",
+      little_description: "dsdsd djsdhgfuysgdf suhdf ui",
+      Date: "2022-12-11",
+      read_min: 2,
+      Image:
+        "https://www.tooltyp.com/wp-content/uploads/2014/10/1900x920-8-beneficios-de-usar-imagenes-en-nuestros-sitios-web.jpg",
+    },
+    {
+      Title: "Pepe",
+      Id: "wfdwed",
+      little_description: "dsdsd djsdhgfuysgdf suhdf ui",
+      Date: "2022-12-11",
+      read_min: 2,
+      Image:
+        "https://www.tooltyp.com/wp-content/uploads/2014/10/1900x920-8-beneficios-de-usar-imagenes-en-nuestros-sitios-web.jpg",
+    },
+    {
+      Title: "Pepe",
+      Id: "wfdwed",
+      little_description: "dsdsd djsdhgfuysgdf suhdf ui",
+      Date: "2022-12-11",
+      read_min: 2,
+      Image:
+        "https://www.tooltyp.com/wp-content/uploads/2014/10/1900x920-8-beneficios-de-usar-imagenes-en-nuestros-sitios-web.jpg",
+    },
+  ];
   const response = await fetch(API_URL + "/news?numPage=" + numPage).catch(
     () => null
   );
@@ -12,6 +122,7 @@ const fetchAllNews = async (numPage) => {
 };
 
 const fetchNumberOfNews = async () => {
+  return 3;
   const response = await fetch(API_URL + "/news/number").catch(() => null);
   if (!response || !response.ok) return null;
   const data = await response.json();

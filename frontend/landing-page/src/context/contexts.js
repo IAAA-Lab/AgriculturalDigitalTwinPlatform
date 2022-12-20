@@ -1,6 +1,7 @@
 import { createContext } from "react";
 
 const AuthContext = createContext({ role: "default", logged: false });
+
 const PHASES = [
   {
     title: "Fase 1",
@@ -23,7 +24,7 @@ const PHASES = [
 ];
 
 const PhasesContext = createContext({
-  phases: PHASES,
+  phases: [],
   currentPhase: 0,
   actions: {
     setCurrentPhase: () => {},

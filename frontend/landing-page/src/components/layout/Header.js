@@ -42,6 +42,8 @@ const Header = ({
   const nav = useRef(null);
   const hamburger = useRef(null);
 
+  const location = window.location.pathname;
+
   useEffect(() => {
     isActive && openMenu();
     document.addEventListener("keydown", keyPress);
@@ -80,6 +82,15 @@ const Header = ({
     closeMenu();
   };
 
+  const scrollToSection = (sectionName) => {
+    const section = document.getElementById(sectionName);
+    section.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+      inline: "nearest",
+    });
+  };
+
   const classes = classNames(
     "site-header",
     bottomOuterDivider && "has-bottom-divider",
@@ -88,7 +99,7 @@ const Header = ({
 
   const loginButtonClasses = classNames(
     auth.usr.logged ? "button-secondary" : "button-primary",
-    "button button-wide-mobile button-sm"
+    "button button-wide-mobile button-sm ml-16"
   );
 
   return (
@@ -119,7 +130,7 @@ const Header = ({
               >
                 <div className="header-nav-inner">
                   {buttonList.map(
-                    ({ path, name }, i) =>
+                    ({ path, name, ref }, i) =>
                       name && (
                         <ul
                           className={classNames(
@@ -129,14 +140,16 @@ const Header = ({
                           key={i}
                         >
                           <li>
-                            {path[0] === "/" ? (
+                            {path ? (
                               <Link to={path} onClick={closeMenu}>
                                 {name}
                               </Link>
                             ) : (
-                              <a href={path} onClick={closeMenu}>
-                                {name}
-                              </a>
+                              location === "/" && (
+                                <a onClick={() => scrollToSection(ref)}>
+                                  {name}
+                                </a>
+                              )
                             )}
                           </li>
                         </ul>

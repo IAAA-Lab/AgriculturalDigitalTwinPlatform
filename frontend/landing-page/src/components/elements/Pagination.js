@@ -15,7 +15,7 @@ export const PaginatedItems = ({ itemsPerPage }) => {
   const [show, setShow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const tilesClasses = classNames("tiles-wrap");
+  const tilesClasses = classNames("tiles-wrap-spread");
 
   useEffect(() => {
     loadNews();
@@ -50,13 +50,13 @@ export const PaginatedItems = ({ itemsPerPage }) => {
   };
 
   const listOfitems = currentItems.map((e) => (
-    <div key={e.ID} className="tiles-item">
+    <div key={e.ID}>
       <div className="tiles-item-inner">
         <Link
           to={`/blog/${e.ID}?title=${e.Title}&littleDescription=${e.little_description}&date=${e.Date}&author=${e.Author}&image=${NEWS_UPLOAD_URL}/${e.Image}&readMin=${e.read_min}`}
         >
-          <div className="features-tiles-item-header center-content">
-            <div className="features-tiles-item-image-no-bg mb-16">
+          <div className="features-tiles-item-header">
+            <div className="features-tiles-item-image mb-16">
               <Image
                 src={`${NEWS_UPLOAD_URL}/${e.Image}`}
                 alt="Features tile icon 01"
@@ -104,7 +104,7 @@ export const PaginatedItems = ({ itemsPerPage }) => {
   return (
     <>
       <div className={tilesClasses}>{listOfitems}</div>
-      <div className="center-content">
+      <div className="center-content mt-32">
         <ReactPaginate
           breakLabel="..."
           nextLabel={

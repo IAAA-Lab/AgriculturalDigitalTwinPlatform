@@ -52,6 +52,7 @@
 
   a:not(.button) {
     display: block;
+    cursor: pointer;
     @include anchor-aspect(header);
     @include font-weight(header-link);
     text-transform: $link-header--transform;
@@ -116,6 +117,7 @@
         text-align: center;
 
         a:not(.button) {
+          cursor: pointer;
           display: inline-flex;
           @include anchor-aspect(header-mobile);
           padding-top: $header-nav--padding-v__mobile * 0.5;
