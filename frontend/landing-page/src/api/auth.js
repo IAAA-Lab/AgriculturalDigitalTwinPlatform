@@ -2,7 +2,9 @@ import { API_URL } from "../config/api";
 import encrypt from "../middleware/encryption";
 
 const login = async (username, password) => {
-  const encryptedMsg = await encrypt(JSON.stringify({ username, password }));
+  const encryptedMsg = await encrypt(
+    JSON.stringify({ email: username, password })
+  );
   const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     body: JSON.stringify({

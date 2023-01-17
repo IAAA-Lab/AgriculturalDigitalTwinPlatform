@@ -84,6 +84,7 @@ const FeaturesSplit = ({
                 data-reveal-container=".split-item"
               >
                 <Image
+                  loading="lazy"
                   src={require("./../../assets/images/fase_1_1.jpg")}
                   alt="Features split 01"
                   className="has-shadow"
@@ -120,6 +121,7 @@ const FeaturesSplit = ({
                 data-reveal-container=".split-item"
               >
                 <img
+                  loading="lazy"
                   src={require("./../../assets/images/fase_1_2.webp")}
                   alt="Features split 02"
                   className="has-shadow"
@@ -153,6 +155,7 @@ const FeaturesSplit = ({
                 data-reveal-container=".split-item"
               >
                 <Image
+                  loading="lazy"
                   src={require("./../../assets/images/fase_1_3.jpg")}
                   alt="Features split 03"
                   className="has-shadow"

@@ -8,7 +8,7 @@ function copy() {
 }
 
 function getFormattedDate(date) {
-  return date.split("T")[0];
+  return date?.split("T")[0];
 }
 
 function escapeHtml(unsafe) {

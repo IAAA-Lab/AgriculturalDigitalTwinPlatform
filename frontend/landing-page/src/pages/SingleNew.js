@@ -7,30 +7,19 @@ import HTMLReactParser from "html-react-parser";
 import { newsService } from "../api/news";
 import { useLocation } from "react-router-dom";
 import { getFormattedDate } from "../utils/functions";
+import { API_URL } from "../config/api";
 
 export const SingleNew = ({ ...props }) => {
-  const [description, setDescription] = useState("");
-  const [title, setTitle] = useState("");
-  const [date, setDate] = useState("");
-  const [image, setImage] = useState("");
-  const [littleDescription, setLittleDescription] = useState("");
-  const [author, setAuthor] = useState("");
-  const [readMin, setReadMin] = useState("");
-
   let { id } = useParams();
-  const params = useLocation().search;
+  const [news, setNews] = useState({});
 
   useEffect(() => {
-    setTitle(new URLSearchParams(params).get("title"));
-    setLittleDescription(new URLSearchParams(params).get("littleDescription"));
-    setAuthor(new URLSearchParams(params).get("author"));
-    setDate(getFormattedDate(new URLSearchParams(params).get("date")));
-    setImage(new URLSearchParams(params).get("image"));
-    setReadMin(new URLSearchParams(params).get("readMin"));
+    if (!id) return;
     newsService.fetchOneNew(id).then((data) => {
-      setDescription(data === null ? "" : data.Content);
+      if (!data) return;
+      setNews(data);
     });
-  }, [id, params]);
+  }, [id]);
 
   const outerClasses = classNames("hero section", "illustration-section-01");
   const innerClasses = classNames(
@@ -41,13 +30,18 @@ export const SingleNew = ({ ...props }) => {
     <section {...props} className={outerClasses}>
       <div className="container-sm">
         <div className={innerClasses} data-reveal-delay="50">
-          <NewInfo author={author} date={date} readMin={readMin} />
-          <h3 className="mt-0 mb-8">{title}</h3>
-          <p className="text-xs">{littleDescription}</p>
+          <NewInfo
+            author={news.author}
+            date={news.date}
+            readMin={news.readTime}
+          />
+          <h3 className="mt-0 mb-8">{news.title}</h3>
+          <p className="text-xs">{news.subtitle}</p>
           <div>
             <img
-              src={image}
-              alt="new image"
+              loading="lazy"
+              src={`${API_URL}/images/news/${news.thumbnail}`}
+              alt="image"
               width="100%"
               onError={(e) => {
                 e.target.onerror = null;
@@ -56,7 +50,9 @@ export const SingleNew = ({ ...props }) => {
               }}
             />
           </div>
-          <div className="mt-32 text-sm">{HTMLReactParser(description)}</div>
+          <div className="mt-32 text-sm">
+            {HTMLReactParser(news.content ?? "")}
+          </div>
         </div>
       </div>
     </section>

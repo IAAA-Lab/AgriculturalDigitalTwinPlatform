@@ -1,12 +1,6 @@
 version: "3.8"
 
 services:
-  rabbitmq:
-        image: rabbitmq:3-management
-        container_name: rabbitmq
-        ports:
-            - 5672:5672
-            - 15672:15672
   prometheus:
     image: prom/prometheus:latest
     volumes:
@@ -29,56 +23,44 @@ services:
       - "3000:3000"
     depends_on:
       - prometheus
-    
   backend:
-    build: backend/digital-twin/main-server
+    build: backend/gateway/main-server
     env_file:
-      - backend/digital-twin/main-server/secrets/.env.development
+      - backend/gateway/main-server/secrets/.env.development
     environment:
       - GIN_MODE=release
       - ENV_MODE=DOCKER
     volumes:
-      - ./backend/digital-twin/main-server:/gin-server
+      - ./backend/gateway/main-server:/gin-server
     command: go run ./src/internal/cmd/main.go
     depends_on:
       - rabbitmq
-      # - redis
-      # - mongo
-  # frontend:
-  #   build: frontend
-  #   restart: always
-  #   ports:
-  #     - "5081:80"
-  #   volumes:
-  #     - ./data/certbot/conf:/etc/letsencrypt
-  #     - ./data/certbot/www:/var/www/certbot:ro
-  #   command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-  # certbot:
-  #   image: certbot/certbot
-  #   restart: unless-stopped
-  #   volumes:
-  #     - ./data/certbot/conf:/etc/letsencrypt:rw
-  #     - ./data/certbot/www:/var/www/certbot:rw
-  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-  # mongo:
-  #   build: ./mongodb
-  #   container_name: mongo
-  #   ports:
-  #       - '27018:27017'
-  #   volumes:
-  #       - ./mongodb/mongodata:/data/db
-  #   restart: always
-  #   env_file:
-  #     - mongodb/secrets/.env
-  # redis:
-  #   image: redis
-  #   container_name: redis
-  #   restart: always
-  #   ports:
-  #       - "6379:6379"
-  #   volumes:
-  #       - ./redis/redisdata:/data
-  #   command: redis-server
+      - mongo
+  frontend:
+    build: frontend
+    restart: always
+    ports:
+      - "5081:80"
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot:ro
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt:rw
+      - ./data/certbot/www:/var/www/certbot:rw
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+  mongo:
+    build: backend/gateway/database/mongodb
+    ports:
+        - '27018:27017'
+    volumes:
+        - ./backend/gateway/database/mongodb/mongodata:/data/db
+    restart: always
+    # env_file:
+    #   - mongodb/secrets/.env
     
 volumes:
   grafana-data:

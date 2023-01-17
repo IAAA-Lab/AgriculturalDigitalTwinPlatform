@@ -14,7 +14,7 @@ const ScrollReveal = React.forwardRef((props, ref) => {
   };
 
   const elementIsVisible = (el, offset) => {
-    return el.getBoundingClientRect().top <= viewportHeight - offset;
+    return el?.getBoundingClientRect().top <= viewportHeight - offset;
   };
 
   const revealElements = () => {

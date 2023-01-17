@@ -70,6 +70,7 @@ const Hero = ({
             data-reveal-delay="200"
           >
             <img
+              loading="lazy"
               className="has-shadow maintain-ratio"
               src={require("./../../assets/images/hero-image-initial.jpg")}
               alt="Hero"

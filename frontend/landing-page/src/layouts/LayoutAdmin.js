@@ -10,6 +10,7 @@ import AuthContext from "../context/contexts";
 const LayoutAdmin = ({ children }) => {
   const [videoModalActive, setVideomodalactive] = useState(false);
   const user = useContext(AuthContext).usr;
+  console.log({ children });
 
   const openModal = (e) => {
     e.preventDefault();

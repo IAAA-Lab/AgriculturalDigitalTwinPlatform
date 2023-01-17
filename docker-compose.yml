@@ -1,73 +1,68 @@
 version: "3.8"
 
 services:
-
-  # frontend-landing-page:
-  #   build: frontend/frontend-landing-page
-  #   volumes:
-  #     - ./frontend-landing-page:/app
-  #     - /app/node_modules
-  #   ports:
-  #     - "3000:3000"
-  #   stdin_open: true
-  #   env_file:
-  #     - frontend/frontend-landing-page/secrets/.env.local
-  #   depends_on:
-  #     - digital-twin-panel
-  # digital-twin-panel:
-  #   build: frontend/digital-twin-panel
-  #   volumes:
-  #     - ./digital-twin-panel:/app
-  #     - /app/node_modules
-  #   ports:
-  #     - "3001:3001"
-  #   stdin_open: true
-  #   env_file:
-  #     - frontend/digital-twin-panel/secrets/.env.local
-  #   depends_on:
-  #     - images-server
-  #     - backend
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./backend/monitorization/prometheus:/etc/prometheus/
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9090:9090"
+    depends_on:
+      - backend
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - ./backend/monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+  rabbitmq:
+      image: rabbitmq:3-management
+      container_name: rabbitmq
+      ports:
+          - 5672:5672
+          - 15672:15672
   backend:
-    build: backend
-    container_name: gin-server
+    build: backend/gateway/main-server
+    container_name: main-server
     env_file:
-      - backend/secrets/.env.local
+      - backend/gateway/main-server/secrets/.env.test
     environment:
       - ENV_MODE=DOCKER
     ports:
         - "8080:8080"
     volumes:
-        - ./backend:/gin-server
+        - ./backend/gateway/main-server:/main-server
     command: go run ./src/internal/cmd/main.go
     restart: always
     depends_on:
-        # - 'mongo'
-        - 'redis'
-  redis:
-    image: redis
-    container_name: redis
+        - 'mongo'
+        - 'rabbitmq'
+  mongo:
+      build: backend/gateway/database/mongodb
+      ports:
+          - '27018:27017'
+      volumes:
+          - ./backend/gateway/database/mongodb/mongodata:/data/db
+      restart: always
+      # env_file:
+      # - mongodb/secrets/.env
+  frontend:
+    build: frontend
     restart: always
     ports:
-        - "6379:6379"
-    volumes:
-        - ./redis/redisdata:/data
-    command: redis-server
-#   mongo:
-#       build: ./mongodb
-#       container_name: mongo
-#       ports:
-#           - '27018:27017'
-#       volumes:
-#           - ./mongodata:/data/db
-#       restart: always
-#       env_file:
-#       - mongodb/secrets/.env
-#   mongo_express:
-#       image: mongo-express
-#       container_name: mongo_express
-#       depends_on:
-#           - 'mongo'
-#       ports:
-#           - '8081:8081'
-#       restart: always
-      
+      - "80:80"
+    depends_on:
+      - backend
+    stdin_open: true
+
+volumes:
+  grafana-data:
+  prometheus-data:

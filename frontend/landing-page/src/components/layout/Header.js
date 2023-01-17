@@ -99,7 +99,7 @@ const Header = ({
 
   const loginButtonClasses = classNames(
     auth.usr.logged ? "button-secondary" : "button-primary",
-    "button button-wide-mobile button-sm ml-16"
+    "button button-wide-mobile button-sm"
   );
 
   return (

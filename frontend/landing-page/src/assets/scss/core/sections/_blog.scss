@@ -1,21 +1,31 @@
 .blog {
   display: flex;
   flex-direction: row;
-  gap: 2rem;
+  flex-wrap: wrap;
+  gap: 2rem 5rem;
+  padding-top: 6rem;
+
   .left {
-    flex: 1;
+    height: 300px;
+    width: 350px;
+    display: flex;
+    flex-direction: column;
   }
 
   .right {
-    flex: 3;
+    flex: 1;
   }
 
   .twitter {
-    margin-top: 6rem;
     margin-bottom: 2rem;
-  }
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0rem 1rem;
+    justify-content: space-between;
 
-  @include media("<large") {
-    flex-direction: column-reverse;
+    @include media("<medium") {
+      margin-top: 0 !important;
+    }
   }
 }

@@ -60,7 +60,7 @@ export const NewsEdit = () => {
           title.value,
           description.value,
           author.value,
-          filename?.path,
+          filename,
           parseInt(minRead.value),
           convertToHTML(content.getCurrentContent()),
           date.value && new Date(date.value).toISOString()
@@ -69,7 +69,7 @@ export const NewsEdit = () => {
           title.value,
           description.value,
           author.value,
-          filename.path,
+          filename,
           parseInt(minRead.value),
           convertToHTML(content.getCurrentContent()),
           date.value

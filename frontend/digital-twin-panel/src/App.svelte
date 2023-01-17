@@ -6,9 +6,9 @@
   const routes = getRoutes();
 </script>
 
-<Router>
+<Router basepath="/panel">
   {#each routes as route}
-    <Route path={route.path} let:params>
+    <Route path={`${route.path}`} let:params>
       <svelte:component this={route.layout}>
         <svelte:component this={route.component} {...params} />
       </svelte:component>

@@ -7,6 +7,8 @@
 
   let selected = window.location.pathname;
 
+  console.log(selected);
+
   let show = true;
   $: show = Object.values(AppRoutes).includes(selected as AppRoutes);
 </script>

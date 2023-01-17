@@ -6,7 +6,7 @@ import classNames from "classnames";
 import { newsService } from "../../api/news";
 import { getFormattedDate } from "../../utils/functions";
 import { SpinnerDotted } from "spinners-react";
-import { NEWS_UPLOAD_URL } from "../../config/api";
+import { API_URL, NEWS_UPLOAD_URL } from "../../config/api";
 
 export const PaginatedItems = ({ itemsPerPage }) => {
   // We start with an empty list of items.
@@ -24,22 +24,15 @@ export const PaginatedItems = ({ itemsPerPage }) => {
 
   const loadNews = async () => {
     setIsLoading(true);
-    const number = await newsService.fetchNumberOfNews();
-    if (number === null) {
-      showNotification();
-      setIsLoading(false);
-      return;
-    }
-    setPageCount(Math.ceil(number / itemsPerPage));
-    setIsLoading(false);
     const news = await newsService.fetchAllNews(pageCount);
+    setIsLoading(false);
     if (news === null) {
       showNotification();
       setIsLoading(false);
       return;
     }
-    setCurrentItems(news);
-    setIsLoading(false);
+    setCurrentItems(news.news ?? []);
+    setPageCount(Math.ceil(news.number / itemsPerPage));
   };
 
   const showNotification = () => {
@@ -50,15 +43,13 @@ export const PaginatedItems = ({ itemsPerPage }) => {
   };
 
   const listOfitems = currentItems.map((e) => (
-    <div key={e.ID}>
+    <div key={e.id}>
       <div className="tiles-item-inner">
-        <Link
-          to={`/blog/${e.ID}?title=${e.Title}&littleDescription=${e.little_description}&date=${e.Date}&author=${e.Author}&image=${NEWS_UPLOAD_URL}/${e.Image}&readMin=${e.read_min}`}
-        >
+        <Link to={`/blog/${e.id}`}>
           <div className="features-tiles-item-header">
             <div className="features-tiles-item-image mb-16">
               <Image
-                src={`${NEWS_UPLOAD_URL}/${e.Image}`}
+                src={`${API_URL}/images/news/${e.thumbnail}`}
                 alt="Features tile icon 01"
                 onError={(e) => {
                   e.target.onerror = null;
@@ -68,13 +59,13 @@ export const PaginatedItems = ({ itemsPerPage }) => {
               />
             </div>
           </div>
-          <h4 className="mt-0 mb-0">{e.Title}</h4>
+          <h4 className="mt-0 mb-0">{e.title}</h4>
         </Link>
-        <p className="m-0 text-xxs">{e.Author}</p>
+        <p className="m-0 text-xxs">{e.author}</p>
         <div className="text-xxs text-color-primary fw-600 mb-8">
-          {getFormattedDate(e.Date)} · {e.read_min} min lectura
+          {getFormattedDate(e.date)} · {e.readTime} min lectura
         </div>
-        <p className="m-0 text-sm">{e.little_description}</p>
+        <p className="m-0 text-sm">{e.subtitle}</p>
       </div>
     </div>
   ));
@@ -88,7 +79,7 @@ export const PaginatedItems = ({ itemsPerPage }) => {
         setIsLoading(false);
         return;
       }
-      setCurrentItems(data);
+      setCurrentItems(data.news);
       setIsLoading(false);
     });
   };
@@ -105,19 +96,6 @@ export const PaginatedItems = ({ itemsPerPage }) => {
     <>
       <div className={tilesClasses}>{listOfitems}</div>
       <div className="center-content mt-32">
-        <ReactPaginate
-          breakLabel="..."
-          nextLabel={
-            <strong className="text-sm text-color-primary">{">"}</strong>
-          }
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={3}
-          pageCount={pageCount}
-          previousLabel={
-            <strong className="text-sm text-color-primary">{"<"}</strong>
-          }
-          renderOnZeroPageCount={null}
-        />
         {show && (
           <div className="notification-error text-xs fw-500">
             Oops! Las noticias no se han podido cargar correctamente.

@@ -65,9 +65,9 @@ export const UsersTable = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map(({ _id, role, username }) => (
+              {users.map(({ _id, role, email }) => (
                 <tr key={_id}>
-                  <td>{username}</td>
+                  <td>{email}</td>
                   <td>{role}</td>
                   <td>
                     <div className="button-group">

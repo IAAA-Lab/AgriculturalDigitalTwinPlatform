@@ -36,6 +36,7 @@ export const Partnership = ({ className, partners, phase, ...props }) => {
                 target="_blank"
               >
                 <img
+                  loading="lazy"
                   style={{ objectFit: "contain" }}
                   src={require(`../../assets/images/${path}`)}
                   width={200}

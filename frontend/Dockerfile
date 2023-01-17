@@ -1,20 +1,18 @@
-FROM node:17 as landing-page
+FROM node:16 as landing-page
 WORKDIR /usr/src/app
-COPY digital-twin-panel/package*.json ./
+COPY landing-page/package*.json ./
 RUN yarn install
-COPY panel/ ./
-RUN yarn run build-dev
+COPY landing-page/ ./
+RUN yarn run build-test
 
-FROM node:18 as digital_twin
-WORKDIR /usr/src/app
-COPY digital-twin-panel/package*.json ./
-RUN yarn install
-COPY digital-twin-panel/ ./
-RUN yarn run build-dev
+# FROM node:19 as digital-twin
+# WORKDIR /usr/src/app
+# COPY digital-twin-panel/ ./
+# RUN yarn install && yarn run build
 
 FROM nginx:latest
 EXPOSE 80
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
-# COPY --from=landing /usr/src/app/build /usr/share/nginx/html/lp
-COPY --from=digital_twin /usr/src/app/build /usr/share/nginx/html/dtp
+COPY nginx/dev.nginx.conf /etc/nginx/conf.d/default.conf
+
 COPY --from=landing-page /usr/src/app/build /usr/share/nginx/html/lp
+# COPY --from=digital-twin /usr/src/app/dist /usr/share/nginx/html/dtp

@@ -28,6 +28,7 @@ export const Login = ({ closeModal }) => {
     <section className="login-section">
       <div className="login-section-image">
         <img
+          loading="lazy"
           src={require("./../../assets/images/plant-login.png")}
           alt="plant-login"
         />

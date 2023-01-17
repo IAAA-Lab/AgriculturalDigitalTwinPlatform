@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { SpinnerDotted } from "spinners-react";
 import { newsService } from "../api/news";
 import ReactPaginate from "react-paginate";
-import Image from "../components/elements/Image";
 import { NEWS_UPLOAD_URL } from "../config/api";
 import { getFormattedDate } from "../utils/functions";
 
@@ -16,23 +15,31 @@ export const NewsPanel = ({ itemsPerPage = 6 }) => {
   const [selectedPage, setSelectedPage] = useState(0);
 
   useEffect(() => {
-    newsService.fetchNumberOfNews().then((number) => {
-      setPageCount(Math.ceil(number / itemsPerPage));
+    newsService.fetchAllNews(0).then((news) => {
+      if (!news) {
+        setIsError(true);
+        return;
+      }
+      setPageCount(Math.ceil(news.number / itemsPerPage));
     });
   }, []);
 
   useEffect(() => {
     setIsLoading(true);
     newsService.fetchAllNews(selectedPage).then((news) => {
-      setNews(news ?? []);
+      setNews(news.news);
       setIsLoading(false);
     });
   }, [selectedPage]);
 
   const handlePageChange = (event) => {
     setSelectedPage(event.selected);
-    newsService.fetchNumberOfNews().then((number) => {
-      setPageCount(Math.ceil(number / itemsPerPage));
+    newsService.fetchAllNews().then((news) => {
+      if (!news) {
+        setIsError(true);
+        return;
+      }
+      setPageCount(Math.ceil(news.number / itemsPerPage));
     });
   };
 
@@ -66,7 +73,7 @@ export const NewsPanel = ({ itemsPerPage = 6 }) => {
               </tr>
             </thead>
             <tbody>
-              {news.map(
+              {news?.map(
                 ({
                   ID,
                   Title,

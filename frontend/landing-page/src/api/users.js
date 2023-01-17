@@ -24,7 +24,7 @@ const deleteUser = async (id) => {
 
 const createUser = async (username, password, role) => {
   const encryptedMsg = await encrypt(
-    JSON.stringify({ username, password, role })
+    JSON.stringify({ email: username, password, role })
   );
   const response = await fetch(API_URL + "/users", {
     method: "POST",
