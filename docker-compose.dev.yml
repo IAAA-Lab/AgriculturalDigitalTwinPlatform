@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.41.0
     volumes:
       - ./backend/monitorization/prometheus:/etc/prometheus/
       - prometheus-data:/prometheus
@@ -10,11 +10,11 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
     ports:
-      - "9090:9090"
+      - "9092:9092"
     depends_on:
       - backend
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:9.3.2
     volumes:
       - ./backend/monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - grafana-data:/var/lib/grafana
@@ -34,10 +34,11 @@ services:
       - ./backend/gateway/main-server:/gin-server
     command: go run ./src/internal/cmd/main.go
     depends_on:
-      - rabbitmq
       - mongo
   frontend:
-    build: frontend
+    build:
+      context: ./frontend
+      dockerfile: dev.Dockerfile
     restart: always
     ports:
       - "5081:80"
@@ -59,6 +60,7 @@ services:
     volumes:
         - ./backend/gateway/database/mongodb/mongodata:/data/db
     restart: always
+    user: "1007:1007"
     # env_file:
     #   - mongodb/secrets/.env
     

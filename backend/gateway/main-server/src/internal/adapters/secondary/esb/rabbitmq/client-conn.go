@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	amqp "github.com/rabbitmq/amqp091-go"
+	"fmt"
 )
 
 type RabbitMQConn struct {
@@ -11,7 +12,7 @@ type RabbitMQConn struct {
 func NewRabbitMQConn(url string) *RabbitMQConn {
 	conn, err := amqp.Dial(url)
 	if err != nil {
-		panic(err)
+		fmt.Println("Rabbitmq failed connection")
 	}
 	return &RabbitMQConn{conn}
 }
