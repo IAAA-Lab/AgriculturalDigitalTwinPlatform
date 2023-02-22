@@ -11,6 +11,7 @@ const Phases = () => {
   const phases = [
     {
       title: "Fase 1",
+      date: "2021",
       code: "AEI-010500-2021b-122",
       stateKey: "under-construction",
       state: "Bajo construcción",
@@ -52,6 +53,7 @@ const Phases = () => {
     },
     {
       title: "Fase 2",
+      date: "2022",
       code: "AEI-010500-2022b-61",
       illustration: "feature-tile-icon-04.svg",
       stateKey: "under-construction",
@@ -126,6 +128,7 @@ const Phases = () => {
       <Financing
         numExpte={phases[currentPhase].code}
         phase={phases[currentPhase].title}
+        date={phases[currentPhase].date}
         bottomDivider
       />
     </section>

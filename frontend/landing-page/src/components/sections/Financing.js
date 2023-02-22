@@ -8,6 +8,7 @@ export const Financing = ({
   bottomDivider,
   numExpte,
   phase,
+  date,
   ...props
 }) => {
   const outerClasses = classNames("features-tiles section", className);
@@ -21,7 +22,7 @@ export const Financing = ({
 
   const sectionHeader = {
     title: "Financiación",
-    paragraph: `El proyecto GEDEFEC ${phase} está apoyado por la convocatoria de octubre de 2021, de apoyo a AAEEII del Ministerio de Industria, Comercio y Turismo, financiada por la Unión Europea – Next Generation EU (Nº Expte: ${numExpte}).`,
+    paragraph: `El proyecto GEDEFEC ${phase} está apoyado por la convocatoria de octubre de ${date}, de apoyo a AAEEII del Ministerio de Industria, Comercio y Turismo, financiada por la Unión Europea – Next Generation EU (Nº Expte: ${numExpte}).`,
   };
 
   const logosPath = [
