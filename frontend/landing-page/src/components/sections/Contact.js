@@ -4,6 +4,7 @@ import { SectionTilesProps } from "../../utils/SectionProps";
 import SectionHeader from "./partials/SectionHeader";
 import Input from "../elements/Input";
 import Image from "../elements/Image";
+import emailSender from "../../middleware/emailSender";
 
 const propTypes = {
   ...SectionTilesProps.types,
@@ -45,6 +46,15 @@ const Testimonial = ({
       "El grupo IAAA Lab está detrás del proyecto GEDEFEC con el objetivo de ayudar a la digitalización del sector agropecuario.",
   };
 
+  const sendEmail = (e) => {
+    e.preventDefault();
+    emailSender(
+      e.target.name.value,
+      e.target.email.value,
+      e.target.message.value
+    );
+  };
+
   return (
     <section {...props} className={outerClasses} id="contact">
       <div className="container">
@@ -66,13 +76,30 @@ const Testimonial = ({
             </div>
             <div className="contact-card-mail">
               <h4>Envíanos un mensaje</h4>
-              <form className="form-group">
+              <form className="form-group" onSubmit={sendEmail}>
                 <div className="contact-card-mail-name">
-                  <Input size="sm" type="email" placeholder="Nombre" />
-                  <Input size="sm" placeholder="Apellidos" />
+                  <Input
+                    required
+                    name={"name"}
+                    size="sm"
+                    placeholder="Nombre"
+                    style={{ minWidth: "100px" }}
+                  />
+                  <Input
+                    required
+                    name={"email"}
+                    size="sm"
+                    type="email"
+                    placeholder="Email"
+                    style={{ minWidth: "100px" }}
+                  />
                 </div>
-                <Input size="sm" placeholder="Email" />
-                <Input type="textarea" placeholder="Mensaje..." />
+                <Input
+                  required
+                  name={"message"}
+                  type="textarea"
+                  placeholder="Mensaje..."
+                />
                 <button
                   type="submit"
                   style={{ maxWidth: 250 }}
