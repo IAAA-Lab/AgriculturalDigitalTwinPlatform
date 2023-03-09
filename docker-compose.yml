@@ -1,68 +1,224 @@
 version: "3.8"
 
 services:
-  prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - ./backend/monitorization/prometheus:/etc/prometheus/
-      - prometheus-data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-    ports:
-      - "9090:9090"
-    depends_on:
-      - backend
-  grafana:
-    image: grafana/grafana:latest
-    volumes:
-      - ./backend/monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - grafana-data:/var/lib/grafana
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    depends_on:
-      - prometheus
+
+#############################################
+#      Collect metrics from services        #
+#############################################
+
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   volumes:
+  #     - ./monitorization/prometheus:/etc/prometheus/
+  #     - prometheus-data:/prometheus
+  #   command:
+  #     - '--config.file=/etc/prometheus/prometheus.yml'
+  #     - '--storage.tsdb.path=/prometheus'
+  #   ports:
+  #     - "9090"
+
+#############################################
+#        Collect logs from services         #
+#############################################
+
+  # loki:
+  #   image: grafana/loki:latest
+  #   ports:
+  #     - "3100"
+  #   volumes:
+  #     # directory must be created first, with uid:gid 10001:10001
+  #     - loki-data:/loki
+
+#############################################
+#      Centralize all metrics and logs      #
+#############################################
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   volumes:
+  #     - ./monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+  #     - grafana-data:/var/lib/grafana
+  #   restart: unless-stopped
+  #   ports:
+  #     - 3010:${GRAFANA_PORT}
+    # depends_on:
+    #   - prometheus
+
+#############################################
+# Services communication and message queue  #
+#############################################
+
   rabbitmq:
       image: rabbitmq:3-management
       container_name: rabbitmq
       ports:
-          - 5672:5672
-          - 15672:15672
-  backend:
-    build: backend/gateway/main-server
-    container_name: main-server
-    env_file:
-      - backend/gateway/main-server/secrets/.env.test
-    environment:
-      - ENV_MODE=DOCKER
+          - 5672:${RABBITMQ_PORT}
+          - 15672:${RABBITMQ_PANEL_PORT}
+
+#############################################
+#              Web app server               #
+#############################################
+
+  gin-gonic:
+    build: web-app/server
     ports:
-        - "8080:8080"
+        - 8080:${GIN_PORT}
     volumes:
-        - ./backend/gateway/main-server:/main-server
+        - ./web-app/server/main-server:/main-server
     command: go run ./src/internal/cmd/main.go
     restart: always
     depends_on:
         - 'mongo'
         - 'rabbitmq'
-  mongo:
-      build: backend/gateway/database/mongodb
-      ports:
-          - '27018:27017'
-      volumes:
-          - ./backend/gateway/database/mongodb/mongodata:/data/db
-      restart: always
-      # env_file:
-      # - mongodb/secrets/.env
-  frontend:
-    build: frontend
+    environment:
+      - ENV_MODE=DOCKER
+      - JWT_SECRET=${JWT_SECRET}
+      - KEY_DECRYPT_PASSWD=${KEY_DECRYPT_PASSWD}
+      - IV_BLOCK_PASSWD=${IV_BLOCK_PASSWD}
+      - MONGO_URI=${MONGO_URI}
+      - MONGO_DB=${MONGO_DB}
+      - RABBITMQ_URI=${RABBITMQ_URI}
+      - REDIS_URI=${REDIS_URI}
+      - LANDING_PAGE_URL=${LANDING_PAGE_URL}
+
+#############################################
+#             Digital twin panel            #
+#############################################
+
+  web-client-svelte:
+    build: web-app/frontend/digital-twin-panel
     restart: always
     ports:
-      - "80:80"
+      - 5173:${SVELTE_PORT}
     depends_on:
-      - backend
+      - gin-gonic
     stdin_open: true
+    environment:
+      - VITE_SERVER_URL=${SVELTE_SERVER_URL}
+      - VITE_LANDING_URL=${SVELTE_LANDING_URL}
+      - VITE_IMAGES_SERVER_URL=${SVELTE_IMAGES_SERVER_URL}
+
+#############################################
+#         Digital twin landing page         #
+#############################################
+
+  landing-page-react:
+    build: web-app/frontend/landing-page
+    restart: always
+    ports:
+      - 3001:${REACT_PORT}
+    depends_on:
+      - gin-gonic
+    stdin_open: true
+    environment:
+      - PORT=${REACT_PORT}
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
+      - REACT_APP_DIGITAL_TWIN_URL=${REACT_APP_DIGITAL_TWIN_URL}
+      - REACT_APP_NEWS_UPLOAD_URL=${REACT_APP_NEWS_UPLOAD_URL}
+      - REACT_APP_KEY_DECRYPT_PASSWD=${REACT_APP_KEY_DECRYPT_PASSWD}
+      - REACT_APP_IV_BLOCK_PASSWD=${REACT_APP_IV_BLOCK_PASSWD}
+      - REACT_APP_EMAIL_SENDER_PUBKEY=${REACT_APP_EMAIL_SENDER_PUBKEY}
+      - REACT_APP_EMAIL_SENDER_SERVICEID=${REACT_APP_EMAIL_SENDER_SERVICEID}
+      - REACT_APP_EMAIL_SENDER_TEMPLATEID=${REACT_APP_EMAIL_SENDER_TEMPLATEID}
+
+#############################################
+#            Digital twin storage           #
+#############################################
+
+  mongo:
+      build: storage/mongodb
+      ports:
+          - 27018:${MONGO_PORT}
+      volumes:
+          - ./storage/mongodb/mongodata:/data/db
+      restart: always
+
+#############################################
+#    Data lake and Prefect flows storage    #
+#############################################
+
+  minio:
+      image: minio/minio:RELEASE.2023-02-27T18-10-45Z
+      environment:
+          MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+          MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      entrypoint: /bin/bash 
+      command: "-c 'mkdir -p /data/prefect-flows && sleep 10 && minio server /data --console-address :9001'"
+      ports:
+          - 9000:${MINIO_PORT}
+          - 9001:${MINIO_PANEL_PORT}
+      volumes:
+          - minio:/data
+
+#############################################
+#        Database for Prefect Server        #
+#############################################
+
+  postgres:
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - 5432:${POSTGRES_PORT}
+    volumes: 
+      - postgres:/var/lib/postgresql/data
+
+#############################################
+#   Data processing and machine learning    #
+#############################################
+
+  prefect-server:
+    build: data-processing/prefect
+    restart: always
+    volumes:
+      - prefect:/root/.prefect
+      - prefect_deployments:/opt/prefect/deployments
+      - ./data-processing/prefect/flows:/opt/prefect/flows
+    environment:
+      - PREFECT_API_URL=${PREFECT_API_URL}
+      - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/prefect
+      - PREFECT_MINIO_ACCESS_ROOT=${MINIO_ROOT_USER}
+      - PREFECT_MINIO_SECRET_ROOT=${MINIO_ROOT_PASSWORD}
+      - PREFECT_MINIO_HOST=${MINIO_HOST}
+    ports:
+      - 4200:${PREFECT_PORT}
+    depends_on:
+      - postgres
+
+#############################################
+#     Agent which executes Prefect flows    #
+#############################################
+
+  prefect-agent:
+    image: prefecthq/prefect:2.8.4-python3.11
+    restart: always
+    entrypoint: ["prefect", "agent", "start", "-q", "default"]
+    environment:
+      - PREFECT_API_URL=${PREFECT_SERVER_URL}
+
+#############################################
+#   Data ingestion and bus communication    #
+#############################################
+
+  camel:
+    build:
+      context: global-data-management/batch
+      dockerfile: src/main/docker/Dockerfile.jvm
+    ports:
+      - 8081:${CAMEL_PORT}
+    restart: always
+    depends_on:
+      - 'mongo'
+      - 'rabbitmq'
 
 volumes:
+  prefect:
+  prefect_deployments:
+  minio:
+  postgres:
   grafana-data:
+  loki-data:
   prometheus-data:

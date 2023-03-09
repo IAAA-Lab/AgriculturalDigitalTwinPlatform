@@ -2,3 +2,5 @@
 redis/redisdata/**
 .DS_Store
 data
+*.log
+*.env
