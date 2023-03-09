@@ -65,7 +65,7 @@ def load(processed_data, data_year):
     processed_data_bytes.seek(0)
     # Store processed data with metadata in MinIO
     minio_client.put_object(
-        "refined-zone",
+        "trusted-zone",
         f"ERP/7eData/{data_year}/{FILE_NAME}",
         processed_data_bytes,
         length=processed_data_bytes.getbuffer().nbytes,

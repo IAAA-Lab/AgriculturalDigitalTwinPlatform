@@ -63,7 +63,7 @@ def load(processed_data):
     processed_data_bytes = io.BytesIO(processed_data.encode("utf-8"))
     # Store processed data with metadata in MinIO
     minio_client.put_object(
-        "refined-zone",
+        "trusted-zone",
         f"ERP/unknown/{FILE_NAME}",
         processed_data_bytes,
         len(processed_data),
