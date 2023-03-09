@@ -8,6 +8,12 @@
 ## What is this project about?
 
 
+## Architecture
+
+The architecture of the project is the following:
+
+![Architecture](./docs/images/tech_arch.png)
+
 ## Deployment
 
 ### Local deployment
@@ -29,3 +35,7 @@ docker-compose up --build -p local-gemelo-digital
 ## Secrets
 
 Secrets, for the moment, are stored in its respective env file (`.env`, `.env.dev`, `.env.prod`), but it is not a good practice. It is better to store them in a secret manager, like [Vault](https://www.vaultproject.io/). In the future, it will be implemented. This files are injected to its respective container through the `docker-compose.yml` file.
+
+## Future work (or not)
+
+- <https://blog.min.io/lakehouse-architecture-iceberg-minio/>

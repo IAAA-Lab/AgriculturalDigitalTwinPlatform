@@ -28,7 +28,7 @@ def extract():
     logger.info("extracting data")
     # Get pistacho.json from MinIO and deserialize it
     pistacho_json_data = minio_client.get_object(
-        "landing-zone", FILE_NAME).read().decode("utf-8")
+        "trusted-zone", FILE_NAME).read().decode("utf-8")
     pistacho_json = json.loads(pistacho_json_data)
     return pistacho_json
 
@@ -78,14 +78,14 @@ def load(processed_data):
 
 
 @flow(name="pistacho_refined_etl")
-def pistacho_refined_etl():
+def pistacho_etl():
     json_data = extract()
     processed_data = transform(json_data)
     load(processed_data)
 
 
 if __name__ == "__main__":
-    pistacho_refined_etl()
+    pistacho_etl()
 
 
 # ---------------------------------------------------------- #
