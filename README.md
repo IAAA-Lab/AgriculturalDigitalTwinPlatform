@@ -39,3 +39,4 @@ Secrets, for the moment, are stored in its respective env file (`.env`, `.env.de
 ## Future work (or not)
 
 - <https://blog.min.io/lakehouse-architecture-iceberg-minio/>
+- <https://www.arecadata.com/high-performance-open-source-data-lakehouse-at-home/>
