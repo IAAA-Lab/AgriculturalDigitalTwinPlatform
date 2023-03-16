@@ -7,7 +7,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
   pip install --no-cache-dir pymongo && \
   pip install --no-cache-dir pandas && \
   pip install --no-cache-dir openpyxl && \
-  pip install --no-cache-dir prefect-jupyter
+  pip install --no-cache-dir prefect-jupyter && \
+  pip install -U --no-cache-dir prefect-dask
 
 COPY flows /opt/prefect/flows
 

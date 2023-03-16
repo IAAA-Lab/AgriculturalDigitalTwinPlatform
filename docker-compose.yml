@@ -60,7 +60,7 @@ services:
 #############################################
 
   gin-gonic:
-    build: web-app/server
+    build: api-gateway/gin-gonic
     ports:
         - 8080:${GIN_PORT}
     volumes:
@@ -86,7 +86,7 @@ services:
 #############################################
 
   web-client-svelte:
-    build: web-app/frontend/digital-twin-panel
+    build: frontend/digital-twin-panel
     restart: always
     ports:
       - 5173:${SVELTE_PORT}
@@ -103,7 +103,7 @@ services:
 #############################################
 
   landing-page-react:
-    build: web-app/frontend/landing-page
+    build: frontend/landing-page
     restart: always
     ports:
       - 3001:${REACT_PORT}
@@ -167,7 +167,8 @@ services:
       - postgres:/var/lib/postgresql/data
 
 #############################################
-#   Data processing and machine learning    #
+#      Data ingestion, data processing      # 
+#      processing and machine learning      #
 #############################################
 
   prefect-server:
@@ -200,20 +201,6 @@ services:
     environment:
       - PREFECT_API_URL=${PREFECT_SERVER_URL}
 
-#############################################
-#   Data ingestion and bus communication    #
-#############################################
-
-  camel:
-    build:
-      context: global-data-management/batch
-      dockerfile: src/main/docker/Dockerfile.jvm
-    ports:
-      - 8081:${CAMEL_PORT}
-    restart: always
-    depends_on:
-      - 'mongo'
-      - 'rabbitmq'
 
 volumes:
   prefect:
@@ -223,3 +210,4 @@ volumes:
   grafana-data:
   loki-data:
   prometheus-data:
+  zato:
