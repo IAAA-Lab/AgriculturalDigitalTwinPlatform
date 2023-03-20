@@ -60,6 +60,7 @@ export const CreateUser = ({ show = false, closeModal }) => {
               <option value={Roles.ADMIN}>Admin</option>
               <option value={Roles.AGRARIAN_USER}>Usuario agrario</option>
               <option value={Roles.NEWS_ADMIN}>Admin noticias</option>
+              <option value={Roles.ROLE_PRIVATE_ACCESS}>Acceso privado</option>
             </select>
             <button className="button button-primary button-wide-mobile button-sm mt-16">
               Crear

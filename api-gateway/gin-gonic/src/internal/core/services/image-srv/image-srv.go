@@ -7,10 +7,10 @@ import (
 )
 
 type service struct {
-	imageRepository ports.FileStorageRepository
+	imageRepository ports.LocalStorageRepository
 }
 
-func New(imageRepository ports.FileStorageRepository) *service {
+func New(imageRepository ports.LocalStorageRepository) *service {
 	return &service{imageRepository: imageRepository}
 }
 
@@ -18,8 +18,8 @@ func (s *service) GetFile(fileName string, path string) ([]byte, error) {
 	return s.imageRepository.GetFile(fileName, path)
 }
 
-func (srv *service) UploadFile(img []byte, path string) (string, error) {
-	return srv.imageRepository.UploadImage(img, uuid.New().String()+".png", path)
+func (srv *service) UploadFile(img []byte, fileName string, path string) (string, error) {
+	return srv.imageRepository.UploadFile(img, uuid.New().String()+".png", path)
 }
 
 func (srv *service) DeleteFile(fileName string, path string) error {

@@ -56,6 +56,10 @@ type AuthCustomClaims struct {
 	jwt.StandardClaims
 }
 
+type APIKey struct {
+	APIKey string `json:"apiKey"`
+}
+
 type EncrytedData struct {
 	Data string `json:"data"`
 }
@@ -70,10 +74,11 @@ const (
 )
 
 const (
-	ROLE_ADMIN       = "admin"
-	ROLE_NEWS_EDITOR = "newsEditor"
-	ROLE_PLAIN       = "user"
-	ROLE_AGRARIAN    = "agrarian"
+	ROLE_ADMIN          = "admin"
+	ROLE_NEWS_EDITOR    = "newsEditor"
+	ROLE_PLAIN          = "user"
+	ROLE_AGRARIAN       = "agrarian"
+	ROLE_PRIVATE_ACCESS = "privateAccess"
 )
 
 var (

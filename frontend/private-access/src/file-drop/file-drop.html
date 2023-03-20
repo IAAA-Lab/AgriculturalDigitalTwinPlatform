@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>File Drop</title>
+    <link rel="stylesheet" href="file-drop.css" />
+    <link rel="stylesheet" href="../style.css" />
+    <!-- Filepond stylesheet -->
+    <link
+      href="https://unpkg.com/filepond/dist/filepond.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <script src="https://unpkg.com/htmx.org@1.8.6"></script>
+    <script type="module" src="file-drop.ts"></script>
+    <h1>Suba sus documentos</h1>
+    <input
+      id="files"
+      type="file"
+      class="filepond"
+      name="files"
+      accept="application/pdf, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, .csv"
+      multiple
+      data-allow-reorder="true"
+      data-max-file-size="3MB"
+      data-max-files="3"
+    />
+  </body>
+</html>

@@ -3,6 +3,7 @@ package aes256repo
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"encoding/base64"
 	"encoding/hex"
 )
 
@@ -19,7 +20,8 @@ func NewEncrypter(key string, iv string) *aes256Alg {
 }
 
 func (alg *aes256Alg) DecryptData(cipherText string) (string, error) {
-	cipherTextDecoded, err := hex.DecodeString(cipherText)
+	// cipherTextDecoded, err := hex.DecodeString(cipherText)
+	cipherTextDecoded, err := base64.StdEncoding.DecodeString(cipherText)
 	if err != nil {
 		return "", err
 	}

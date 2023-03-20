@@ -60,6 +60,11 @@ type JWTService interface {
 	GetRefreshToken(userId string) (string, error)
 }
 
+type APIKeyService interface {
+	GenerateAPIKey() (string, error)
+	ValidateAPIKey(key string) error
+}
+
 type EncryptionService interface {
 	EncryptData(data string) (string, error)
 	DecryptData(data string) (string, error)
@@ -71,8 +76,7 @@ type CacheService interface {
 	Delete(key string) error
 }
 
-type FileStorageService interface {
+type StorageService interface {
 	GetFile(fileName string, path string) ([]byte, error)
-	UploadFile(file []byte, path string) (string, error)
-	DeleteFile(fileName string, path string) error
+	UploadFile(file []byte, fineName string, path string) (string, error)
 }

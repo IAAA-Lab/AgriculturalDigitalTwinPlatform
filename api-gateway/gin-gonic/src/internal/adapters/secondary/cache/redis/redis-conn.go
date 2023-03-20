@@ -12,14 +12,15 @@ type redissrv struct {
 	client *redis.Client
 }
 
-func NewRedisConn(redisUri string) *redissrv {
+func NewRedisConn(redisUri string, redisUsername string, redisPassword string) *redissrv {
 
 	if redisUri == "" {
 		redisUri = "localhost:6379"
 	}
 
 	redisClient := redis.NewClient(&redis.Options{
-		Addr: redisUri,
+		Addr:     redisUri,
+		Password: redisPassword,
 	})
 
 	if err := redisClient.Ping(context.Background()).Err(); err != nil {

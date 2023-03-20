@@ -96,8 +96,17 @@ type CacheRepository interface {
 	Delete(key string) error
 }
 
-type FileStorageRepository interface {
+type LocalStorageRepository interface {
 	GetFile(fileName string, path string) ([]byte, error)
-	UploadImage(image []byte, fileName string, path string) (string, error)
+	UploadFile(file []byte, fileName string, path string) (string, error)
 	DeleteFile(fileName string, path string) error
+}
+
+type StorageRepository interface {
+	// GetFile(fileName string, path string) ([]byte, error)
+	UploadFile(file []byte, fileName string, path string) error
+}
+
+type APIKeyRepository interface {
+	GetAPIKey(key string) (string, error)
 }

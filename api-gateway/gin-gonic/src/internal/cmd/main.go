@@ -17,29 +17,29 @@ import (
 	encryptionmw "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/middleware/encryption-mw"
 	aes256repo "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/middleware/encryption-mw/aes-256"
 	jwtmw "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/middleware/jwt-mw"
-	imageshdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/images-hdl"
+	fileshdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/files-hdl"
 	newshdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/news-hdl"
 	parcelshdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/parcels"
 	usershdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/users-hdl"
 	redisrepo "digital-twin/main-server/src/internal/adapters/secondary/cache/redis"
 	"digital-twin/main-server/src/internal/adapters/secondary/esb/rabbitmq"
 	localfilestoragerepo "digital-twin/main-server/src/internal/adapters/secondary/file-storage/local-file-storage"
+	"digital-twin/main-server/src/internal/adapters/secondary/file-storage/minio"
 	"digital-twin/main-server/src/internal/adapters/secondary/persistence/mongodb"
 	"digital-twin/main-server/src/internal/core/domain"
 	authsrv "digital-twin/main-server/src/internal/core/services/auth-srv"
 	cachesrv "digital-twin/main-server/src/internal/core/services/cache-srv"
 	encryptionsrv "digital-twin/main-server/src/internal/core/services/encryption-srv"
+	filedumpsrv "digital-twin/main-server/src/internal/core/services/file-dump-srv"
 	imagessrv "digital-twin/main-server/src/internal/core/services/image-srv"
 	newssrv "digital-twin/main-server/src/internal/core/services/news-srv"
 	parcelssrv "digital-twin/main-server/src/internal/core/services/parcels-srv"
 	userssrv "digital-twin/main-server/src/internal/core/services/users-srv"
 
-	"log"
 	"os"
 
 	"github.com/dvwright/xss-mw"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/penglongli/gin-metrics/ginmetrics"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -49,11 +49,14 @@ func CorsConfig() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if os.Getenv("ENV_MODE") != "LOCAL" {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", os.Getenv("LANDING_PAGE_URL"))
+			c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 			//NOTE: for the moment, we are not using redis cache, with this is enough
 			// c.Writer.Header().Set("Cache-Control", "max-age=600")
+		} else {
+			c.Writer.Header().Set("Access-Control-Allow-Credentials", "false")
+			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		}
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With, HX-Request, HX-Trigger, HX-Trigger-Name, HX-Target, HX-Prompt, HX-Current-URL")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PATCH, DELETE")
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
@@ -77,8 +80,14 @@ func setupRouter() *gin.Engine {
 	rabbitMQURI := os.Getenv("RABBITMQ_URI")
 	mongoDb := os.Getenv("MONGO_DB")
 	redisUri := os.Getenv("REDIS_URI")
+	redisUsername := os.Getenv("REDIS_USERNAME")
+	redisPassword := os.Getenv("REDIS_PASSWORD")
 	encKey := os.Getenv("KEY_DECRYPT_PASSWD")
 	ivKey := os.Getenv("IV_BLOCK_PASSWD")
+	minioEndpoint := os.Getenv("MINIO_ENDPOINT")
+	minioAccessKey := os.Getenv("MINIO_ACCESS_KEY")
+	minioSecretAccessKey := os.Getenv("MINIO_SECRET_KEY")
+	minioBucketName := os.Getenv("MINIO_BUCKET_NAME")
 
 	encryptionrepository := aes256repo.NewEncrypter(encKey, ivKey)
 	encryptionService := encryptionsrv.New(encryptionrepository)
@@ -86,6 +95,8 @@ func setupRouter() *gin.Engine {
 
 	mongodbRepository := mongodb.NewMongodbConn(mongoUri, mongoDb, 10)
 	rabbitMQESB := rabbitmq.NewRabbitMQConn(rabbitMQURI)
+	minioRepository := minio.NewMinioConn(minioEndpoint, minioAccessKey, minioSecretAccessKey, false, minioBucketName)
+	imagesRepository := localfilestoragerepo.NewLocalFileStorage("./images")
 
 	newsService := newssrv.New(mongodbRepository)
 	newsHandler := newshdl.NewHTTPHandler(newsService)
@@ -96,11 +107,11 @@ func setupRouter() *gin.Engine {
 	parcelsService := parcelssrv.New(mongodbRepository, rabbitMQESB)
 	parcelsHandler := parcelshdl.NewHTTPHandler(parcelsService)
 
-	imagesRepository := localfilestoragerepo.NewLocalFileStorage("./images")
 	imagesService := imagessrv.New(imagesRepository)
-	imagesHandler := imageshdl.NewHTTPHandler(imagesService)
+	fileDumpService := filedumpsrv.New(minioRepository)
+	filesHandler := fileshdl.NewHTTPHandler(imagesService, fileDumpService)
 
-	cacherepository := redisrepo.NewRedisConn(redisUri)
+	cacherepository := redisrepo.NewRedisConn(redisUri, redisUsername, redisPassword)
 	cacheService := cachesrv.New(cacherepository)
 	authService := authsrv.JWTAuthService(cacheService)
 	authMiddleware := jwtmw.Init(authService, usersService, os.Getenv("ENV_MODE"))
@@ -128,7 +139,7 @@ func setupRouter() *gin.Engine {
 
 	// ---- Image storage
 	r.Static("/images", "./images")
-	r.POST("/images/upload", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_NEWS_EDITOR}), imagesHandler.UploadImage)
+	r.POST("/images/upload", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_NEWS_EDITOR}), filesHandler.UploadImage)
 
 	// ---- Auth
 	r.POST("/auth/login", encryptionMiddleware.DecryptData, usersHandler.CheckLogin, authMiddleware.ReturnJWT)
@@ -162,31 +173,14 @@ func setupRouter() *gin.Engine {
 	agrarianGroup.GET("/phytosantaries", parcelsHandler.GetPhytosanitaries)
 	agrarianGroup.GET("/fertilizers", parcelsHandler.GetFertilizers)
 	// agrarianGroup.GET("/ssetest", parcelsStreamingHandler.SseTest)
-	//TODO: add digital twin routes
+
+	// ---- private access
+	r.POST("/internal/files/upload", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_PRIVATE_ACCESS}), filesHandler.UploadFiles)
 
 	return r
 }
 
-func setUpEnv() {
-	err := error(nil)
-	switch os.Getenv("ENV_MODE") {
-	case "DOCKER":
-		return
-	case "PROD":
-		err = godotenv.Load("../../../secrets/.env.production")
-	case "DEV":
-		err = godotenv.Load("../../../secrets/.env.development")
-	default:
-		err = godotenv.Load("../../../secrets/.env.local")
-	}
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-}
-
 func main() {
-
-	setUpEnv()
 
 	docs.SwaggerInfo.Title = "Agrarian exploitation Swagger API"
 	docs.SwaggerInfo.Description = "This is an agrarian exploitation server."
@@ -196,7 +190,10 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
 	r := setupRouter()
+	// For large file upload (default is 32 MB)
+	// r.MaxMultipartMemory = 8 << 20
 	m := setUpMonitoring(r)
+	// To access swagger UI, go to http://localhost:8080/swagger/index.html
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	port := os.Getenv("PORT")
 
