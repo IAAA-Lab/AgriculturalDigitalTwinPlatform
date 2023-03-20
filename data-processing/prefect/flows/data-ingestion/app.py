@@ -1,5 +1,6 @@
 from prefect import flow, task, get_run_logger, router
 import requests
+import os
 
 
 @task
@@ -10,6 +11,9 @@ def extract():
 
     # Extract data from Rest API
 
+    AUTH_TOKEN = os.environ.get("AGROSLAB_AUTH_TOKEN")
+    AGROSLAB_API_URL = os.environ.get("AGROSLAB_API_URL")
+
     body = {
         "operation": "aemetprediccionmunicipio",
         "provincia": "50",
@@ -18,20 +22,25 @@ def extract():
     }
 
     headers = {
-        'Authorization': 'Basic YWdyb3NsYWJzZWN1cmU6NXJwNmFMdlZiNkhV'
+        'Authorization': AUTH_TOKEN,
     }
 
     response = requests.post(
-        "http://agroslab.geoslab.com/AgroslabHttpServlet/AgroslabHttpServlet", json=body, headers=headers)
+        AGROSLAB_API_URL, json=body, headers=headers)
 
     return response.json()
+
+
+@task
+def transform():
+    logger = get_run_logger()
+    print("transforming data")
+    logger.info("transforming data")
 
 
 @flow(name="data-ingestion")
 def data_ingestion():
     data = extract()
-    logger = get_run_logger()
-    logger.info(data)
 
 
 if __name__ == "__main__":

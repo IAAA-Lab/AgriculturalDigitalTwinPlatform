@@ -1,0 +1,7 @@
+minio === 7.1.13
+pymongo === 4.3.3
+pandas === 1.5.3
+openpyxl === 3.1.2
+prefect-jupyter === 0.2.0
+seaborn === 0.12.2
+prefect-dask === 0.2.3

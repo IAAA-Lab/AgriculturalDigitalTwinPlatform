@@ -24,9 +24,9 @@ def extract():
     data = minio_client.get_object(
         "landing-zone", FILE_NAME).read()
     df = pd.read_excel(io.BytesIO(data), engine="openpyxl",
-                       sheet_name="Tratamientos")
+                       sheet_name="Tratamientos", na_values=[''])
     df2 = pd.read_excel(io.BytesIO(data), engine="openpyxl",
-                        sheet_name="Parcelas")
+                        sheet_name="Parcelas", na_values=[''])
     return df, df2
 
 
@@ -47,8 +47,15 @@ def transform(df: pd.DataFrame):
     # Validate data
     # TODO: add rules to validate the data
     # Modify data
-    # Trim spaces from strings but not from numbers TODO: 0s are being removed
-    # df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+    # Thanks to Jupyter Notebook, I found out that some number columns are being read as objects
+    # Trim spaces
+    df['parcelAggregatedId'].replace(r'\s*$', 0, regex=True, inplace=True)
+    df['parcelEnclosureId'].replace(r'\s*$', 0, regex=True, inplace=True)
+    # Convert to int
+    df['parcelAggregatedId'] = df['parcelAggregatedId'].astype(str).astype(int)
+    df['parcelEnclosureId'] = df['parcelEnclosureId'].astype(str).astype(int)
+    # Trim spaces from strings
+    df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
     # Convert strings to uppercase
     df["secUserName"] = df["secUserName"].str.upper()
     data_year = df['harvestYear'].iloc[:1].values[0]
