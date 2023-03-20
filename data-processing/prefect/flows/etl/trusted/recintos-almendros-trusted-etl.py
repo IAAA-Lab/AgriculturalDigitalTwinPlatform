@@ -25,25 +25,32 @@ def extract():
         "landing-zone", FILE_NAME).read()
     df = pd.read_excel(io.BytesIO(data), engine="openpyxl",
                        sheet_name="Tratamientos")
-    return df
+    df2 = pd.read_excel(io.BytesIO(data), engine="openpyxl",
+                        sheet_name="Parcelas")
+    return df, df2
 
 
 @task
-def transform(df):
+def transform(df: pd.DataFrame):
     logger = get_run_logger()
     print("processing data")
     logger.info("processing data")
     # Change column names
-    df.columns = ["harvestYear", "harvestInitDate", "phytosanitaryId", "phytosanitaryName", "phytosanitaryFormula", "plagueTreatmentEffectsId", "plagueEffects", "plagueTreatmentWeedsId", "secUserName", "secUserNIF", "secUserId", "parcelProvinceId", "parcelMunicipalityId",
-                  "parcelPolygonId", "parcelId", "parcelEnclosureId", "parcelAggregatedId", "parcelZoneId", "parcelGeographicSpot", "parcelHarvestPACCode", "parcelHavestPACCropTree", "broth", "doseKind", "doseUnit", "treatedArea", "phytosanitaryQuantityMovement", "safePeriodMovement", "doseMovement", "parcelArea", "parcelAreaSIGPAC", "parcelVulnerableArea", "parcelSIGPACCode"]
+    try:
+        df.columns = ["harvestYear", "harvestInitDate", "phytosanitaryId", "phytosanitaryName", "phytosanitaryFormula", "plagueTreatmentEffectsId", "plagueEffects", "plagueTreatmentWeedsId", "secUserName", "secUserNIF", "secUserId", "parcelProvinceId", "parcelMunicipalityId",
+                      "parcelPolygonId", "parcelId", "parcelEnclosureId", "parcelGeographicSpot", "parcelAggregatedId", "parcelZoneId", "parcelHarvestPACCode", "parcelHavestPACCropTree", "broth", "doseKind", "doseUnit", "treatedArea", "phytosanitaryQuantityMovement", "safePeriodMovement", "doseMovement", "parcelArea", "parcelAreaSIGPAC", "parcelVulnerableArea", "parcelSIGPACCode"]
+    except Exception as e:
+        # Finish flow with error
+        raise ValueError("Error changing column names: ", e)
     # Hide sensitive data
     df = df.drop(columns=["secUserNIF"])
     # Validate data
     # TODO: add rules to validate the data
     # Modify data
-    # df["secUserName"] = df["secUserName"].str.replace('[^a-zA-Z0-9\s]+', '', regex=True) NOTE: Is this okey?
+    # Trim spaces from strings but not from numbers TODO: 0s are being removed
+    # df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+    # Convert strings to uppercase
     df["secUserName"] = df["secUserName"].str.upper()
-    # Convert back to csv
     data_year = df['harvestYear'].iloc[:1].values[0]
     return df, data_year
 
@@ -63,6 +70,9 @@ def load(processed_data, data_year):
     processed_data_bytes = io.BytesIO()
     processed_data.to_excel(processed_data_bytes, index=False)
     processed_data_bytes.seek(0)
+    # Create bucket if it doesn't exist
+    if not minio_client.bucket_exists("trusted-zone"):
+        minio_client.make_bucket("trusted-zone")
     # Store processed data with metadata in MinIO
     minio_client.put_object(
         "trusted-zone",
@@ -79,7 +89,7 @@ def load(processed_data, data_year):
 
 @flow(name="recintos_almendros_refined_etl")
 def recintos_almendros_refined_etl():
-    df = extract()
+    df, df2 = extract()
     processed_data, data_year = transform(df)
     load(processed_data, data_year)
 
