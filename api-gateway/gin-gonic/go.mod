@@ -15,6 +15,7 @@ require (
 )
 
 require (
+	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.3 // indirect
@@ -22,6 +23,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.49 // indirect
 	github.com/minio/sha256-simd v1.0.0 // indirect
 	github.com/rs/xid v1.4.0 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
@@ -74,6 +76,7 @@ require (
 	github.com/penglongli/gin-metrics v0.1.10
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
+	github.com/urfave/cli v1.22.12
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect
 	github.com/xdg-go/stringprep v1.0.3 // indirect
