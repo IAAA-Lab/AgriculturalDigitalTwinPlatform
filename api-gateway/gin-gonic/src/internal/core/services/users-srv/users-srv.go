@@ -42,6 +42,10 @@ func (srv *service) FetchUser(id string) (domain.User, error) {
 	return srv.usersrepository.FetchUser(idObj)
 }
 
+func (srv *service) FetchUserByEmail(email string) (domain.User, error) {
+	return srv.usersrepository.FetchUserByEmail(email)
+}
+
 func (srv *service) DeleteUser(id string) error {
 	idObj, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

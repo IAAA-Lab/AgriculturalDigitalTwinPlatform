@@ -19,6 +19,7 @@ type UsersService interface {
 	CheckLogin(username string, password string) (domain.User, error)
 	FetchAllUsers() ([]domain.User, error)
 	FetchUser(id string) (domain.User, error)
+	FetchUserByEmail(email string) (domain.User, error)
 	DeleteUser(id string) error
 	PostNewUser(user domain.User) error
 }

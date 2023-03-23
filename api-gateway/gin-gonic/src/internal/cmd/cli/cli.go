@@ -86,7 +86,14 @@ func main() {
 					},
 					Action: func(c *cli.Context) error {
 						email := c.String("email")
-						return userssrv.DeleteUser(email)
+						if email == "" {
+							return fmt.Errorf("email is required")
+						}
+						user, err := userssrv.FetchUserByEmail(email)
+						if err != nil {
+							return err
+						}
+						return userssrv.DeleteUser(user.ID.Hex())
 					},
 				},
 				{
