@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { SpinnerDotted } from "spinners-react";
 import { newsService } from "../api/news";
 import ReactPaginate from "react-paginate";
-import { NEWS_UPLOAD_URL } from "../config/api";
+import { NEWS_UPLOAD_URL } from "../config/constants";
 import { getFormattedDate } from "../utils/functions";
 
 export const NewsPanel = ({ itemsPerPage = 6 }) => {

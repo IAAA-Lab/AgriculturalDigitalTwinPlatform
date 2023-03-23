@@ -77,8 +77,8 @@ func setUpMonitoring(r *gin.Engine) *gin.Engine {
 func setupRouter() *gin.Engine {
 
 	mongoUri := os.Getenv("MONGO_URI")
-	rabbitMQURI := os.Getenv("RABBITMQ_URI")
 	mongoDb := os.Getenv("MONGO_DB")
+	rabbitMQURI := os.Getenv("RABBITMQ_URI")
 	redisUri := os.Getenv("REDIS_URI")
 	redisUsername := os.Getenv("REDIS_USERNAME")
 	redisPassword := os.Getenv("REDIS_PASSWORD")
@@ -147,9 +147,10 @@ func setupRouter() *gin.Engine {
 	r.POST("/auth/refresh", authMiddleware.RefreshJWT)
 	r.POST("/auth/validate", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_AGRARIAN, domain.ROLE_NEWS_EDITOR}), usersHandler.AuthorizeUser)
 	// ---- Users
-	r.POST("/users", encryptionMiddleware.DecryptData, usersHandler.CreateNewUser)
-	r.GET("/users", usersHandler.FetchAllUsers)
-	r.DELETE("/users/:id", usersHandler.DeleteUser)
+	usersGroup := r.Group("/", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN}))
+	usersGroup.POST("/users", encryptionMiddleware.DecryptData, usersHandler.CreateNewUser)
+	usersGroup.GET("/users", usersHandler.FetchAllUsers)
+	usersGroup.DELETE("/users/:id", usersHandler.DeleteUser)
 	// ---- News
 	r.GET("/news", newsHandler.FetchAll)
 	r.GET("/news/:id", newsHandler.Fetch)

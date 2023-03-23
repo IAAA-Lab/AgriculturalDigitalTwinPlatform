@@ -1,4 +1,3 @@
-import { DIGITAL_TWIN_PANEL_URL } from "../config/api";
 import { Roles } from "../config/roles";
 import LayoutAdmin from "../layouts/LayoutAdmin";
 import LayoutAgrarian from "../layouts/LayoutAgrarian";
@@ -6,9 +5,6 @@ import LayoutDefault from "../layouts/LayoutDefault";
 import LayoutEditor from "../layouts/LayoutEditor";
 import { Blog } from "../pages/Blog";
 import Home from "../pages/Home";
-import { NewsEdit } from "../pages/NewsEdit";
-import { NewsPanel } from "../pages/NewsPanel";
-import { SingleNew } from "../pages/SingleNew";
 import { UsersTable } from "../pages/UsersTable";
 
 const getRoutes = ({ role, logged }) => {
@@ -148,7 +144,31 @@ const getRoutes = ({ role, logged }) => {
         },
       ];
     default:
-      return [];
+      return [
+        {
+          exact: true,
+          path: "/",
+          component: Home,
+          layout: LayoutDefault,
+        },
+        {
+          exact: true,
+          ref: "phases",
+          name: "Fases",
+        },
+        {
+          exact: true,
+          path: "/blog",
+          component: Blog,
+          layout: LayoutDefault,
+          name: "Noticias",
+        },
+        {
+          exact: true,
+          ref: "contact",
+          name: "Contacto",
+        },
+      ];
   }
 };
 

@@ -3,7 +3,7 @@ import {
   EMAIL_SENDER_PUB_KEY,
   EMAIL_SENDER_SERVICEID,
   EMAIL_SENDER_TEMPLATEID,
-} from "../config/api";
+} from "../config/constants";
 
 const emailSender = async (email, name, message) => {
   let serviceId = EMAIL_SENDER_SERVICEID;

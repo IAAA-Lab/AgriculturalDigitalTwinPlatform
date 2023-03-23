@@ -1,4 +1,4 @@
-import { API_URL } from "../config/api";
+import { API_URL, IS_LOCAL } from "../config/constants";
 import encrypt from "../middleware/encryption";
 
 const login = async (username, password) => {
@@ -10,7 +10,8 @@ const login = async (username, password) => {
     body: JSON.stringify({
       data: encryptedMsg,
     }),
-    credentials: "include",
+    // Dont include credentials in local mode
+    credentials: IS_LOCAL ? "omit" : "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -23,14 +24,14 @@ const login = async (username, password) => {
 const logout = async () => {
   const response = await fetch(`${API_URL}/auth/logout`, {
     method: "POST",
-    credentials: "include",
+    credentials: IS_LOCAL ? "omit" : "include",
   }).catch((_) => null);
 };
 
 const refreshLogin = async () => {
   const response = await fetch(`${API_URL}/auth/refresh`, {
     method: "POST",
-    credentials: "include",
+    credentials: IS_LOCAL ? "omit" : "include",
   }).catch((_) => null);
   if (!response || !response.ok) return null;
   const token = await response.json();

@@ -1,4 +1,4 @@
-import { API_URL } from "../config/api";
+import { API_URL } from "../config/constants";
 import encrypt from "../middleware/encryption";
 
 const fetchAllUsers = async () => {

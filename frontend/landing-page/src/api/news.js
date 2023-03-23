@@ -1,4 +1,4 @@
-import { API_URL, NEWS_UPLOAD_URL } from "../config/api";
+import { API_URL, NEWS_UPLOAD_URL } from "../config/constants";
 import { escapeHtml } from "../utils/functions";
 
 const fetchAllNews = async (numPage) => {

@@ -24,8 +24,6 @@ func Init(authsrv ports.JWTService, usersrv ports.UsersService, envMode string) 
 
 func (srv *service) AuthorizeJWT(roles []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Next()
-		return
 		jwtToken := c.Request.Header.Get("Authorization")
 		if !strings.HasPrefix(jwtToken, "Bearer ") {
 			c.AbortWithStatusJSON(401, gin.H{"message": apperrors.ErrUnauthorized})

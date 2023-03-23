@@ -7,7 +7,7 @@ import HTMLReactParser from "html-react-parser";
 import { newsService } from "../api/news";
 import { useLocation } from "react-router-dom";
 import { getFormattedDate } from "../utils/functions";
-import { API_URL } from "../config/api";
+import { API_URL } from "../config/constants";
 
 export const SingleNew = ({ ...props }) => {
   let { id } = useParams();
