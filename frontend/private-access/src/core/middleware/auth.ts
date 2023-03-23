@@ -36,6 +36,10 @@ class Auth {
     localStorage.removeItem("auth");
     window.location.replace("/");
   }
+
+  getToken() {
+    return localStorage.getItem("accessToken");
+  }
 }
 
 export default Auth;

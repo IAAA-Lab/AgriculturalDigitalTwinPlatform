@@ -17,6 +17,9 @@ const pond = FilePond.create(
     allowRevert: false,
     server: {
       url: API_URL + "/internal/files/upload",
+      headers: {
+        Authorization: "Bearer " + auth.getToken() || "",
+      },
     },
     acceptedFileTypes: [
       "application/pdf",
