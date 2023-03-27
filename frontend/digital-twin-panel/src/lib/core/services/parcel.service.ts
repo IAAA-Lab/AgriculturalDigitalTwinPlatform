@@ -39,7 +39,8 @@ class ParcelsService implements IParcelsService {
     date.setHours(0, 0, 0, 0);
     return this.parcelsRepository.getDailyWeather(parcelId, date);
   }
-  getForecastWeather(parcelId: string): Promise<ForecastWeather[]> {
+  getForecastWeather(parcelId: string): Promise<ForecastWeather> {
+    console.log("HOLAAAAA");
     return this.parcelsRepository.getForecastWeather(parcelId);
   }
   getNDVI(

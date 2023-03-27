@@ -85,27 +85,27 @@ func (srv *service) GetParcels(enclosureIds []string) ([]domain.Parcel, error) {
 	return parcels, nil
 }
 
-func (srv *service) GetForecastWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error) {
-	forecastWeather, err := srv.persistence.GetForecastWeather(idema, startDate, endDate)
-	if err == nil {
-		return forecastWeather, nil
-	}
-	if err != apperrors.ErrNotFound {
-		return nil, err
-	}
+func (srv *service) GetForecastWeather(parcelId string) (domain.ForecastWeather, error) {
+	// forecastWeather, err := srv.persistence.GetForecastWeather(parcelId)
+	// if err == nil {
+	// 	return forecastWeather, nil
+	// }
+	// if err != apperrors.ErrNotFound {
+	// 	return nil, err
+	// }
 	// If not found in localdatabase, get from local ESB
-	forecastWeather, err = srv.esb.GetForecastWeather(idema, startDate, endDate)
+	forecastWeather, err := srv.esb.GetForecastWeather(parcelId)
 	if err != nil {
-		return nil, err
+		return domain.ForecastWeather{}, err
 	}
 	// Save in local database in background
-	defer func() {
-		err := srv.persistence.PostForecastWeather(forecastWeather)
-		// TODO: use a proper logger
-		if err != nil {
-			log.Fatalln(err)
-		}
-	}()
+	// defer func() {
+	// 	err := srv.persistence.PostForecastWeather(forecastWeather)
+	// 	// TODO: use a proper logger
+	// 	if err != nil {
+	// 		log.Fatalln(err)
+	// 	}
+	// }()
 	return forecastWeather, nil
 }
 

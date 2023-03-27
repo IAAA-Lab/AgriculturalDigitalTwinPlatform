@@ -23,13 +23,17 @@
       {:then forecast}
         <CardInner>
           <div slot="body" class="p-8 body">
-            {#each forecast as f, i}
-              <ForecastWeatherItem day={f.date} minTa={f.tamin} maxTa={f.tamax}>
+            {#each forecast.prediction.day as f, i}
+              <ForecastWeatherItem
+                day={f.date}
+                minTa={f.ta.tamin}
+                maxTa={f.ta.tamax}
+              >
                 <svelte:fragment slot="icon">
-                  {@html getWeatherIcon(f.skyState.description)}
+                  <!-- {@html getWeatherIcon(f.skyState.desc)} -->
                 </svelte:fragment>
               </ForecastWeatherItem>
-              {#if i < forecast.length - 1}
+              {#if i < forecast.prediction.day.length - 1}
                 <div class="divider" />
               {/if}
             {/each}

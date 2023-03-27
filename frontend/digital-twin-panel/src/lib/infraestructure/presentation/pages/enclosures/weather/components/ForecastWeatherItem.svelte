@@ -16,7 +16,7 @@
 
 <div class="item">
   <p class="m-0 text-sm" style="width: 75px;">
-    {days[day.getDay() - 1] || "Domingo"}
+    <!-- {days[day.getDay() - 1] || "Domingo"} -->
   </p>
   <slot name="icon" />
   <div class="ta__wrapper">

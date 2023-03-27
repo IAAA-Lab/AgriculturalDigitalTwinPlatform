@@ -218,18 +218,52 @@ type HistoricalWeather = {
 };
 
 type ForecastWeather = {
+  origin: origin;
   type: string;
-  skyState: skyState;
   parcelId: string;
-  probPrec: number;
-  snowProb: number;
-  tamin: number;
-  tamax: number;
-  hrMin: number;
-  hrMax: number;
-  windSpeed: number;
+  elaboratedAt: Date;
+  municipality: string;
+  province: string;
+  prediction: {
+    day: Day[];
+  };
+};
+
+type Day = {
+  probPrec: ProbPrec[];
+  snowQuote: SkyState[];
+  skyState: SkyState[];
+  wind: Wind[];
+  ta: Ta;
+  hr: Hr;
   uvMax: number;
   date: Date;
+};
+
+type Hr = {
+  hrmax: number;
+  hrmin: number;
+};
+
+type ProbPrec = {
+  value: number;
+  period: string;
+};
+
+type SkyState = {
+  value: string;
+  period: string;
+};
+
+type Ta = {
+  tamax: number;
+  tamin: number;
+};
+
+type Wind = {
+  direction: string;
+  speed: number;
+  period: string;
 };
 
 type DailyWeather = {

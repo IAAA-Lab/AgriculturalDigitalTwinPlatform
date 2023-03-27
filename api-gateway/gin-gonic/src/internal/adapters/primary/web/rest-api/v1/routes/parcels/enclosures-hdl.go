@@ -210,9 +210,7 @@ func (hdl *HTTPHandler) GetDailyWeather(c *gin.Context) {
 // -----------------------------------------------------------------------
 
 type ForecastWeatherIn struct {
-	ParcelId  string    `form:"parcelId"`
-	StartDate time.Time `form:"startDate"`
-	EndDate   time.Time `form:"endDate"`
+	ParcelId string `form:"parcelId"`
 }
 
 func (hdl *HTTPHandler) GetForecastWeather(c *gin.Context) {
@@ -222,7 +220,7 @@ func (hdl *HTTPHandler) GetForecastWeather(c *gin.Context) {
 		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
 		return
 	}
-	forecastWeather, err := hdl.parcelsService.GetForecastWeather(forecastWeatherIn.ParcelId, forecastWeatherIn.StartDate, forecastWeatherIn.EndDate)
+	forecastWeather, err := hdl.parcelsService.GetForecastWeather(forecastWeatherIn.ParcelId)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return

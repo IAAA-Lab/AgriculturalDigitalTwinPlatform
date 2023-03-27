@@ -31,7 +31,7 @@ type ParcelsService interface {
 	PatchUserEnclosures(userId string, enclosureIds []string) error
 	GetSummary(userId string) (domain.Summary, error)
 	// Weather
-	GetForecastWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error)
+	GetForecastWeather(parcelId string) (domain.ForecastWeather, error)
 	GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error)
 	GetHistoricalWeather(parcelId string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error)
 	// Parcels

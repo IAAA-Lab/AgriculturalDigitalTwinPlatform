@@ -54,6 +54,9 @@ services:
       ports:
           - 5672:${RABBITMQ_PORT}
           - 15672:${RABBITMQ_PANEL_PORT}
+      environment:
+          - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+          - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
 
 #############################################
 #              Web app server               #
@@ -73,6 +76,7 @@ services:
     environment:
       - ENV_MODE=LOCAL
       - JWT_SECRET=${JWT_SECRET}
+      - LOCAL_AUTHORIZATION=${LOCAL_AUTHORIZATION}
       - KEY_DECRYPT_PASSWD=${KEY_DECRYPT_PASSWD}
       - IV_BLOCK_PASSWD=${IV_BLOCK_PASSWD}
       - MONGO_URI=${MONGO_URI}
@@ -222,7 +226,6 @@ services:
     restart: always
     volumes:
       - prefect:/root/.prefect
-      - prefect_deployments:/opt/prefect/deployments
       - ./data-processing/prefect/flows:/opt/prefect/flows
     environment:
       - PREFECT_API_URL=${PREFECT_API_URL}
@@ -239,21 +242,9 @@ services:
     depends_on:
       - postgres
 
-#############################################
-#     Agent which executes Prefect flows    #
-#############################################
-
-  prefect-agent:
-    image: prefecthq/prefect:2.8.4-python3.11
-    restart: always
-    entrypoint: ["prefect", "agent", "start", "-q", "default"]
-    environment:
-      - PREFECT_API_URL=${PREFECT_SERVER_URL}
-
 
 volumes:
   prefect:
-  prefect_deployments:
   postgres:
   grafana-data:
   loki-data:

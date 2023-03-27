@@ -11,7 +11,7 @@ import (
 
 func (r *RabbitMQConn) GetParcels(enclosureIds []string) ([]domain.Parcel, error) {
 	// Wait for sync esb response
-	parcelsRaw, err := r.PublishAndWait("parcels.get", uuid.New().String(), domain.SyncEventExtSend{
+	parcelsRaw, err := r.ClientRPC("parcels.get", uuid.New().String(), domain.SyncEventExtSend{
 		Payload: enclosureIds,
 	})
 	// Check if errors
@@ -31,29 +31,26 @@ func (r *RabbitMQConn) GetParcels(enclosureIds []string) ([]domain.Parcel, error
 }
 
 type ForecastWeatherReq struct {
-	Idema     string    `json:"idema"`
-	StartDate time.Time `json:"start"`
-	EndDate   time.Time `json:"end"`
+	ParcelId string `json:"parcelId"`
 }
 
-func (r *RabbitMQConn) GetForecastWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error) {
-	forecastWeatherRaw, err := r.PublishAndWait("forecast-weather.get", uuid.New().String(), domain.SyncEventExtSend{
+func (r *RabbitMQConn) GetForecastWeather(parcelId string) (domain.ForecastWeather, error) {
+	forecastWeatherRaw, err := r.ClientRPC("prefect", uuid.New().String(), domain.SyncEventExtSend{
 		Payload: ForecastWeatherReq{
-			Idema:     idema,
-			StartDate: startDate,
-			EndDate:   endDate,
+			ParcelId: parcelId,
 		},
+		Key: "forecast_weather",
 	})
 	if err != nil {
-		return nil, err
+		return domain.ForecastWeather{}, err
 	}
 	if forecastWeatherRaw.ErrorMessage != "" {
-		return nil, errors.New(forecastWeatherRaw.ErrorMessage)
+		return domain.ForecastWeather{}, errors.New(forecastWeatherRaw.ErrorMessage)
 	}
-	var forecastWeather []domain.ForecastWeather
+	var forecastWeather domain.ForecastWeather
 	err = json.Unmarshal(forecastWeatherRaw.Payload, &forecastWeather)
 	if err != nil {
-		return nil, err
+		return domain.ForecastWeather{}, err
 	}
 	return forecastWeather, nil
 }
@@ -65,7 +62,7 @@ type HistoricalWeatherReq struct {
 }
 
 func (r *RabbitMQConn) GetHistoricalWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error) {
-	historicalWeatherRaw, err := r.PublishAndWait("historical-weather.get", uuid.New().String(), domain.SyncEventExtSend{
+	historicalWeatherRaw, err := r.ClientRPC("historical-weather.get", uuid.New().String(), domain.SyncEventExtSend{
 		Payload: HistoricalWeatherReq{
 			Idema:     idema,
 			StartDate: startDate,
@@ -87,13 +84,13 @@ func (r *RabbitMQConn) GetHistoricalWeather(idema string, startDate time.Time, e
 }
 
 type DailyWeatherReq struct {
-	ParcelId string    `json:"parcelId"`
-	Date     time.Time `json:"date"`
+	ParcelId string `json:"parcelId"`
 }
 
 func (r *RabbitMQConn) GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error) {
-	dailyWeatherRaw, err := r.PublishAndWait("weather.daily", uuid.New().String(), domain.SyncEventExtSend{
-		Payload: DailyWeatherReq{ParcelId: parcelId, Date: date},
+	dailyWeatherRaw, err := r.ClientRPC("prefect", uuid.New().String(), domain.SyncEventExtSend{
+		Payload: DailyWeatherReq{ParcelId: parcelId},
+		Key:     "daily_weather",
 	})
 	if err != nil {
 		return domain.DailyWeather{}, err
@@ -116,7 +113,7 @@ type NDVIReq struct {
 }
 
 func (r *RabbitMQConn) GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error) {
-	ndviRaw, err := r.PublishAndWait("ndvi", uuid.New().String(), domain.SyncEventExtSend{
+	ndviRaw, err := r.ClientRPC("ndvi", uuid.New().String(), domain.SyncEventExtSend{
 		Payload: NDVIReq{
 			EnclosureIds: enclosureIds,
 			StartDate:    startDate,
@@ -144,7 +141,7 @@ type FertilizersReq struct {
 }
 
 func (r *RabbitMQConn) GetFertilizers(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error) {
-	fertilizersRaw, err := r.PublishAndWait("fertilizers.get", uuid.New().String(), domain.SyncEventExtSend{
+	fertilizersRaw, err := r.ClientRPC("fertilizers.get", uuid.New().String(), domain.SyncEventExtSend{
 		Payload: FertilizersReq{
 			EnclosureId: enclosureId,
 			StartDate:   startDate,
@@ -172,7 +169,7 @@ type PhytosanitariesReq struct {
 }
 
 func (r *RabbitMQConn) GetPhytosanitaries(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error) {
-	phytosanitariesRaw, err := r.PublishAndWait("phytosanitaries.get", uuid.New().String(), domain.SyncEventExtSend{
+	phytosanitariesRaw, err := r.ClientRPC("phytosanitaries.get", uuid.New().String(), domain.SyncEventExtSend{
 		Payload: PhytosanitariesReq{
 			EnclosureId: enclosureId,
 			StartDate:   startDate,
@@ -200,7 +197,7 @@ type CropStatsReq struct {
 }
 
 func (r *RabbitMQConn) GetCropStats(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error) {
-	cropStatsRaw, err := r.PublishAndWait("crop-stats.get", uuid.New().String(), domain.SyncEventExtSend{
+	cropStatsRaw, err := r.ClientRPC("crop-stats.get", uuid.New().String(), domain.SyncEventExtSend{
 		Payload: CropStatsReq{
 			EnclosureId: enclosureId,
 			StartDate:   startDate,

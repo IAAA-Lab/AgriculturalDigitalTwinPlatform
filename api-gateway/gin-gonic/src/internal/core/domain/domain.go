@@ -191,16 +191,40 @@ type FarmHolderId struct {
 	Code string `json:"code"`
 }
 type ForecastWeather struct {
-	Type     string    `json:"type"`
-	ParcelId string    `json:"parcelId"`
-	Idema    string    `json:"idema"`
-	Fint     time.Time `json:"fint"`
-	Prec     float32   `json:"prec"`
-	Tamin    float32   `json:"tamin"`
-	Tamax    float32   `json:"tamax"`
-	Ta       float32   `json:"ta"`
-	Hr       float32   `json:"hr"`
-	Tpr      float32   `json:"tpr"`
+	Origin       origin `json:"origin"`
+	Type         string `json:"type"`
+	ParcelId     string `json:"parcelId"`
+	ElaboratedAt string `json:"elaboratedAt"`
+	Municipality string `json:"municipality"`
+	Province     string `json:"province"`
+	Prediction   struct {
+		Day []struct {
+			ProbPrec []struct {
+				Value  int    `json:"value"`
+				Period string `json:"period"`
+			} `json:"probPrec"`
+			SnowQuote []struct {
+				Value  string `json:"value"`
+				Period string `json:"period"`
+			} `json:"snowQuote"`
+			SkyState []skyState `json:"skyState"`
+			Wind     []struct {
+				Direction string `json:"direction"`
+				Speed     int    `json:"speed"`
+				Period    string `json:"period"`
+			} `json:"wind"`
+			Ta struct {
+				Tamax int `json:"tamax"`
+				Tamin int `json:"tamin"`
+			} `json:"ta"`
+			Hr struct {
+				Hrmax int `json:"hrmax"`
+				Hrmin int `json:"hrmin"`
+			} `json:"hr"`
+			UvMax int    `json:"uvMax,omitempty"`
+			Date  string `json:"date"`
+		} `json:"day"`
+	} `json:"prediction"`
 }
 
 type HistoricalWeather struct {
@@ -259,15 +283,15 @@ type skyState struct {
 	Description string `json:"description,omitempty"`
 }
 type genericState struct {
-	Value  float32 `json:"value"`
-	Period string  `json:"period"`
+	Value  string `json:"value"`
+	Period string `json:"period"`
 }
 
 type windState struct {
-	Direction string  `json:"direction"`
-	Period    string  `json:"period"`
-	Speed     float32 `json:"speed"`
-	Value     float32 `json:"value,omitempty"`
+	Period    string   `json:"period"`
+	Direction []string `json:"direction"`
+	Speed     []string `json:"speed"`
+	Value     string   `json:"value,omitempty"`
 }
 
 type SensorData struct {

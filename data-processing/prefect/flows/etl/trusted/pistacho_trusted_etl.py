@@ -86,17 +86,3 @@ def pistacho_refined_etl():
 
 if __name__ == "__main__":
     pistacho_refined_etl()
-
-
-# ---------------------------------------------------------- #
-#  # Connect to MongoDB
-#     mongo_client = MongoClient(
-#         "---",
-#     )
-
-#     # Get MongoDB database and collection
-#     db = mongo_client["---"]
-#     collection = db["---"]
-
-#     # Store processed data in MongoDB
-#     collection.insert_one(processed_data)

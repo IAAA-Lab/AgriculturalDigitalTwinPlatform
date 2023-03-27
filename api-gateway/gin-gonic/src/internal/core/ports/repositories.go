@@ -33,7 +33,7 @@ type ParcelsRepository interface {
 	PostParcelsSummary(userId primitive.ObjectID, summary domain.Summary) error
 	PatchUserEnclosures(userId primitive.ObjectID, enclosureIds []string) error
 	// Weather
-	GetForecastWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error)
+	GetForecastWeather(parcelId string) (domain.ForecastWeather, error)
 	PostForecastWeather(forecastWeather []domain.ForecastWeather) error
 	GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error)
 	GetHistoricalWeather(parcelId string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error)
@@ -68,7 +68,7 @@ type ParcelsESB interface {
 	// Parcels
 	GetParcels(enclosureIds []string) ([]domain.Parcel, error)
 	// Weather
-	GetForecastWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error)
+	GetForecastWeather(parcelId string) (domain.ForecastWeather, error)
 	GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error)
 	GetHistoricalWeather(parcelId string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error)
 	// NDVI

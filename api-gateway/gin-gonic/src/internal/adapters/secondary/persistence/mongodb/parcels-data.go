@@ -34,13 +34,12 @@ func (mc *mongodbConn) PatchUserEnclosures(userId primitive.ObjectID, enclosureI
 	return mc.UpdateDocument(USER_PARCELS_COLLECTION, filter, update, nil)
 }
 
-func (mc *mongodbConn) GetForecastWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.ForecastWeather, error) {
+func (mc *mongodbConn) GetForecastWeather(parcelId string) (domain.ForecastWeather, error) {
 	filter := bson.M{
-		"idema": bson.M{"$eq": idema},
-		"fint":  bson.M{"$gte": startDate, "$lte": endDate},
+		"parcelId": bson.M{"$eq": parcelId},
 	}
-	opts := options.Find().SetSort(bson.M{"fint": -1}).SetLimit(1)
-	return GetDocuments[[]domain.ForecastWeather](mc, WEATHER_COLLECTION, filter, opts)
+	opts := options.FindOne().SetSort(bson.M{"fint": -1})
+	return GetDocument[domain.ForecastWeather](mc, WEATHER_COLLECTION, filter, opts)
 }
 
 func (mc *mongodbConn) PostForecastWeather(forecastWeather []domain.ForecastWeather) error {

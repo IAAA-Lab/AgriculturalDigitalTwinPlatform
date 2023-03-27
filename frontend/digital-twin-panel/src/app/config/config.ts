@@ -19,11 +19,8 @@ const digitalTwinHttpInstance = axios.create({
 
 // --------- Dependency injection ------------
 // Parcels use cases
-const parcelsRepositoryMock = new HttpParcelsRepositoryMock(
-  digitalTwinHttpInstance
-);
 const parcelsRepository = new HttpParcelsRepository(digitalTwinHttpInstance);
-const parcelsService = new ParcelsService(parcelsRepositoryMock);
+const parcelsService = new ParcelsService(parcelsRepository);
 
 // User use cases
 const localStorage = new LocalStorageRepository(window.localStorage);

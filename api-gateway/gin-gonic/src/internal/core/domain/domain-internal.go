@@ -42,6 +42,7 @@ type AsyncEventExtSend struct {
 
 type SyncEventExtSend struct {
 	Payload interface{} `json:"payload"`
+	Key     string      `json:"key"`
 }
 type EventOut struct {
 	ErrorMessage string      `json:"errorMessage"`

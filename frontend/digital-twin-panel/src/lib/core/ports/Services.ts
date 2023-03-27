@@ -19,7 +19,7 @@ interface IParcelsService {
     endDate: Date
   ): Promise<HistoricalWeather[]>;
   getDailyWeather(parcelId: string): Promise<DailyWeather>;
-  getForecastWeather(parcelId: string): Promise<ForecastWeather[]>;
+  getForecastWeather(parcelId: string): Promise<ForecastWeather>;
   getNDVI(
     enclosureIds: string[],
     startDate: Date,
