@@ -5,9 +5,11 @@ go 1.18
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/disintegration/imaging v1.6.2
+	github.com/gabriel-vasile/mimetype v1.4.2
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/uuid v1.3.0
+	github.com/minio/minio-go/v7 v7.0.49
 	github.com/rabbitmq/amqp091-go v1.5.0
 	github.com/swaggo/swag v1.8.6
 	go.mongodb.org/mongo-driver v1.11.2
@@ -17,10 +19,9 @@ require (
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
+	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.3 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
-	github.com/minio/minio-go/v7 v7.0.49 // indirect
 	github.com/minio/sha256-simd v1.0.0 // indirect
 	github.com/rs/xid v1.4.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
@@ -34,7 +35,6 @@ require (
 	github.com/bits-and-blooms/bitset v1.2.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
-	github.com/jellydator/ttlcache/v2 v2.11.1 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.21 // indirect
 	github.com/prometheus/client_golang v1.12.0 // indirect
@@ -49,7 +49,6 @@ require (
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/chenyahui/gin-cache v1.7.1
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dvwright/xss-mw v0.0.0-20191029162136-7a0dab86d8f6
 	github.com/gin-contrib/sse v0.1.0 // indirect
@@ -62,7 +61,6 @@ require (
 	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/goccy/go-json v0.9.11
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/joho/godotenv v1.4.0
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.15.15 // indirect

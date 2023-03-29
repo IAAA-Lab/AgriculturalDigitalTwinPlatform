@@ -18,7 +18,6 @@ import (
 	aes256repo "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/middleware/encryption-mw/aes-256"
 	jwtmw "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/middleware/jwt-mw"
 	fileshdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/files-hdl"
-	newshdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/news-hdl"
 	parcelshdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/parcels"
 	usershdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/users-hdl"
 	redisrepo "digital-twin/main-server/src/internal/adapters/secondary/cache/redis"
@@ -32,7 +31,6 @@ import (
 	encryptionsrv "digital-twin/main-server/src/internal/core/services/encryption-srv"
 	filedumpsrv "digital-twin/main-server/src/internal/core/services/file-dump-srv"
 	imagessrv "digital-twin/main-server/src/internal/core/services/image-srv"
-	newssrv "digital-twin/main-server/src/internal/core/services/news-srv"
 	parcelssrv "digital-twin/main-server/src/internal/core/services/parcels-srv"
 	userssrv "digital-twin/main-server/src/internal/core/services/users-srv"
 
@@ -98,9 +96,6 @@ func setupRouter() *gin.Engine {
 	minioRepository := minio.NewMinioConn(minioEndpoint, minioAccessKey, minioSecretAccessKey, false, minioBucketName)
 	imagesRepository := localfilestoragerepo.NewLocalFileStorage("./images")
 
-	newsService := newssrv.New(mongodbRepository)
-	newsHandler := newshdl.NewHTTPHandler(newsService)
-
 	usersService := userssrv.New(mongodbRepository)
 	usersHandler := usershdl.NewHTTPHandler(usersService)
 
@@ -115,14 +110,6 @@ func setupRouter() *gin.Engine {
 	cacheService := cachesrv.New(cacherepository)
 	authService := authsrv.JWTAuthService(cacheService)
 	authMiddleware := jwtmw.Init(authService, usersService, os.Getenv("ENV_MODE"))
-
-	// cacheMiddleware := cache.CacheByRequestURI(persist.NewRedisStore(cacherepository.GetClient()), 10*time.Minute)
-
-	//Start event handler
-	// eventHandler := eventhdl.NewEventHandler(parcelsService, cacheService, rabbitMQESB)
-	// eventHandler.Start()
-
-	// parcelsStreamingHandler := parcelshdl.NewHTTPStreamHandler(parcelsService, eventHandler.GetIntChannel())
 
 	r := gin.Default()
 	m := ginmetrics.GetMonitor()
@@ -151,12 +138,6 @@ func setupRouter() *gin.Engine {
 	usersGroup.POST("/users", encryptionMiddleware.DecryptData, usersHandler.CreateNewUser)
 	usersGroup.GET("/users", usersHandler.FetchAllUsers)
 	usersGroup.DELETE("/users/:id", usersHandler.DeleteUser)
-	// ---- News
-	r.GET("/news", newsHandler.FetchAll)
-	r.GET("/news/:id", newsHandler.Fetch)
-	r.POST("/news", newsHandler.PostNews)
-	r.PATCH("/news/:id", newsHandler.UpdateNews)
-	r.DELETE("/news/:id", newsHandler.DeleteNews)
 
 	// ---- Agrarian
 	// ---- SSE (inject eventhandler channel for communication)
@@ -165,7 +146,6 @@ func setupRouter() *gin.Engine {
 	r.GET("/parcels/refs", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN}), parcelsHandler.GetUserParcels)
 	r.PATCH("/parcels/refs", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN}), parcelsHandler.PostParcelRefs)
 
-	agrarianGroup.GET("/parcels/summary", parcelsHandler.GetParcelsSummary)
 	agrarianGroup.GET("/weather/daily", parcelsHandler.GetDailyWeather)
 	agrarianGroup.GET("/weather/forecast", parcelsHandler.GetForecastWeather)
 	agrarianGroup.GET("/enclosures", parcelsHandler.GetEnclosures)
@@ -173,7 +153,6 @@ func setupRouter() *gin.Engine {
 	agrarianGroup.GET("/ndvi", parcelsHandler.GetNDVI)
 	agrarianGroup.GET("/phytosantaries", parcelsHandler.GetPhytosanitaries)
 	agrarianGroup.GET("/fertilizers", parcelsHandler.GetFertilizers)
-	// agrarianGroup.GET("/ssetest", parcelsStreamingHandler.SseTest)
 
 	// ---- private access
 	r.POST("/internal/files/upload", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_PRIVATE_ACCESS}), filesHandler.UploadFiles)

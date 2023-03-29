@@ -9,15 +9,6 @@ import (
 
 // ---- Domain specific interfaces ----
 
-type NewsRepository interface {
-	FetchNumber() (int64, error)
-	FetchAll(numPage int64) ([]domain.News, error)
-	Fetch(id primitive.ObjectID) (domain.News, error)
-	PostNewNews(news domain.News) error
-	UpdateNews(id primitive.ObjectID, news domain.News) error
-	DeleteNews(id primitive.ObjectID) error
-}
-
 type UsersRepository interface {
 	FetchAllUsers() ([]domain.User, error)
 	FetchUser(id primitive.ObjectID) (domain.User, error)
@@ -27,60 +18,23 @@ type UsersRepository interface {
 }
 
 type ParcelsRepository interface {
-	// User parcels
 	GetUserParcels(userId primitive.ObjectID) (domain.UserParcels, error)
 	PostUserParcels(userParcels domain.UserParcels) error
-	PostParcelsSummary(userId primitive.ObjectID, summary domain.Summary) error
 	PatchUserEnclosures(userId primitive.ObjectID, enclosureIds []string) error
-	// Weather
 	GetForecastWeather(parcelId string) (domain.ForecastWeather, error)
-	PostForecastWeather(forecastWeather []domain.ForecastWeather) error
 	GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error)
 	GetHistoricalWeather(parcelId string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error)
-	PostHistoricalWeather(historicalWeather []domain.HistoricalWeather) error
-	// Parcels
-	GetParcels(enclosureIds []string) ([]domain.Parcel, error)
-	PostParcel(parcel domain.Parcel) error
-	// NDVI
+	GetEnclosures(enclosureIds []string, year int16) ([]domain.Enclosure, error)
 	GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error)
-	PostNDVI(ndvi []domain.NDVI) error
-	// Farm
 	GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder, error)
-	PostFarmHolder(farmHolder domain.FarmHolder) error
-	// Fertilizers
 	GetFertilizers(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
-	PostFertilizers(fertilizer []domain.Fertilizer) error
-	// Phytosanitaries
 	GetPhytosanitaries(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
-	PostPhytosanitaries(phytosanitary []domain.Phytosanitary) error
-	// Crops
-	GetCropStats(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
-	PostCropStats(cropStats []domain.CropStats) error
-	// Sensors
-	GetSensorData(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.SensorData, error)
-	PostSensorData(sensorData []domain.SensorData) error
-	// Notifications
-	GetNotifications(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Notification, error)
-	PostNotifications(notifications []domain.Notification) error
 }
 
 type ParcelsESB interface {
-	// Parcels
-	GetParcels(enclosureIds []string) ([]domain.Parcel, error)
-	// Weather
 	GetForecastWeather(parcelId string) (domain.ForecastWeather, error)
 	GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error)
 	GetHistoricalWeather(parcelId string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error)
-	// NDVI
-	GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error)
-	// Farm
-	// TODO: get the hole farm, maybe asociated with the parcel
-	// Fertilizers
-	GetFertilizers(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
-	// Phytosanitaries
-	GetPhytosanitaries(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
-	// Crops
-	GetCropStats(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
 }
 
 // ---- Adapter specific interfaces ----

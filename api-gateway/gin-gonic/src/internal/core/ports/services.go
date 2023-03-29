@@ -25,32 +25,17 @@ type UsersService interface {
 }
 
 type ParcelsService interface {
-	// User parcels
 	GetUserParcels(userId string) (domain.UserParcels, error)
 	PostUserParcels(userParcels domain.UserParcels) error
 	PatchUserEnclosures(userId string, enclosureIds []string) error
-	GetSummary(userId string) (domain.Summary, error)
-	// Weather
 	GetForecastWeather(parcelId string) (domain.ForecastWeather, error)
 	GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error)
 	GetHistoricalWeather(parcelId string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error)
-	// Parcels
-	GetParcels(enclosureIds []string) ([]domain.Parcel, error)
-	// NDVI
+	GetEnclosures(enclosureIds []string, year int16) ([]domain.Enclosure, error)
 	GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error)
-	//TODO: ask the esb for the NDVI Map provider
-	// Farm
 	GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder, error)
-	// Fertilizers
 	GetFertilizers(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
-	// Phytosanitaries
 	GetPhytosanitaries(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
-	// Crops
-	GetCropStats(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
-	// Sensors
-	GetSensorData(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.SensorData, error)
-	// Notifications
-	GetNotifications(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Notification, error)
 }
 
 type JWTService interface {

@@ -2,16 +2,16 @@ import type {
   User,
   DailyWeather,
   NDVI,
-  Parcel,
   Summary,
   UserParcels,
   ForecastWeather,
   HistoricalWeather,
+  Enclosure,
 } from "../Domain";
 
 interface IParcelsService {
   getUserParcels(userId: string): Promise<UserParcels>;
-  getEnclosures(enclosureIds: string[]): Promise<Parcel[]>;
+  getEnclosures(enclosureIds: string[], year: number): Promise<Enclosure[]>;
   getOverviewSummary(userId: string): Promise<Summary>;
   getHistoricalWeather(
     idema: string,

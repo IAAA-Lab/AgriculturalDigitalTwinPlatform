@@ -3,6 +3,7 @@ package mongodb
 import (
 	"context"
 	"digital-twin/main-server/src/pkg/apperrors"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -28,6 +29,8 @@ func GetDocuments[T any](m *mongodbConn, collection string, filter interface{}, 
 	defer cancel()
 	var results T
 	cursor, err := m.db.Collection(collection).Find(ctx, filter, opts)
+	// Print results
+	fmt.Println(cursor)
 	if err == nil {
 		err = cursor.All(ctx, &results)
 		if err != nil {

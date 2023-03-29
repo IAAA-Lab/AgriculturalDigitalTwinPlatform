@@ -1,10 +1,10 @@
 import type {
   DailyWeather,
+  Enclosure,
   Fertilizer,
   ForecastWeather,
   HistoricalWeather,
   NDVI,
-  Parcel,
   Phytosanitary,
   Summary,
   UserParcels,
@@ -12,7 +12,7 @@ import type {
 
 interface IParcelsRepository {
   getUserParcels(userId: string): Promise<UserParcels>;
-  getEnclosures(enclosureIds: string[]): Promise<Parcel[]>;
+  getEnclosures(enclosureIds: string[], year: number): Promise<Enclosure[]>;
   getOverviewSummary(userId: string): Promise<Summary>;
   getHistoricalWeather(
     idema: string,

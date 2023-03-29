@@ -17,7 +17,7 @@
 
 <h1 class="title">Mapa</h1>
 <section class="container-responsive">
-  {#await parcelsService.getEnclosures([])}
+  {#await parcelsService.getEnclosures( ["50-99-0-0-28-144-1", "50-99-0-0-2-190-1"] )}
     <Loading />
   {:then parcels}
     <Map enclosures={parcels.flatMap((parcel) => parcel.enclosures.features)} />

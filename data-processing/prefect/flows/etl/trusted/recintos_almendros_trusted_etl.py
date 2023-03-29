@@ -1,4 +1,5 @@
 import os
+import re
 from prefect import flow, task, get_run_logger
 from minio import Minio
 import pandas as pd
@@ -23,15 +24,15 @@ def extract():
     # Get pistacho.json from MinIO and deserialize it
     data = minio_client.get_object(
         "landing-zone", FILE_NAME).read()
-    df = pd.read_excel(io.BytesIO(data), engine="openpyxl",
+    dfTreatments = pd.read_excel(io.BytesIO(data), engine="openpyxl",
                        sheet_name="Tratamientos", na_values=[''])
-    df2 = pd.read_excel(io.BytesIO(data), engine="openpyxl",
+    dfParcels = pd.read_excel(io.BytesIO(data), engine="openpyxl",
                         sheet_name="Parcelas", na_values=[''])
-    return df, df2
+    return dfTreatments, dfParcels
 
 
 @task
-def transform(df: pd.DataFrame):
+def transform_treatments(df: pd.DataFrame):
     logger = get_run_logger()
     print("processing data")
     logger.info("processing data")
@@ -55,7 +56,7 @@ def transform(df: pd.DataFrame):
     df['parcelAggregatedId'] = df['parcelAggregatedId'].astype(str).astype(int)
     df['parcelEnclosureId'] = df['parcelEnclosureId'].astype(str).astype(int)
     # Trim spaces from strings
-    df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
+    df.columns = df.columns.str.replace('^ +| +$', '')
     # Convert strings to uppercase
     df["secUserName"] = df["secUserName"].str.upper()
     data_year = df['harvestYear'].iloc[:1].values[0]
@@ -63,7 +64,41 @@ def transform(df: pd.DataFrame):
 
 
 @task
-def load(processed_data, data_year):
+def transform_parcels(df: pd.DataFrame):
+    logger = get_run_logger()
+    print("processing parcels data")
+    logger.info("processing parcels data")
+    # Modify data
+    ## Convert NaN to None
+    df = df.where(pd.notnull(df), None)
+    ## Trim spaces
+    df.columns = df.columns.str.replace('^ +| +$', '')
+    ## Convert strings to int in columns "Recinto" and "Agregado"
+    columns = ["Recinto", "Agregado"]
+    for column in columns:
+        df[column] = df[column].map(lambda x: re.sub(r'\W+', '', x)) # Remove non alphanumeric characters
+        df = df[df[column] != ""]  # Remove empty strings
+        df[column] = df[column].astype(int)  # Convert to int
+    ## Remove some columns
+    df = df.drop(columns=['ProductorNIF', 'Marcoplantacionh',
+                 'Marcoplantacionv', 'Asesoramiento'])
+    ## Change column names
+    try:
+        df.columns = ["harvestYear", "parcelProvinceId", "parcelMunicipalityId", "parcelPolygonId", "parcelId", "parcelEnclosureId", "parcelGeographicSpot", "parcelAggregatedId", "parcelZoneId", "orderPAC", "subOrderPAC", "areaSIGPAC", "area", "cropId",
+                      "parcelVarietyId", "irrigationKind", "tenureRegimeId", "plantationYear", "numberOfTrees", "plantationDensity", "ATRIA_ADV_ASV", "parcelVulnerableArea", "specificZones", "parcelUse", "slope", "UHC", "UHCDescription", "ZepaZone", "SIEZone"]
+    except Exception as e:
+        raise ValueError("Error changing column names: ", e)
+    ## Convert 'N' and 'S' to True and False
+    columns = ["specificZones", "parcelVulnerableArea", "ZepaZone", "SIEZone"]
+    for column in columns:
+        df[column] = df[column].map(lambda x: True if x == "S" else False)
+    ## Get data year
+    data_year = df['harvestYear'].iloc[:1].values[0]
+    return df, data_year
+
+
+@task
+def load(processed_data, data_year, file_name):
     logger = get_run_logger()
     print("loading data")
     logger.info("loading data")
@@ -83,7 +118,7 @@ def load(processed_data, data_year):
     # Store processed data with metadata in MinIO
     minio_client.put_object(
         "trusted-zone",
-        f"ERP/7eData/{data_year}/{FILE_NAME}",
+        f"ERP/7eData/{data_year}/{file_name}",
         processed_data_bytes,
         length=processed_data_bytes.getbuffer().nbytes,
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -96,9 +131,12 @@ def load(processed_data, data_year):
 
 @flow(name="recintos_almendros_refined_etl")
 def recintos_almendros_refined_etl():
-    df, df2 = extract()
-    processed_data, data_year = transform(df)
-    load(processed_data, data_year)
+    dfTratamientos, dfParcels = extract()
+    processed_data_treatments, data_year = transform_treatments(dfTratamientos)
+    processed_data_parcels, data_year = transform_parcels(dfParcels)
+    load(processed_data_treatments, data_year,
+         "recintos_almendros_tratamientos.xlsx")
+    load(processed_data_parcels, data_year, "recintos_almendros_parcelas.xlsx")
 
 
 if __name__ == "__main__":

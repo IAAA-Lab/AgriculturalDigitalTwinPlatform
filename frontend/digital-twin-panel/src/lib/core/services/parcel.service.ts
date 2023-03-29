@@ -1,11 +1,11 @@
 import type {
   UserParcels,
-  Parcel,
   Summary,
   DailyWeather,
   NDVI,
   ForecastWeather,
   HistoricalWeather,
+  Enclosure,
 } from "../Domain";
 import type { IParcelsRepository } from "../ports/Repository";
 import type { IParcelsService } from "../ports/Services";
@@ -16,8 +16,8 @@ class ParcelsService implements IParcelsService {
   getUserParcels(userId: string): Promise<UserParcels> {
     return this.parcelsRepository.getUserParcels(userId);
   }
-  getEnclosures(enclosureIds: string[]): Promise<Parcel[]> {
-    return this.parcelsRepository.getEnclosures(enclosureIds);
+  getEnclosures(enclosureIds: string[]): Promise<Enclosure[]> {
+    return this.parcelsRepository.getEnclosures(enclosureIds, 2022);
   }
   getOverviewSummary(userId: string): Promise<Summary> {
     return this.parcelsRepository.getOverviewSummary(userId);

@@ -44,69 +44,41 @@ type Characteristics = {
   state: StateNames;
 };
 
-type Parcel = {
-  id: string;
-  ts: Date;
-  type: string;
-  geometry: {
-    type: string;
-    coordinates: number[][][];
-  };
-  properties: {
-    address: {
-      zip: string;
-      municipality: string;
-      province: string;
-      ccaa: string;
-    };
-    idema: string;
-    protectedZones: {
-      type: string;
-      zones: string[];
-    }[];
-  };
-  enclosures: {
-    type: string;
-    features: Enclosure[];
-  };
-};
-
 type Enclosure = {
   id: string;
-  ts: Date;
+  year: number;
   type: string;
   geometry: {
     type: string;
-    coordinates: number[][][];
+    coordinates: number[][];
+  };
+  meteoStation: {
+    idema: string;
+    name: string;
+    "distance(km)": number;
   };
   properties: {
-    imageUri: string;
-    protectedArea: boolean;
-    ndvi: {
-      value: number;
-      state: StateNames;
-    };
-    area: {
-      value: number;
-      unit: string;
-    };
-    slope: {
-      value: number;
-      unit: string;
-    };
-    irrigation: {
-      value: number;
-      unit: string;
-    };
-    usedArea: {
-      value: number;
-      unit: string;
-    };
-
-    irrigationType: string;
-    useType: string;
+    irrigationCoef: number;
+    admisibility: number;
+    geographicSpot: string;
+    cropId: CropId;
+    areaSIGPAC: number;
+    area: number;
+    varietyId: string;
+    irrigationKind: string;
+    tenureRegimeId: string;
+    plantationYear: number;
+    numberOfTrees: number;
+    plantationDensity: number;
+    vulnerableArea: boolean;
+    specificZones: boolean;
+    parcelUse: string;
+    slope: number;
+    uhc: number;
+    uhcDescription: string;
+    zepaZone: boolean;
+    sieZone: boolean;
   };
-  cropIds: CropId[];
 };
 
 type Crop = {
@@ -337,7 +309,6 @@ export type {
   Result,
   User,
   Characteristic,
-  Parcel,
   Enclosure,
   Crop,
   CropId,

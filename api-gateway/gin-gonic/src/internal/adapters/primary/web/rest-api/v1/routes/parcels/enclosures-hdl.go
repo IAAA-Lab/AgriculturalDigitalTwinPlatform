@@ -78,6 +78,7 @@ func (hdl *HTTPHandler) GetUserParcels(c *gin.Context) {
 
 type ParcelsIn struct {
 	EnclosureIds []string `form:"enclosureIds"`
+	Year         int16    `form:"year"`
 }
 
 func (hdl *HTTPHandler) GetEnclosures(c *gin.Context) {
@@ -87,33 +88,12 @@ func (hdl *HTTPHandler) GetEnclosures(c *gin.Context) {
 		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
 		return
 	}
-	enclosures, err := hdl.parcelsService.GetParcels(enclosuresIn.EnclosureIds)
+	enclosures, err := hdl.parcelsService.GetEnclosures(enclosuresIn.EnclosureIds, enclosuresIn.Year)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
 	}
 	c.JSON(200, enclosures)
-}
-
-// -----------------------------------------------------------------------
-
-type ParcelsSummary struct {
-	UserId string `form:"userId"`
-}
-
-func (hdl *HTTPHandler) GetParcelsSummary(c *gin.Context) {
-	var parcelsSummary ParcelsSummary
-	err := c.ShouldBind(&parcelsSummary)
-	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
-		return
-	}
-	summary, err := hdl.parcelsService.GetSummary(parcelsSummary.UserId)
-	if err != nil {
-		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
-		return
-	}
-	c.JSON(200, summary)
 }
 
 // -----------------------------------------------------------------------
@@ -250,28 +230,3 @@ func (hdl *HTTPHandler) GetNDVI(c *gin.Context) {
 	}
 	c.JSON(200, ndvi)
 }
-
-// -----------------------------------------------------------------------
-
-// func (hdl *HTTPStreamHandler) SseTest(c *gin.Context) {
-// 	chanStream := make(chan domain.EventOut, 10)
-// 	parcel := domain.Parcel{
-// 		Id: "334rm3434",
-// 		Ts: time.Now(),
-// 		Geometry: struct {
-// 			Type        string    "json:\"type\""
-// 			Coordinates []float64 "json:\"coordinates\""
-// 		}{
-// 			Type:        "Point",
-// 			Coordinates: []float64{0, 0},
-// 		},
-// 	}
-// 	chanStream <- domain.EventOut{ErrorMessage: "", Payload: parcel}
-// 	c.Stream(func(w io.Writer) bool {
-// 		if msg, ok := <-chanStream; ok {
-// 			c.SSEvent("message", msg)
-// 			return true
-// 		}
-// 		return false
-// 	})
-// }

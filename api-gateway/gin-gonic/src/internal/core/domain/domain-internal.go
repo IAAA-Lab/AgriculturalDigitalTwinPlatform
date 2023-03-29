@@ -81,31 +81,3 @@ const (
 	ROLE_AGRARIAN       = "agrarian"
 	ROLE_PRIVATE_ACCESS = "privateAccess"
 )
-
-var (
-	AreaChar = Characteristics{
-		Name: "Area",
-		Unit: "m2",
-	}
-	SlopeAvgChar = Characteristics{
-		Name: "Pendiente media",
-		Unit: "%",
-	}
-	IrrigationCoefChar = Characteristics{
-		Name: "Coef. de regadío",
-		Unit: "%",
-	}
-	PlantsHealth = Characteristics{
-		Name: "Salud plantas (NDVI)",
-		Unit: "%",
-	}
-)
-
-type StateNames string
-
-const (
-	Good   StateNames = "BIEN"
-	Medium StateNames = "MEDIO"
-	Bad    StateNames = "MAL"
-	NA     StateNames = "N/A"
-)

@@ -14,7 +14,7 @@ type mongodbConn struct {
 }
 
 const (
-	PARCELS_COLLECTION         = "Parcels"
+	ENCLOSURES_COLLECTION      = "Enclosures"
 	USER_PARCELS_COLLECTION    = "UserParcels"
 	WEATHER_COLLECTION         = "Weather"
 	NDVI_COLLECTION            = "NDVI"

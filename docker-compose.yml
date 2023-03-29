@@ -48,15 +48,15 @@ services:
 # Services communication and message queue  #
 #############################################
 
-  rabbitmq:
-      image: rabbitmq:3-management
-      container_name: rabbitmq
-      ports:
-          - 5672:${RABBITMQ_PORT}
-          - 15672:${RABBITMQ_PANEL_PORT}
-      environment:
-          - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-          - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+  # rabbitmq:
+  #     image: rabbitmq:3-management
+  #     container_name: rabbitmq
+  #     ports:
+  #         - 5672:${RABBITMQ_PORT}
+  #         - 15672:${RABBITMQ_PANEL_PORT}
+  #     environment:
+  #         - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+  #         - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
 
 #############################################
 #              Web app server               #
@@ -67,12 +67,12 @@ services:
     ports:
         - 8080:${GIN_PORT}
     volumes:
-        - ./web-app/server/main-server:/main-server
-    command: go run ./src/internal/cmd/main.go
+        - ./api-gateway/gin-gonic:/app
+    # command: go run ./src/internal/cmd/main.go
     restart: always
     depends_on:
         - 'mongo'
-        - 'rabbitmq'
+        # - 'rabbitmq'
     environment:
       - ENV_MODE=LOCAL
       - JWT_SECRET=${JWT_SECRET}
@@ -95,77 +95,77 @@ services:
 #               Redis server                #
 #############################################
 
-  redis:
-    image: redis:7
-    ports:
-      - 6379:${REDIS_PORT}
-    # user and password
-    command: bash -c "redis-server --requirepass $REDIS_PASSWORD --appendonly yes"
-    volumes:
-      - ./storage/redis/data:/data
-    restart: always
+  # redis:
+  #   image: redis:7
+  #   ports:
+  #     - 6379:${REDIS_PORT}
+  #   # user and password
+  #   command: bash -c "redis-server --requirepass $REDIS_PASSWORD --appendonly yes"
+  #   volumes:
+  #     - ./storage/redis/data:/data
+  #   restart: always
 
 #############################################
 #             Digital twin panel            #
 #############################################
 
-  web-client-svelte:
-    build: frontend/digital-twin-panel
-    restart: always
-    ports:
-      - 5173:${SVELTE_PORT}
-    depends_on:
-      - gin-gonic
-    stdin_open: true
-    environment:
-      - VITE_SERVER_URL=${SVELTE_SERVER_URL}
-      - VITE_LANDING_URL=${SVELTE_LANDING_URL}
-      - VITE_IMAGES_SERVER_URL=${SVELTE_IMAGES_SERVER_URL}
+#   web-client-svelte:
+#     build: frontend/digital-twin-panel
+#     restart: always
+#     ports:
+#       - 5173:${SVELTE_PORT}
+#     depends_on:
+#       - gin-gonic
+#     stdin_open: true
+#     environment:
+#       - VITE_SERVER_URL=${SVELTE_SERVER_URL}
+#       - VITE_LANDING_URL=${SVELTE_LANDING_URL}
+#       - VITE_IMAGES_SERVER_URL=${SVELTE_IMAGES_SERVER_URL}
 
-#############################################
-#               Private access              #
-#############################################
+# #############################################
+# #               Private access              #
+# #############################################
 
-  private-access-vanillajs:
-    build: frontend/private-access
-    restart: always
-    ports:
-      - 5174:${VITE_VANILLAJS_PORT}
-    depends_on:
-      - gin-gonic
-    stdin_open: true
-    environment:
-      - VITE_API_URL=${VITE_VANILLAJS_API_URL}
-      - VITE_PORT=${VITE_VANILLAJS_PORT}
-      - VITE_IV_BLOCK_PASSWD=${VITE_IV_BLOCK_PASSWD}
-      - VITE_KEY_DECRYPT_PASSWD=${VITE_KEY_DECRYPT_PASSWD}
+#   private-access-vanillajs:
+#     build: frontend/private-access
+#     restart: always
+#     ports:
+#       - 5174:${VITE_VANILLAJS_PORT}
+#     depends_on:
+#       - gin-gonic
+#     stdin_open: true
+#     environment:
+#       - VITE_API_URL=${VITE_VANILLAJS_API_URL}
+#       - VITE_PORT=${VITE_VANILLAJS_PORT}
+#       - VITE_IV_BLOCK_PASSWD=${VITE_IV_BLOCK_PASSWD}
+#       - VITE_KEY_DECRYPT_PASSWD=${VITE_KEY_DECRYPT_PASSWD}
 
-#############################################
-#         Digital twin landing page         #
-#############################################
+# #############################################
+# #         Digital twin landing page         #
+# #############################################
 
-  landing-page-react:
-    build: frontend/landing-page
-    restart: always
-    ports:
-      - 3001:${REACT_PORT}
-    depends_on:
-      - gin-gonic
-    stdin_open: true
-    environment:
-      - PORT=${REACT_PORT}
-      - REACT_APP_API_URL=${REACT_APP_API_URL}
-      - REACT_APP_DIGITAL_TWIN_URL=${REACT_APP_DIGITAL_TWIN_URL}
-      - REACT_APP_NEWS_UPLOAD_URL=${REACT_APP_NEWS_UPLOAD_URL}
-      - REACT_APP_KEY_DECRYPT_PASSWD=${REACT_APP_KEY_DECRYPT_PASSWD}
-      - REACT_APP_IV_BLOCK_PASSWD=${REACT_APP_IV_BLOCK_PASSWD}
-      - REACT_APP_EMAIL_SENDER_PUBKEY=${REACT_APP_EMAIL_SENDER_PUBKEY}
-      - REACT_APP_EMAIL_SENDER_SERVICEID=${REACT_APP_EMAIL_SENDER_SERVICEID}
-      - REACT_APP_EMAIL_SENDER_TEMPLATEID=${REACT_APP_EMAIL_SENDER_TEMPLATEID}
+#   # landing-page-react:
+#   #   build: frontend/landing-page
+#   #   restart: always
+#   #   ports:
+#   #     - 3001:${REACT_PORT}
+#   #   depends_on:
+#   #     - gin-gonic
+#   #   stdin_open: true
+#   #   environment:
+#   #     - PORT=${REACT_PORT}
+#   #     - REACT_APP_API_URL=${REACT_APP_API_URL}
+#   #     - REACT_APP_DIGITAL_TWIN_URL=${REACT_APP_DIGITAL_TWIN_URL}
+#   #     - REACT_APP_NEWS_UPLOAD_URL=${REACT_APP_NEWS_UPLOAD_URL}
+#   #     - REACT_APP_KEY_DECRYPT_PASSWD=${REACT_APP_KEY_DECRYPT_PASSWD}
+#   #     - REACT_APP_IV_BLOCK_PASSWD=${REACT_APP_IV_BLOCK_PASSWD}
+#   #     - REACT_APP_EMAIL_SENDER_PUBKEY=${REACT_APP_EMAIL_SENDER_PUBKEY}
+#   #     - REACT_APP_EMAIL_SENDER_SERVICEID=${REACT_APP_EMAIL_SENDER_SERVICEID}
+#   #     - REACT_APP_EMAIL_SENDER_TEMPLATEID=${REACT_APP_EMAIL_SENDER_TEMPLATEID}
 
-#############################################
-#            Digital twin storage           #
-#############################################
+# #############################################
+# #            Digital twin storage           #
+# #############################################
 
   mongo:
       build: storage/mongodb
@@ -183,9 +183,9 @@ services:
         - MONGO_FIRST_USER_PASSWORD=${MONGO_FIRST_USER_PASSWORD}
         - MONGO_FIRST_USER_ROLE=${MONGO_FIRST_USER_ROLE}
 
-#############################################
-#    Data lake and Prefect flows storage    #
-#############################################
+# #############################################
+# #    Data lake and Prefect flows storage    #
+# #############################################
 
   minio:
       image: minio/minio:RELEASE.2023-02-27T18-10-45Z
@@ -200,9 +200,9 @@ services:
       volumes:
           - ./storage/minio/data:/data
 
-#############################################
-#        Database for Prefect Server        #
-#############################################
+# #############################################
+# #        Database for Prefect Server        #
+# #############################################
 
   postgres:
     image: postgres:15.2-alpine
@@ -216,10 +216,10 @@ services:
     volumes: 
       - postgres:/var/lib/postgresql/data
 
-#############################################
-#      Data ingestion, data processing      # 
-#      processing and machine learning      #
-#############################################
+# #############################################
+# #      Data ingestion, data processing      # 
+# #      processing and machine learning      #
+# #############################################
 
   prefect-server:
     build: data-processing/prefect
@@ -246,6 +246,3 @@ services:
 volumes:
   prefect:
   postgres:
-  grafana-data:
-  loki-data:
-  prometheus-data:

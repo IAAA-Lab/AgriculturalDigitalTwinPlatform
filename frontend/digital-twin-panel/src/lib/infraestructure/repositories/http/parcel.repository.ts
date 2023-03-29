@@ -3,20 +3,39 @@ import type {
   ForecastWeather,
   DailyWeather,
   NDVI,
-  Parcel,
   Summary,
   UserParcels,
   Fertilizer,
   HistoricalWeather,
   Phytosanitary,
+  Enclosure,
 } from "src/lib/core/Domain";
 import { ServerError } from "src/lib/core/Exceptions";
 import type { IParcelsRepository } from "src/lib/core/ports/Repository";
 
 class HttpParcelsRepository implements IParcelsRepository {
   constructor(private readonly http: AxiosInstance) {}
-  async getEnclosures(enclosureIds: string[]): Promise<Parcel[]> {
-    return [];
+  async getEnclosures(
+    enclosureIds: string[],
+    year: number
+  ): Promise<Enclosure[]> {
+    console.log({ enclosureIds });
+    return this.http
+      .get<Enclosure[]>("enclosures", {
+        params: {
+          enclosureIds: enclosureIds.join(","),
+          year,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          return response.data;
+        }
+        throw ServerError;
+      })
+      .catch((_) => {
+        throw ServerError;
+      });
   }
   async getOverviewSummary(userId: string): Promise<Summary> {
     return null;
@@ -89,7 +108,7 @@ class HttpParcelsRepository implements IParcelsRepository {
   }
   async getForecastWeather(parcelId: string): Promise<ForecastWeather> {
     return this.http
-      .get<DailyWeather[]>("weather/forecast", {
+      .get<ForecastWeather>("weather/forecast", {
         params: {
           parcelId,
         },
