@@ -18,9 +18,6 @@ def extract():
     logger = get_run_logger()
     # Connect to MinIO
     minio_client = functions.DB_MinioClient().connect()
-
-    print("extracting data")
-    logger.info("extracting data")
     # Get pistacho.json from MinIO and deserialize it
     pistacho_json_data = minio_client.get_object(
         "trusted-zone", FILE_NAME).read().decode("utf-8")
@@ -31,8 +28,6 @@ def extract():
 @task
 def extract_model_schema():
     logger = get_run_logger()
-    print("extracting model schema")
-    logger.info("extracting model schema")
     # Get model schema from MinIO and deserialize it
     minio_client = functions.DB_MinioClient().connect()
     model_schema = minio_client.get_object(
@@ -44,8 +39,6 @@ def extract_model_schema():
 @task
 def transform(json_data: dict, model_schema):
     logger = get_run_logger()
-    print("processing data")
-    logger.info("processing data")
     # Convert json to json compatible with model schema
     farm_input = Pistachio.from_dict(json_data)
     logger.info(farm_input)
@@ -96,8 +89,6 @@ def transform(json_data: dict, model_schema):
 @task
 def load(processed_data):
     logger = get_run_logger()
-    print("loading data")
-    logger.info("loading data")
 
     # Connect to MongoDB
     MONGODB_HOST = os.environ.get("PREFECT_MONGODB_HOST")
@@ -107,7 +98,9 @@ def load(processed_data):
     db = mongo_client[MONGODB_DB]
     collection = db["Farm"]
     # Store processed data in MongoDB
-    collection.insert_one(processed_data)
+    collection.update_one({
+        "farmId": processed_data["Farm"]["Farm_Id"],
+    }, {"$set": processed_data}, upsert=True)
 
 
 @flow(name="pistacho_refined_etl")

@@ -5,8 +5,8 @@ import type {
   ForecastWeather,
   HistoricalWeather,
   NDVI,
-  Phytosanitary,
   Summary,
+  Treatment,
   UserParcels,
 } from "../Domain";
 
@@ -19,18 +19,19 @@ interface IParcelsRepository {
     startDate: Date,
     endDate: Date
   ): Promise<HistoricalWeather[]>;
-  getDailyWeather(parcelId: string, date: Date): Promise<DailyWeather>;
-  getForecastWeather(parcelId: string): Promise<ForecastWeather>;
+  getDailyWeather(enclosureId: string, date: Date): Promise<DailyWeather>;
+  getForecastWeather(enclosureId: string): Promise<ForecastWeather>;
   getNDVI(
     enclosureIds: string[],
     startDate: Date,
-    endDate: Date
+    endDate: Date,
+    limit: number
   ): Promise<NDVI[]>;
-  getPhytosanitaries(
+  GetTreatments(
     enclosureId: string,
     startDate: Date,
     endDate: Date
-  ): Promise<Phytosanitary[]>;
+  ): Promise<Treatment[]>;
   getFertilizers(
     enclosureId: string,
     startDate: Date,

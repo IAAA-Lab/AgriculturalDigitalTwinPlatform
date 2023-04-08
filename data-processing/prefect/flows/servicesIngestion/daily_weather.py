@@ -5,17 +5,14 @@ import os
 
 
 @task
-def extract(parcelId: str):
-    logger = get_run_logger()
-    print("extracting data")
-    logger.info("extracting data")
+def extract(enclosureId: str):
 
     # Extract data from Rest API
 
     AUTH_TOKEN = os.environ.get("AGROSLAB_AUTH_TOKEN")
     AGROSLAB_API_URL = os.environ.get("AGROSLAB_API_URL")
 
-    municipality = parcelId.split("-")[1]
+    municipality = enclosureId.split("-")[1]
     if len(municipality) == 1:
         municipality = "00" + municipality
     elif len(municipality) == 2:
@@ -23,7 +20,7 @@ def extract(parcelId: str):
 
     body = {
         "operation": "aemetprediccionmunicipio",
-        "provincia": parcelId.split("-")[0],
+        "provincia": enclosureId.split("-")[0],
         "municipio": municipality,
         "type": "horaria"
     }
@@ -39,15 +36,14 @@ def extract(parcelId: str):
 
 
 @task
-def transform(data, parcelId) -> dict:
+def transform(data, enclosureId) -> dict:
     logger = get_run_logger()
     print("transforming data")
     logger.info("transforming data")
-    print(data)
     response = DailyWeather.from_dict(data[0])
     daily_weather = {
         "type": "daily_weather",
-        "parcelId": parcelId,
+        "enclosureId": enclosureId,
         "origin": {
             "producer": response.origen.productor,
             "web": response.origen.web,
@@ -108,10 +104,10 @@ def transform(data, parcelId) -> dict:
 
 
 @flow(name="daily_weather")
-def daily_weather(parcelId: str) -> dict:
+def daily_weather(enclosureId: str) -> dict:
     try:
-        data = extract(parcelId)
-        processed_data = transform(data, parcelId)
+        data = extract(enclosureId)
+        processed_data = transform(data, enclosureId)
         return processed_data
     except Exception as e:
         logger = get_run_logger()

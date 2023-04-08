@@ -1,6 +1,6 @@
 <script>
   import { map } from "leaflet";
-  import { getRangeBarColor } from "src/lib/core/functions";
+  import { getRangeBarColor, numberWithCommas } from "src/lib/core/functions";
   import Card from "src/lib/infraestructure/presentation/components/cards/Card.svelte";
   import CardInner from "src/lib/infraestructure/presentation/components/cards/CardInner.svelte";
   import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
@@ -9,16 +9,15 @@
   import config from "../../map/components/config/ndviLineChart.config";
   import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
   import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
-  import { parcelsService } from "src/app/config/config";
+  import { enclosuresService } from "src/app/config/config";
 
   export let enclosureId;
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 30);
-  const endDate = new Date();
+  const startDate = new Date("2022-01-01");
+  const endDate = new Date("2022-02-01");
 </script>
 
 <section>
-  {#await parcelsService.getNDVI([enclosureId], startDate, endDate)}
+  {#await enclosuresService.getNDVI([enclosureId], null, null, 30)}
     <Loading />
   {:then ndviValues}
     <Link to="/enclosure/{enclosureId}/map">
@@ -34,9 +33,7 @@
                 background={getRangeBarColor(currentNdviValue)}
               />
               <h3 class="m-0">
-                <strong
-                  >{(currentNdviValue * 100).toPrecision(4)} %<strong /></strong
-                >
+                <strong>{numberWithCommas(currentNdviValue)}<strong /></strong>
               </h3>
             </div>
           </CardInner>
@@ -44,7 +41,7 @@
           <CardInner>
             <div class="ndvi__chart" slot="body">
               <LineChart
-                labels={ndviValues.map((ndvi) => ndvi.date)}
+                labels={ndviValues.map((ndvi) => ndvi.date.split("T")[0])}
                 datasets={[
                   {
                     data: ndviValues.map((ndvi) => ndvi.value),
@@ -86,14 +83,14 @@
 <style>
   section {
     grid-area: ndvi;
+    margin-top: 1.25rem;
   }
   .ndvi__chart {
-    height: 200px;
+    height: 300px;
   }
 
   .ndvi__value__unit {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     white-space: nowrap;
     column-gap: 0.5rem;

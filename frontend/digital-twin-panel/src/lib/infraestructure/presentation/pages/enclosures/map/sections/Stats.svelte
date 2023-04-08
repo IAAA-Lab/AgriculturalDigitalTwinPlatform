@@ -1,99 +1,101 @@
-<script>
-  import { getRangeBarColor } from "src/lib/core/functions";
+<script type="ts">
+  import { getRangeBarColor, numberWithCommas } from "src/lib/core/functions";
   import Card from "src/lib/infraestructure/presentation/components/cards/Card.svelte";
   import CardInner from "src/lib/infraestructure/presentation/components/cards/CardInner.svelte";
   import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
   import Range from "src/lib/infraestructure/presentation/components/misc/Range.svelte";
   import config from "../components/config/ndviLineChart.config";
-  import { parcelsService } from "src/app/config/config";
+  import { enclosuresService } from "src/app/config/config";
   import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
   import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
+  import { onMount } from "svelte";
+  import type { NDVI } from "src/lib/core/Domain";
 
-  export let enclosureId;
-  let endDateText = new Date().toISOString().split("T")[0];
-  let startDateText;
-  startDateText = new Date(new Date().setDate(new Date().getDate() - 30))
-    .toISOString()
-    .split("T")[0];
-  let startDate;
-  let endDate;
+  export let enclosureId: string;
+  let startDateText: string = null;
+  let endDateText: string = null;
+  let ndviValues: NDVI[] = [];
+
   $: {
-    startDate = new Date(startDateText);
-    endDate = new Date(endDateText);
+    enclosuresService
+      .getNDVI(
+        [enclosureId],
+        startDateText && new Date(startDateText),
+        endDateText && new Date(endDateText),
+        startDateText && endDateText ? null : 30
+      )
+      .then((ndvi) => {
+        ndviValues = ndvi;
+      })
+      .catch((error) => {
+        ndviValues = [];
+      });
   }
 </script>
 
-{#await parcelsService.getNDVI([enclosureId], startDate, endDate)}
-  <Loading />
-{:then ndviValues}
-  <Card>
-    <h2 class="m-0" slot="header">NDVI</h2>
-    <div slot="body" class="p-16 body">
-      <div class="left">
-        <h4 class="m-0">Media</h4>
-        <CardInner class="ndvi__card">
-          <div slot="body" class="range__bar">
-            {@const lastNdviValue = ndviValues.at(-1).value}
-            <Range
-              value={lastNdviValue}
-              to={1}
-              background={getRangeBarColor(lastNdviValue)}
-            />
-            <h3 class="m-0">
-              <strong
-                >{(
-                  (ndviValues.reduce((a, b) => a + b.value, 0) /
-                    ndviValues.length) *
-                  100
-                ).toPrecision(4)} %<strong /></strong
-              >
-            </h3>
-          </div>
-        </CardInner>
-        <div class="date__picker">
-          <input type="date" bind:value={startDateText} />
-          <input type="date" bind:value={endDateText} />
-        </div>
-      </div>
-      <CardInner class="card__wrapper">
-        <div class="chart__wrapper" slot="body">
-          <LineChart
-            labels={ndviValues.map((v) => v.date)}
-            datasets={[
-              {
-                data: ndviValues.map((v) => v.value),
-                label: "Ganancias",
-                fill: true,
-                borderColor: "#fc9b68",
-                backgroundColor: function (context) {
-                  const chart = context.chart;
-                  const { ctx, chartArea } = chart;
-                  if (!chartArea) {
-                    return null;
-                  }
-                  const gradient = ctx.createLinearGradient(
-                    0,
-                    chartArea.bottom,
-                    0,
-                    chartArea.top
-                  );
-                  gradient.addColorStop(0.0, "rgba(255,255,255,0.7)");
-                  gradient.addColorStop(0.2, "rgba(252, 155, 104,1)");
-                  return gradient;
-                },
-                tension: 0.2,
-              },
-            ]}
-            title="Índices NDVI por fecha"
-            {config}
+<Card>
+  <h2 class="m-0" slot="header">NDVI</h2>
+  <div slot="body" class="p-16 body">
+    <div class="left">
+      <h4 class="m-0">Media</h4>
+      <CardInner class="ndvi__card">
+        <div slot="body" class="range__bar">
+          {@const lastNdviValue = ndviValues?.at(-1)?.value}
+          <Range
+            value={lastNdviValue}
+            to={1}
+            background={getRangeBarColor(lastNdviValue)}
           />
+          <h3 class="m-0">
+            <strong
+              >{numberWithCommas(
+                ndviValues.reduce((a, b) => a + b?.value, 0) / ndviValues.length
+              )}<strong /></strong
+            >
+          </h3>
         </div>
       </CardInner>
+      <div class="date__picker">
+        <input type="date" bind:value={startDateText} />
+        <input type="date" bind:value={endDateText} />
+      </div>
     </div>
-  </Card>
-{:catch error}
-  <Error />
-{/await}
+    <CardInner class="card__wrapper">
+      <div class="chart__wrapper" slot="body">
+        <LineChart
+          labels={ndviValues.map((v) => v.date.split("T")[0])}
+          datasets={[
+            {
+              data: ndviValues.map((v) => v.value),
+              label: "Ganancias",
+              fill: true,
+              borderColor: "#fc9b68",
+              backgroundColor: function (context) {
+                const chart = context.chart;
+                const { ctx, chartArea } = chart;
+                if (!chartArea) {
+                  return null;
+                }
+                const gradient = ctx.createLinearGradient(
+                  0,
+                  chartArea.bottom,
+                  0,
+                  chartArea.top
+                );
+                gradient.addColorStop(0.0, "rgba(255,255,255,0.7)");
+                gradient.addColorStop(0.2, "rgba(252, 155, 104,1)");
+                return gradient;
+              },
+              tension: 0.2,
+            },
+          ]}
+          title="Índices NDVI por fecha"
+          {config}
+        />
+      </div>
+    </CardInner>
+  </div>
+</Card>
 
 <style lang="scss">
   .body {
@@ -129,7 +131,8 @@
   }
 
   .chart__wrapper {
-    height: 300px;
+    min-height: 100px;
+    max-height: 500px;
     min-width: 200px;
   }
 

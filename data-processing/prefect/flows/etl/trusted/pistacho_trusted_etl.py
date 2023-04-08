@@ -71,7 +71,7 @@ def load(processed_data):
         metadata={
             # "source": "7eData", -- NOTE: already in metadata from landing-zone to raw-zone
             # "date": "2021-05-01", -- NOTE: already in metadata from landing-zone to raw-zone
-            "type": "raw",
+            "type": "trusted",
             "description": "Pistachio raw data containing farmholders, healthadvisors, healthapplicators and static parcel information",
         },
     )

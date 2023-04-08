@@ -93,7 +93,7 @@ const getIconByCharacteristic = (characteristic) => {
       return `<i class="fi fi-rr-water" />`;
     case "NDVI medio":
       return `<i class="fi fi-rr-leaf" />`;
-    case "Pendiente media":
+    case "Pendiente":
       return `<i class="fi fi-rr-mountains"></i>`;
     default:
       return `<i class="fi fi-rr-map-marker" />`;
@@ -111,7 +111,6 @@ const getRangeBarColor = (value: number) => {
 };
 
 const getWeatherIcon = (description: string) => {
-  console.log({ description });
   //aemet icons
   switch (description) {
     case "Despejado":
@@ -211,7 +210,6 @@ const getWeatherIcon = (description: string) => {
     case "Despejado y mucho viento":
       return `<i class="fi fi-rr-sun" />`;
     case "Niebla ":
-      console.log("HOLAAAA");
       return `<i class="fi fi-rr-fog" />`;
     case "Bruma":
       return `<i class="fi fi-rr-fog" />`;
@@ -222,29 +220,17 @@ const getWeatherIcon = (description: string) => {
   }
 };
 
-const getIconByCropStats = (title: string) => {
-  switch (title) {
-    case "Área":
-      return `<i class="fi fi-rr-map-marker" />`;
-    case "Ganancias":
-      return `<i class="fi fi-rr-money" />`;
-    case "Rendimiento":
-      return `<i class="fi fi-rr-stats" />`;
-    case "Cosecha":
-      return `<i class="fi fi-rr-hand-holding-seeding" />`;
-    case "Producción":
-      return `<i class="fi fi-rr-tractor" />`;
-    default:
-      return `<i class="fi fi-rr-map-marker" />`;
-  }
-};
-
 const formattedTime = (time: string) => {
   return time.split("T")[0];
 };
 
 const formattedDate = (time: Date) => {
   return time.getDate() + "" + (time.getMonth() + 1) + "/" + time.getFullYear();
+};
+
+const onCropImageError = (ev) => {
+  ev.target.src =
+    "https://www.iconpacks.net/icons/2/free-plant-icon-1573-thumb.png";
 };
 
 export {
@@ -257,5 +243,5 @@ export {
   formattedDate,
   getWeatherIcon,
   formattedTime,
-  getIconByCropStats,
+  onCropImageError,
 };

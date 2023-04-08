@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let day: Date;
+  export let day: Date = new Date();
   export let minTa: number;
   export let maxTa: number;
 
@@ -16,7 +16,7 @@
 
 <div class="item">
   <p class="m-0 text-sm" style="width: 75px;">
-    <!-- {days[day.getDay() - 1] || "Domingo"} -->
+    {days[new Date(day).getDay()] || "Domingo"}
   </p>
   <slot name="icon" />
   <div class="ta__wrapper">

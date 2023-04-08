@@ -1,4 +1,4 @@
-FROM node:19 as digital-twin
+FROM node:19
 WORKDIR /usr/src/app
 COPY . ./
 RUN yarn install

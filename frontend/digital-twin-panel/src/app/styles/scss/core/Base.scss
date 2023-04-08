@@ -86,7 +86,7 @@ table {
   white-space: nowrap;
 
   th {
-    padding: 0.75rem;
+    padding: 0.5rem;
     text-align: left;
     border-bottom: 1px solid #e5e7eb;
     background-color: #f3f4f6;
@@ -94,7 +94,7 @@ table {
   }
 
   td {
-    padding: 0.75rem;
+    padding: 0.5rem;
     text-align: left;
     border-bottom: 1px solid #e5e7eb;
     @extend .text-sm;

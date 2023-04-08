@@ -5,7 +5,7 @@
   import ForecastWeather from "./sections/ForecastWeather.svelte";
   import TempMap from "./sections/TempMap.svelte";
   import Error from "../../../components/misc/Error.svelte";
-  import { parcelsService } from "src/app/config/config";
+  import { enclosuresService } from "src/app/config/config";
   import Loading from "../../../components/misc/Loading.svelte";
 
   export let id;
@@ -13,7 +13,7 @@
 
 <h1 class="title">Recinto#{id} · Tiempo</h1>
 <div class="container-responsive">
-  {#await parcelsService.getDailyWeather(id)}
+  {#await enclosuresService.getDailyWeather(id)}
     <Loading />
   {:then cw}
     {@const pred = cw.prediction[0]}

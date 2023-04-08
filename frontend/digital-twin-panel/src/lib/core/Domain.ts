@@ -24,7 +24,7 @@ type UserParcels = {
 type SummaryStat = {
   enclosureId: string;
   stat: Characteristics;
-  cropIds: CropId[];
+  // cropIds: CropId[];
   diff: number;
 };
 
@@ -61,11 +61,11 @@ type Enclosure = {
     irrigationCoef: number;
     admisibility: number;
     geographicSpot: string;
-    cropId: CropId;
+    crop: Crop;
     areaSIGPAC: number;
     area: number;
     varietyId: string;
-    irrigationKind: string;
+    rainfedOrIrrigated: string;
     tenureRegimeId: string;
     plantationYear: number;
     numberOfTrees: number;
@@ -82,65 +82,43 @@ type Enclosure = {
 };
 
 type Crop = {
+  id: string;
   name: string;
   variety: string;
-  imageUri: string;
-  production: number;
-  area: number;
-  performance: number;
-  harvest: number;
-  characteristics: Characteristics[];
-};
-
-type CropId = {
-  name: string;
-  variety: string;
-  imageUri: string;
-};
-
-type CropStat = {
-  enclosureId: string;
-  cropId: CropId;
-  stats: {
-    title: string;
-    value: number;
-    diff: number;
-    unit?: string;
-  };
+  varietyId: number;
+  codeType: string;
+  plantationKind?: string;
+  plantationSubKind?: string;
 };
 
 type Fertilizer = {
   enclosureId: string;
-  crop: CropId;
+  crop: Crop;
   name: string;
   startDate: Date;
   quantity: number;
 };
 
-type Phytosanitary = {
-  enclosureId: string;
-  crop: CropId;
-  startDate: Date;
-  endDate: Date;
-  product: string;
-  registrationNumber: string;
-  plague: string;
-  area: number;
-  dosage: number;
-  efficacy: string;
-  hap: {
-    id: string;
-    description: string;
-    romaCode: string;
-    adquisitionDate: Date;
-    lastInspectionDate: Date;
-  };
-  had: {
-    id: string;
+type Treatment = {
+  id: string;
+  date: Date;
+  broth: number;
+  doseKind: number;
+  doseMovement: number;
+  quantity: number;
+  doseUnit: string;
+  healthAgent: {
+    id: number;
     name: string;
-    nifCode: string;
-    ropoCode: string;
-    carnetType: string;
+  };
+  phytosanitary: {
+    id: number;
+    name: string;
+    formula: string;
+  };
+  plague: {
+    id: number;
+    name: string;
   };
 };
 
@@ -225,6 +203,7 @@ type ProbPrec = {
 type SkyState = {
   value: string;
   period: string;
+  description?: string;
 };
 
 type Ta = {
@@ -266,7 +245,7 @@ type Prediction = {
   ta: genericState[];
   hr: genericState[];
   wind: windState[];
-  date: string;
+  date: Date;
   dawn: string;
   sunset: string;
 };
@@ -311,10 +290,8 @@ export type {
   Characteristic,
   Enclosure,
   Crop,
-  CropId,
   Fertilizer,
-  Phytosanitary,
-  CropStat,
+  Treatment,
   NDVI,
   NDVIMap,
   FarmHolder,

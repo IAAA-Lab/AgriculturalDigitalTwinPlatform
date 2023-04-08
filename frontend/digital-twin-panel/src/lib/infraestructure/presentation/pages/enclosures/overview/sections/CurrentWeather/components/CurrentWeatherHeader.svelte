@@ -1,5 +1,5 @@
 <script>
-  import { formattedDate, formattedTime } from "src/lib/core/functions";
+  import { formattedTime } from "src/lib/core/functions";
   export let date = "--";
   export let address = "--";
   export let ta = "--";
@@ -19,7 +19,9 @@
       <slot name="icon" />
       <p class="m-0 text-sm skyState">{skyState}</p>
     </div>
-    <p class="m-0 fw-700 temp">{ta} °</p>
+    <p class="m-0 fw-700 temp" style="white-space: nowrap; margin-top: 1rem">
+      {ta} °
+    </p>
   </div>
 </div>
 
@@ -47,9 +49,10 @@
     border: 1px solid #e3e3e3;
     box-shadow: inset 0px 0px 30px rgba(52, 95, 160, 0.4);
     border-radius: 10px;
-    height: 200px;
+    min-width: 200px;
     padding: 0.5rem;
     color: whitesmoke;
+    padding-bottom: 2rem;
 
     :global(i) {
       font-size: 2.75rem;
@@ -57,11 +60,10 @@
 
     .skyState__wrapper {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      width: 100%;
-      column-gap: 2rem;
+      row-gap: 0.75rem;
     }
 
     .skyState {

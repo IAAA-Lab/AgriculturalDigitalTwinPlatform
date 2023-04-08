@@ -20,18 +20,13 @@ type News struct {
 }
 
 type User struct {
-	ID       primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	Email    string             `json:"email"`
-	Password string             `json:"password"`
-	Role     string             `json:"role"`
-}
-
-type UserParcels struct {
 	ID           primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	UserID       primitive.ObjectID `json:"userId"`
-	Ts           time.Time          `json:"ts"`
+	Email        string             `json:"email"`
+	Password     string             `json:"password"`
+	Role         string             `json:"role"`
 	EnclosureIds []string           `json:"enclosureIds"`
 }
+
 type Enclosure struct {
 	Id       string `json:"id"`
 	Year     int    `json:"year"`
@@ -48,35 +43,36 @@ type Enclosure struct {
 	Properties struct {
 		IrrigationCoef float64 `json:"irrigationCoef"`
 		// Admisibility      float64 `json:"admisibility"`
-		GeographicSpot    string  `json:"geographicSpot"`
-		CropId            int     `json:"cropId"`
-		AreaSIGPAC        float64 `json:"areaSIGPAC"`
-		Area              float64 `json:"area"`
-		VarietyId         int     `json:"varietyId"`
-		IrrigationKind    string  `json:"irrigationKind"`
-		TenureRegimeId    int     `json:"tenureRegimeId"`
-		PlantationYear    int     `json:"plantationYear"`
-		NumberOfTrees     int     `json:"numberOfTrees"`
-		PlantationDensity float64 `json:"plantationDensity"`
-		VulnerableArea    bool    `json:"vulnerableArea"`
-		SpecificZones     bool    `json:"specificZones"`
-		ParcelUse         string  `json:"parcelUse" bson:",truncate"`
-		Slope             float64 `json:"slope"`
-		UHC               float64 `json:"uhc"`
-		UHCDescription    string  `json:"uhcDescription"`
-		ZEPAZone          bool    `json:"zepaZone"`
-		SIEZone           bool    `json:"sieZone"`
+		GeographicSpot     string  `json:"geographicSpot"`
+		Crop               Crop    `json:"crop"`
+		AreaSIGPAC         float64 `json:"areaSIGPAC"`
+		Area               float64 `json:"area"`
+		VarietyId          int     `json:"varietyId"`
+		RainfedOrIrrigated string  `json:"rainfedOrIrrigated"`
+		TenureRegimeId     int     `json:"tenureRegimeId"`
+		PlantationYear     int     `json:"plantationYear"`
+		NumberOfTrees      int     `json:"numberOfTrees"`
+		PlantationDensity  float64 `json:"plantationDensity"`
+		VulnerableArea     bool    `json:"vulnerableArea"`
+		SpecificZones      bool    `json:"specificZones"`
+		ParcelUse          string  `json:"parcelUse" bson:",truncate"`
+		Slope              float64 `json:"slope"`
+		UHC                float64 `json:"uhc"`
+		UHCDescription     string  `json:"uhcDescription"`
+		ZEPAZone           bool    `json:"zepaZone"`
+		SIEZone            bool    `json:"sieZone"`
 	} `json:"properties"`
 }
 
 type Crop struct {
-	Name        string  `json:"name"`
-	Variety     string  `json:"variety"`
-	ImageUri    string  `json:"imageUri" bson:"imageUri"`
-	Production  float32 `json:"production" bson:",truncate"`
-	Area        float32 `json:"area" bson:",truncate"`
-	Performance float32 `json:"performance" bson:",truncate"`
-	Harvest     int16   `json:"harvest"`
+	Id                int    `json:"id"`
+	Name              string `json:"name"`
+	Variety           string `json:"variety,omitempty"`
+	VarietyId         int    `json:"varietyId,omitempty"`
+	CodeType          string `json:"codeType,omitempty"`
+	PlantationKind    string `json:"plantationKind,omitempty"`
+	PlantationSubKind string `json:"plantationSubKind,omitempty"`
+	// ImageUri    string  `json:"imageUri" bson:"imageUri"`
 }
 
 type CropId struct {
@@ -92,37 +88,33 @@ type Fertilizer struct {
 	Quantity    float32   `json:"quantity"`
 }
 
-type Phytosanitary struct {
-	EnclosureId        string    `json:"enclosureId"`
-	CropId             CropId    `json:"crop"`
-	StartDate          time.Time `json:"startDate"`
-	EndDate            time.Time `json:"endDate"`
-	Product            string    `json:"product"`
-	RegistrationNumber string    `json:"registrationNumber"`
-	Plague             string    `json:"plague"`
-	Area               float32   `json:"area"`
-	Dosage             float32   `json:"dosage"`
-	Efficacy           float32   `json:"efficacy"`
-	Hap                struct {
-		Id                 string    `json:"id"`
-		Description        string    `json:"description"`
-		ROMACode           string    `json:"romaCode"`
-		AdquisitionDate    time.Time `json:"adquisitionDate"`
-		LastInspectionDate time.Time `json:"lastInspectionDate"`
-	} `json:"hap"`
-	Had struct {
-		Id         string `json:"id"`
-		Name       string `json:"name"`
-		NifCode    string `json:"nifCode"`
-		ROPOCode   string `json:"ropoCode"`
-		CarnetType string `json:"carnetType"`
-	} `json:"had"`
+type Treatment struct {
+	Date         time.Time `json:"date"`
+	Broth        string    `json:"broth"`
+	DoseKind     int       `json:"doseKind"`
+	DoseMovement float64   `json:"doseMovement"`
+	Quantity     float64   `json:"quantity"`
+	DoseUnit     string    `json:"doseUnit"`
+	// SafePeriod   int       `json:"safePeriod"`
+	HealthAgent struct {
+		Id   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"healthAgent"`
+	Phytosanitary struct {
+		Id      string `json:"id"`
+		Name    string `json:"name"`
+		Formula string `json:"formula"`
+	} `json:"phytosanitary"`
+	Plague struct {
+		Id   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"plague"`
 }
 
 type NDVI struct {
 	EnclosureId string    `json:"enclosureId"`
 	Date        time.Time `json:"date"`
-	Value       float32   `json:"value"`
+	Value       float64   `json:"value"`
 }
 
 type NDVIMap struct {
@@ -157,7 +149,7 @@ type ForecastWeather struct {
 		LegalNote string `json:"legalNote"`
 	} `json:"origin"`
 	Type         string `json:"type"`
-	ParcelId     string `json:"parcelId"`
+	EnclosureId  string `json:"enclosureId"`
 	ElaboratedAt string `json:"elaboratedAt"`
 	Municipality string `json:"municipality"`
 	Province     string `json:"province"`
@@ -196,32 +188,31 @@ type ForecastWeather struct {
 }
 
 type HistoricalWeather struct {
-	Type        string    `json:"type" default:"historicalWeather"`
-	ParcelId    string    `json:"parcelId"`
-	Idema       string    `json:"idema"`
-	Fint        time.Time `json:"fint"`
-	Prec        float32   `json:"prec"`
-	Tamin       float32   `json:"tamin"`
-	Tamax       float32   `json:"tamax"`
-	Tmed        float32   `json:"tmed"`
-	TaminTime   time.Time `json:"taminTime"`
-	TamaxTime   time.Time `json:"tamaxTime"`
-	WindSpeed   float32   `json:"windSpeed"`
-	WindDir     float32   `json:"windDir"`
-	WindGust    float32   `json:"windGust"`
-	WinGustTime time.Time `json:"windGustTime"`
+	Idema        string    `json:"idema"`
+	Height       float32   `json:"height"`
+	Date         time.Time `json:"date"`
+	Prec         float32   `json:"prec"`
+	Tmin         float32   `json:"tmin"`
+	Tmax         float32   `json:"tmax"`
+	Tmed         float32   `json:"tmed"`
+	TminTime     string    `json:"tminTime"`
+	TmaxTime     string    `json:"tmaxTime"`
+	WindSpeed    float32   `json:"windSpeed"`
+	WindDir      float32   `json:"windDir"`
+	WindGust     float32   `json:"windGust"`
+	WindGustTime string    `json:"windGustTime"`
 }
 
 type DailyWeather struct {
-	Type     string `json:"type"`
-	ParcelId string `json:"parcelId"`
-	Origin   struct {
+	Type        string `json:"type"`
+	EnclosureId string `json:"enclosureId"`
+	Origin      struct {
 		Producer  string `json:"producer"`
 		Web       string `json:"web"`
 		Language  string `json:"language"`
 		Copyright string `json:"copyright"`
 		LegalNote string `json:"legalNote"`
-	}
+	} `json:"origin"`
 	ElaboratedAt string `json:"elaboratedAt"`
 	Municipality string `json:"municipality"`
 	Province     string `json:"province"`
@@ -263,7 +254,6 @@ type DailyWeather struct {
 			Period    string   `json:"period"`
 			Direction []string `json:"direction"`
 			Speed     []string `json:"speed"`
-			Value     string   `json:"value,omitempty"`
 		} `json:"wind"`
 		Date   string `json:"date"`
 		Dawn   string `json:"dawn"`

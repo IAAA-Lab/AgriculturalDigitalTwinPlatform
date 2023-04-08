@@ -7,9 +7,10 @@ import type {
   ForecastWeather,
   HistoricalWeather,
   Enclosure,
+  Treatment,
 } from "../Domain";
 
-interface IParcelsService {
+interface IenclosuresService {
   getUserParcels(userId: string): Promise<UserParcels>;
   getEnclosures(enclosureIds: string[], year: number): Promise<Enclosure[]>;
   getOverviewSummary(userId: string): Promise<Summary>;
@@ -18,14 +19,20 @@ interface IParcelsService {
     startDate: Date,
     endDate: Date
   ): Promise<HistoricalWeather[]>;
-  getDailyWeather(parcelId: string): Promise<DailyWeather>;
-  getForecastWeather(parcelId: string): Promise<ForecastWeather>;
+  getDailyWeather(enclosureId: string): Promise<DailyWeather>;
+  getForecastWeather(enclosureId: string): Promise<ForecastWeather>;
   getNDVI(
     enclosureIds: string[],
     startDate: Date,
-    endDate: Date
+    endDate: Date,
+    limit: number
   ): Promise<NDVI[]>;
   getCropStats(enclosureId: string): Promise<any[]>;
+  getTreatments(
+    enclosureId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<Treatment[]>;
 }
 
 interface IUserService {
@@ -34,4 +41,4 @@ interface IUserService {
   validateLogin(): Promise<void>;
 }
 
-export type { IParcelsService, IUserService };
+export type { IenclosuresService, IUserService };

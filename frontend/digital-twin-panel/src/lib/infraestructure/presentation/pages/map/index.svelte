@@ -3,9 +3,10 @@
   import Search from "./sections/Search.svelte";
   import SearchPopup from "./components/SearchPopup.svelte";
   import { TABLET_WIDTH } from "src/app/config/constants";
-  import { parcelsService } from "src/app/config/config";
+  import { enclosuresService } from "src/app/config/config";
   import Loading from "../../components/misc/Loading.svelte";
   import Error from "../../components/misc/Error.svelte";
+  import { listOfEnclosures } from "src/app/config/stores/selectedEnclosure";
 
   let mediaQueryMobile = window.matchMedia(`(max-width: ${TABLET_WIDTH}px)`);
   let isInMobile = mediaQueryMobile.matches;
@@ -17,20 +18,16 @@
 
 <h1 class="title">Mapa</h1>
 <section class="container-responsive">
-  {#await parcelsService.getEnclosures( ["50-99-0-0-28-144-1", "50-99-0-0-2-190-1"] )}
+  {#await enclosuresService.getEnclosures($listOfEnclosures)}
     <Loading />
-  {:then parcels}
-    <Map enclosures={parcels.flatMap((parcel) => parcel.enclosures.features)} />
+  {:then enclosures}
+    <Map {enclosures} />
     {#if isInMobile}
       <SearchPopup>
-        <Search
-          enclosures={parcels.flatMap((parcel) => parcel.enclosures.features)}
-        />
+        <Search {enclosures} />
       </SearchPopup>
     {:else}
-      <Search
-        enclosures={parcels.flatMap((parcel) => parcel.enclosures.features)}
-      />
+      <Search {enclosures} />
     {/if}
   {:catch}
     <Error />

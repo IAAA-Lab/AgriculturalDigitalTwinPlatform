@@ -5,23 +5,19 @@ from prefect import flow, task, get_run_logger
 from minio import Minio
 from pymongo import MongoClient
 
+from etl.utils.functions import DB_MinioClient
 
-FILE_PATH = "ERP/7eData/2022"
-FILE_NAME = "recintos_almendros_tratamientos.xlsx"
+
+YEAR = 2022
+FILE_PATH = f"ERP/7eData/{YEAR}"
+FILE_NAME = "Recintos_Almendros_Cercanos_y_Otros_Cultivos_2_TRATAMIENTOS_2022.xlsx"
 
 
 @task
 def extract():
-    logger = get_run_logger()
     # Connect to MinIO
-    ACCESS_ROOT = os.environ.get("PREFECT_MINIO_ACCESS_ROOT")
-    SECRET_ROOT = os.environ.get("PREFECT_MINIO_SECRET_ROOT")
-    MINIO_HOST = os.environ.get("PREFECT_MINIO_HOST")
-    minio_client = Minio(MINIO_HOST, access_key=ACCESS_ROOT,
-                         secret_key=SECRET_ROOT, secure=False)
+    minio_client = DB_MinioClient().connect()
 
-    print("extracting data")
-    logger.info("extracting data")
     data = minio_client.get_object(
         "trusted-zone", f"{FILE_PATH}/{FILE_NAME}").read()
     df = pd.read_excel(io.BytesIO(data), engine="openpyxl",
@@ -31,20 +27,16 @@ def extract():
 
 @task
 def transform_tratamientos(df: pd.DataFrame):
-    logger = get_run_logger()
-    print("processing data")
-    logger.info("processing data")
     # Convert to Digital Twin domain
-    # Loop through the rows using intertuples()
-    enclosures = []
-    phytosanitaries = []
-    plagues = []
+    ## Loop through the rows using intertuples()
+    # phytosanitaries = []
+    # plagues = []
     treatments = []
     for row in df.itertuples():
         enclosureId = f"{row.parcelProvinceId}-{row.parcelMunicipalityId}-{row.parcelAggregatedId}-{row.parcelZoneId}-{row.parcelPolygonId}-{row.parcelId}-{row.parcelEnclosureId}"
         # Get phytosanitaries
         phytosanitary = {
-            "id": row.phytosanitaryId,
+            "id": str(row.phytosanitaryId),
             "name": row.phytosanitaryName,
             "formula": row.phytosanitaryFormula,
         }
@@ -54,86 +46,60 @@ def transform_tratamientos(df: pd.DataFrame):
             "name": row.plagueEffects,
         }
 
-        treatment = {
-            "id": row.phytosanitaryId,
-            "enclosureId": enclosureId,
-            "date": row.harvestInitDate,
-            "broth": row.broth,
-            "doseKind": row.doseKind,
-            "doseUnit": row.doseUnit,
-            "doseMovement": row.doseMovement,
-            "safePeriod": row.safePeriodMovement,
-            "quantity": row.phytosanitaryQuantityMovement,
-        }
-
         healthAgent = {
             "id": row.secUserId,
             "name": row.secUserName,
         }
 
-        enclosure = {
-            "id": enclosureId,
-            "geographicSpot": row.parcelGeographicSpot,
-            "codePAC": row.parcelHarvestPACCode,
+        treatment = {
+            "enclosureId": enclosureId,
+            "date": pd.to_datetime(row.harvestInitDate),
+            "broth": str(row.broth),
+            "doseKind": row.doseKind,
+            "doseUnit": row.doseUnit,
+            "doseMovement": row.doseMovement,
+            "safePeriod": row.safePeriodMovement,
+            "quantity": row.phytosanitaryQuantityMovement,
+            "healthAgent": healthAgent,
+            "plague": plague,
+            "phytosanitary": phytosanitary,
         }
 
-        enclosures.append(enclosure)
-        phytosanitaries.append(phytosanitary)
-        plagues.append(plague)
+        # phytosanitaries.append(phytosanitary)
+        # plagues.append(plague)
         treatments.append(treatment)
-
-    # Remove duplicates
-    enclosures = [dict(t) for t in {tuple(d.items()) for d in enclosures}]
-    phytosanitaries = [dict(t)
-                       for t in {tuple(d.items()) for d in phytosanitaries}]
-    plagues = [dict(t) for t in {tuple(d.items()) for d in plagues}]
-    treatments = [dict(t) for t in {tuple(d.items()) for d in treatments}]
-    return enclosures, phytosanitaries, plagues, treatments
-
-
-@ task
-def transform_parcelas(df):
-    logger = get_run_logger()
-    print("processing data")
-    logger.info("processing data")
-    # Convert to Digital Twin domain
-
-    return df
-
+    return treatments
 
 @task
-def load(enclosures, phytosanitaries, plagues, treatments):
-    logger = get_run_logger()
-    print("loading data")
-    logger.info("loading data")
-
+def load(treatments):
     # Connect to MongoDB
     MONGODB_HOST = os.environ.get("PREFECT_MONGODB_HOST")
     MONGODB_DB = os.environ.get("PREFECT_MONGODB_DB")
     print(MONGODB_DB)
     mongo_client = MongoClient(MONGODB_HOST)
     db = mongo_client[MONGODB_DB]
-    # Insert enclosures without duplicates
-    # db.Enclosures.create_index("id", unique=True)
-    db.Enclosures.insert_many(enclosures, ordered=False)
-    # Insert phytosanitaries without duplicates
-    # db.Phytosanitaries.create_index("id", unique=True)
-    db.Phytosanitaries.insert_many(phytosanitaries, ordered=False)
-    # Insert plagues without duplicates
-    # db.Plagues.create_index("id", unique=True)
-    db.Plagues.insert_many(plagues, ordered=False)
-    # Insert treatments without duplicates
-    # db.Treatments.create_index("id", unique=True)
-    db.Treatments.insert_many(treatments, ordered=False)
+
+    # Insert data
+    # for phytosanitary in phytosanitaries:
+    #     db.Phytosanitaries.update_one({"id": phytosanitary["id"]}, {
+    #                                   "$set": phytosanitary}, upsert=True)
+
+    # for plague in plagues:
+    #     db.Plagues.update_one({"id": plague["id"]}, {
+    #                           "$set": plague}, upsert=True)
+
+    for treatment in treatments:
+        db.Treatments.update_one({
+            "enclosureId": treatment["enclosureId"], "date": treatment["date"], "phytosanitary.id": treatment["phytosanitary"]["id"], "plague.id": treatment["plague"]["id"]
+        }, {"$set": treatment}, upsert=True)
 
 
 @flow(name="recintos_almendros_tratamientos_dt_etl")
 def recintos_almendros_tratamientos_dt_etl():
     df = extract()
-    enclosures, phytosanitaries, plagues, treatments = transform_tratamientos(
+    treatments = transform_tratamientos(
         df)
-    load(enclosures, phytosanitaries, plagues, treatments)
-    return enclosures, phytosanitaries, plagues, treatments
+    load(treatments)
 
 
 if __name__ == "__main__":

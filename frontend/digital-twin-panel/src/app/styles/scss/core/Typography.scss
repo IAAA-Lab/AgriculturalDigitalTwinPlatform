@@ -71,6 +71,7 @@ small,
 
 .text-xs {
   @include font-size(xs);
+  color: color(low-contrast);
 }
 
 .text-xxs {

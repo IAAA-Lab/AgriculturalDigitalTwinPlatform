@@ -1,6 +1,6 @@
 <script lang="ts">
   import App from "src/App.svelte";
-  import { parcelsService } from "src/app/config/config";
+  import { enclosuresService } from "src/app/config/config";
   import { getWeatherIcon } from "src/lib/core/functions";
   import CardInner from "src/lib/infraestructure/presentation/components/cards/CardInner.svelte";
   import WeatherCard from "src/lib/infraestructure/presentation/components/cards/WeatherCard.svelte";
@@ -18,7 +18,7 @@
   <WeatherCard>
     <h3 class="m-0 mb-8" slot="header">Previsión (7 días)</h3>
     <div slot="body" style="overflow: hidden;">
-      {#await parcelsService.getForecastWeather(parcelId)}
+      {#await enclosuresService.getForecastWeather(parcelId)}
         <Loading />
       {:then forecast}
         <CardInner>
@@ -30,7 +30,7 @@
                 maxTa={f.ta.tamax}
               >
                 <svelte:fragment slot="icon">
-                  <!-- {@html getWeatherIcon(f.skyState.desc)} -->
+                  {@html getWeatherIcon(f.skyState[0].description)}
                 </svelte:fragment>
               </ForecastWeatherItem>
               {#if i < forecast.prediction.day.length - 1}
@@ -57,7 +57,7 @@
   .body {
     display: flex;
     flex-direction: column;
-    row-gap: 0.7rem;
+    row-gap: 0.5rem;
     overflow: scroll;
   }
 

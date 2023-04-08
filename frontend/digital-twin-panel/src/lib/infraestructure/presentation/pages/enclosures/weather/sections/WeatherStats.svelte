@@ -3,59 +3,43 @@
   import BarChart from "src/lib/infraestructure/presentation/components/charts/BarChart.svelte";
   import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
   import config from "../components/config/tempLineChart.config";
+  import { enclosuresService } from "src/app/config/config";
   import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
-  import { parcelsService } from "src/app/config/config";
-  import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
-  import { onMount } from "svelte";
 
   const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 7);
-  const endDate = new Date();
-
-  let hidden = true;
+  startDate.setDate(startDate.getDate() - 6);
+  let currentHour = new Date().getHours();
 
   export let pred;
-
-  onMount(() => {
-    setTimeout(() => {
-      hidden = false;
-    }, 500);
-  });
+  console.log(pred.wind, currentHour);
 </script>
 
 <section>
   <div>
-    {#if hidden}
-      <Loading />
-    {:else}
-      <WeatherCard class="child">
-        <div slot="header" class="header">
-          <i class="fi fi-rr-cloud-showers-heavy" />
-          <p class="m-0 text-sm">Precipitaciones (Últimos 7 días)</p>
-        </div>
-        <div
-          slot="body"
-          class="body"
-          style="max-height: 200px; min-height: 100px;"
-        >
+    <WeatherCard class="child">
+      <div slot="header" class="header">
+        <i class="fi fi-rr-cloud-showers-heavy" />
+        <p class="m-0 text-sm">Precipitaciones (Últimos 7 días)</p>
+      </div>
+      <div
+        slot="body"
+        class="body"
+        style="max-height: 200px; min-height: 100px;"
+      >
+        {#await enclosuresService.getHistoricalWeather("9434", startDate, new Date())}
+          <Loading />
+        {:then hw}
           <BarChart
-            data={[22.1, 12.12, 43.1, 12.1, 12.1, 0.0, 12.9, 0.0]}
-            labels={[
-              "2021-05-01",
-              "2021-05-02",
-              "2021-05-03",
-              "2021-05-04",
-              "2021-05-05",
-              "2021-05-06",
-              "2021-05-07",
-              "2021-05-08",
-            ]}
+            data={hw?.map((h) => h?.prec)}
+            labels={hw?.map((h) => h?.date?.split("T")[0])}
             color="blue"
             yAxisLabel="Precipitación (mm)"
           />
-        </div>
-      </WeatherCard>
-    {/if}
+        {:catch error}
+          <p>Error: {error.message}</p>
+        {/await}
+      </div>
+    </WeatherCard>
     <WeatherCard class="child">
       <div slot="header" class="header">
         <i class="fi fi-rr-wind" />
@@ -68,7 +52,13 @@
           height="100"
           width="100"
         />
-        <p class="text-m m-0"><strong>{pred.wind[0].speed} km/h</strong></p>
+        <p class="text-m m-0">
+          <strong
+            >{pred?.wind?.find((w) => w.period == currentHour)?.speed?.at(0) ||
+              "--"}
+            km/h</strong
+          >
+        </p>
       </div>
     </WeatherCard>
     <WeatherCard class="child">

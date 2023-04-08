@@ -1,16 +1,19 @@
 import axios from "axios";
-import ParcelsService from "src/lib/core/services/parcel.service";
-import UserService from "src/lib/core/services/user.service";
+import EnclosuresService from "src/lib/core/services/enclosures.service";
+import UserService from "src/lib/core/services/users.service";
 import HttpParcelsRepositoryMock from "src/lib/infraestructure/repositories/http/mocks/parcel.repository.mock";
 import HttpParcelsRepository from "src/lib/infraestructure/repositories/http/parcel.repository";
 import HttpUserRepository from "src/lib/infraestructure/repositories/http/user.repository";
 import LocalStorageRepository from "src/lib/infraestructure/repositories/storage.repository";
 
-const IMAGES_SERVER_URL = import.meta.env.VITE_IMAGES_SERVER_URL as string;
-const DIGITAL_TWIN_API_URL = import.meta.env.VITE_SERVER_URL as string;
+const IMAGES_SERVER_URL =
+  (import.meta.env.VITE_IMAGES_SERVER_URL as string) ||
+  "http://localhost:9000/web-images";
+const DIGITAL_TWIN_API_URL =
+  (import.meta.env.VITE_SERVER_URL as string) || "http://localhost:8080";
 
 const digitalTwinHttpInstance = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: DIGITAL_TWIN_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -20,11 +23,11 @@ const digitalTwinHttpInstance = axios.create({
 // --------- Dependency injection ------------
 // Parcels use cases
 const parcelsRepository = new HttpParcelsRepository(digitalTwinHttpInstance);
-const parcelsService = new ParcelsService(parcelsRepository);
+const enclosuresService = new EnclosuresService(parcelsRepository);
 
 // User use cases
 const localStorage = new LocalStorageRepository(window.localStorage);
 const userRepository = new HttpUserRepository(digitalTwinHttpInstance);
 const userService = new UserService(userRepository, localStorage);
 
-export { parcelsService, userService, IMAGES_SERVER_URL };
+export { enclosuresService, userService, IMAGES_SERVER_URL };

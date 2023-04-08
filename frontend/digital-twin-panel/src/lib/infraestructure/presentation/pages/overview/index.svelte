@@ -1,51 +1,48 @@
 <script lang="ts">
-  import { parcelsService } from "src/app/config/config";
+  import { enclosuresService } from "src/app/config/config";
   import { getColorList } from "src/lib/core/functions";
   import Error from "../../components/misc/Error.svelte";
   import Loading from "../../components/misc/Loading.svelte";
   import FirstColTable from "./components/FirstColTable.svelte";
   import Characteristics from "./sections/Characteristics.svelte";
   import Map from "./sections/Map.svelte";
-  import Summary from "./sections/Summary.svelte";
   import Tables from "./sections/Tables.svelte";
+  import { listOfEnclosures } from "src/app/config/stores/selectedEnclosure";
+  import { map } from "leaflet";
+  import Summary from "./sections/Summary.svelte";
 </script>
 
 <h1 class="title">Overview</h1>
 <div class="overview mr-8 container-responsive">
-  {#await parcelsService.getEnclosures( ["50-99-0-0-28-144-1", "50-99-0-0-2-190-1"] )}
+  {#await enclosuresService.getEnclosures($listOfEnclosures)}
     <Loading />
-  {:then parcels}
-    <Characteristics />
-    <Map {parcels} />
-    {@const colorList = getColorList(parcels.length)}
+  {:then enclosures}
+    <Characteristics {enclosures} />
+    <Map {enclosures} />
     <Tables
-      rows={[
-        {
-          color: colorList[0],
-          id: "47-96-0-0-5-25-1",
-          area: 6.2002,
-          slope: 14,
-          irrigationCoef: 100,
-          usedArea: 98,
-          ndvi: 0.087,
-        },
-        {
-          color: colorList[1],
-          id: "47-124-0-0-4-560-1",
-          area: 2.2222,
-          slope: 35,
-          irrigationCoef: 0,
-          usedArea: 92,
-          ndvi: 0.12,
-        },
-      ]}
+      rows={enclosures.map((enclosure, index) => ({
+        color: getColorList(enclosures.length)[index],
+        id: enclosure.id,
+        area: enclosure.properties.area,
+        slope: enclosure.properties.slope,
+        irrigationCoef: enclosure.properties.irrigationCoef,
+        usedArea: enclosure.properties.areaSIGPAC,
+        properties: enclosure.properties,
+        // ndvi: await enclosuresService.getNDVI(enclosure.id)
+      }))}
       columns={[
         {
-          key: "parcelId",
-          title: "Parcela",
+          key: "enclosureId",
+          title: "Recinto",
           value: (v) => v.id,
           sortable: true,
           renderComponent: FirstColTable,
+        },
+        {
+          key: "Planta",
+          title: "Planta",
+          value: (v) => v.properties.crop.name || "N/A",
+          sortable: true,
         },
         {
           key: "area",
@@ -53,23 +50,23 @@
           value: (v) => v.area,
           sortable: true,
         },
-        { key: "slope", title: "Pendiente media (%)", value: (v) => v.slope },
+        {
+          key: "areaSIGPAC",
+          title: "Área SIGPAC (Ha)",
+          value: (v) => v.usedArea,
+          sortable: true,
+        },
+        { key: "slope", title: "Pendiente (%)", value: (v) => v.slope },
         {
           key: "irrigationCoef",
           title: "Coef. de regadío (%)",
           value: (v) => v.irrigationCoef,
         },
-        {
-          key: "usedArea",
-          title: "Área en uso (%)",
-          value: (v) => v.usedArea,
-          sortable: true,
-        },
-        { key: "ndvi", title: "NDVI", value: (v) => v.ndvi, sortable: true },
+        // { key: "ndvi", title: "NDVI", value: (v) => v.ndvi, sortable: true },
       ]}
     />
   {:catch error}
-    <Error />
+    <Error errorMessage={error} />
   {/await}
   <Summary />
 </div>
@@ -81,7 +78,8 @@
     grid-template-areas:
       "map"
       "characteristics"
-      "tables";
+      "tables"
+      "summary";
     :global(.summary) {
       display: none;
     }

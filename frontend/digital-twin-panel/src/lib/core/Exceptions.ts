@@ -3,15 +3,27 @@ interface CustomError extends Error {
   message: string;
 }
 
+const handleErrorMessage = (error: any) => {
+  if (error.response) {
+    return error.response.data.message;
+  } else if (error.request) {
+    return "Error de conexión";
+  } else {
+    return error.message;
+  }
+};
+
 const LogoutError: CustomError = {
   name: "LogoutError",
   message: "Error al cerrar sesión",
 };
 
-const ServerError: CustomError = {
-  name: "ServerError",
-  message: "Ocurrió un problema con el servidor",
-};
+class ServerError extends Error {
+  constructor(message: string = "Error del servidor") {
+    super(handleErrorMessage(message));
+    this.name = "ServerError";
+  }
+}
 
 const MustLoginAgainError: CustomError = {
   name: "MustLoginAgainError",

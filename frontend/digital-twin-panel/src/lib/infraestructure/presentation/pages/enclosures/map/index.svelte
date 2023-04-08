@@ -1,7 +1,4 @@
 <script>
-  import { parcelsService } from "src/app/config/config";
-  import Error from "../../../components/misc/Error.svelte";
-  import Loading from "../../../components/misc/Loading.svelte";
   import Map from "./sections/Map.svelte";
   import Stats from "./sections/Stats.svelte";
 

@@ -3,6 +3,14 @@ import { svelte } from "@sveltejs/vite-plugin-svelte";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // config to achieve hot reload in docker container
+  // server: {
+  //   host: "0.0.0.0",
+  //   port: 5173,
+  //   fs: {
+  //     strict: false,
+  //   },
+  // },
   // base: "/panel",
   plugins: [
     svelte({

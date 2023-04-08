@@ -1,8 +1,8 @@
 <script lang="ts">
   import { numberWithCommas } from "../../../../../core/functions";
   import Card from "../../../components/cards/Card.svelte";
-  export let statName = "-";
-  export let statValue: number;
+  export let statName = "--";
+  export let statValue: number | string = "--";
   export let statUnit = "";
 </script>
 
@@ -17,9 +17,9 @@
       </h4>
       <div class="stat-value-unit">
         <h2 class="m-0 fw-600">
-          {numberWithCommas(statValue)}
+          {statValue}
         </h2>
-        <span class="ml-8 text-xxs">
+        <span class="ml-8 text-xs">
           {statUnit}
         </span>
       </div>
@@ -33,6 +33,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
+    padding-right: 1rem;
 
     .stat-icon {
       width: 70px;

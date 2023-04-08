@@ -5,17 +5,15 @@ import os
 
 
 @task
-def extract(parcelId: str):
-    logger = get_run_logger()
-    print("extracting data")
-    logger.info("extracting data")
+def extract(enclosureId: str):
+    print(enclosureId)
 
     # Extract data from Rest API
 
     AUTH_TOKEN = os.environ.get("AGROSLAB_AUTH_TOKEN")
     AGROSLAB_API_URL = os.environ.get("AGROSLAB_API_URL")
 
-    municipality = parcelId.split("-")[1]
+    municipality = enclosureId.split("-")[1]
     if len(municipality) == 1:
         municipality = "00" + municipality
     elif len(municipality) == 2:
@@ -23,7 +21,7 @@ def extract(parcelId: str):
 
     body = {
         "operation": "aemetprediccionmunicipio",
-        "provincia": parcelId.split("-")[0],
+        "provincia": enclosureId.split("-")[0],
         "municipio": municipality,
         "type": "diaria"
     }
@@ -37,61 +35,16 @@ def extract(parcelId: str):
 
     return response.json()
 
-# type ForecastWeather struct {
-# 	Origin       origin `json:"origin"`
-# 	Type         string `json:"type"`
-# 	ParcelId     string `json:"parcelId"`
-# 	ElaboratedAt string `json:"elaboratedAt"`
-# 	Municipality string `json:"municipality"`
-# 	Province     string `json:"province"`
-# 	Prediction   struct {
-# 		Day []struct {
-# 			ProbPrec []struct {
-# 				Value  int    `json:"value"`
-# 				Period string `json:"period"`
-# 			} `json:"probPrec"`
-# 			SnowQuote []struct {
-# 				Value  string `json:"value"`
-# 				Period string `json:"period"`
-# 			} `json:"snowQuote"`
-# 			SkyState []skyState `json:"skyState"`
-# 			Wind     []struct {
-# 				Direction string `json:"direction"`
-# 				Speed     int    `json:"speed"`
-# 				Period    string `json:"period"`
-# 			} `json:"wind"`
-# 			Ta struct {
-# 				Tamax int `json:"Tamax"`
-# 				Tamin int `json:"Tamin"`
-# 			} `json:"ta"`
-# 			Hr struct {
-# 				Hrmax int `json:"Hrmax"`
-# 				Hrmin int `json:"Hrmin"`
-# 			} `json:"hr"`
-# 			UvMax int    `json:"uvMax,omitempty"`
-# 			Date  string `json:"date"`
-# 		} `json:"day"`
-# 	} `json:"prediction"`
-# }
-
-# type origin struct {
-# 	Producer  string `json:"producer"`
-# 	Web       string `json:"web"`
-# 	Language  string `json:"language"`
-# 	Copyright string `json:"copyright"`
-# 	LegalNote string `json:"legalNote"`
-# }
 
 @task
-def transform(data, parcelId) -> dict:
+def transform(data, enclosureId) -> dict:
     logger = get_run_logger()
     print("transforming data")
     logger.info("transforming data")
-    print(data)
     response = ForecastWeather.from_dict(data[0])
     forecast_weather = {
         "type": "forecast_weather",
-        "parcelId": parcelId,
+        "enclosureId": enclosureId,
         "origin": {
             "producer": response.origen.productor,
             "web": response.origen.web,
@@ -114,7 +67,8 @@ def transform(data, parcelId) -> dict:
                 }, day.cotaNieveProv),
                 "skyState": map(lambda skyState: {
                     "value": skyState.value,
-                    "period": skyState.periodo
+                    "period": skyState.periodo,
+                    "description": skyState.descripcion
                 }, day.estadoCielo),
                 "wind": map(lambda wind: {
                     "direction": wind.direccion,
@@ -137,12 +91,12 @@ def transform(data, parcelId) -> dict:
     return forecast_weather
 
 
-
 @flow(name="forecast_weather")
-def forecast_weather(parcelId: str) -> dict:
-    data = extract(parcelId)
-    processed_data = transform(data, parcelId)
+def forecast_weather(enclosureId: str) -> dict:
+    data = extract(enclosureId)
+    processed_data = transform(data, enclosureId)
     return processed_data
+
 
 if __name__ == "__main__":
     forecast_weather()

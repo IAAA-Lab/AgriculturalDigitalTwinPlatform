@@ -1,21 +1,16 @@
 <script>
   import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
   import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
-  import { parcelsService } from "src/app/config/config";
+  import { enclosuresService } from "src/app/config/config";
   import EnclosureMap from "../components/EnclosureMap.svelte";
 
   export let enclosureId;
 </script>
 
-{#await parcelsService.getEnclosures( ["50-99-0-0-28-144-1", "50-99-0-0-2-190-1"] )}
+{#await enclosuresService.getEnclosures([enclosureId])}
   <Loading />
-{:then parcels}
-  {@const parcel = parcels.find((enc) =>
-    enc.enclosures.features.some((e) => e.id === enclosureId)
-  )}
-  {@const enclosure = parcel?.enclosures.features.find(
-    (e) => e.id === enclosureId
-  )}
+{:then enclosures}
+  {@const enclosure = enclosures.at(0)}
   {#if !enclosure}
     <Error />
   {:else}

@@ -4,7 +4,7 @@
   import PieChart from "../../../components/charts/DoughnutChart.svelte";
   import ToggleSwitch from "../../../components/basics/ToggleSwitch.svelte";
   import SummaryStatCard from "../components/SummaryStatCard.svelte";
-  import { parcelsService } from "src/app/config/config";
+  import { enclosuresService } from "src/app/config/config";
   import { Link } from "svelte-routing";
   import { formattedDate } from "src/lib/core/functions";
   import Loading from "../../../components/misc/Loading.svelte";
@@ -12,66 +12,68 @@
 
   let checked: boolean = false;
   let selectedChartStat: string;
+  let statsSelected: any[] = [];
 </script>
 
 <section class="summary">
-  {#await parcelsService.getOverviewSummary("")}
-    <Loading />
-  {:then summary}
-    {@const statsSelected = checked ? summary.stats.bad : summary.stats.good}
-    <Card>
-      <svelte:fragment slot="header">
-        <div class="summary__title mt-8">
-          <h2 class="m-0">Resumen</h2>
-          <ToggleSwitch bind:checked />
-        </div>
-        <p class="text-xs">Última actualización: {formattedDate(summary.ts)}</p>
-      </svelte:fragment>
-      <div slot="body" class="body">
-        <div class="body-stats mb-16">
-          {#each statsSelected as stat, i}
-            <Link to={`/enclosure/${stat.enclosureId}`}>
-              <SummaryStatCard
-                title={stat.stat.name}
-                value={stat.stat.value}
-                unit={stat.stat.unit || ""}
-                diff={stat.diff}
-                enclosureName={stat.enclosureId}
-                crops={stat.cropIds}
-                primary={i === 0}
-              />
-            </Link>
-          {/each}
-        </div>
-        <CardInner>
-          <svelte:fragment slot="header">
-            <div class="header__wrapper">
-              <h4 class="text-sm stat-header m-0 mr-16">
-                Stats promedios por parcela
-              </h4>
-              <select bind:value={selectedChartStat}>
-                {#each [...new Set(summary.stats.all.map((s) => s.stat.name))] as statName}
-                  <option value={statName}>{statName}</option>
-                {/each}
-              </select>
-            </div>
-          </svelte:fragment>
-          <div slot="body" class="analytics-chart">
-            <PieChart
-              labels={summary.stats.all
-                .filter((s) => s.stat.name === selectedChartStat)
-                .map((s) => s.enclosureId)}
-              data={summary.stats.all
-                .filter((s) => s.stat.name === selectedChartStat)
-                .map((s) => s.stat.value)}
-            />
-          </div>
-        </CardInner>
+  <Card>
+    <svelte:fragment slot="header">
+      <div class="summary__title mt-8">
+        <h2 class="m-0">Resumen</h2>
+        <ToggleSwitch bind:checked />
       </div>
-    </Card>
-  {:catch error}
-    <Error />
-  {/await}
+      <p class="text-xs">Última actualización: --</p>
+    </svelte:fragment>
+    <div slot="body" class="body">
+      <div class="body-stats mb-16">
+        {#each statsSelected as stat, i}
+          <Link to={`/enclosure/${stat.enclosureId}`}>
+            <SummaryStatCard
+              title={stat.stat.name}
+              value={stat.stat.value}
+              unit={stat.stat.unit || ""}
+              diff={stat.diff}
+              enclosureName={stat.enclosureId}
+              crops={stat.cropIds}
+              primary={i === 0}
+            />
+          </Link>
+        {/each}
+      </div>
+      <CardInner>
+        <!-- <svelte:fragment slot="header">
+          <div class="header__wrapper">
+            <h4 class="text-sm stat-header m-0 mr-16">
+              Stats promedios por parcela
+            </h4>
+            <select bind:value={selectedChartStat}>
+              {#each [...new Set(summary?.stats.all.map((s) => s.stat.name))] as statName}
+                <option value={statName}>{statName}</option>
+              {/each}
+            </select>
+          </div>
+        </svelte:fragment> -->
+        <div slot="body" class="analytics-chart">
+          <!-- <PieChart
+            labels={summary?.stats.all
+              .filter((s) => s.stat.name === selectedChartStat)
+              .map((s) => s.enclosureId)}
+            data={summary?.stats.all
+              .filter((s) => s.stat.name === selectedChartStat)
+              .map((s) => s.stat.value)}
+          /> -->
+          <h3 class="m-0">En construcción</h3>
+          <br />
+          <img
+            src="/images/under_construction.png"
+            alt="Under construction"
+            width="100%"
+            style="max-width: 700px;"
+          />
+        </div>
+      </CardInner>
+    </div>
+  </Card>
 </section>
 
 <style lang="scss">
@@ -91,6 +93,7 @@
     }
 
     .body {
+      height: 700px;
       padding: 0px 5px 10px 5px;
     }
     .body-stats {
@@ -100,8 +103,12 @@
     }
 
     .analytics-chart {
-      max-height: 175px;
+      // max-height: 175px;
       padding: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
   }
 </style>

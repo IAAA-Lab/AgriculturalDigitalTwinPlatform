@@ -9,14 +9,14 @@
 </script>
 
 <Card>
-  <h6 slot="header" class="m-0 mb-8">Área en uso (Ha)</h6>
+  <h6 slot="header" class="m-0 mb-8">Área SIGPAC (Ha)</h6>
   <svelte:fragment slot="body">
     <CardInner>
       <div slot="body" class="value__unit">
         <Range
           value={usedArea}
           to={totalArea}
-          background={getRangeBarColor(usedArea)}
+          background={getRangeBarColor(usedArea / totalArea)}
         />
         <h3 class="m-0">
           <strong

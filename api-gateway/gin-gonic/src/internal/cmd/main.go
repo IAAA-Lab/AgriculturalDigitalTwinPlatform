@@ -1,38 +1,15 @@
 package main
 
-// @title Swagger Example API
-// @version 1.0
-// @description This is a sample server celler server.
-// @termsOfService http://swagger.io/terms/
-
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
 import (
 	"digital-twin/main-server/docs"
-	encryptionmw "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/middleware/encryption-mw"
-	aes256repo "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/middleware/encryption-mw/aes-256"
-	jwtmw "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/middleware/jwt-mw"
-	fileshdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/files-hdl"
-	parcelshdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/parcels"
-	usershdl "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/v1/routes/users-hdl"
-	redisrepo "digital-twin/main-server/src/internal/adapters/secondary/cache/redis"
-	"digital-twin/main-server/src/internal/adapters/secondary/esb/rabbitmq"
-	localfilestoragerepo "digital-twin/main-server/src/internal/adapters/secondary/file-storage/local-file-storage"
-	"digital-twin/main-server/src/internal/adapters/secondary/file-storage/minio"
-	"digital-twin/main-server/src/internal/adapters/secondary/persistence/mongodb"
+	"digital-twin/main-server/src/internal/adapters/primary/web/rest-api/handlers"
+	"digital-twin/main-server/src/internal/adapters/primary/web/rest-api/middleware"
+	"digital-twin/main-server/src/internal/adapters/secondary/minio"
+	"digital-twin/main-server/src/internal/adapters/secondary/mongodb"
+	"digital-twin/main-server/src/internal/adapters/secondary/rabbitmq"
+	"digital-twin/main-server/src/internal/adapters/secondary/redis"
 	"digital-twin/main-server/src/internal/core/domain"
-	authsrv "digital-twin/main-server/src/internal/core/services/auth-srv"
-	cachesrv "digital-twin/main-server/src/internal/core/services/cache-srv"
-	encryptionsrv "digital-twin/main-server/src/internal/core/services/encryption-srv"
-	filedumpsrv "digital-twin/main-server/src/internal/core/services/file-dump-srv"
-	imagessrv "digital-twin/main-server/src/internal/core/services/image-srv"
-	parcelssrv "digital-twin/main-server/src/internal/core/services/parcels-srv"
-	userssrv "digital-twin/main-server/src/internal/core/services/users-srv"
+	"digital-twin/main-server/src/internal/core/services"
 
 	"os"
 
@@ -48,8 +25,6 @@ func CorsConfig() gin.HandlerFunc {
 		if os.Getenv("ENV_MODE") != "LOCAL" {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", os.Getenv("LANDING_PAGE_URL"))
 			c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-			//NOTE: for the moment, we are not using redis cache, with this is enough
-			// c.Writer.Header().Set("Cache-Control", "max-age=600")
 		} else {
 			c.Writer.Header().Set("Access-Control-Allow-Credentials", "false")
 			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
@@ -85,31 +60,23 @@ func setupRouter() *gin.Engine {
 	minioEndpoint := os.Getenv("MINIO_ENDPOINT")
 	minioAccessKey := os.Getenv("MINIO_ACCESS_KEY")
 	minioSecretAccessKey := os.Getenv("MINIO_SECRET_KEY")
-	minioBucketName := os.Getenv("MINIO_BUCKET_NAME")
 
-	encryptionrepository := aes256repo.NewEncrypter(encKey, ivKey)
-	encryptionService := encryptionsrv.New(encryptionrepository)
-	encryptionMiddleware := encryptionmw.Init(encryptionService)
-
+	cacherepository := redis.NewRedisConn(redisUri, redisUsername, redisPassword)
 	mongodbRepository := mongodb.NewMongodbConn(mongoUri, mongoDb, 10)
-	rabbitMQESB := rabbitmq.NewRabbitMQConn(rabbitMQURI)
-	minioRepository := minio.NewMinioConn(minioEndpoint, minioAccessKey, minioSecretAccessKey, false, minioBucketName)
-	imagesRepository := localfilestoragerepo.NewLocalFileStorage("./images")
+	rabbitMQRepository := rabbitmq.NewRabbitMQConn(rabbitMQURI)
+	minioRepository := minio.NewMinioConn(minioEndpoint, minioAccessKey, minioSecretAccessKey, false)
 
-	usersService := userssrv.New(mongodbRepository)
-	usersHandler := usershdl.NewHTTPHandler(usersService)
+	authService := services.NewAuthService(cacherepository)
+	usersService := services.NewUsersService(mongodbRepository)
+	enclosuresService := services.NewEnclosuresService(mongodbRepository, rabbitMQRepository)
+	fileDumpService := services.NewFileDumpService(minioRepository)
 
-	parcelsService := parcelssrv.New(mongodbRepository, rabbitMQESB)
-	parcelsHandler := parcelshdl.NewHTTPHandler(parcelsService)
+	encryptionMiddleware := middleware.InitEncryptionMiddleware(ivKey, encKey)
+	JWTMiddleware := middleware.InitJwtMiddleware(authService, usersService, os.Getenv("ENV_MODE"))
 
-	imagesService := imagessrv.New(imagesRepository)
-	fileDumpService := filedumpsrv.New(minioRepository)
-	filesHandler := fileshdl.NewHTTPHandler(imagesService, fileDumpService)
-
-	cacherepository := redisrepo.NewRedisConn(redisUri, redisUsername, redisPassword)
-	cacheService := cachesrv.New(cacherepository)
-	authService := authsrv.JWTAuthService(cacheService)
-	authMiddleware := jwtmw.Init(authService, usersService, os.Getenv("ENV_MODE"))
+	usersHandler := handlers.NewUsersHTTPHandler(usersService)
+	enclosuresHandler := handlers.NewEnclosuresHTTPHandler(enclosuresService)
+	filesHandler := handlers.NewFilesHTTPHandler(fileDumpService)
 
 	r := gin.Default()
 	m := ginmetrics.GetMonitor()
@@ -124,57 +91,58 @@ func setupRouter() *gin.Engine {
 		c.String(200, "pong")
 	})
 
-	// ---- Image storage
-	r.Static("/images", "./images")
-	r.POST("/images/upload", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_NEWS_EDITOR}), filesHandler.UploadImage)
+	// ---- private access
+	r.POST("/internal/files/upload", JWTMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_PRIVATE_ACCESS}), filesHandler.UploadFiles)
+	// For large file upload (default is 32 MB)
+	// r.MaxMultipartMemory = 8 << 20
 
 	// ---- Auth
-	r.POST("/auth/login", encryptionMiddleware.DecryptData, usersHandler.CheckLogin, authMiddleware.ReturnJWT)
-	r.POST("/auth/logout", authMiddleware.RevokeJWT)
-	r.POST("/auth/refresh", authMiddleware.RefreshJWT)
-	r.POST("/auth/validate", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_AGRARIAN, domain.ROLE_NEWS_EDITOR}), usersHandler.AuthorizeUser)
+	authGroup := r.Group("/auth")
+
+	authGroup.POST("/login", encryptionMiddleware.DecryptData, usersHandler.CheckLogin, JWTMiddleware.ReturnJWT)
+	authGroup.POST("/logout", JWTMiddleware.RevokeJWT)
+	authGroup.POST("/refresh", JWTMiddleware.RefreshJWT)
+
 	// ---- Users
-	usersGroup := r.Group("/", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN}))
+	usersGroup := r.Group("/", JWTMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN}))
+
 	usersGroup.POST("/users", encryptionMiddleware.DecryptData, usersHandler.CreateNewUser)
 	usersGroup.GET("/users", usersHandler.FetchAllUsers)
 	usersGroup.DELETE("/users/:id", usersHandler.DeleteUser)
 
-	// ---- Agrarian
-	// ---- SSE (inject eventhandler channel for communication)
-	agrarianGroup := r.Group("/", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_AGRARIAN}))
+	// ---- Digital twin
+	agrarianGroup := r.Group("/", JWTMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_AGRARIAN}))
 
-	r.GET("/parcels/refs", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN}), parcelsHandler.GetUserParcels)
-	r.PATCH("/parcels/refs", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN}), parcelsHandler.PostParcelRefs)
-
-	agrarianGroup.GET("/weather/daily", parcelsHandler.GetDailyWeather)
-	agrarianGroup.GET("/weather/forecast", parcelsHandler.GetForecastWeather)
-	agrarianGroup.GET("/enclosures", parcelsHandler.GetEnclosures)
-	agrarianGroup.GET("/cropStats", parcelsHandler.GetCropStats)
-	agrarianGroup.GET("/ndvi", parcelsHandler.GetNDVI)
-	agrarianGroup.GET("/phytosantaries", parcelsHandler.GetPhytosanitaries)
-	agrarianGroup.GET("/fertilizers", parcelsHandler.GetFertilizers)
-
-	// ---- private access
-	r.POST("/internal/files/upload", authMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_PRIVATE_ACCESS}), filesHandler.UploadFiles)
+	agrarianGroup.GET("/weather/daily", enclosuresHandler.GetDailyWeather)
+	agrarianGroup.GET("/weather/forecast", enclosuresHandler.GetForecastWeather)
+	agrarianGroup.GET("/weather/historical", enclosuresHandler.GetHistoricalWeather)
+	agrarianGroup.POST("/enclosures", enclosuresHandler.GetEnclosures)
+	agrarianGroup.GET("/crops", enclosuresHandler.GetCropStats)
+	agrarianGroup.POST("/ndvi", enclosuresHandler.GetNDVI)
+	agrarianGroup.GET("/treatments", enclosuresHandler.GetTreatments)
+	agrarianGroup.GET("/fertilizers", enclosuresHandler.GetFertilizers)
 
 	return r
 }
 
-func main() {
-
-	docs.SwaggerInfo.Title = "Agrarian exploitation Swagger API"
-	docs.SwaggerInfo.Description = "This is an agrarian exploitation server."
+func setUpSwagger(r *gin.Engine) {
+	docs.SwaggerInfo.Title = "Gin gonic Swagger API"
+	docs.SwaggerInfo.Description = "Gin gonic API Gateway"
 	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Host = "agrarian.swagger.io"
 	docs.SwaggerInfo.BasePath = "/v2"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
-	r := setupRouter()
-	// For large file upload (default is 32 MB)
-	// r.MaxMultipartMemory = 8 << 20
-	m := setUpMonitoring(r)
 	// To access swagger UI, go to http://localhost:8080/swagger/index.html
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+}
+
+func main() {
+
+	r := setupRouter()
+	setUpSwagger(r)
+	m := setUpMonitoring(r)
+
 	port := os.Getenv("PORT")
 
 	if port == "" {

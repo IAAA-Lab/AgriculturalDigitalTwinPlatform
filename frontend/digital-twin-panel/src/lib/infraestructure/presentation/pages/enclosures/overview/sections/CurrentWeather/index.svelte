@@ -1,5 +1,5 @@
 <script>
-  import { parcelsService } from "src/app/config/config";
+  import { enclosuresService } from "src/app/config/config";
   import { getWeatherIcon } from "src/lib/core/functions";
   import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
   import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
@@ -16,7 +16,7 @@
 </script>
 
 <section>
-  {#await parcelsService.getDailyWeather(enclosureId)}
+  {#await enclosuresService.getDailyWeather(enclosureId)}
     <Loading />
   {:then cw}
     {#if !cw}
@@ -26,7 +26,7 @@
       <CurrentWeatherHeader
         date={cw.elaboratedAt}
         address={cw.municipality + ", " + cw.province}
-        ta={pred.ta.find((t) => t.period == currentHour)?.value}
+        ta={pred.ta.find((t) => t.period == currentHour)?.value.toString()}
         skyState={pred.skyState.find((t) => t.period == currentHour)
           ?.description}
       >
@@ -53,7 +53,9 @@
           hrLabels={pred.hr.map((v) => v.period)}
         />
         <!-- <UvWeatherStat uv={pred.} /> -->
-        <PrecipitationWeatherStat probPrec={pred.probPrec[0].value} />
+        <PrecipitationWeatherStat
+          probPrec={pred.probPrec[0].value.toString()}
+        />
       </div>
       <CurrentWeatherFooter
         producer={cw.origin.producer}

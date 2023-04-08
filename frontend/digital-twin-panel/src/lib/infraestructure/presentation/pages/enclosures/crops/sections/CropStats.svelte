@@ -5,7 +5,7 @@
   import Card from "src/lib/infraestructure/presentation/components/cards/Card.svelte";
   import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
   import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
-  import { parcelsService } from "src/app/config/config";
+  import { enclosuresService } from "src/app/config/config";
 
   let selectedCropStat = {};
   export let enclosureId;
@@ -13,7 +13,7 @@
 
 <section>
   <div class="crop__stats__wrapper">
-    {#await parcelsService.getCropStats(enclosureId)}
+    {#await enclosuresService.getCropStats(enclosureId)}
       <Loading />
     {:then cropStats}
       {#each cropStats as cropStat}

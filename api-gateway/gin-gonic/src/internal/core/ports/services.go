@@ -22,20 +22,18 @@ type UsersService interface {
 	FetchUserByEmail(email string) (domain.User, error)
 	DeleteUser(id string) error
 	PostNewUser(user domain.User) error
+	PostEnclosure(email string, enclosureIds []string) error
 }
 
-type ParcelsService interface {
-	GetUserParcels(userId string) (domain.UserParcels, error)
-	PostUserParcels(userParcels domain.UserParcels) error
-	PatchUserEnclosures(userId string, enclosureIds []string) error
-	GetForecastWeather(parcelId string) (domain.ForecastWeather, error)
-	GetDailyWeather(parcelId string, date time.Time) (domain.DailyWeather, error)
-	GetHistoricalWeather(parcelId string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error)
+type EnclosuresService interface {
+	GetForecastWeather(enclosureId string) (domain.ForecastWeather, error)
+	GetDailyWeather(enclosureId string) (domain.DailyWeather, error)
+	GetHistoricalWeather(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error)
 	GetEnclosures(enclosureIds []string, year int16) ([]domain.Enclosure, error)
-	GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time) ([]domain.NDVI, error)
+	GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time, limit int) ([]domain.NDVI, error)
 	GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder, error)
 	GetFertilizers(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error)
-	GetPhytosanitaries(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Phytosanitary, error)
+	GetTreatments(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Treatment, error)
 }
 
 type JWTService interface {
@@ -51,18 +49,7 @@ type APIKeyService interface {
 	ValidateAPIKey(key string) error
 }
 
-type EncryptionService interface {
-	EncryptData(data string) (string, error)
-	DecryptData(data string) (string, error)
-}
-
-type CacheService interface {
-	Get(key string) (string, error)
-	Set(key string, value string, exp time.Duration) error
-	Delete(key string) error
-}
-
 type StorageService interface {
-	GetFile(fileName string, path string) ([]byte, error)
-	UploadFile(file []byte, fineName string, path string) (string, error)
+	GetFile(fileName string, bucket string, path string) ([]byte, error)
+	UploadFile(file []byte, fileName string, bucket string, path string) error
 }

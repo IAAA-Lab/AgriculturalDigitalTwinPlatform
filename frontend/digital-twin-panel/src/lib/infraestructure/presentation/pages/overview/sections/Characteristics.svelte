@@ -1,37 +1,67 @@
-<script>
+<script type="ts">
   import {
+    getColorList,
     getIconByCharacteristic,
     getRangeBarColor,
   } from "src/lib/core/functions";
   import Card from "../../../components/cards/Card.svelte";
   import Range from "../../../components/misc/Range.svelte";
   import StatsCard from "../components/StatsCard.svelte";
-  let characteristics = [
-    {
-      name: "Área total",
-      value: 8.43,
-      unit: "Ha",
-    },
-    {
-      name: "Área en uso",
-      value: 8.12,
-      unit: "Ha",
-    },
-    {
-      name: "Coef. de regadío",
-      value: 50,
-      unit: "%",
-    },
-    {
-      name: "Pendiente media",
-      value: 24.5,
-      unit: "%",
-    },
-  ];
+  import PieChart from "../../../components/charts/PieChart.svelte";
+  import type { Enclosure } from "src/lib/core/Domain";
+  import DoughnutChart from "../../../components/charts/DoughnutChart.svelte";
+
+  export let enclosures: Enclosure[] = [];
+  // Average properties
+  let characteristics = [];
+  let properties = {
+    area: 0,
+    areaSIGPAC: 0,
+    irrigationCoef: 0,
+    slope: 0,
+  };
+  $: {
+    if (enclosures) {
+      properties = {
+        area: enclosures.reduce((a, b) => a + b.properties.area, 0),
+        areaSIGPAC: enclosures.reduce((a, b) => a + b.properties.areaSIGPAC, 0),
+        irrigationCoef:
+          enclosures.reduce((a, b) => a + b.properties.irrigationCoef, 0) /
+          enclosures.length,
+        slope:
+          enclosures.reduce((a, b) => a + b.properties.slope, 0) /
+          enclosures.length,
+      };
+    }
+    if (enclosures) {
+      characteristics = [
+        {
+          name: "Área total",
+          value: properties.area,
+          unit: "Ha",
+        },
+        {
+          name: "Área SIGPAC",
+          value: properties.areaSIGPAC,
+          unit: "Ha",
+        },
+        {
+          name: "Coef. regadío medio",
+          value: properties.irrigationCoef,
+          unit: "%",
+        },
+        {
+          name: "Pendiente media",
+          value: properties.slope,
+          unit: "%",
+        },
+      ];
+    }
+  }
 </script>
 
 <section>
-  <h2 class="m-0">Parcelas del usuario</h2>
+  <h2 class="m-0">Recintos del usuario</h2>
   <summary class="text-sm m-0 mb-8">Promedio de características</summary>
   <div class="characteristics">
     {#each characteristics as characteristic}
@@ -48,20 +78,30 @@
   </div>
   <br />
   <div class="dynamic__characteristics">
-    <Card>
+    <!-- <Card>
       <h4 slot="header" class="m-0 mb-8 text-sm">
         Salud de las plantas (NDVI)
       </h4>
       <div slot="body" class="range">
         <Range value={0.1} to={1} background={getRangeBarColor(0.1)} />
-        <span class="text-sm fw-700 ml-8">{10} %</span>
+        <span class="text-sm fw-700 ml-8">{0.1}</span>
       </div>
-    </Card>
+    </Card> -->
     <Card>
-      <h4 slot="header" class="m-0 mb-8 text-sm">Área en uso</h4>
-      <div slot="body" class="range">
-        <Range value={95} background={getRangeBarColor(95 / 100)} />
-        <span class="text-sm fw-700 ml-8">{95} %</span>
+      <h4 slot="header" class="m-0 mb-8 text-sm">Plantas por recinto</h4>
+      <div slot="body">
+        <!-- SHow the quantity of each plant in enclosures -->
+        {@const uniqueCrops = [
+          ...new Set(enclosures.map((e) => e.properties.crop.name)),
+        ]}
+        {@const countCrops = uniqueCrops.map(
+          (c) => enclosures.filter((e) => e.properties.crop.name === c).length
+        )}
+        <!-- Convert spaces in N/A -->
+        {@const labels = uniqueCrops.map((c) => (c === "" ? "N/A" : c))}
+        <div class="chart__wrapper">
+          <DoughnutChart data={countCrops} {labels} />
+        </div>
       </div>
     </Card>
   </div>
@@ -94,6 +134,10 @@
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+
+      .chart__wrapper {
+        max-height: 200px;
+      }
     }
   }
 </style>

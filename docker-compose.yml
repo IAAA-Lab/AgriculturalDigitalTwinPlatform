@@ -48,31 +48,32 @@ services:
 # Services communication and message queue  #
 #############################################
 
-  # rabbitmq:
-  #     image: rabbitmq:3-management
-  #     container_name: rabbitmq
-  #     ports:
-  #         - 5672:${RABBITMQ_PORT}
-  #         - 15672:${RABBITMQ_PANEL_PORT}
-  #     environment:
-  #         - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-  #         - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+  rabbitmq:
+      image: rabbitmq:3-management
+      container_name: rabbitmq
+      ports:
+          - 5672:${RABBITMQ_PORT}
+          - 15672:${RABBITMQ_PANEL_PORT}
+      environment:
+          - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+          - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
 
 #############################################
 #              Web app server               #
 #############################################
 
   gin-gonic:
-    build: api-gateway/gin-gonic
+    build:
+      context: ./api-gateway/gin-gonic
+      dockerfile: local.Dockerfile
     ports:
         - 8080:${GIN_PORT}
     volumes:
         - ./api-gateway/gin-gonic:/app
-    # command: go run ./src/internal/cmd/main.go
     restart: always
     depends_on:
         - 'mongo'
-        # - 'rabbitmq'
+        - 'rabbitmq'
     environment:
       - ENV_MODE=LOCAL
       - JWT_SECRET=${JWT_SECRET}
@@ -89,7 +90,8 @@ services:
       - MINIO_ENDPOINT=${MINIO_ENDPOINT}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-      - MINIO_BUCKET_NAME=${MINIO_BUCKET_NAME}
+      - MINIO_LANDING_BUCKET_NAME=${MINIO_LANDING_BUCKET_NAME}
+      - MINIO_IMAGES_BUCKET_NAME=${MINIO_IMAGES_BUCKET_NAME}
 
 #############################################
 #               Redis server                #
@@ -109,36 +111,36 @@ services:
 #             Digital twin panel            #
 #############################################
 
-#   web-client-svelte:
-#     build: frontend/digital-twin-panel
-#     restart: always
-#     ports:
-#       - 5173:${SVELTE_PORT}
-#     depends_on:
-#       - gin-gonic
-#     stdin_open: true
-#     environment:
-#       - VITE_SERVER_URL=${SVELTE_SERVER_URL}
-#       - VITE_LANDING_URL=${SVELTE_LANDING_URL}
-#       - VITE_IMAGES_SERVER_URL=${SVELTE_IMAGES_SERVER_URL}
+  web-client-svelte:
+    build: frontend/digital-twin-panel
+    restart: always
+    ports:
+      - 5173:${SVELTE_PORT}
+    depends_on:
+      - gin-gonic
+    stdin_open: true
+    environment:
+      - VITE_SERVER_URL=${SVELTE_SERVER_URL}
+      - VITE_LANDING_URL=${SVELTE_LANDING_URL}
+      - VITE_IMAGES_SERVER_URL=${SVELTE_IMAGES_SERVER_URL}
 
 # #############################################
 # #               Private access              #
 # #############################################
 
-#   private-access-vanillajs:
-#     build: frontend/private-access
-#     restart: always
-#     ports:
-#       - 5174:${VITE_VANILLAJS_PORT}
-#     depends_on:
-#       - gin-gonic
-#     stdin_open: true
-#     environment:
-#       - VITE_API_URL=${VITE_VANILLAJS_API_URL}
-#       - VITE_PORT=${VITE_VANILLAJS_PORT}
-#       - VITE_IV_BLOCK_PASSWD=${VITE_IV_BLOCK_PASSWD}
-#       - VITE_KEY_DECRYPT_PASSWD=${VITE_KEY_DECRYPT_PASSWD}
+  private-access-vanillajs:
+    build: frontend/private-access
+    restart: always
+    ports:
+      - 5174:${VITE_VANILLAJS_PORT}
+    depends_on:
+      - gin-gonic
+    stdin_open: true
+    environment:
+      - VITE_API_URL=${VITE_VANILLAJS_API_URL}
+      - VITE_PORT=${VITE_VANILLAJS_PORT}
+      - VITE_IV_BLOCK_PASSWD=${VITE_IV_BLOCK_PASSWD}
+      - VITE_KEY_DECRYPT_PASSWD=${VITE_KEY_DECRYPT_PASSWD}
 
 # #############################################
 # #         Digital twin landing page         #
@@ -237,6 +239,7 @@ services:
       - PREFECT_MONGODB_DB=${MONGO_INITDB_DATABASE}
       - AGROSLAB_AUTH_TOKEN=${AGROSLAB_AUTH_TOKEN}
       - AGROSLAB_API_URL=${AGROSLAB_API_URL}
+      - AGROSLAB_TELEDETECTION_URL=${AGROSLAB_TELEDETECTION_URL}
     ports:
       - 4200:${PREFECT_PORT}
     depends_on:

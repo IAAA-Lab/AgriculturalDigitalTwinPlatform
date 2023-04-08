@@ -1,33 +1,46 @@
 <script lang="ts">
   import { IMAGES_SERVER_URL } from "src/app/config/config";
-  import type { CropId } from "src/lib/core/Domain";
-  import { getIconByCropStats } from "src/lib/core/functions";
+  import type { Crop } from "src/lib/core/Domain";
+  import { onCropImageError } from "src/lib/core/functions";
   import CardInner from "src/lib/infraestructure/presentation/components/cards/CardInner.svelte";
 
-  export let crop: CropId;
-  export let cropStats: any[];
+  export let crop: Crop;
 </script>
 
 <CardInner>
   <div slot="body" class="crop">
     <div class="crop__header">
       <img
-        src={`${IMAGES_SERVER_URL}/pistachio.png`}
-        alt="crop"
+        src={`${IMAGES_SERVER_URL}/${crop.id}.png`}
         class="crop__image"
         style="max-width: 100px;"
+        on:error={onCropImageError}
       />
-      <h4 class="m-0">PISTACHO</h4>
-      <span class="text-xs">{crop.variety}</span>
+      <h4 class="m-0">{crop.name.toUpperCase()}</h4>
+      <span class="text-xs">{crop.variety || "--"}</span>
     </div>
     <div class="crop__divider" />
     <div class="crop__body">
-      {#each cropStats as stat}
-        <div class="crop__body__item">
-          {@html getIconByCropStats(stat.title)}
-          <span class="text-xs m-0">{stat.value} {stat.unit || ""} </span>
-        </div>
-      {/each}
+      <div class="crop__body__item">
+        <i class="fi fi-rr-map-marker" />
+        <span class="text-xs m-0"> -- </span>
+      </div>
+      <div class="crop__body__item">
+        <i class="fi fi-rr-money" />
+        <span class="text-xs m-0"> -- </span>
+      </div>
+      <div class="crop__body__item">
+        <i class="fi fi-rr-stats" />
+        <span class="text-xs m-0"> -- </span>
+      </div>
+      <div class="crop__body__item">
+        <i class="fi fi-rr-hand-holding-seeding" />
+        <span class="text-xs m-0"> -- </span>
+      </div>
+      <div class="crop__body__item">
+        <i class="fi fi-rr-tractor" />
+        <span class="text-xs m-0"> -- </span>
+      </div>
     </div>
   </div>
 </CardInner>
@@ -36,7 +49,7 @@
   .crop {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
     margin: 0.5rem;
     column-gap: 0.5rem;
@@ -64,6 +77,7 @@
     justify-content: start;
     align-items: center;
     column-gap: 0.5rem;
+    margin-left: 1rem;
   }
 
   .crop__divider {

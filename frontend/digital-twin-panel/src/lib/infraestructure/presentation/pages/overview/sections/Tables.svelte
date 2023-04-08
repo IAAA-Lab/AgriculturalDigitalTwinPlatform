@@ -23,7 +23,7 @@
     overflow: hidden;
 
     div {
-      height: 250px;
+      max-height: 750px;
       overflow: scroll;
     }
   }

@@ -6,8 +6,8 @@
 
   let mapElement;
   let i = 0;
-  export let parcels;
-  const colorList = getColorList(parcels.length);
+  export let enclosures;
+  const colorList = getColorList(enclosures.length);
 
   onMount(async () => {
     const map = leaflet.map(mapElement);
@@ -21,10 +21,8 @@
 
     const geojsonFeatures = {
       type: "FeatureCollection",
-      features: parcels,
+      features: enclosures,
     };
-
-    console.log(geojsonFeatures);
 
     const features = leaflet
       .geoJSON(geojsonFeatures, {

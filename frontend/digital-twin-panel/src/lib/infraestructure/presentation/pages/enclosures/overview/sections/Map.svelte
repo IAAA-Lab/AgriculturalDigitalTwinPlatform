@@ -1,13 +1,14 @@
-<script>
+<script type="ts">
   import { onMount } from "svelte";
   import leaflet from "leaflet";
   import { getColorList } from "src/lib/core/functions";
   import Card from "src/lib/infraestructure/presentation/components/cards/Card.svelte";
+  import type { Enclosure } from "src/lib/core/Domain";
 
   let mapElement;
   let i = 0;
-  export let parcels;
-  const colorList = getColorList(parcels.length);
+  export let enclosures: Enclosure[];
+  const colorList = getColorList(enclosures.length);
 
   onMount(async () => {
     const map = leaflet.map(mapElement);
@@ -21,7 +22,7 @@
 
     const geojsonFeatures = {
       type: "FeatureCollection",
-      features: parcels,
+      features: enclosures,
     };
 
     const features = leaflet
@@ -48,7 +49,7 @@
 </script>
 
 <section>
-  <Card>
+  <Card height="100%">
     <div slot="body" bind:this={mapElement} />
   </Card>
 </section>
@@ -59,7 +60,7 @@
     grid-area: map;
     div {
       min-height: 200px;
-      aspect-ratio: 1 / 1;
+      height: 100%;
     }
   }
 </style>

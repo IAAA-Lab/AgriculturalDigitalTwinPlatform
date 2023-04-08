@@ -7,7 +7,7 @@ import type {
   UserParcels,
   Fertilizer,
   HistoricalWeather,
-  Phytosanitary,
+  Treatment,
   Enclosure,
 } from "src/lib/core/Domain";
 import { ServerError } from "src/lib/core/Exceptions";
@@ -19,13 +19,10 @@ class HttpParcelsRepository implements IParcelsRepository {
     enclosureIds: string[],
     year: number
   ): Promise<Enclosure[]> {
-    console.log({ enclosureIds });
     return this.http
-      .get<Enclosure[]>("enclosures", {
-        params: {
-          enclosureIds: enclosureIds.join(","),
-          year,
-        },
+      .post<Enclosure[]>("enclosures", {
+        enclosureIds,
+        year,
       })
       .then((response) => {
         if (response.status === 200) {
@@ -45,14 +42,46 @@ class HttpParcelsRepository implements IParcelsRepository {
     startDate: Date,
     endDate: Date
   ): Promise<HistoricalWeather[]> {
-    return [];
+    return this.http
+      .get<HistoricalWeather[]>("weather/historical", {
+        params: {
+          idema,
+          startDate,
+          endDate,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          return response.data;
+        }
+        throw ServerError;
+      })
+      .catch((_) => {
+        throw ServerError;
+      });
   }
-  async getPhytosanitaries(
+  async GetTreatments(
     enclosureId: string,
     startDate: Date,
     endDate: Date
-  ): Promise<Phytosanitary[]> {
-    return [];
+  ): Promise<Treatment[]> {
+    return this.http
+      .get<Treatment[]>("treatments", {
+        params: {
+          enclosureId,
+          startDate,
+          endDate,
+        },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          return response.data;
+        }
+        throw ServerError;
+      })
+      .catch((_) => {
+        throw ServerError;
+      });
   }
   async getFertilizers(
     enclosureId: string,
@@ -80,70 +109,72 @@ class HttpParcelsRepository implements IParcelsRepository {
         if (response.status === 200) {
           return response.data;
         }
-        throw ServerError;
+        throw new ServerError("Error al obtener los campos del usuario");
       })
-      .catch((_) => {
-        throw ServerError;
+      .catch((e) => {
+        throw new ServerError(e);
       });
   }
 
-  async getDailyWeather(parcelId: string, date: Date): Promise<DailyWeather> {
+  async getDailyWeather(
+    enclosureId: string,
+    date: Date
+  ): Promise<DailyWeather> {
     return this.http
       .get<DailyWeather>("weather/daily", {
         params: {
-          parcelId,
+          enclosureId,
           date,
         },
       })
       .then((response) => {
-        console.log({ response });
         if (response.status === 200) {
           return response.data;
         }
-        throw ServerError;
+        throw new ServerError("Error al obtener el tiempo del día");
       })
-      .catch((_) => {
-        throw ServerError;
+      .catch((e) => {
+        throw new ServerError(e);
       });
   }
-  async getForecastWeather(parcelId: string): Promise<ForecastWeather> {
+  async getForecastWeather(enclosureId: string): Promise<ForecastWeather> {
     return this.http
       .get<ForecastWeather>("weather/forecast", {
         params: {
-          parcelId,
+          enclosureId,
         },
       })
       .then((response) => {
         if (response.status === 200) {
           return response.data;
         }
-        throw ServerError;
+        throw new ServerError("Error al obtener el pronóstico del tiempo");
       })
-      .catch((_) => {
-        throw ServerError;
+      .catch((e) => {
+        throw new ServerError(e);
       });
   }
   async getNDVI(
     enclosureIds: string[],
     startDate: Date,
-    endDate: Date
+    endDate: Date,
+    limit: number
   ): Promise<NDVI[]> {
     return this.http
-      .get<NDVI[]>("ndvi", {
-        params: {
-          enclosureIds,
-          startDate,
-          endDate,
-        },
+      .post<NDVI[]>("ndvi", {
+        enclosureIds,
+        startDate,
+        endDate,
+        limit,
       })
       .then((response) => {
         if (response.status === 200) {
           return response.data;
         }
-        throw ServerError;
+        throw new ServerError("Error al obtener NDVI");
       })
-      .catch((_) => {
-        throw ServerError;
+      .catch((e) => {
+        throw new ServerError(e);
       });
   }
 }

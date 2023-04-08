@@ -1,28 +1,20 @@
 <script lang="ts">
-  import { IMAGES_SERVER_URL } from "src/app/config/config";
+  import { IMAGES_SERVER_URL, enclosuresService } from "src/app/config/config";
   import { selectedEnclosure } from "src/app/config/stores/selectedEnclosure";
-  import type { Enclosure } from "src/lib/core/Domain";
-  import { getColorList } from "src/lib/core/functions";
+  import type { Enclosure, NDVI } from "src/lib/core/Domain";
+  import { getColorList, onCropImageError } from "src/lib/core/functions";
   import { Link } from "svelte-routing";
   import Card from "../../../components/cards/Card.svelte";
   import MapSearchCard from "../components/MapSearchCard.svelte";
-
-  const colorList = getColorList(2);
+  import { onMount } from "svelte";
 
   export let enclosures: Enclosure[] = [];
-  console.log(enclosures);
+  const colorList = getColorList(enclosures.length);
   let search = "";
-
-  // Listener for the search input
-  // $: {
-  //   enclosures = enclosures.filter((e) =>
-  //     e.toLowerCase().includes(search.toLowerCase())
-  //   );
-  // }
 </script>
 
 <Card>
-  <h2 class="m-0 mb-8" slot="header">Enclosures</h2>
+  <h2 class="m-0 mb-8 ml-8" slot="header">Recintos</h2>
   <div slot="body" class="p-8">
     <input
       type="search"
@@ -44,16 +36,18 @@
       {#each enclosures as enclosure, i}
         <Link to={`/enclosure/${enclosure.id}`}>
           <MapSearchCard
+            location={enclosure.properties.geographicSpot}
             enclosureName={enclosure.id}
-            area={enclosure.properties.area.value}
-            ndvi={enclosure.properties.ndvi.value}
+            area={enclosure.properties.area}
             geojsonFeature={enclosure}
             color={colorList[i]}
+            cropName={enclosure.properties.crop.name}
           >
             <img
+              on:error={onCropImageError}
               slot="crops"
-              src={`${IMAGES_SERVER_URL}/${enclosure.cropIds?.at(0).name}.png`}
-              alt="crops"
+              src={`${IMAGES_SERVER_URL}/${enclosure.properties.crop.id}.png`}
+              alt="img planta"
               height="30"
               class="ml-8"
             />

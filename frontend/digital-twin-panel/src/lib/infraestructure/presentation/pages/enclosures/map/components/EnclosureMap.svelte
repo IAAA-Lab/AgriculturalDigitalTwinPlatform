@@ -5,7 +5,7 @@
   import Card from "src/lib/infraestructure/presentation/components/cards/Card.svelte";
   import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
   import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
-  import { parcelsService } from "src/app/config/config";
+  import { enclosuresService } from "src/app/config/config";
 
   let mapElement;
   let i = 0;
@@ -39,7 +39,7 @@
     // .bindPopup((e) => e.feature.type);
 
     // Fits map to all features present automatically
-    map.fitBounds(features.getBounds(), { padding: [25, 25] }).setMaxZoom(17);
+    map.fitBounds(features.getBounds(), { padding: [25, 25] });
 
     return () => map.remove();
   });

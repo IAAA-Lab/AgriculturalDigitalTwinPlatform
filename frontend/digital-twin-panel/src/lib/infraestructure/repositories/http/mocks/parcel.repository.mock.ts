@@ -626,9 +626,7 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
               };
             });
             return data;
-          } catch (error) {
-            console.log("error", error);
-          }
+          } catch (error) {}
         }
         throw ServerError;
       })
@@ -686,7 +684,6 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
             date: Object.keys(item)[0],
           };
         });
-        console.log({ ndvi });
         if (response.status === 200) {
           return ndvi;
         }
@@ -697,7 +694,7 @@ class HttpParcelsRepositoryMock implements IParcelsRepository {
       });
   }
 
-  async getPhytosanitaries(
+  async GetTreatments(
     enclosureId: string,
     startDate: Date,
     endDate: Date

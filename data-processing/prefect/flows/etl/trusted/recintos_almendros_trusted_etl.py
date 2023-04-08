@@ -5,31 +5,45 @@ from minio import Minio
 import pandas as pd
 import io
 
-FILE_NAME = "Recintos_Almendros_Cercanos_y_Otros_Cultivos.xlsx"
+from etl.utils.functions import DB_MinioClient
 
+METADATA_KEY = "x-amz-meta-type"
+METADATA_VAL = "excel_almendros_cercanos"
+BUCKET_FROM_NAME = "landing-zone"
+BUCKET_TO_NAME = "trusted-zone"
 
 @task
-def extract():
+def extract_objects_to_process() -> list:
     logger = get_run_logger()
     # Connect to MinIO
-    # TODO: use secrets cause it's not working
-    ACCESS_ROOT = os.environ.get("PREFECT_MINIO_ACCESS_ROOT")
-    SECRET_ROOT = os.environ.get("PREFECT_MINIO_SECRET_ROOT")
-    MINIO_HOST = os.environ.get("PREFECT_MINIO_HOST")
-    minio_client = Minio(MINIO_HOST, access_key=ACCESS_ROOT,
-                         secret_key=SECRET_ROOT, secure=False)
-
-    print("extracting data")
-    logger.info("extracting data")
-    # Get pistacho.json from MinIO and deserialize it
-    data = minio_client.get_object(
-        "landing-zone", FILE_NAME).read()
-    dfTreatments = pd.read_excel(io.BytesIO(data), engine="openpyxl",
-                       sheet_name="Tratamientos", na_values=[''])
-    dfParcels = pd.read_excel(io.BytesIO(data), engine="openpyxl",
-                        sheet_name="Parcelas", na_values=[''])
-    return dfTreatments, dfParcels
-
+    minio_client = DB_MinioClient().connect()
+    # Fetch objects and filter by metadata
+    objects_name = []
+    for obj in minio_client.list_objects(BUCKET_FROM_NAME, include_user_meta=True):
+        stat = minio_client.stat_object(BUCKET_FROM_NAME, obj.object_name)
+        if stat.metadata.get(METADATA_KEY) == METADATA_VAL:
+            objects_name.append(obj.object_name)
+    # Read object and convert to dataframe
+    objects = []
+    for object_name in objects_name:
+            data = minio_client.get_object(BUCKET_FROM_NAME, object_name).read()
+            try:
+                dfParcels = pd.read_excel(io.BytesIO(data), engine="openpyxl",
+                                sheet_name="Parcelas", na_values=[''])
+            except Exception as e:
+                logger.error("Error reading object: ", e)
+            try:
+                dfTreatments = pd.read_excel(io.BytesIO(data), engine="openpyxl",
+                                sheet_name="Tratamientos", na_values=[''])
+            except Exception as e:
+                logger.error("Error reading object: ", e)
+            objects.append({
+                "treatments": dfTreatments,
+                "parcels": dfParcels,
+                "name": re.split(r"\.", object_name)[0]
+            })
+        
+    return objects
 
 @task
 def transform_treatments(df: pd.DataFrame):
@@ -59,6 +73,10 @@ def transform_treatments(df: pd.DataFrame):
     df.columns = df.columns.str.replace('^ +| +$', '')
     # Convert strings to uppercase
     df["secUserName"] = df["secUserName"].str.upper()
+    # Convert string to datetime and format it
+    df["harvestInitDate"] = pd.to_datetime(df["harvestInitDate"])
+    df["harvestInitDate"] = df["harvestInitDate"].dt.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+    # Get data year
     data_year = df['harvestYear'].iloc[:1].values[0]
     return df, data_year
 
@@ -69,16 +87,19 @@ def transform_parcels(df: pd.DataFrame):
     print("processing parcels data")
     logger.info("processing parcels data")
     # Modify data
-    ## Convert NaN to None
-    df = df.where(pd.notnull(df), None)
     ## Trim spaces
     df.columns = df.columns.str.replace('^ +| +$', '')
     ## Convert strings to int in columns "Recinto" and "Agregado"
     columns = ["Recinto", "Agregado"]
     for column in columns:
-        df[column] = df[column].map(lambda x: re.sub(r'\W+', '', x)) # Remove non alphanumeric characters
-        df = df[df[column] != ""]  # Remove empty strings
-        df[column] = df[column].astype(int)  # Convert to int
+        ### Remove spaces from columns
+        df.columns = df.columns.astype(str).str.replace(' ', '').str.strip()
+        ### Convert columns Recinto and Agregado to int
+        df[column] = pd.to_numeric(df[column], downcast='integer', errors='coerce')
+        ### Remove rows with NaN in Recinto
+        df = df[df[column].notna()]
+        ### Convert columns Recinto to int
+        df[column] = df[column].astype(int)
     ## Remove some columns
     df = df.drop(columns=['ProductorNIF', 'Marcoplantacionh',
                  'Marcoplantacionv', 'Asesoramiento'])
@@ -88,6 +109,8 @@ def transform_parcels(df: pd.DataFrame):
                       "parcelVarietyId", "irrigationKind", "tenureRegimeId", "plantationYear", "numberOfTrees", "plantationDensity", "ATRIA_ADV_ASV", "parcelVulnerableArea", "specificZones", "parcelUse", "slope", "UHC", "UHCDescription", "ZepaZone", "SIEZone"]
     except Exception as e:
         raise ValueError("Error changing column names: ", e)
+    ## Remove rows with empty parcelUse
+    df = df[df["parcelUse"].notna()]
     ## Convert 'N' and 'S' to True and False
     columns = ["specificZones", "parcelVulnerableArea", "ZepaZone", "SIEZone"]
     for column in columns:
@@ -98,16 +121,12 @@ def transform_parcels(df: pd.DataFrame):
 
 
 @task
-def load(processed_data, data_year, file_name):
+def load(processed_data, data_year, file_name, file_type):
     logger = get_run_logger()
     print("loading data")
     logger.info("loading data")
     # Connect to MinIO
-    ACCESS_ROOT = os.environ.get("PREFECT_MINIO_ACCESS_ROOT")
-    SECRET_ROOT = os.environ.get("PREFECT_MINIO_SECRET_ROOT")
-    MINIO_HOST = os.environ.get("PREFECT_MINIO_HOST")
-    minio_client = Minio(MINIO_HOST, access_key=ACCESS_ROOT,
-                         secret_key=SECRET_ROOT, secure=False)
+    minio_client = DB_MinioClient().connect()
     # Convert processed data to bytes
     processed_data_bytes = io.BytesIO()
     processed_data.to_excel(processed_data_bytes, index=False)
@@ -124,19 +143,24 @@ def load(processed_data, data_year, file_name):
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         metadata={
             "source": "7eData",
-            "type": "raw"
+            "type": f"${METADATA_VAL}_${file_type}",
+            "year": data_year,
         }
     )
 
 
 @flow(name="recintos_almendros_refined_etl")
 def recintos_almendros_refined_etl():
-    dfTratamientos, dfParcels = extract()
-    processed_data_treatments, data_year = transform_treatments(dfTratamientos)
-    processed_data_parcels, data_year = transform_parcels(dfParcels)
-    load(processed_data_treatments, data_year,
-         "recintos_almendros_tratamientos.xlsx")
-    load(processed_data_parcels, data_year, "recintos_almendros_parcelas.xlsx")
+    objects = extract_objects_to_process()
+    for object in objects:
+        dfTratamientos = object["treatments"]
+        dfParcels = object["parcels"]
+        name = object["name"]
+        processed_data_treatments, data_year = transform_treatments(dfTratamientos)
+        processed_data_parcels, data_year = transform_parcels(dfParcels)
+        load(processed_data_parcels, data_year, f"{name}_PARCELAS_{data_year}.xlsx", "parcelas")
+        load(processed_data_treatments, data_year,
+            f"{name}_TRATAMIENTOS_{data_year}.xlsx", "tratamientos")
 
 
 if __name__ == "__main__":
