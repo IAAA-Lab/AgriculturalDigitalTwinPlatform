@@ -63,8 +63,8 @@ func setupRouter() *gin.Engine {
 
 	cacherepository := redis.NewRedisConn(redisUri, redisUsername, redisPassword)
 	mongodbRepository := mongodb.NewMongodbConn(mongoUri, mongoDb, 10)
-	rabbitMQRepository := rabbitmq.NewRabbitMQConn(rabbitMQURI)
 	minioRepository := minio.NewMinioConn(minioEndpoint, minioAccessKey, minioSecretAccessKey, false)
+	rabbitMQRepository := rabbitmq.NewRabbitMQConn(rabbitMQURI)
 
 	authService := services.NewAuthService(cacherepository)
 	usersService := services.NewUsersService(mongodbRepository)

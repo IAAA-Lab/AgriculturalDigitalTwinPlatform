@@ -216,7 +216,7 @@ services:
     ports:
       - 5432:${POSTGRES_PORT}
     volumes: 
-      - postgres:/var/lib/postgresql/data
+      - ./storage/postgres/data:/var/lib/postgresql/data
 
 # #############################################
 # #      Data ingestion, data processing      # 
@@ -225,7 +225,7 @@ services:
 
   prefect-server:
     build: data-processing/prefect
-    restart: always
+    restart: on-failure
     volumes:
       - prefect:/root/.prefect
       - ./data-processing/prefect/flows:/opt/prefect/flows
@@ -244,8 +244,9 @@ services:
       - 4200:${PREFECT_PORT}
     depends_on:
       - postgres
+      - rabbitmq
+      - mongo
 
 
 volumes:
   prefect:
-  postgres:

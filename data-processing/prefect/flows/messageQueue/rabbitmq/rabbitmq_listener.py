@@ -1,6 +1,7 @@
 # Rabbitmq rpc consumer with pika
 
 import json
+import time
 import pika
 from servicesIngestion.daily_weather import daily_weather
 from servicesIngestion.forecast_weather import forecast_weather
@@ -75,7 +76,6 @@ class RabbitmqRpcConsumer():
                         'errorMessage': "Error al obtener el clima historico",
                         'payload': None
                     }
-                    
 
         response = {
             'errorMessage': "",
@@ -109,5 +109,14 @@ if __name__ == '__main__':
         'password': PASSWORD
     }
     consumer = RabbitmqRpcConsumer(config)
-    consumer.connect()
+    # Connect to RabbitMQ and retry 3 times if it fails
+    for i in range(5):
+        try:
+            consumer.connect()
+            time.sleep(10)
+            break
+        except Exception as e:
+            print(f"Error connecting to RabbitMQ: {str(e)}")
+            if i == 4:
+                raise
     consumer.start_receiver()
