@@ -16,35 +16,36 @@
   });
 </script>
 
-<h1 class="title">Mapa</h1>
 <section class="container-responsive">
-  {#await enclosuresService.getEnclosures($listOfEnclosures)}
-    <Loading />
-  {:then enclosures}
-    <Map {enclosures} />
-    {#if isInMobile}
-      <SearchPopup>
+  <h1 class="title">Mapa</h1>
+  <div class="inner__container">
+    {#await enclosuresService.getEnclosures($listOfEnclosures)}
+      <Loading />
+    {:then enclosures}
+      <Map {enclosures} />
+      {#if isInMobile}
+        <SearchPopup>
+          <Search {enclosures} />
+        </SearchPopup>
+      {:else}
         <Search {enclosures} />
-      </SearchPopup>
-    {:else}
-      <Search {enclosures} />
-    {/if}
-  {:catch}
-    <Error />
-  {/await}
+      {/if}
+    {:catch}
+      <Error />
+    {/await}
+  </div>
 </section>
 
 <style lang="scss">
-  section {
+  .inner__container {
     display: grid;
     gap: 0.8rem;
-    height: calc(100vh - 5rem);
+    height: calc(100vh - 8.5rem);
     grid-template-columns: 1fr 400px;
-    overflow: scroll;
   }
 
   @include media("<large") {
-    section {
+    .inner__container {
       padding: 0;
       margin-top: 16px;
       grid-template-columns: 1fr;

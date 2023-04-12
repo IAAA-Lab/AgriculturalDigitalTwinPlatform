@@ -17,26 +17,28 @@
   $: $selectedEnclosure = id;
 </script>
 
-<div class="title">
-  <h1>Recinto#{id}</h1>
-  {#if vulnerableArea}
-    <ProtectedAreaCard />
-  {/if}
-</div>
-<div class="overview mr-8 container-responsive">
-  {#await enclosuresService.getEnclosures([id])}
-    <Loading />
-  {:then enclosures}
-    {@const properties = enclosures[0].properties}
-    <Map {enclosures} />
-    <Crops enclosureId={id} crop={properties.crop} />
-    <Characteristics {properties} />
-    <!-- <UsedArea usedArea={properties.area} totalArea={properties.areaSIGPAC} /> -->
-    <Ndvi enclosureId={id} />
-    <CurrentWeather enclosureId={id} />
-  {:catch error}
-    <Error errorMessage={error} />
-  {/await}
+<div class="container-responsive">
+  <div class="title">
+    <h1>Recinto#{id}</h1>
+    {#if vulnerableArea}
+      <ProtectedAreaCard />
+    {/if}
+  </div>
+  <div class="overview">
+    {#await enclosuresService.getEnclosures([id])}
+      <Loading />
+    {:then enclosures}
+      {@const properties = enclosures[0].properties}
+      <Map {enclosures} />
+      <Crops enclosureId={id} crop={properties.crop} />
+      <Characteristics {properties} />
+      <!-- <UsedArea usedArea={properties.area} totalArea={properties.areaSIGPAC} /> -->
+      <Ndvi enclosureId={id} />
+      <CurrentWeather enclosureId={id} />
+    {:catch error}
+      <Error errorMessage={error.message} />
+    {/await}
+  </div>
 </div>
 
 <style lang="scss">

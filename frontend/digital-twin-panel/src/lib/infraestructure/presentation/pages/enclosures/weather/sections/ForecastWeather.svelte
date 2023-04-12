@@ -58,7 +58,7 @@
     display: flex;
     flex-direction: column;
     row-gap: 0.5rem;
-    overflow: scroll;
+    overflow-x: scroll;
   }
 
   .divider {

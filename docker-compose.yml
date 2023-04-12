@@ -111,18 +111,18 @@ services:
 #             Digital twin panel            #
 #############################################
 
-  web-client-svelte:
-    build: frontend/digital-twin-panel
-    restart: always
-    ports:
-      - 5173:${SVELTE_PORT}
-    depends_on:
-      - gin-gonic
-    stdin_open: true
-    environment:
-      - VITE_SERVER_URL=${SVELTE_SERVER_URL}
-      - VITE_LANDING_URL=${SVELTE_LANDING_URL}
-      - VITE_IMAGES_SERVER_URL=${SVELTE_IMAGES_SERVER_URL}
+  # web-client-svelte:
+  #   build: frontend/digital-twin-panel
+  #   restart: always
+  #   ports:
+  #     - 5173:${SVELTE_PORT}
+  #   depends_on:
+  #     - gin-gonic
+  #   stdin_open: true
+  #   environment:
+  #     - VITE_SERVER_URL=${SVELTE_SERVER_URL}
+  #     - VITE_LANDING_URL=${SVELTE_LANDING_URL}
+  #     - VITE_IMAGES_SERVER_URL=${SVELTE_IMAGES_SERVER_URL}
 
 # #############################################
 # #               Private access              #
@@ -146,24 +146,24 @@ services:
 # #         Digital twin landing page         #
 # #############################################
 
-#   # landing-page-react:
-#   #   build: frontend/landing-page
-#   #   restart: always
-#   #   ports:
-#   #     - 3001:${REACT_PORT}
-#   #   depends_on:
-#   #     - gin-gonic
-#   #   stdin_open: true
-#   #   environment:
-#   #     - PORT=${REACT_PORT}
-#   #     - REACT_APP_API_URL=${REACT_APP_API_URL}
-#   #     - REACT_APP_DIGITAL_TWIN_URL=${REACT_APP_DIGITAL_TWIN_URL}
-#   #     - REACT_APP_NEWS_UPLOAD_URL=${REACT_APP_NEWS_UPLOAD_URL}
-#   #     - REACT_APP_KEY_DECRYPT_PASSWD=${REACT_APP_KEY_DECRYPT_PASSWD}
-#   #     - REACT_APP_IV_BLOCK_PASSWD=${REACT_APP_IV_BLOCK_PASSWD}
-#   #     - REACT_APP_EMAIL_SENDER_PUBKEY=${REACT_APP_EMAIL_SENDER_PUBKEY}
-#   #     - REACT_APP_EMAIL_SENDER_SERVICEID=${REACT_APP_EMAIL_SENDER_SERVICEID}
-#   #     - REACT_APP_EMAIL_SENDER_TEMPLATEID=${REACT_APP_EMAIL_SENDER_TEMPLATEID}
+  landing-page-react:
+    build: frontend/landing-page
+    restart: always
+    ports:
+      - 3001:${REACT_PORT}
+    depends_on:
+      - gin-gonic
+    stdin_open: true
+    environment:
+      - PORT=${REACT_PORT}
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
+      - REACT_APP_DIGITAL_TWIN_URL=${REACT_APP_DIGITAL_TWIN_URL}
+      - REACT_APP_NEWS_UPLOAD_URL=${REACT_APP_NEWS_UPLOAD_URL}
+      - REACT_APP_KEY_DECRYPT_PASSWD=${REACT_APP_KEY_DECRYPT_PASSWD}
+      - REACT_APP_IV_BLOCK_PASSWD=${REACT_APP_IV_BLOCK_PASSWD}
+      - REACT_APP_EMAIL_SENDER_PUBKEY=${REACT_APP_EMAIL_SENDER_PUBKEY}
+      - REACT_APP_EMAIL_SENDER_SERVICEID=${REACT_APP_EMAIL_SENDER_SERVICEID}
+      - REACT_APP_EMAIL_SENDER_TEMPLATEID=${REACT_APP_EMAIL_SENDER_TEMPLATEID}
 
 # #############################################
 # #            Digital twin storage           #

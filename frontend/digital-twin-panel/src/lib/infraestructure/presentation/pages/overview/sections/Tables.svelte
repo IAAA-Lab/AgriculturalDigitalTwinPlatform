@@ -11,7 +11,7 @@
 
 <section>
   <Card>
-    <div slot="body" class="card-body">
+    <div slot="body">
       <Table {rows} {columns} />
     </div>
   </Card>

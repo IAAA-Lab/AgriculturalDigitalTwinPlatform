@@ -6,8 +6,8 @@
   export let id;
 </script>
 
-<h1 class="title">Recinto#{id} · Plantas</h1>
 <div class="container-responsive">
+  <h1 class="title">Recinto#{id} · Plantas</h1>
   <!-- <CropStats enclosureId={id} /> -->
   <!-- <br /> -->
   <Treatments enclosureId={id} />

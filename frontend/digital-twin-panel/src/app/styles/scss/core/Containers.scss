@@ -4,6 +4,7 @@
 .container-responsive {
   @include media(">small") {
     padding: $container--padding__desktop;
+    padding-top: 0;
   }
 }
 

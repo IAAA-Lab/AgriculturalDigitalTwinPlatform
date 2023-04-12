@@ -21,7 +21,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    white-space: nowrap;
     row-gap: 0.25rem;
+    width: 85px;
   }
 </style>

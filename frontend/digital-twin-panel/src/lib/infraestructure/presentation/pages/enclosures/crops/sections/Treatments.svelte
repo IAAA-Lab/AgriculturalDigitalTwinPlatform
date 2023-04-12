@@ -43,12 +43,12 @@
     </div>
   </div>
   <div slot="body" class="body m-16">
+    <CardInner>
+      <div slot="body" class="table__inner">
+        <PhytosTable {treatments} />
+      </div>
+    </CardInner>
     <div class="table__pie__chart__wrapper">
-      <CardInner class="table__wrapper">
-        <svelte:fragment slot="body">
-          <PhytosTable {treatments} />
-        </svelte:fragment>
-      </CardInner>
       <!-- <CardInner class="chart__pie__wrapper">
           <h4 slot="header" class="m-0">Eficacia</h4>
           <div slot="body" class="chart__pie__body">
@@ -129,18 +129,16 @@
     row-gap: 1rem;
   }
 
+  .table__inner {
+    height: 300px;
+    overflow: scroll;
+  }
+
   .table__pie__chart__wrapper {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 1rem;
-
-    :global(.table__wrapper) {
-      flex: 7;
-      overflow: scroll;
-      height: 300px;
-      min-width: 220px;
-    }
 
     :global(.chart__pie__wrapper) {
       flex: 1;
@@ -156,12 +154,12 @@
 
     :global(.chart__doughnut__wrapper) {
       flex: 3;
-      min-width: 120px;
+      min-width: 150px;
     }
 
     :global(.chart__line__wrapper) {
       flex: 7;
-      min-width: 120px;
+      min-width: 150px;
     }
     gap: 1rem;
   }

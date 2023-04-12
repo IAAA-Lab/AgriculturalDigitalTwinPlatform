@@ -34,6 +34,7 @@
     align-items: center;
     justify-content: flex-start;
     padding-right: 1rem;
+    white-space: nowrap;
 
     .stat-icon {
       width: 70px;

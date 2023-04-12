@@ -11,24 +11,26 @@
   export let id;
 </script>
 
-<h1 class="title">Recinto#{id} · Tiempo</h1>
 <div class="container-responsive">
-  {#await enclosuresService.getDailyWeather(id)}
-    <Loading />
-  {:then cw}
-    {@const pred = cw.prediction[0]}
-    <CurrentWeather {cw} />
-    <DailyWeather ta={pred.ta} skyState={pred.skyState} />
-    <WeatherStats pred={cw.prediction[0]} />
-  {:catch error}
-    <Error errorMessage={error.message} />
-  {/await}
-  <ForecastWeather enclosureId={id} />
-  <TempMap />
+  <h1 class="title">Recinto#{id} · Tiempo</h1>
+  <div class="inner__container">
+    {#await enclosuresService.getDailyWeather(id)}
+      <Loading />
+    {:then cw}
+      {@const pred = cw.prediction[0]}
+      <CurrentWeather {cw} />
+      <DailyWeather ta={pred.ta} skyState={pred.skyState} />
+      <WeatherStats pred={cw.prediction[0]} />
+    {:catch error}
+      <Error errorMessage={error.message} />
+    {/await}
+    <ForecastWeather enclosureId={id} />
+    <TempMap />
+  </div>
 </div>
 
 <style lang="scss">
-  .container-responsive {
+  .inner__container {
     display: grid;
     grid-template-columns: 2fr 2fr 1fr;
     grid-template-areas:
@@ -39,7 +41,7 @@
   }
 
   @include media("<large") {
-    .container-responsive {
+    .inner__container {
       grid-template-columns: 1fr;
       grid-template-areas:
         "current-weather"

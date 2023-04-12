@@ -6,6 +6,7 @@ import Logo from "./partials/Logo";
 import Button from "../elements/Button";
 import AuthContext from "../../context/contexts";
 import { authService } from "../../api/auth";
+import { DIGITAL_TWIN_PANEL_URL } from "../../config/constants";
 
 const propTypes = {
   navPosition: PropTypes.string,
@@ -38,7 +39,6 @@ const Header = ({
   ...props
 }) => {
   const [isActive, setIsactive] = useState(false);
-  const auth = useContext(AuthContext);
   const nav = useRef(null);
   const hamburger = useRef(null);
 
@@ -98,7 +98,7 @@ const Header = ({
   );
 
   const loginButtonClasses = classNames(
-    auth.usr.logged ? "button-secondary" : "button-primary",
+    "button-primary",
     "button button-wide-mobile button-sm"
   );
 
@@ -160,18 +160,11 @@ const Header = ({
                       <li>
                         <Button
                           className={loginButtonClasses}
-                          onClick={async (e) => {
-                            if (auth.usr.logged) {
-                              await authService.logout();
-                              auth.actions.logout();
-                              closeMenu();
-                            } else {
-                              handleOpen(e);
-                              closeMenu();
-                            }
+                          onClick={(e) => {
+                            window.location.href = DIGITAL_TWIN_PANEL_URL;
                           }}
                         >
-                          {auth.usr.logged ? "Salir" : "Acceder"}
+                          Accede
                         </Button>
                       </li>
                     </ul>

@@ -1,5 +1,5 @@
-<h1 class="title">Análisis</h1>
 <div class="container-responsive p-16">
+  <h1 class="title">Análisis</h1>
   <img
     src="/images/under_construction.png"
     alt="Under construction"
