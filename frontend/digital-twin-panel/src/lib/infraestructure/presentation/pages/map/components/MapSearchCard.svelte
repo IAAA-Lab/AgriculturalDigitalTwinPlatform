@@ -20,13 +20,13 @@
   onMount(() => {
     // Convert geojson features to the svg image we see, imitating the ones in the map
     icon = geojson2svg()
-      .data(geojsonFeature)
       .styles((e, i, a) => {
         return {
           fill: color,
           opacity: 0.7,
         };
       })
+      .data(geojsonFeature)
       .render()
       // Replace the svg tag with a svg tag with the desired width and height and add border color black adapted to the shape
       .replace("svg", "svg width='125' height='125'");
@@ -41,7 +41,7 @@
       <p class="text-xs mb-4">{location}</p>
       <div class="card-item">
         <i class="fi fi-rr-map-marker" />
-        <p class="text-sm m-0 pl-8">{numberWithCommas(area)}</p>
+        <p class="text-sm m-0 pl-8">{numberWithCommas(area)} Ha</p>
       </div>
       <div class="card-item">
         <i class="fi fi-rr-corn" />

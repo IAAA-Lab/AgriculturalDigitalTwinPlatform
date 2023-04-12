@@ -48,7 +48,6 @@
 </script>
 
 <Card>
-  <h2 class="m-0 ml-8" slot="header">NDVI</h2>
   <div slot="body" class="p-16 body">
     <div class="left">
       <h4 class="m-0">Media</h4>
