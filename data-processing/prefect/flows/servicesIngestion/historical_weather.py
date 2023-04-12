@@ -35,33 +35,34 @@ def transform(weather_data: dict):
     if weather_data is None:
         return None
     logger = get_run_logger()
-    
+
     weather_data_list = []
     for weather_data_item in weather_data:
         # Convert date 2021-01-01 to 2021-02-01T00:00:00.000Z
         try:
             weather_data_list.append(
-            {
-                "date": pd.to_datetime(weather_data_item["fecha"]).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                "idema": weather_data_item["indicativo"],
-                "height": float(weather_data_item["altitud"].replace(",", ".")),
-                "tmed": float(weather_data_item["tmed"].replace(",", ".")),
-                # If prec is not a number, set it to 0
-                "prec": float(weather_data_item["prec"].replace(",", ".")) if weather_data_item["prec"].replace(",", ".").isnumeric() else 0,
-                "tmin": float(weather_data_item["tmin"].replace(",", ".")),
-                "tminTime": weather_data_item["horatmin"],
-                "tmax": float(weather_data_item["tmax"].replace(",", ".")),
-                "horaTmax": weather_data_item["horatmax"],
-                "windDir": float(weather_data_item["dir"].replace(",", ".")),
-                "windSpeed": float(weather_data_item["velmedia"].replace(",", ".")),
-                "windGust": float(weather_data_item["racha"].replace(",", ".")),
-                "windGustTime": weather_data_item["horaracha"],
-            }
-        )
+                {
+                    "date": pd.to_datetime(weather_data_item["fecha"]).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+                    "idema": weather_data_item["indicativo"],
+                    "height": float(weather_data_item["altitud"].replace(",", ".")) if weather_data_item["prec"].replace(",", "").isnumeric() else 0,
+                    "tmed": float(weather_data_item["tmed"].replace(",", ".")) if weather_data_item["prec"].replace(",", "").isnumeric() else 0,
+                    # If prec is not a number, set it to 0
+                    "prec": float(weather_data_item["prec"].replace(",", ".")) if weather_data_item["prec"].replace(",", "").isnumeric() else 0,
+                    "tmin": float(weather_data_item["tmin"].replace(",", ".")) if weather_data_item["prec"].replace(",", "").isnumeric() else 0,
+                    "tminTime": weather_data_item["horatmin"],
+                    "tmax": float(weather_data_item["tmax"].replace(",", ".")) if weather_data_item["prec"].replace(",", "").isnumeric() else 0,
+                    "horaTmax": weather_data_item["horatmax"],
+                    "windDir": float(weather_data_item["dir"].replace(",", ".")) if weather_data_item["prec"].replace(",", "").isnumeric() else 0,
+                    "windSpeed": float(weather_data_item["velmedia"].replace(",", ".")) if weather_data_item["prec"].replace(",", "").isnumeric() else 0,
+                    "windGust": float(weather_data_item["racha"].replace(",", ".")) if weather_data_item["prec"].replace(",", "").isnumeric() else 0,
+                    "windGustTime": weather_data_item["horaracha"],
+                }
+            )
         except Exception as e:
-            logger.error(
-                f"Error transforming historic weather data - {e}")
+            raise Exception(
+                f"Error transforming weather data: {weather_data_item} - {e}")
     return weather_data_list
+
 
 @task
 async def load(weather_list: dict):

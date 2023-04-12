@@ -13,9 +13,6 @@
     padding: 0px 6px;
     gap: 8px;
     white-space: nowrap;
-
-    /* Violet / V100 */
-
     background: #e7e4f9;
     border-radius: 4px;
   }

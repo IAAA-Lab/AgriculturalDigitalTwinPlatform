@@ -25,10 +25,10 @@ func (srv *enclosuresService) GetEnclosures(enclosureIds []string, year int16) (
 
 func (srv *enclosuresService) GetHistoricalWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error) {
 	// Check if the data is in the persistence
-	weather, err := srv.persistence.GetHistoricalWeather(idema, startDate, endDate)
-	if err == nil && len(weather) > 0 {
-		return weather, nil
-	}
+	// weather, err := srv.persistence.GetHistoricalWeather(idema, startDate, endDate)
+	// if err == nil && len(weather) > 0 {
+	// 	return weather, nil
+	// }
 	// If not, get it from the ESB
 	return srv.esb.GetHistoricalWeather(idema, startDate, endDate)
 }

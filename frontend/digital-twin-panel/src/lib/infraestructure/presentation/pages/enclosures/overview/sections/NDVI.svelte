@@ -1,19 +1,16 @@
 <script>
-  import { map } from "leaflet";
   import { getRangeBarColor, numberWithCommas } from "src/lib/core/functions";
   import Card from "src/lib/infraestructure/presentation/components/cards/Card.svelte";
   import CardInner from "src/lib/infraestructure/presentation/components/cards/CardInner.svelte";
-  import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
+  import LineChart from "src/lib/infraestructure/presentation/components/charts/Chart.svelte";
   import Range from "src/lib/infraestructure/presentation/components/misc/Range.svelte";
   import { Link } from "svelte-routing";
-  import config from "../../map/components/config/ndviLineChart.config";
   import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
   import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
   import { enclosuresService } from "src/app/config/config";
+  import { es } from "date-fns/locale";
 
   export let enclosureId;
-  const startDate = new Date("2022-01-01");
-  const endDate = new Date("2022-02-01");
 </script>
 
 <section>
@@ -41,34 +38,65 @@
           <CardInner>
             <div class="ndvi__chart" slot="body">
               <LineChart
-                labels={ndviValues.map((ndvi) => ndvi.date.split("T")[0])}
-                datasets={[
-                  {
-                    data: ndviValues.map((ndvi) => ndvi.value),
-                    label: "Ganancias",
-                    fill: true,
-                    backgroundColor: function (context) {
-                      const chart = context.chart;
-                      const { ctx, chartArea } = chart;
-                      if (!chartArea) {
-                        return null;
-                      }
-                      const gradient = ctx.createLinearGradient(
-                        0,
-                        chartArea.bottom,
-                        0,
-                        chartArea.top
-                      );
-                      gradient.addColorStop(0.0, "rgba(255,255,255,0.7)");
-                      gradient.addColorStop(0.2, "rgba(252, 155, 104,1)");
-                      return gradient;
-                    },
-                    borderColor: "rgba(252, 155, 104,1)",
-                    tension: 0.2,
+                data={{
+                  data: {
+                    datasets: [
+                      {
+                        type: "line",
+                        data: ndviValues?.map((ndvi) => ({
+                          x: ndvi.date.split("T")[0],
+                          y: ndvi.value,
+                        })),
+                        fill: true,
+                        borderColor: "#fc9b68",
+                        backgroundColor: function (context) {
+                          const chart = context.chart;
+                          const { ctx, chartArea } = chart;
+                          if (!chartArea) {
+                            return null;
+                          }
+                          const gradient = ctx.createLinearGradient(
+                            0,
+                            chartArea.bottom,
+                            0,
+                            chartArea.top
+                          );
+                          gradient.addColorStop(0.2, "rgba(255,255,255,0.8)");
+                          gradient.addColorStop(1, "rgba(252, 155, 104,1)");
+                          return gradient;
+                        },
+                        tension: 0.2,
+                      },
+                    ],
                   },
-                ]}
-                title="Índices NDVI (Últimos 30 días)"
-                {config}
+                  options: {
+                    plugins: {
+                      legend: {
+                        display: false,
+                      },
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                      y: {
+                        type: "linear",
+                        display: true,
+                        position: "left",
+                        max: 1,
+                      },
+                      x: {
+                        display: true,
+                        position: "bottom",
+                        type: "time",
+                        adapters: {
+                          date: {
+                            locale: es,
+                          },
+                        },
+                      },
+                    },
+                  },
+                }}
               />
             </div>
           </CardInner>
@@ -83,7 +111,6 @@
 <style>
   section {
     grid-area: ndvi;
-    margin-top: 1.25rem;
   }
   .ndvi__chart {
     height: 300px;

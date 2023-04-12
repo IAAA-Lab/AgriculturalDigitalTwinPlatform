@@ -2,7 +2,7 @@
   import { numberWithCommas } from "src/lib/core/functions";
   import CardInner from "src/lib/infraestructure/presentation/components/cards/CardInner.svelte";
   import CardInnerPrimary from "src/lib/infraestructure/presentation/components/cards/CardInnerPrimary.svelte";
-  import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
+  import LineChart from "src/lib/infraestructure/presentation/components/charts/Chart.svelte";
   import config from "src/lib/infraestructure/presentation/components/charts/config/LineChartNoBg.config";
   import cropStatsChartConfig from "../config/cropStatsChart.config";
   import cropStatsPrimaryChartConfig from "../config/cropStatsPrimaryChart.config";
@@ -40,7 +40,7 @@
       </span>
     </div>
     <div class="chart">
-      <LineChart
+      <!-- <LineChart
         {labels}
         datasets={[
           {
@@ -49,7 +49,7 @@
           },
         ]}
         {config}
-      />
+      /> -->
     </div>
   </div>
 </svelte:component>

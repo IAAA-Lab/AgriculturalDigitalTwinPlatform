@@ -1,17 +1,15 @@
 <script>
   import WeatherCard from "src/lib/infraestructure/presentation/components/cards/WeatherCard.svelte";
   import BarChart from "src/lib/infraestructure/presentation/components/charts/BarChart.svelte";
-  import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
-  import config from "../components/config/tempLineChart.config";
+  import Chart from "src/lib/infraestructure/presentation/components/charts/Chart.svelte";
   import { enclosuresService } from "src/app/config/config";
   import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
 
   const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 6);
+  startDate.setDate(startDate.getDate() - 14);
   let currentHour = new Date().getHours();
 
   export let pred;
-  console.log(pred.wind, currentHour);
 </script>
 
 <section>
@@ -79,35 +77,66 @@
       </div>
       <div slot="body" class="body">
         <div style="max-height: 250px; min-height: 150px; width: 100%;">
-          <LineChart
-            labels={pred.ta.map((ta) => ta.period)}
-            datasets={[
-              {
-                data: pred.ta.map((ta) => ta.value),
-                label: "",
-                fill: true,
-                backgroundColor: function (context) {
-                  const chart = context.chart;
-                  const { ctx, chartArea } = chart;
-                  if (!chartArea) {
-                    return null;
-                  }
-                  const gradient = ctx.createLinearGradient(
-                    0,
-                    chartArea.bottom,
-                    0,
-                    chartArea.top
-                  );
-                  gradient.addColorStop(0, "#267DF3");
-                  gradient.addColorStop(0.6, "#F34A26");
-                  return gradient;
-                },
-                borderWidth: 3,
-                borderColor: "#2F3030",
-                tension: 0.2,
+          <Chart
+            data={{
+              data: {
+                datasets: [
+                  {
+                    type: "line",
+                    data: pred.ta.map((t) => ({
+                      x: t.period,
+                      y: t.value,
+                    })),
+                    fill: true,
+                    backgroundColor: function (context) {
+                      const chart = context.chart;
+                      const { ctx, chartArea } = chart;
+                      if (!chartArea) {
+                        return null;
+                      }
+                      const gradient = ctx.createLinearGradient(
+                        0,
+                        chartArea.bottom,
+                        0,
+                        chartArea.top
+                      );
+                      gradient.addColorStop(0, "#267DF3");
+                      gradient.addColorStop(0.6, "#F34A26");
+                      return gradient;
+                    },
+                    borderWidth: 3,
+                    borderColor: "#2F3030",
+                    tension: 0.2,
+                  },
+                ],
               },
-            ]}
-            {config}
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    display: false,
+                  },
+                  title: {
+                    display: false,
+                  },
+                },
+                scales: {
+                  x: {
+                    grid: {
+                      drawBorder: false,
+                      display: false,
+                    },
+                  },
+                  y: {
+                    max: 60,
+                    grid: {
+                      drawBorder: false,
+                    },
+                  },
+                },
+              },
+            }}
           />
         </div>
         <div class="temp__min__max">

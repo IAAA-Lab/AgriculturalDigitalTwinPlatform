@@ -40,8 +40,7 @@
         <TemperatureWeatherStat
           minTa={Math.min(...pred.ta.map((ta) => ta.value))}
           maxTa={Math.max(...pred.ta.map((ta) => ta.value))}
-          taData={pred.ta.map((v) => v.value)}
-          taLabels={pred.ta.map((v) => v.period)}
+          taData={pred.ta}
         />
         <WindWeatherStat
           windSpeed={pred.wind.find((t) => t.period == currentHour)?.speed}
@@ -49,8 +48,7 @@
         <HumidityWeatherStat
           minHr={pred.hr.find((t) => t.period == currentHour)?.value}
           maxHr={pred.hr.find((t) => t.period == currentHour)?.value}
-          hrData={pred.hr.map((v) => v.value)}
-          hrLabels={pred.hr.map((v) => v.period)}
+          hrData={pred.hr}
         />
         <!-- <UvWeatherStat uv={pred.} /> -->
         <PrecipitationWeatherStat

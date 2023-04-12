@@ -82,8 +82,6 @@ class RabbitmqRpcConsumer():
             'payload': payload
         }
 
-        print(f" [x] {response}")
-
         ch.basic_publish(
             exchange='',
             routing_key=props.reply_to,

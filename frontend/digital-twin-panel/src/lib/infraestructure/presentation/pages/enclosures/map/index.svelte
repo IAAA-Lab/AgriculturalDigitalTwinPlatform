@@ -1,15 +1,17 @@
 <script>
+  import { selectedEnclosure } from "src/app/config/stores/selectedEnclosure";
   import Map from "./sections/Map.svelte";
   import Stats from "./sections/Stats.svelte";
 
   export let id;
+  export let idema = "9434";
 </script>
 
 <div class="container-responsive">
   <h1 class="title">Recinto#{id} · Mapa</h1>
   <div class="inner__container">
     <Map enclosureId={id} />
-    <Stats enclosureId={id} />
+    <Stats enclosureId={id} {idema} />
   </div>
 </div>
 

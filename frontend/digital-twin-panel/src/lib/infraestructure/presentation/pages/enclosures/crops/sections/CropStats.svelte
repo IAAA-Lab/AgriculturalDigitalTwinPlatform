@@ -1,5 +1,5 @@
 <script>
-  import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
+  import LineChart from "src/lib/infraestructure/presentation/components/charts/Chart.svelte";
   import CropStatsCard from "../components/CropStatsCard.svelte";
   import config from "../config/selectedCropStat.config";
   import Card from "src/lib/infraestructure/presentation/components/cards/Card.svelte";
@@ -34,39 +34,39 @@
     {/await}
   </div>
   <br />
-  <Card class="chart__wrapper">
+  <Card>
     <div slot="body" class="chart">
       <LineChart
-        labels={selectedCropStat.labels}
-        datasets={[
-          {
-            label: "",
-            data: selectedCropStat.datasets,
-            fill: true,
-            backgroundColor: function (context) {
-              const chart = context.chart;
-              const { ctx, chartArea } = chart;
-              if (!chartArea) {
-                return null;
-              }
-              const gradient = ctx.createLinearGradient(
-                0,
-                chartArea.bottom,
-                0,
-                chartArea.top
-              );
-              gradient.addColorStop(0, "rgba(255,255,255,0.7)");
-              gradient.addColorStop(0.6, "rgba(252, 155, 104,1)");
-              return gradient;
-            },
-            borderWidth: 3,
-            borderColor: "#414242",
-            tension: 0.2,
+        data={{
+          data: {
+            datasets: [
+              {
+                label: "",
+                data: selectedCropStat.datasets,
+                fill: true,
+                backgroundColor: function (context) {
+                  const chart = context.chart;
+                  const { ctx, chartArea } = chart;
+                  if (!chartArea) {
+                    return null;
+                  }
+                  const gradient = ctx.createLinearGradient(
+                    0,
+                    chartArea.bottom,
+                    0,
+                    chartArea.top
+                  );
+                  gradient.addColorStop(0, "rgba(255,255,255,0.7)");
+                  gradient.addColorStop(0.6, "rgba(252, 155, 104,1)");
+                  return gradient;
+                },
+                borderWidth: 3,
+                borderColor: "#414242",
+                tension: 0.2,
+              },
+            ],
           },
-        ]}
-        title="{selectedCropStat?.title || ''} ({selectedCropStat?.unit ||
-          ''}) por fecha"
-        {config}
+        }}
       />
     </div>
   </Card>

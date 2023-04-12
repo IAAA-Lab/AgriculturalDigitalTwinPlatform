@@ -47,6 +47,7 @@
     flex-direction: row;
     align-items: center;
     column-gap: 1rem;
+    flex-wrap: wrap-reverse;
   }
   .overview {
     display: grid;

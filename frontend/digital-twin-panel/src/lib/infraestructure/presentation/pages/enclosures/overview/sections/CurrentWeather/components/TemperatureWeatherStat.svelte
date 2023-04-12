@@ -1,11 +1,9 @@
 <script>
-  import LineChart from "src/lib/infraestructure/presentation/components/charts/LineChart.svelte";
+  import Chart from "src/lib/infraestructure/presentation/components/charts/Chart.svelte";
   import WeatherStat from "./WeatherStat.svelte";
-  import config from "./config/weatherStatsLineChart.config";
   export let minTa;
   export let maxTa;
   export let taData;
-  export let taLabels;
 </script>
 
 <div class="temp">
@@ -13,18 +11,49 @@
     <i slot="header-icon" class="fi fi-rr-temperature-low pt-4" />
     <svelte:fragment slot="body">
       <div class="chart-wrap">
-        <LineChart
-          labels={taLabels}
-          datasets={[
-            {
-              borderWidth: 3,
-              borderColor: "#414242",
-              tension: 0.5,
-              pointRadius: 1,
-              data: taData,
+        <Chart
+          data={{
+            data: {
+              datasets: [
+                {
+                  type: "line",
+                  borderWidth: 3,
+                  borderColor: "#414242",
+                  tension: 0.5,
+                  pointRadius: 1,
+                  data: taData.map((ta) => ({
+                    x: ta.period,
+                    y: ta.value,
+                  })),
+                },
+              ],
             },
-          ]}
-          {config}
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: false,
+                },
+                title: {
+                  display: false,
+                },
+              },
+              scales: {
+                x: {
+                  grid: {
+                    drawBorder: false,
+                    display: false,
+                  },
+                },
+                y: {
+                  grid: {
+                    drawBorder: false,
+                  },
+                },
+              },
+            },
+          }}
         />
       </div>
       <div class="min-max text-xs mt-4">

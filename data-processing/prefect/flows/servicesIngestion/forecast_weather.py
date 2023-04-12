@@ -6,8 +6,6 @@ import os
 
 @task
 def extract(enclosureId: str):
-    print(enclosureId)
-
     # Extract data from Rest API
 
     AUTH_TOKEN = os.environ.get("AGROSLAB_AUTH_TOKEN")
