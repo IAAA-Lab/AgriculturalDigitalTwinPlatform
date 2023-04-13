@@ -21,6 +21,7 @@
   section {
     grid-area: tables;
     overflow: hidden;
+    margin-top: 1.25rem;
 
     div {
       max-height: 750px;

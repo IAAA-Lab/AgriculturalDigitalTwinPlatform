@@ -1,3 +1,5 @@
+import { BASEPATH } from "./config";
+
 enum AppRoutes {
   OVERVIEW = "/",
   MAP = "/map",
@@ -12,7 +14,7 @@ enum AppRoutes {
 }
 
 // Create enclosure routes regex
-const ENCLOSURE_OVERVIEW_REGEX = /^\/enclosure\/[^\/]+$/;
+const ENCLOSURE_OVERVIEW_REGEX = /\/enclosure\/[^\/]+$/;
 const ENCLOSURE_MAP_REGEX = /\/enclosure\/.+\/map/;
 const ENCLOSURE_WEATHER_REGEX = /\/enclosure\/.+\/weather/;
 const ENCLOSURE_CROPS_REGEX = /\/enclosure\/.+\/crops/;

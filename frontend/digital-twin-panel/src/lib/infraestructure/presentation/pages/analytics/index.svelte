@@ -1,7 +1,11 @@
+<script>
+  import { BASEPATH } from "src/app/config/config";
+</script>
+
 <div class="container-responsive p-16">
   <h1 class="title">Análisis</h1>
   <img
-    src="/images/under_construction.png"
+    src="{BASEPATH}/images/under_construction.png"
     alt="Under construction"
     width="100%"
     style="max-width: 700px;"

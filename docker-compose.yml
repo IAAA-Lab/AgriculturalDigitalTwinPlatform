@@ -65,7 +65,7 @@ services:
   gin-gonic:
     build:
       context: ./api-gateway/gin-gonic
-      dockerfile: local.Dockerfile
+      target: local
     ports:
         - 8080:${GIN_PORT}
     volumes:
@@ -123,6 +123,7 @@ services:
   #     - VITE_SERVER_URL=${SVELTE_SERVER_URL}
   #     - VITE_LANDING_URL=${SVELTE_LANDING_URL}
   #     - VITE_IMAGES_SERVER_URL=${SVELTE_IMAGES_SERVER_URL}
+  #     - VITE_PORT=${SVELTE_PORT}
 
 # #############################################
 # #               Private access              #

@@ -12,7 +12,7 @@ import { AppRoutes } from "../constants";
 const getRoutes = () => {
   return [
     {
-      path: "/",
+      path: AppRoutes.OVERVIEW,
       component: Overview,
       layout: LayoutDefault,
     },

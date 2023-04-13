@@ -3,13 +3,14 @@
 
   import { Link } from "svelte-routing";
   import SidebarOption from "../components/SidebarOption.svelte";
-  let selected = window.location.pathname;
+  import { BASEPATH } from "src/app/config/config";
+  let selected = window.location.pathname.replace(BASEPATH, "");
 </script>
 
 <nav>
   <ul>
     <li>
-      <Link to={AppRoutes.OVERVIEW}>
+      <Link to={BASEPATH + AppRoutes.OVERVIEW}>
         <SidebarOption
           text="Overview"
           selected={selected === AppRoutes.OVERVIEW}
@@ -19,14 +20,14 @@
       </Link>
     </li>
     <li>
-      <Link to={AppRoutes.MAP}>
+      <Link to={BASEPATH + AppRoutes.MAP}>
         <SidebarOption text="Mapa" selected={selected === AppRoutes.MAP}>
           <i class="fi fi-rr-map" />
         </SidebarOption>
       </Link>
     </li>
     <li>
-      <Link to={AppRoutes.ANALYTICS}>
+      <Link to={BASEPATH + AppRoutes.ANALYTICS}>
         <SidebarOption
           text="Análisis"
           selected={selected === AppRoutes.ANALYTICS}
@@ -36,7 +37,7 @@
       </Link>
     </li>
     <li>
-      <Link to={AppRoutes.SIMULATION}>
+      <Link to={BASEPATH + AppRoutes.SIMULATION}>
         <SidebarOption
           text="Simulaciones"
           selected={selected === AppRoutes.SIMULATION}
@@ -46,7 +47,7 @@
       </Link>
     </li>
     <li>
-      <Link to={AppRoutes.SETTINGS}>
+      <Link to={BASEPATH + AppRoutes.SETTINGS}>
         <SidebarOption
           text="Configuración"
           selected={selected === AppRoutes.SETTINGS}

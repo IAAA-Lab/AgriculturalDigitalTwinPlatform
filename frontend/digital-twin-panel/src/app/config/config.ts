@@ -11,6 +11,7 @@ const IMAGES_SERVER_URL =
   "http://localhost:9000/web-images";
 const DIGITAL_TWIN_API_URL =
   (import.meta.env.VITE_SERVER_URL as string) || "http://localhost:8080";
+const BASEPATH = (import.meta.env.VITE_BASE_URL as string) || "";
 
 const digitalTwinHttpInstance = axios.create({
   baseURL: DIGITAL_TWIN_API_URL,
@@ -30,4 +31,4 @@ const localStorage = new LocalStorageRepository(window.localStorage);
 const userRepository = new HttpUserRepository(digitalTwinHttpInstance);
 const userService = new UserService(userRepository, localStorage);
 
-export { enclosuresService, userService, IMAGES_SERVER_URL };
+export { enclosuresService, userService, IMAGES_SERVER_URL, BASEPATH };

@@ -48,23 +48,20 @@
 </script>
 
 <Card>
-  <div slot="body" class="p-16 body">
+  <div slot="body" class="p-8 body">
     <div class="left">
       <h4 class="m-0">Media</h4>
       <CardInner class="ndvi__card">
         <div slot="body" class="range__bar">
-          {@const lastNdviValue = ndviValues?.at(-1)?.value}
+          {@const ndviAvg =
+            ndviValues.reduce((a, b) => a + b?.value, 0) / ndviValues.length}
           <Range
-            value={lastNdviValue}
+            value={ndviAvg}
             to={1}
-            background={getRangeBarColor(lastNdviValue)}
+            background={getRangeBarColor(ndviAvg)}
           />
           <h3 class="m-0">
-            <strong
-              >{numberWithCommas(
-                ndviValues.reduce((a, b) => a + b?.value, 0) / ndviValues.length
-              )}<strong /></strong
-            >
+            <strong>{numberWithCommas(ndviAvg)}<strong /></strong>
           </h3>
         </div>
       </CardInner>
@@ -166,6 +163,7 @@
 
   .left {
     flex: 1;
+    min-width: 250px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -182,12 +180,14 @@
   }
 
   :global(.ndvi__card) {
-    width: 100%;
+    width: 95%;
   }
 
   .chart__wrapper {
-    min-height: 200px;
-    max-height: 100%;
+    max-height: 600px;
+    min-height: 300px;
+    height: 100%;
+    width: 100%;
     min-width: 200px;
   }
 

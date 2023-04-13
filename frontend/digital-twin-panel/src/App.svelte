@@ -3,6 +3,7 @@
   import getRoutes from "./app/config/routes/routes";
   import Page404 from "./lib/infraestructure/presentation/pages/error/Page404.svelte";
   import { listOfEnclosures } from "./app/config/stores/selectedEnclosure";
+  import { BASEPATH } from "./app/config/config";
 
   const routes = getRoutes();
   // TODO: provisional
@@ -13,9 +14,11 @@
     "50-230-0-0-10-447-2",
     "50-99-0-0-20-1182-1",
   ]);
+
+  const props = BASEPATH ? { basepath: BASEPATH } : {};
 </script>
 
-<Router>
+<Router {...props}>
   {#each routes as route}
     <Route path={`${route.path}`} let:params>
       <svelte:component this={route.layout}>

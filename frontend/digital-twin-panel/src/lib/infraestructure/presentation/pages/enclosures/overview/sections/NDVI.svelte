@@ -7,7 +7,7 @@
   import { Link } from "svelte-routing";
   import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
   import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
-  import { enclosuresService } from "src/app/config/config";
+  import { BASEPATH, enclosuresService } from "src/app/config/config";
   import { es } from "date-fns/locale";
 
   export let enclosureId;
@@ -17,7 +17,7 @@
   {#await enclosuresService.getNDVI([enclosureId], null, null, 30)}
     <Loading />
   {:then ndviValues}
-    <Link to="/enclosure/{enclosureId}/map">
+    <Link to="{BASEPATH}/enclosure/{enclosureId}/map">
       <Card>
         <h6 slot="header" class="m-0 mb-8">Salud de las plantas (NDVI)</h6>
         <svelte:fragment slot="body">

@@ -55,6 +55,7 @@
   @import "leaflet/dist/leaflet.css";
   div {
     min-height: 200px;
+    max-height: 500px;
     height: 100%;
   }
 </style>

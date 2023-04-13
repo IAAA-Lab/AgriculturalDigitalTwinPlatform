@@ -2,12 +2,13 @@
   import { AppRoutes } from "src/app/config/constants";
   import SummaryPopup from "../../../pages/overview/components/SummaryPopup.svelte";
   import UserOptions from "../components/UserOptions.svelte";
+  import { BASEPATH } from "src/app/config/config";
 </script>
 
 <header class="ml-16">
   <nav>
     <ul>
-      {#if window.location.pathname === AppRoutes.OVERVIEW}
+      {#if window.location.pathname === BASEPATH + AppRoutes.OVERVIEW}
         <li class="mt-8">
           <SummaryPopup />
         </li>

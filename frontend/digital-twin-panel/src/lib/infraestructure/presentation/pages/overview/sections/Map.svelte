@@ -48,7 +48,7 @@
 </script>
 
 <section>
-  <Card>
+  <Card height="100%">
     <div slot="body" bind:this={mapElement} />
   </Card>
 </section>
@@ -57,9 +57,10 @@
   @import "leaflet/dist/leaflet.css";
   section {
     grid-area: map;
+    height: 100%;
     div {
       min-height: 200px;
-      aspect-ratio: 1 / 1;
+      height: 100%;
     }
   }
 </style>

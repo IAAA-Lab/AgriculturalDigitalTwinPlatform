@@ -1,7 +1,5 @@
 # Digital Twin for agrarian exploitations
 
-**IMPORTANT!! DO NOT DELETE THE CREATED CONTAINERS IF NOT BACKED UP!!!!**
-
 ## What is a Digital Twin?
 
 
@@ -29,12 +27,36 @@ Actually it has been tested in MacOS, but it should work in Linux and Windows as
 To execute it if not using the dev environment, you need to execute the following command:
 
 ```bash
-docker-compose up --build -p local-gemelo-digital
+docker-compose up --build -p digital-twin-local
+```
+
+#### golang cli
+
+This applies to all types of deployments. A golang bash cli is provided to execute some actions. To execute it you need to execute the following command:
+
+```bash
+./project-cli.sh
+```
+
+### Development deployment
+
+To execute it you need to execute the following command:
+
+```bash
+docker-compose -f docker-compose.dev.yml -p digital-twin-dev --env-file .env.dev up --build
+```
+
+### Production deployment
+
+To execute it you need to execute the following command:
+
+```bash
+docker-compose -f docker-compose.prod.yml -p digital-twin-prod --env-file .env.prod up --build
 ```
 
 ## Secrets
 
-Secrets, for the moment, are stored in its respective env file (`.env`, `.env.dev`, `.env.prod`), but it is not a good practice. It is better to store them in a secret manager, like [Vault](https://www.vaultproject.io/). In the future, it will be implemented. This files are injected to its respective container through the `docker-compose.yml` file.
+Secrets, for the moment, are stored in its respective env file (`.env`, `.env.dev`, `.env.prod`), but it is not a good practice. It is better to store them in a secret manager, like [Vault](https://www.vaultproject.io/). In the future, it will be implemented. This files are injected to its respective container through the `docker-compose.yml` files.
 
 ## Future work (or not)
 

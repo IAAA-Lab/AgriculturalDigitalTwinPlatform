@@ -1,4 +1,5 @@
 import { authService } from "../core/api/auth";
+import { BASEPATH } from "../core/config/constants";
 
 const onSubmit = async (e: any) => {
   e.preventDefault();
@@ -9,7 +10,7 @@ const onSubmit = async (e: any) => {
     alert("Usuario o contraseña incorrectos");
   } else {
     localStorage.setItem("accessToken", accessToken);
-    location.replace("/src/file-drop/file-drop.html");
+    location.replace(BASEPATH + "/src/file-drop/file-drop.html");
   }
 };
 

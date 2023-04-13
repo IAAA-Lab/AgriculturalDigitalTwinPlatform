@@ -10,13 +10,14 @@
   import { Link } from "svelte-routing";
   import SidebarOption from "../components/SidebarOption.svelte";
   import { selectedEnclosure } from "src/app/config/stores/selectedEnclosure";
-  let selected = window.location.pathname;
+  import { BASEPATH } from "src/app/config/config";
+  let selected = window.location.pathname.replace(BASEPATH, "");
 </script>
 
 <nav>
   <ul>
     <li>
-      <Link to={`/enclosure/${$selectedEnclosure}`}>
+      <Link to="{BASEPATH}/enclosure/{$selectedEnclosure}">
         <SidebarOption
           text="Recinto"
           selected={ENCLOSURE_OVERVIEW_REGEX.test(selected)}
@@ -26,7 +27,7 @@
       </Link>
     </li>
     <li>
-      <Link to={`/enclosure/${$selectedEnclosure}/crops`}>
+      <Link to="{BASEPATH}/enclosure/{$selectedEnclosure}/crops">
         <SidebarOption
           text="Plantas"
           selected={ENCLOSURE_CROPS_REGEX.test(selected)}
@@ -36,7 +37,7 @@
       </Link>
     </li>
     <li>
-      <Link to={`/enclosure/${$selectedEnclosure}/weather`}>
+      <Link to="{BASEPATH}/enclosure/{$selectedEnclosure}/weather">
         <SidebarOption
           text="Tiempo"
           selected={ENCLOSURE_WEATHER_REGEX.test(selected)}
@@ -46,7 +47,7 @@
       </Link>
     </li>
     <li>
-      <Link to={`/enclosure/${$selectedEnclosure}/map`}>
+      <Link to="{BASEPATH}/enclosure/{$selectedEnclosure}/map">
         <SidebarOption
           text="Mapa"
           selected={ENCLOSURE_MAP_REGEX.test(selected)}

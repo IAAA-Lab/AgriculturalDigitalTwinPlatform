@@ -4,8 +4,10 @@
   import LogoText from "../components/LogoText.svelte";
   import SidebarNavBarInner from "../components/SidebarNavBarInner.svelte";
   import { AppRoutes } from "src/app/config/constants";
+  import { BASEPATH } from "src/app/config/config";
 
-  let selected = window.location.pathname;
+  // Get path without basepath
+  const selected = window.location.pathname.replace(BASEPATH, "");
 
   let show = true;
   $: show = Object.values(AppRoutes).includes(selected as AppRoutes);

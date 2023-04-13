@@ -2,7 +2,7 @@
   import WeatherCard from "src/lib/infraestructure/presentation/components/cards/WeatherCard.svelte";
   import BarChart from "src/lib/infraestructure/presentation/components/charts/BarChart.svelte";
   import Chart from "src/lib/infraestructure/presentation/components/charts/Chart.svelte";
-  import { enclosuresService } from "src/app/config/config";
+  import { BASEPATH, enclosuresService } from "src/app/config/config";
   import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
 
   const startDate = new Date();
@@ -45,7 +45,7 @@
       </div>
       <div slot="body" class="body">
         <img
-          src="/images/compass.svg"
+          src="{BASEPATH}/images/compass.svg"
           alt="wind direction"
           height="100"
           width="100"

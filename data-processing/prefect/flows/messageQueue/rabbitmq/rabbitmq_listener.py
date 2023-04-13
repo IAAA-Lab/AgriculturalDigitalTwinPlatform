@@ -108,13 +108,5 @@ if __name__ == '__main__':
     }
     consumer = RabbitmqRpcConsumer(config)
     # Connect to RabbitMQ and retry 3 times if it fails
-    for i in range(5):
-        try:
-            consumer.connect()
-            time.sleep(10)
-            break
-        except Exception as e:
-            print(f"Error connecting to RabbitMQ: {str(e)}")
-            if i == 4:
-                raise
+    consumer.connect()
     consumer.start_receiver()

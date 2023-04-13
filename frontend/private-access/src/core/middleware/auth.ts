@@ -1,4 +1,5 @@
 import jwt_decode from "jwt-decode";
+import { BASEPATH } from "../config/constants";
 
 class Auth {
   // setup the class and hide the body by default
@@ -10,8 +11,8 @@ class Auth {
   // check to see if the localStorage item passed to the function is valid and set
   validateAuth(auth: string | null) {
     if (!auth) {
-      if (window.location.pathname !== "/") {
-        window.location.replace("/");
+      if (window.location.pathname !== BASEPATH + "/") {
+        window.location.replace(BASEPATH + "/");
         return;
       }
       document!.querySelector("body")!.style.display = "block";
@@ -22,19 +23,20 @@ class Auth {
     const currentTime = Date.now() / 1000;
     if (decodedToken.exp < currentTime) {
       localStorage.removeItem("accessToken");
-      window.location.replace("/");
+      window.location.replace(BASEPATH + "/");
       return;
     }
 
     document!.querySelector("body")!.style.display = "block";
-    if (window.location.pathname === "/") {
-      window.location.replace("/src/file-drop/file-drop.html");
+    if (window.location.pathname === BASEPATH + "/") {
+      window.location.replace(BASEPATH + "/src/file-drop/file-drop.html");
     }
   }
   // will remove the localStorage item and redirect to login  screen
   logOut() {
     localStorage.removeItem("auth");
-    window.location.replace("/");
+    // Replace with basepath also
+    window.location.replace(BASEPATH + "/");
   }
 
   getToken() {

@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { IMAGES_SERVER_URL, enclosuresService } from "src/app/config/config";
+  import {
+    BASEPATH,
+    IMAGES_SERVER_URL,
+    enclosuresService,
+  } from "src/app/config/config";
   import { selectedEnclosure } from "src/app/config/stores/selectedEnclosure";
   import type { Enclosure, NDVI } from "src/lib/core/Domain";
   import { getColorList, onCropImageError } from "src/lib/core/functions";
@@ -34,7 +38,7 @@
     <br />
     <div class="enclosures">
       {#each enclosures as enclosure, i}
-        <Link to={`/enclosure/${enclosure.id}`}>
+        <Link to="{BASEPATH}/enclosure/{enclosure.id}">
           <MapSearchCard
             location={enclosure.properties.geographicSpot}
             enclosureName={enclosure.id}

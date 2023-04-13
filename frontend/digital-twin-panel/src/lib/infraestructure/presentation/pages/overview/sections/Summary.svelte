@@ -4,7 +4,7 @@
   import PieChart from "../../../components/charts/DoughnutChart.svelte";
   import ToggleSwitch from "../../../components/basics/ToggleSwitch.svelte";
   import SummaryStatCard from "../components/SummaryStatCard.svelte";
-  import { enclosuresService } from "src/app/config/config";
+  import { BASEPATH, enclosuresService } from "src/app/config/config";
   import { Link } from "svelte-routing";
   import { formattedDate } from "src/lib/core/functions";
   import Loading from "../../../components/misc/Loading.svelte";
@@ -27,7 +27,7 @@
     <div slot="body" class="body">
       <div class="body-stats mb-16">
         {#each statsSelected as stat, i}
-          <Link to={`/enclosure/${stat.enclosureId}`}>
+          <Link to="{BASEPATH}/enclosure/{stat.enclosureId}">
             <SummaryStatCard
               title={stat.stat.name}
               value={stat.stat.value}
@@ -65,7 +65,7 @@
           <h3 class="m-0">En construcción</h3>
           <br />
           <img
-            src="/images/under_construction.png"
+            src="{BASEPATH}/images/under_construction.png"
             alt="Under construction"
             width="100%"
             style="max-width: 700px;"

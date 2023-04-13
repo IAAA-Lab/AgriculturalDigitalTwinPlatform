@@ -155,20 +155,16 @@ const Header = ({
                         </ul>
                       )
                   )}
-                  {!hideSignin && (
-                    <ul className="list-reset header-nav-right">
-                      <li>
-                        <Button
-                          className={loginButtonClasses}
-                          onClick={(e) => {
-                            window.location.href = DIGITAL_TWIN_PANEL_URL;
-                          }}
-                        >
-                          Accede
-                        </Button>
-                      </li>
-                    </ul>
-                  )}
+                  <ul className="list-reset header-nav-right">
+                    <li>
+                      <a
+                        href={DIGITAL_TWIN_PANEL_URL}
+                        className={loginButtonClasses}
+                      >
+                        Accede
+                      </a>
+                    </li>
+                  </ul>
                 </div>
               </nav>
             </>

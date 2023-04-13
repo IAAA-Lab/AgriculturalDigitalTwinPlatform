@@ -35,7 +35,7 @@
 
 <div class="characteristics">
   {#each chars as c}
-    <div class="card">
+    <div class="characteristics__item">
       <StatsCard statName={c?.name} statValue={c?.value} statUnit={c?.unit}>
         {@html getIconByCharacteristic(c)}
       </StatsCard>
@@ -43,13 +43,15 @@
   {/each}
 </div>
 
-<style>
+<style type="scss">
   .characteristics {
     grid-area: characteristics;
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
-    column-gap: 0.5rem;
-    row-gap: 0.5rem;
+    gap: 0.5rem;
+    .characteristics__item {
+      flex: 200px;
+    }
   }
 </style>

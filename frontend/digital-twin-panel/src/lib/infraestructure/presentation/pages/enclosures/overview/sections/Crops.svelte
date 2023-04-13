@@ -1,5 +1,5 @@
 <script>
-  import { enclosuresService } from "src/app/config/config";
+  import { BASEPATH, enclosuresService } from "src/app/config/config";
   import Card from "src/lib/infraestructure/presentation/components/cards/Card.svelte";
   import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
   import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
@@ -14,7 +14,7 @@
   <Card>
     <h3 slot="header" class="m-0 mb-16">Plantas cultivadas</h3>
     <svelte:fragment slot="body">
-      <Link to="/enclosure/{enclosureId}/crops">
+      <Link to="{BASEPATH}/enclosure/{enclosureId}/crops">
         <CropCard {crop} />
       </Link>
     </svelte:fragment>

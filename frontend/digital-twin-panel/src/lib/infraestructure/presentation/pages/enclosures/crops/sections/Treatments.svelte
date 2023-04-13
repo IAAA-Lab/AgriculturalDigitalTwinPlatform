@@ -4,9 +4,6 @@
   import CardInner from "src/lib/infraestructure/presentation/components/cards/CardInner.svelte";
   import BarChart from "src/lib/infraestructure/presentation/components/charts/BarChart.svelte";
   import DoughnutChart from "src/lib/infraestructure/presentation/components/charts/DoughnutChart.svelte";
-  import PieChart from "src/lib/infraestructure/presentation/components/charts/PieChart.svelte";
-  import Error from "src/lib/infraestructure/presentation/components/misc/Error.svelte";
-  import Loading from "src/lib/infraestructure/presentation/components/misc/Loading.svelte";
   import PhytosTable from "../components/PhytosTable.svelte";
 
   export let enclosureId;
@@ -42,7 +39,7 @@
       <input type="date" bind:value={endDateInput} />
     </div>
   </div>
-  <div slot="body" class="body m-16">
+  <div slot="body" class="body p-8">
     <CardInner>
       <div slot="body" class="table__inner">
         <PhytosTable {treatments} />
@@ -142,7 +139,7 @@
 
     :global(.chart__pie__wrapper) {
       flex: 1;
-      min-width: 220px;
+      min-width: 275px;
     }
   }
 
@@ -154,12 +151,12 @@
 
     :global(.chart__doughnut__wrapper) {
       flex: 3;
-      min-width: 150px;
+      min-width: 275px;
     }
 
     :global(.chart__line__wrapper) {
       flex: 7;
-      min-width: 150px;
+      min-width: 275px;
     }
     gap: 1rem;
   }

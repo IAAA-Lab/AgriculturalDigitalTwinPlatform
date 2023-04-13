@@ -20,7 +20,7 @@
     display: grid;
     gap: 0.8rem;
     height: calc(100vh - 7rem);
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 0.75fr 1fr;
   }
 
   @include media("<large") {
