@@ -3,7 +3,6 @@ package handlers
 import (
 	"digital-twin/main-server/src/internal/core/ports"
 	"digital-twin/main-server/src/pkg/apperrors"
-	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -42,6 +41,7 @@ func (hdl *EnclosuresHTTPHandler) GetEnclosures(c *gin.Context) {
 		Year: 2022,
 	}
 	err := c.ShouldBind(&enclosuresIn)
+
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
 		return
@@ -178,7 +178,7 @@ type DailyWeatherIn struct {
 func (hdl *EnclosuresHTTPHandler) GetDailyWeather(c *gin.Context) {
 	var dailyWeatherIn DailyWeatherIn
 	err := c.ShouldBind(&dailyWeatherIn)
-	fmt.Println("holaaaaaaa", err)
+
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error(), "valid_input": map[string]string{"enclosureId": "string, required"}})
 		return

@@ -2,59 +2,239 @@ version: "3.8"
 
 services:
 
-  images-server:
-    build: images-server
+#############################################
+#      Collect metrics from services        #
+#############################################
+
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   volumes:
+  #     - ./monitorization/prometheus:/etc/prometheus/
+  #     - prometheus-data:/prometheus
+  #   command:
+  #     - '--config.file=/etc/prometheus/prometheus.yml'
+  #     - '--storage.tsdb.path=/prometheus'
+  #   ports:
+  #     - "9090"
+
+#############################################
+#        Collect logs from services         #
+#############################################
+
+  # loki:
+  #   image: grafana/loki:latest
+  #   ports:
+  #     - "3100"
+  #   volumes:
+  #     # directory must be created first, with uid:gid 10001:10001
+  #     - loki-data:/loki
+
+#############################################
+#      Centralize all metrics and logs      #
+#############################################
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   volumes:
+  #     - ./monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+  #     - grafana-data:/var/lib/grafana
+  #   restart: unless-stopped
+  #   ports:
+  #     - 3010:${GRAFANA_PORT}
+    # depends_on:
+    #   - prometheus
+
+#############################################
+# Services communication and message queue  #
+#############################################
+
+  rabbitmq:
+      image: rabbitmq:3-management
+      container_name: rabbitmq
+      ports:
+          - 5672:${RABBITMQ_PORT}
+          - 15672:${RABBITMQ_PANEL_PORT}
+      environment:
+          - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+          - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+
+#############################################
+#              Web app server               #
+#############################################
+
+  gin-gonic:
+    build:
+      context: ./api-gateway/gin-gonic
+      target: development
+    ports:
+        - 8080:${GIN_PORT}
     volumes:
-      - ./images-server:/app
-      - /app/node_modules
-    stdin_open: true
-    env_file:
-      - images-server/secrets/.env.production
-  backend:
-    build: backend
-    env_file:
-      - backend/secrets/.env.production
-    environment:
-      - GIN_MODE=release
-      - ENV_MODE=DOCKER
-    volumes:
-      - ./backend:/gin-server
-    command: go run ./src/internal/cmd/main.go
+        - ./api-gateway/gin-gonic:/app
+    restart: always
     depends_on:
-      - redis
-      - mongo
+        - 'mongo'
+        - 'rabbitmq'
+    environment:
+      - ENV_MODE=LOCAL
+      - JWT_SECRET=${JWT_SECRET}
+      - LOCAL_AUTHORIZATION=${LOCAL_AUTHORIZATION}
+      - KEY_DECRYPT_PASSWD=${KEY_DECRYPT_PASSWD}
+      - IV_BLOCK_PASSWD=${IV_BLOCK_PASSWD}
+      - MONGO_URI=${MONGO_URI}
+      - MONGO_DB=${MONGO_DB}
+      - RABBITMQ_URI=${RABBITMQ_URI}
+      - REDIS_URI=${REDIS_URI}
+      - REDIS_USERNAME=${REDIS_USERNAME}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_LANDING_BUCKET_NAME=${MINIO_LANDING_BUCKET_NAME}
+      - MINIO_IMAGES_BUCKET_NAME=${MINIO_IMAGES_BUCKET_NAME}
+
+#############################################
+#               Redis server                #
+#############################################
+
+  # redis:
+  #   image: redis:7
+  #   ports:
+  #     - 6379:${REDIS_PORT}
+  #   # user and password
+  #   command: bash -c "redis-server --requirepass $REDIS_PASSWORD --appendonly yes"
+  #   volumes:
+  #     - ./storage/redis/data:/data
+  #   restart: always
+
+
+# #############################################
+# #                 Frontend                  #
+# #############################################
+
+
   frontend:
-    build: frontend
+    build:
+      context: ./frontend/web-app
+      args:
+        - VITE_PORT=${VITE_PORT}
+        - VITE_API_URL=${VITE_API_URL}
+        - VITE_EMAIL_SENDER_PUBKEY=${VITE_EMAIL_SENDER_PUBKEY}
+        - VITE_EMAIL_SENDER_SERVICEID=${VITE_EMAIL_SENDER_SERVICEID}
+        - VITE_EMAIL_SENDER_TEMPLATEID=${VITE_EMAIL_SENDER_TEMPLATEID}
+        - VITE_IV_BLOCK_PASSWD=${VITE_IV_BLOCK_PASSWD}
+        - VITE_KEY_DECRYPT_PASSWD=${VITE_KEY_DECRYPT_PASSWD}
+        - VITE_IMAGES_SERVER_URL=${SVELTE_IMAGES_SERVER_URL}
+
     restart: always
     ports:
-      - "4081:80"
+      - 3000:${VITE_PORT}
+    depends_on:
+      - gin-gonic
+
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - "80:80"
     volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
+      - ./frontend/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./data/certbot/conf:/etc/letsencrypt:ro
       - ./data/certbot/www:/var/www/certbot:ro
+    depends_on:
+      - frontend
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-  certbot:
-    image: certbot/certbot
-    restart: unless-stopped
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt:rw
-      - ./data/certbot/www:/var/www/certbot:rw
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+  # certbot:
+  #   image: certbot/certbot
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./data/certbot/conf:/etc/letsencrypt:rw
+  #     - ./data/certbot/www:/var/www/certbot:rw
+  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+
+# #############################################
+# #            Digital twin storage           #
+# #############################################
+
   mongo:
-    build: ./mongodb
-    container_name: mongo
-    ports:
-        - '27018:27017'
-    volumes:
-        - ./mongodb/mongodata:/data/db
+      build: storage/mongodb
+      ports:
+          - 27018:${MONGO_PORT}
+      restart: always
+      volumes:
+          - ./storage/mongodb/mongodata:/data/db
+          - ./storage/mongodb/init_db.js:/docker-entrypoint-initdb.d/init_db.js
+      environment:
+        - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+        - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+        - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+        - MONGO_FIRST_USER_NAME=${MONGO_FIRST_USER_NAME}
+        - MONGO_FIRST_USER_PASSWORD=${MONGO_FIRST_USER_PASSWORD}
+        - MONGO_FIRST_USER_ROLE=${MONGO_FIRST_USER_ROLE}
+
+# #############################################
+# #    Data lake and Prefect flows storage    #
+# #############################################
+
+  minio:
+      image: minio/minio:RELEASE.2023-02-27T18-10-45Z
+      environment:
+          MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+          MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      entrypoint: /bin/bash 
+      command: "-c 'mkdir -p /data/prefect-flows && sleep 10 && minio server /data --console-address :9001'"
+      ports:
+          - 9000:${MINIO_PORT}
+          - 9001:${MINIO_PANEL_PORT}
+      volumes:
+          - ./storage/minio/data:/data
+
+# #############################################
+# #        Database for Prefect Server        #
+# #############################################
+
+  postgres:
+    image: postgres:15.2-alpine
     restart: always
-    env_file:
-      - mongodb/secrets/.env
-  redis:
-    image: redis
-    container_name: redis
-    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     ports:
-        - "6379:6379"
+      - 5432:${POSTGRES_PORT}
+    volumes: 
+      - ./storage/postgres/data:/var/lib/postgresql/data
+
+# #############################################
+# #      Data ingestion, data processing      # 
+# #      processing and machine learning      #
+# #############################################
+
+  prefect-server:
+    build: data-processing/prefect
+    restart: on-failure
     volumes:
-        - ./redis/redisdata:/data
-    command: redis-server
+      - prefect:/root/.prefect
+      - ./data-processing/prefect/flows:/opt/prefect/flows
+    environment:
+      - PREFECT_API_URL=${PREFECT_API_URL}
+      - PREFECT_API_DATABASE_CONNECTION_URL=${PREFECT_API_DATABASE_CONNECTION_URL}
+      - PREFECT_MINIO_ACCESS_ROOT=${MINIO_ROOT_USER}
+      - PREFECT_MINIO_SECRET_ROOT=${MINIO_ROOT_PASSWORD}
+      - PREFECT_MINIO_HOST=${MINIO_HOST}
+      - PREFECT_MONGODB_HOST=${MONGO_URI}
+      - PREFECT_MONGODB_DB=${MONGO_INITDB_DATABASE}
+      - AGROSLAB_AUTH_TOKEN=${AGROSLAB_AUTH_TOKEN}
+      - AGROSLAB_API_URL=${AGROSLAB_API_URL}
+      - AGROSLAB_TELEDETECTION_URL=${AGROSLAB_TELEDETECTION_URL}
+    ports:
+      - 4200:${PREFECT_PORT}
+    depends_on:
+      - postgres
+      - rabbitmq
+      - mongo
+
+
+volumes:
+  prefect:

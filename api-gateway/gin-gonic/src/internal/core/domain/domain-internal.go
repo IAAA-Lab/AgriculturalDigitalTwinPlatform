@@ -76,8 +76,7 @@ const (
 
 const (
 	ROLE_ADMIN          = "admin"
-	ROLE_NEWS_EDITOR    = "newsEditor"
 	ROLE_PLAIN          = "user"
 	ROLE_AGRARIAN       = "agrarian"
-	ROLE_PRIVATE_ACCESS = "privateAccess"
+	ROLE_PRIVATE_ACCESS = "private_access"
 )

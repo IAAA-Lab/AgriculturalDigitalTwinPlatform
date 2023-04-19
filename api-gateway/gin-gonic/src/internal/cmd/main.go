@@ -10,6 +10,7 @@ import (
 	"digital-twin/main-server/src/internal/adapters/secondary/redis"
 	"digital-twin/main-server/src/internal/core/domain"
 	"digital-twin/main-server/src/internal/core/services"
+	"fmt"
 
 	"os"
 
@@ -22,13 +23,8 @@ import (
 
 func CorsConfig() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if os.Getenv("ENV_MODE") != "LOCAL" {
-			c.Writer.Header().Set("Access-Control-Allow-Origin", os.Getenv("LANDING_PAGE_URL"))
-			c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		} else {
-			c.Writer.Header().Set("Access-Control-Allow-Credentials", "false")
-			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		}
+		c.Writer.Header().Set("Access-Control-Allow-Origin", os.Getenv("FRONTEND_URL"))
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With, HX-Request, HX-Trigger, HX-Trigger-Name, HX-Target, HX-Prompt, HX-Current-URL")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PATCH, DELETE")
 		if c.Request.Method == "OPTIONS" {
@@ -102,6 +98,7 @@ func setupRouter() *gin.Engine {
 	authGroup.POST("/login", encryptionMiddleware.DecryptData, usersHandler.CheckLogin, JWTMiddleware.ReturnJWT)
 	authGroup.POST("/logout", JWTMiddleware.RevokeJWT)
 	authGroup.POST("/refresh", JWTMiddleware.RefreshJWT)
+	authGroup.GET("/validate", JWTMiddleware.ReturnJWT)
 
 	// ---- Users
 	usersGroup := r.Group("/", JWTMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN}))
@@ -109,6 +106,7 @@ func setupRouter() *gin.Engine {
 	usersGroup.POST("/users", encryptionMiddleware.DecryptData, usersHandler.CreateNewUser)
 	usersGroup.GET("/users", usersHandler.FetchAllUsers)
 	usersGroup.DELETE("/users/:id", usersHandler.DeleteUser)
+	usersGroup.GET("/users/:id/enclosures", usersHandler.FetchEnclosuresByUserId)
 
 	// ---- Digital twin
 	agrarianGroup := r.Group("/", JWTMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_AGRARIAN}))
@@ -151,5 +149,6 @@ func main() {
 	go func() {
 		_ = m.Run(":9090")
 	}()
+	fmt.Println("FRONTEND: " + os.Getenv("FRONTEND_URL"))
 	r.Run(":" + port)
 }

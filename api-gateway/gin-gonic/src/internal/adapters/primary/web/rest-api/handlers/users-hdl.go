@@ -27,8 +27,12 @@ func NewUsersHTTPHandler(usersService ports.UsersService) *UsersHTTPHandler {
 // @Router /users/authorize [post]
 func (hdl *UsersHTTPHandler) CheckLogin(c *gin.Context) {
 	var user domain.User
-	c.BindJSON(&user)
-	user, err := hdl.usersService.CheckLogin(user.Email, user.Password)
+	err := c.BindJSON(&user)
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	user, err = hdl.usersService.CheckLogin(user.Email, user.Password)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
@@ -88,4 +92,26 @@ func (hdl *UsersHTTPHandler) FetchAllUsers(c *gin.Context) {
 		return
 	}
 	c.JSON(200, users)
+}
+
+// @Summary Fetch enclosures by user id
+// @Description Fetch enclosures by user id
+// @Tags users
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} []domain.Enclosure
+// @Failure 500 {object} string
+// @Router /users/{id}/enclosures [get]
+func (hdl *UsersHTTPHandler) FetchEnclosuresByUserId(c *gin.Context) {
+	id := c.Param("id")
+	user, err := hdl.usersService.FetchUser(id)
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	if user.EnclosureIds == nil {
+		c.JSON(200, []string{})
+		return
+	}
+	c.JSON(200, user.EnclosureIds)
 }

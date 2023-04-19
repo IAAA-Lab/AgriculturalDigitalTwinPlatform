@@ -26,18 +26,19 @@ func GetDocument[T any](m *mongodbConn, collection string, filter interface{}, o
 func GetDocuments[T any](m *mongodbConn, collection string, filter interface{}, opts *options.FindOptions) ([]T, error) {
 	var ctx, cancel = context.WithTimeout(context.Background(), time.Duration(m.timeout)*time.Second)
 	defer cancel()
-	var results []T
+	var results []T = []T{}
 	cursor, err := m.db.Collection(collection).Find(ctx, filter, opts)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, apperrors.ErrNotFound
+			return results, nil
 		}
 		return nil, apperrors.ErrInternal
 	}
 	if err = cursor.All(ctx, &results); err != nil {
 		return nil, apperrors.ErrInternal
 	}
-	if len(results) == 0 || results == nil {
+
+	if results == nil {
 		return nil, apperrors.ErrNotFound
 	}
 	return results, nil

@@ -86,7 +86,7 @@ services:
       - REDIS_URI=${REDIS_URI}
       - REDIS_USERNAME=${REDIS_USERNAME}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - LANDING_PAGE_URL=${LANDING_PAGE_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
       - MINIO_ENDPOINT=${MINIO_ENDPOINT}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
@@ -115,33 +115,35 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ./frontend/web-app
       args:
-        - PORT=${REACT_PORT}
-        - REACT_APP_API_URL=${REACT_APP_API_URL}
-        - REACT_APP_DIGITAL_TWIN_URL=${REACT_APP_DIGITAL_TWIN_URL}
-        - REACT_APP_EMAIL_SENDER_PUBKEY=${REACT_APP_EMAIL_SENDER_PUBKEY}
-        - REACT_APP_EMAIL_SENDER_SERVICEID=${REACT_APP_EMAIL_SENDER_SERVICEID}
-        - REACT_APP_EMAIL_SENDER_TEMPLATEID=${REACT_APP_EMAIL_SENDER_TEMPLATEID}
-        - VITE_BASE_URL=${VITE_BASE_URL}
-        - VITE_API_URL=${VITE_VANILLAJS_API_URL}
-        - VITE_SVELTE_PORT=${SVELTE_PORT}
+        - VITE_PORT=${VITE_PORT}
+        - VITE_API_URL=${VITE_API_URL}
+        - VITE_EMAIL_SENDER_PUBKEY=${VITE_EMAIL_SENDER_PUBKEY}
+        - VITE_EMAIL_SENDER_SERVICEID=${VITE_EMAIL_SENDER_SERVICEID}
+        - VITE_EMAIL_SENDER_TEMPLATEID=${VITE_EMAIL_SENDER_TEMPLATEID}
         - VITE_IV_BLOCK_PASSWD=${VITE_IV_BLOCK_PASSWD}
         - VITE_KEY_DECRYPT_PASSWD=${VITE_KEY_DECRYPT_PASSWD}
-        - VITE_SERVER_URL=${SVELTE_SERVER_URL}
-        - VITE_LANDING_URL=${SVELTE_LANDING_URL}
         - VITE_IMAGES_SERVER_URL=${SVELTE_IMAGES_SERVER_URL}
-        - VITE_VANILLAJS_PORT=${VITE_VANILLAJS_PORT}
-        - VITE_VANILLAJS_BASE_URL=${VITE_VANILLAJS_BASE_URL}
 
+    restart: always
+    ports:
+      - 3000:${VITE_PORT}
+    depends_on:
+      - gin-gonic
+
+  nginx:
+    image: nginx:latest
     restart: always
     ports:
       - "80:80"
     volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
+      - ./frontend/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./data/certbot/conf:/etc/letsencrypt:ro
       - ./data/certbot/www:/var/www/certbot:ro
+    depends_on:
+      - frontend
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-
   # certbot:
   #   image: certbot/certbot
   #   restart: unless-stopped

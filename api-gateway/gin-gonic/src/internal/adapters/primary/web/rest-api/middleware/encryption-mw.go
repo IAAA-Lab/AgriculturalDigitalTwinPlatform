@@ -8,6 +8,7 @@ import (
 	"digital-twin/main-server/src/pkg/apperrors"
 	"encoding/base64"
 	"encoding/hex"
+	"fmt"
 	"io"
 
 	"github.com/gin-gonic/gin"
@@ -51,9 +52,15 @@ func InitEncryptionMiddleware(iv string, key string) *encryptionMiddleware {
 }
 
 func (mw *encryptionMiddleware) EncryptData(c *gin.Context) {
-	data := c.MustGet("data").(string)
-	cipherText, err := encryptData(data, mw.key, mw.iv)
+	data, exists := c.Get("data")
+	if !exists {
+		c.AbortWithStatusJSON(500, gin.H{"message": apperrors.ErrInternal.Error()})
+		return
+	}
+
+	cipherText, err := encryptData(data.(string), mw.key, mw.iv)
 	if err != nil {
+		fmt.Print(err)
 		c.AbortWithStatusJSON(500, gin.H{"message": apperrors.ErrInternal.Error()})
 	}
 	c.JSON(200, gin.H{"result": cipherText})
@@ -61,10 +68,14 @@ func (mw *encryptionMiddleware) EncryptData(c *gin.Context) {
 
 func (mw *encryptionMiddleware) DecryptData(c *gin.Context) {
 	var data domain.EncrytedData
-	c.BindJSON(&data)
+	err := c.BindJSON(&data)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
+		return
+	}
 	plainText, err := decryptData(data.Data, mw.key, mw.iv)
 	if err != nil {
-		c.AbortWithStatusJSON(500, gin.H{"message": apperrors.ErrInvalidInput.Error()})
+		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
 		return
 	}
 	c.Request.Body = io.NopCloser(bytes.NewBufferString(plainText))
