@@ -10,8 +10,9 @@ class UserService implements IUserService {
 	constructor(private readonly userRepository: IUserRepository) {}
 
 	async logout(): Promise<void> {
-		this.userRepository.logout();
+		this.userRepository.setAuthorizationHeader('');
 		user.set(null);
+		await this.userRepository.logout();
 	}
 	async refresh(): Promise<User> {
 		const jwtRaw = await this.userRepository.refresh();

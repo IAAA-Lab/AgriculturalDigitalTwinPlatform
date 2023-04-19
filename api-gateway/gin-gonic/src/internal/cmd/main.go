@@ -106,7 +106,7 @@ func setupRouter() *gin.Engine {
 	usersGroup.POST("/users", encryptionMiddleware.DecryptData, usersHandler.CreateNewUser)
 	usersGroup.GET("/users", usersHandler.FetchAllUsers)
 	usersGroup.DELETE("/users/:id", usersHandler.DeleteUser)
-	usersGroup.GET("/users/:id/enclosures", usersHandler.FetchEnclosuresByUserId)
+	r.GET("/users/:id/enclosures", JWTMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_AGRARIAN}), usersHandler.FetchEnclosuresByUserId)
 
 	// ---- Digital twin
 	agrarianGroup := r.Group("/", JWTMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_AGRARIAN}))

@@ -53,7 +53,6 @@ class HttpUserRepository implements IUserRepository {
 				if (response.status !== 200) {
 					throw LogoutError;
 				}
-				this.setAuthorizationHeader('');
 			})
 			.catch((_) => {
 				throw LogoutError;

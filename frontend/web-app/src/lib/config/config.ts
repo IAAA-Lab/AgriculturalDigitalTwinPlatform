@@ -3,7 +3,6 @@ import EnclosuresService from '$lib/core/services/enclosures.service';
 import UserService from '$lib/core/services/users.service';
 import HttpParcelsRepository from '$lib/repositories/http/parcel.repository';
 import HttpUserRepository from '$lib/repositories/http/user.repository';
-import { goto } from '$app/navigation';
 
 const IMAGES_SERVER_URL =
 	(import.meta.env.VITE_IMAGES_SERVER_URL as string) || 'http://localhost:9000/web-images';
