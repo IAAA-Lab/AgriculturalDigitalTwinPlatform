@@ -23,12 +23,12 @@ func InitJwtMiddleware(authsrv ports.JWTService, usersrv ports.UsersService, env
 
 func (mw *jwtMiddleware) AuthorizeJWT(roles []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		accesstokenCookies := c.Request.Header.Get("Authorization")
-		if !strings.HasPrefix(accesstokenCookies, "Bearer ") {
+		accesstokenHeader := c.Request.Header.Get("Authorization")
+		if !strings.HasPrefix(accesstokenHeader, "Bearer ") {
 			c.AbortWithStatusJSON(401, gin.H{"message": apperrors.ErrUnauthorized})
 			return
 		}
-		accesstoken, err := mw.authsrv.ValidateToken(strings.Split(accesstokenCookies, "Bearer ")[1])
+		accesstoken, err := mw.authsrv.ValidateToken(strings.Split(accesstokenHeader, "Bearer ")[1])
 
 		if err != nil || !accesstoken.Valid {
 			c.AbortWithStatusJSON(401, apperrors.ErrUnauthorized.Error())

@@ -2,7 +2,8 @@
 	import { onMount } from 'svelte';
 	import * as FilePond from 'filepond';
 	import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
-	import { API_URL } from '$lib/config/config';
+	import { API_URL, axiosInstance } from '$lib/config/config';
+	import axios from 'axios';
 
 	onMount(() => {
 		FilePond.registerPlugin(FilePondPluginFileValidateType);
@@ -16,6 +17,9 @@
 				process: {
 					url: '/internal/files/upload',
 					withCredentials: true
+				},
+				headers: {
+					Authorization: `${axiosInstance.defaults.headers.common['Authorization']}`
 				}
 			},
 			acceptedFileTypes: [
