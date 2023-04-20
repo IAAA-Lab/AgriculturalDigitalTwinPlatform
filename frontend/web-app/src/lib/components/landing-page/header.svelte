@@ -3,19 +3,26 @@
 	import { onMount } from 'svelte';
 	import Logo from './logo.svelte';
 	import Hamburger from '../misc/Hamburger.svelte';
-	import clickOutside from 'svelte-outside-click';
 
-	let isActive = true;
+	let isActive = false;
+	let hamburger: any = null;
+
+	onMount(() => {
+		document.addEventListener('click', (e) => {
+			if (hamburger.contains(e.target)) return;
+			closeMenu();
+		});
+	});
 
 	const scrollIntoView = ({ target }: any) => {
 		const el = document.querySelector(target.getAttribute('href'));
 		if (!el) return;
+		closeMenu();
 		el.scrollIntoView({
 			behavior: 'smooth',
 			block: 'start',
 			inline: 'start'
 		});
-		closeMenu();
 	};
 
 	const toggleMenu = () => {
@@ -32,7 +39,7 @@
 	<div class="container">
 		<div class="site-header-inner">
 			<Logo />
-			<div use:clickOutside={closeMenu} class="header-nav-toggle" on:click={toggleMenu}>
+			<div bind:this={hamburger} class="header-nav-toggle" on:click={toggleMenu}>
 				<Hamburger open={isActive} />
 			</div>
 			<nav class="header-nav" class:is-active={isActive}>

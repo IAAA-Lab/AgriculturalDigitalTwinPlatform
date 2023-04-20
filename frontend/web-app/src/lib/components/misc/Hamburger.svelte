@@ -42,20 +42,18 @@
 		z-index: 9999;
 		cursor: pointer;
 		padding: 0.5rem;
-		height: 60px;
-		width: 60px;
 
 		.icon {
-			@include icon(4px, 30px);
+			@include icon(3px, 25px);
 			border-radius: 4px;
 
 			&:before {
-				@include icon-before(4px, 30px, -10px);
+				@include icon-before(3px, 25px, -8px);
 				border-radius: 4px;
 			}
 
 			&:after {
-				@include icon-after(4px, 30px, 10px);
+				@include icon-after(3px, 25px, 8px);
 				border-radius: 4px;
 			}
 		}
@@ -66,11 +64,11 @@
 				background: transparent;
 
 				&:before {
-					transform: rotateZ(45deg) scaleX(1.25) translate(6.5px, 6.5px);
+					transform: rotateZ(45deg) scaleX(1) translate(6.5px, 6.5px);
 				}
 
 				&:after {
-					transform: rotateZ(-45deg) scaleX(1.25) translate(6px, -6px);
+					transform: rotateZ(-45deg) scaleX(1) translate(5px, -5px);
 				}
 			}
 		}
