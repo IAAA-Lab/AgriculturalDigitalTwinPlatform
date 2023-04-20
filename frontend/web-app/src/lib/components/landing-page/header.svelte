@@ -2,20 +2,10 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import Logo from './logo.svelte';
+	import Hamburger from '../misc/Hamburger.svelte';
+	import clickOutside from 'svelte-outside-click';
 
-	let nav: any = null;
-	let isActive = false;
-	let hamburger: any = null;
-
-	const clickOutside = (e: any) => {
-		if (!nav) return;
-		if (!isActive || nav.contains(e.target) || e.target === hamburger) return;
-		closeMenu();
-	};
-
-	onMount(() => {
-		document.addEventListener('click', clickOutside);
-	});
+	let isActive = true;
 
 	const scrollIntoView = ({ target }: any) => {
 		const el = document.querySelector(target.getAttribute('href'));
@@ -28,17 +18,12 @@
 		closeMenu();
 	};
 
-	const openMenu = () => {
-		document.body.classList.add('off-nav-is-active');
-		if (!nav) return;
-		nav.style.maxHeight = nav.scrollHeight + 'px';
-		isActive = true;
+	const toggleMenu = () => {
+		isActive = !isActive;
 	};
 
 	const closeMenu = () => {
-		document.body.classList.remove('off-nav-is-active');
-		if (!nav) return;
-		nav && (nav.style.maxHeight = null);
+		console.log(isActive);
 		isActive = false;
 	};
 </script>
@@ -47,17 +32,10 @@
 	<div class="container">
 		<div class="site-header-inner">
 			<Logo />
-			<div
-				class="header-nav-toggle"
-				bind:this={hamburger}
-				on:click={isActive ? closeMenu : openMenu}
-			>
-				<!-- <span class="screen-reader">Menu</span> -->
-				<span class="hamburger">
-					<span class="hamburger-inner" />
-				</span>
+			<div use:clickOutside={closeMenu} class="header-nav-toggle" on:click={toggleMenu}>
+				<Hamburger open={isActive} />
 			</div>
-			<nav class="header-nav" bind:this={nav} class:is-active={isActive}>
+			<nav class="header-nav" class:is-active={isActive}>
 				<div class="header-nav-inner">
 					<ul class="list-reset header-nav-right">
 						{#if $page.url.pathname === '/'}
@@ -165,7 +143,6 @@
 	@include media('<=medium') {
 		.header-nav-toggle {
 			display: block;
-
 			// Header navigation when the hamburger is a previous sibling
 			+ .header-nav {
 				background: color-bg(footer);
@@ -173,15 +150,16 @@
 				left: 0;
 				right: 0;
 				top: 70px;
-				z-index: 9999;
+				z-index: 100000;
 				max-height: 0;
 				opacity: 0;
 				overflow: hidden;
-				transition: max-height 0.25s ease-in-out, opacity 0.15s;
+				transition: max-height 0.5s ease-in-out, opacity 0.15s;
 				row-gap: 1rem;
 
 				&.is-active {
 					opacity: 1;
+					max-height: 500px;
 				}
 
 				ul {
@@ -199,69 +177,6 @@
 						padding: 0.25rem 0 !important;
 					}
 				}
-			}
-		}
-	}
-	.hamburger,
-	.hamburger-inner {
-		display: block;
-		pointer-events: none;
-	}
-
-	.hamburger {
-		position: relative;
-		width: 50px;
-		height: 50px;
-	}
-
-	.hamburger-inner,
-	.hamburger-inner::before,
-	.hamburger-inner::after {
-		width: 50px;
-		height: 50px;
-		position: absolute;
-		background: color-icon(hamburger);
-		border-radius: 7px;
-	}
-
-	.hamburger-inner {
-		transition-duration: 0.22s;
-		transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
-
-		&::before,
-		&::after {
-			content: '';
-			display: block;
-		}
-
-		&::before {
-			top: 5px;
-			transition: top 0.1s 0.25s ease-in, opacity 0.1s ease-in;
-		}
-
-		&::after {
-			bottom: 5px;
-			transition: bottom 0.1s 0.25s ease-in, transform 0.22s cubic-bezier(0.55, 0.055, 0.675, 0.19),
-				width 0.1s 0.25s ease-in;
-		}
-
-		.off-nav-is-active & {
-			transform: rotate(225deg);
-			transition-delay: 0.12s;
-			transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-
-			&::before {
-				top: 0;
-				opacity: 0;
-				transition: top 0.1s ease-out, opacity 0.1s 0.12s ease-out;
-			}
-
-			&::after {
-				width: 5px;
-				bottom: 0;
-				transform: rotate(-90deg);
-				transition: bottom 0.1s ease-out, transform 0.22s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1),
-					width 0.1s ease-out;
 			}
 		}
 	}
