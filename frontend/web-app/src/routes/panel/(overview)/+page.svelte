@@ -90,8 +90,7 @@
 			grid-template-columns: 2.5fr 2.5fr 2fr;
 			grid-template-areas:
 				'map characteristics summary'
-				'map characteristics summary'
-				'tables tables summary';
+				'tables tables tables';
 			:global(.summary) {
 				display: block;
 			}

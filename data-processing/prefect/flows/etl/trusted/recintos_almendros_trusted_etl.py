@@ -156,11 +156,15 @@ def recintos_almendros_refined_etl():
         dfTratamientos = object["treatments"]
         dfParcels = object["parcels"]
         name = object["name"]
-        processed_data_treatments, data_year = transform_treatments(dfTratamientos)
-        processed_data_parcels, data_year = transform_parcels(dfParcels)
-        load(processed_data_parcels, data_year, f"{name}_PARCELAS_{data_year}.xlsx", "parcelas")
-        load(processed_data_treatments, data_year,
+        if not dfTratamientos.empty:
+            processed_data_treatments, data_year = transform_treatments(dfTratamientos)
+            print(f"Treatments - {data_year}")
+            load(processed_data_treatments, data_year,
             f"{name}_TRATAMIENTOS_{data_year}.xlsx", "tratamientos")
+        if not dfParcels.empty:
+            processed_data_parcels, data_year = transform_parcels(dfParcels)
+            print(f"Parcels - {data_year}")
+            load(processed_data_parcels, data_year, f"{name}_PARCELAS_{data_year}.xlsx", "parcelas")
 
 
 if __name__ == "__main__":

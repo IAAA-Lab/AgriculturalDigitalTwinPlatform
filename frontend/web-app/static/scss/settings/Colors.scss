@@ -4,9 +4,9 @@
 $palette: (
 	light: (
 		1: #f2f0ee,
-		2: #2f485a,
-		3: #717d86,
-		4: #ededed
+		2: #40484d,
+		3: #7b8690,
+		4: #e8ecee
 	),
 	dark: (
 		1: #232d36,
@@ -49,18 +49,12 @@ $color: (
 	warning: get-color(alert, warning),
 	warning-text: darken(get-color(alert, warning), 45%),
 	success: get-color(alert, success),
-	success-text: darken(get-color(alert, success), 45%),
-	// ↓ Inverted colors
-	heading-inverse: get-color(dark, 1),
-	card-inverse: rgba(get-color(light, 1), 0.5),
-	base-inverse: get-color(light, 3),
-	high-contrast-inverse: get-color(dark, 1),
-	mid-contrast-inverse: get-color(dark, 2),
-	low-contrast-inverse: get-color(light, 3)
+	success-text: darken(get-color(alert, success), 45%)
 );
 
 // Borders and dividers: color
 $border--color: (
+	base: rgba(get-color(light, 3), 0.4),
 	divider: get-color(light, 3),
 	divider-inverse: get-color(light, 1)
 );
@@ -71,14 +65,6 @@ $icon--color: (
 	hamburger: get-color(light, 2),
 	// hamburger icon
 	accordion: get-color(primary, 1),
-	// accordion icon
-	social: get-color(primary, 1),
-	// social icons
-	social-hover: get-color(primary, 2),
-	// social icons (:hover)
-	modal: get-color(light, 3),
-	// modal icon
-	modal-hover: get-color(light, 2),
 	// modal icon (:hover)
 	news-more: get-color(primary, 2),
 	// news - read more link arrow

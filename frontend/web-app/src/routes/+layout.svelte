@@ -19,12 +19,15 @@
 					break;
 			}
 		} catch (error) {
-			console.log(error);
+			// console.log(error);
 		}
 		loading = false;
 	});
 </script>
 
+<svelte:head>
+	<title>GEDEFEC · Panel</title>
+</svelte:head>
 {#if loading}
 	<Loading />
 {:else}

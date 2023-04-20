@@ -30,6 +30,20 @@ const enclosuresService = new EnclosuresService(parcelsRepository);
 const userRepository = new HttpUserRepository(axiosInstance);
 const userService = new UserService(userRepository);
 
+// intercept all requests and check if 401 Unauthorized
+axiosInstance.interceptors.response.use(
+	(response) => {
+		return response;
+	},
+	(error) => {
+		if (error.response.status === 401) {
+			// redirect to login page
+			window.location.href = '/';
+		}
+		return Promise.reject(error);
+	}
+);
+
 export {
 	enclosuresService,
 	userService,
