@@ -7,7 +7,7 @@
 </script>
 
 <div class="container-responsive">
-	<h1 class="title">Recinto#{id} · Plantas</h1>
+	<h1 class="title pb-16">Recinto#{id} · Plantas</h1>
 	<!-- <CropStats enclosureId={id} /> -->
 	<!-- <br /> -->
 	<Treatments enclosureId={id} />

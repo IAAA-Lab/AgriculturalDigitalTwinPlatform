@@ -30,16 +30,23 @@ const enclosuresService = new EnclosuresService(parcelsRepository);
 const userRepository = new HttpUserRepository(axiosInstance);
 const userService = new UserService(userRepository);
 
+let refresh = false;
 // intercept all requests and check if 401 Unauthorized
 axiosInstance.interceptors.response.use(
 	(response) => {
 		return response;
 	},
-	(error) => {
-		if (error.response.status === 401) {
-			// redirect to login page
-			window.location.href = '/';
+	async (error) => {
+		if (error.response.status === 401 && !refresh) {
+			refresh = true;
+			try {
+				await userRepository.refresh();
+				return axios(error.config);
+			} catch (error) {
+				// redirect to login page
+			}
 		}
+		refresh = false;
 		return Promise.reject(error);
 	}
 );

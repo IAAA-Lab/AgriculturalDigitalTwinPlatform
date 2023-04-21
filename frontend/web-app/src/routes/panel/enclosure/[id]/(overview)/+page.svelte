@@ -21,7 +21,7 @@
 
 <div class="container-responsive">
 	<div class="title">
-		<h1>Recinto#{id}</h1>
+		<h1 class="pb-16">Recinto#{id}</h1>
 		{#if vulnerableArea}
 			<ProtectedAreaCard />
 		{/if}

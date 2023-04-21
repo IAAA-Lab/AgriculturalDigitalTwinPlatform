@@ -257,6 +257,7 @@
 		flex-direction: row;
 		flex-wrap: wrap;
 		align-items: center;
+		overflow-x: scroll;
 
 		:global(.chart__doughnut__wrapper) {
 			flex: 3;

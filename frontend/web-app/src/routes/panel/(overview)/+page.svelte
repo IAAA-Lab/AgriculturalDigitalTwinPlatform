@@ -12,7 +12,7 @@
 </script>
 
 <div class="container-responsive">
-	<h1 class="title">Overview</h1>
+	<h1 class="title pb-16">Overview</h1>
 	<div class="inner__container">
 		{#await enclosuresService.getEnclosures($listOfEnclosures)}
 			<Loading />

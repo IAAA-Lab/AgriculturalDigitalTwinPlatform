@@ -34,14 +34,14 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: flex-start;
-		padding-right: 1rem;
-		white-space: nowrap;
+		word-break: break-all;
 
 		.stat-icon {
 			width: 70px;
 			height: 70px;
 			background: color-bg(primary);
 			border-radius: 10px;
+			border: solid 2px color(primary);
 			display: flex;
 			align-items: center;
 			justify-content: center;

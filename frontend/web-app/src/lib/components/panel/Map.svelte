@@ -61,7 +61,7 @@
 
 <style lang="scss">
 	div {
-		min-width: 300px;
+		min-width: 250px;
 		min-height: 350px;
 		height: 100%;
 	}

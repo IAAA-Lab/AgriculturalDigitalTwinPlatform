@@ -11,7 +11,7 @@
 </script>
 
 <div class="container-responsive">
-	<h1 class="title">Recinto#{id} · Mapa</h1>
+	<h1 class="title pb-16">Recinto#{id} · Mapa</h1>
 	<div class="inner__container">
 		<Map enclosureId={id} />
 		<Stats enclosureId={id} {idema} />

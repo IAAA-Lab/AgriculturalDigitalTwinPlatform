@@ -14,7 +14,7 @@
 </script>
 
 <div class="container-responsive">
-	<h1 class="title">Recinto#{id} · Tiempo</h1>
+	<h1 class="title pb-16">Recinto#{id} · Tiempo</h1>
 	<div class="inner__container">
 		{#await enclosuresService.getDailyWeather(id)}
 			<Loading />
