@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"digital-twin/main-server/src/internal/core/domain"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -35,14 +36,48 @@ func (mc *mongodbConn) GetEnclosures(enclosureIds []string, year int16) ([]domai
 
 func (mc *mongodbConn) GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time, limit int) ([]domain.NDVI, error) {
 	// if startDate or endDate are zero, then we don't filter by date
-	filter := bson.M{
-		"enclosureId": bson.M{"$in": enclosureIds},
+	fmt.Println("GetNDVI", enclosureIds, startDate, endDate, limit)
+	pipeline := []bson.M{
+		{
+			"$match": bson.M{
+				"enclosureId": bson.M{"$in": enclosureIds},
+				// "date":        bson.M{"$gte": startDate, "$lte": endDate},
+			},
+		},
+		{
+			"$sort": bson.M{
+				"date": -1,
+			},
+		},
+		{
+			"$group": bson.M{
+				"_id": "$enclosureId",
+				"ndvi": bson.M{
+					"$push": bson.M{
+						"date":  "$date",
+						"value": "$value",
+					},
+				},
+				"avg": bson.M{
+					"$avg": "$value",
+				},
+			},
+		},
+		{
+			"$project": bson.M{
+				"_id":         0,
+				"enclosureId": "$_id",
+				"avg":         1,
+				"ndvi": bson.M{
+					"$slice": []interface{}{"$ndvi", limit},
+				},
+			},
+		},
 	}
 	if !startDate.IsZero() && !endDate.IsZero() {
-		filter["date"] = bson.M{"$gte": startDate, "$lte": endDate}
+		pipeline[0]["$match"].(bson.M)["date"] = bson.M{"$gte": startDate, "$lte": endDate}
 	}
-	opts := options.Find().SetSort(bson.M{"date": -1}).SetLimit(int64(limit))
-	return GetDocuments[domain.NDVI](mc, NDVI_COLLECTION, filter, opts)
+	return AggregateDocuments[domain.NDVI](mc, NDVI_COLLECTION, pipeline, nil)
 }
 
 func (mc *mongodbConn) GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder, error) {

@@ -97,19 +97,23 @@ func (m *mongodbConn) CountDocuments(collection string, filter interface{}) (int
 	return count, nil
 }
 
-func (m *mongodbConn) AggregateDocuments(collection string, pipeline interface{}, opts *options.AggregateOptions) (interface{}, error) {
+func AggregateDocuments[T any](m *mongodbConn, collection string, pipeline interface{}, opts *options.AggregateOptions) ([]T, error) {
 	var ctx, cancel = context.WithTimeout(context.Background(), time.Duration(m.timeout)*time.Second)
 	defer cancel()
-	var results interface{}
+	var results []T = []T{}
 	cursor, err := m.db.Collection(collection).Aggregate(ctx, pipeline, opts)
-	if err == nil {
-		err = cursor.All(ctx, results)
-		if results == nil || err != nil {
-			return results, apperrors.ErrNotFound
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return results, nil
 		}
+		return nil, apperrors.ErrInternal
 	}
-	if err == mongo.ErrNoDocuments || results == nil {
-		return results, apperrors.ErrNotFound
+	if err = cursor.All(ctx, &results); err != nil {
+		return nil, apperrors.ErrInternal
 	}
-	return results, apperrors.ErrInternal
+
+	if results == nil {
+		return nil, apperrors.ErrNotFound
+	}
+	return results, nil
 }

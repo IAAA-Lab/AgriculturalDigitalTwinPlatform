@@ -11,28 +11,29 @@
 
 	export let enclosureId: string;
 	export let idema: string;
-	let startDateText: string;
-	let endDateText: string;
-	let ndviValues: NDVI[] = [];
-	let weatherValues: HistoricalWeather[] = [];
 
-	const LIMIT = 30;
+	let ndviValues: NDVI | null = null;
+	let weatherValues: HistoricalWeather[] = [];
+	let startDate: string;
+	let endDate: string;
+	let LIMIT: number | undefined = 30;
+
+	$: {
+		if (startDate && endDate) {
+			LIMIT = undefined;
+		}
+	}
 
 	$: {
 		enclosuresService
-			.getNDVI(
-				[enclosureId],
-				new Date(startDateText),
-				new Date(endDateText),
-				startDateText && endDateText ? 0 : LIMIT
-			)
+			.getNDVI([enclosureId], new Date(startDate), new Date(endDate), LIMIT)
 			.then((ndvi) => {
-				ndviValues = ndvi;
+				ndviValues = ndvi[0];
 				enclosuresService
 					.getHistoricalWeather(
 						idema,
-						new Date(ndvi.at(0)?.date || startDateText),
-						new Date(ndvi.at(-1)?.date || endDateText)
+						new Date(ndvi[0].ndvi.at(-1)?.date || startDate),
+						new Date(ndvi[0].ndvi.at(0)?.date || endDate)
 					)
 					.then((weather) => {
 						weatherValues = weather;
@@ -42,7 +43,7 @@
 					});
 			})
 			.catch((error) => {
-				ndviValues = [];
+				ndviValues = null;
 			});
 	}
 </script>
@@ -53,7 +54,9 @@
 			<h4 class="m-0">Media</h4>
 			<CardInner class="ndvi__card">
 				<div slot="body" class="range__bar">
-					{@const ndviAvg = ndviValues.reduce((a, b) => a + b?.value, 0) / ndviValues.length}
+					{@const ndviAvg = ndviValues
+						? ndviValues?.ndvi.reduce((a, b) => a + b?.value, 0) / ndviValues?.ndvi.length
+						: -1}
 					<Range value={ndviAvg} to={1} background={getRangeBarColor(ndviAvg)} />
 					<h3 class="m-0">
 						<strong>{numberWithCommas(ndviAvg)}<strong /></strong>
@@ -61,8 +64,8 @@
 				</div>
 			</CardInner>
 			<div class="date__picker">
-				<input type="date" bind:value={startDateText} />
-				<input type="date" bind:value={endDateText} />
+				<input type="date" bind:value={startDate} />
+				<input type="date" bind:value={endDate} />
 			</div>
 		</div>
 		<CardInner class="card__wrapper">
@@ -73,7 +76,7 @@
 							datasets: [
 								{
 									type: 'line',
-									data: ndviValues?.map((ndvi) => ({
+									data: ndviValues?.ndvi.map((ndvi) => ({
 										x: new Date(ndvi.date),
 										y: ndvi.value
 									})),

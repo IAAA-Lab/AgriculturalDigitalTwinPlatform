@@ -9,7 +9,7 @@
 
 	onMount(() => {
 		document.addEventListener('click', (e) => {
-			if (hamburger.contains(e.target)) return;
+			if (hamburger?.contains(e.target)) return;
 			closeMenu();
 		});
 	});
@@ -30,7 +30,6 @@
 	};
 
 	const closeMenu = () => {
-		console.log(isActive);
 		isActive = false;
 	};
 </script>

@@ -13,7 +13,7 @@
 			code: 'AEI-010500-2021b-122',
 			stateKey: 'under-construction',
 			state: 'Bajo construcción',
-			illustration: 'feature-tile-icon-02.svg',
+			illustration: '/feature-tile-icon-02.svg',
 			objectives: [
 				{
 					title: 'Modelo de datos consistente',
@@ -50,7 +50,7 @@
 			title: 'Fase 2',
 			date: '2022',
 			code: 'AEI-010500-2022b-61',
-			illustration: 'feature-tile-icon-04.svg',
+			illustration: '/feature-tile-icon-04.svg',
 			stateKey: 'under-construction',
 			state: 'Bajo construcción',
 			objectives: [

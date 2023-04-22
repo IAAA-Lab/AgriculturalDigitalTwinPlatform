@@ -275,7 +275,7 @@ type NDVIIn struct {
 	EnclosureIds []string  `form:"enclosureIds" binding:"required"`
 	StartDate    time.Time `form:"startDate"`
 	EndDate      time.Time `form:"endDate"`
-	Limit        int       `form:"limit" default:"150"`
+	Limit        int       `form:"limit" default:"365"`
 }
 
 // @Summary Get NDVI
@@ -292,7 +292,7 @@ type NDVIIn struct {
 // @Router /ndvi [get]
 func (hdl *EnclosuresHTTPHandler) GetNDVI(c *gin.Context) {
 	ndviIn := NDVIIn{
-		Limit: 150,
+		Limit: 365,
 	}
 	err := c.ShouldBind(&ndviIn)
 	if err != nil {

@@ -15,7 +15,7 @@
 	</div>
 	<div class="contact-card reveal-from-bottom" data-reveal-delay="50">
 		<div class="contact-card-info">
-			<img src={'logo.svg'} alt="GEDEFEC" width={90} />
+			<img src={'/logo.svg'} alt="GEDEFEC" width={90} />
 			<br />
 			<p class="text-sm m-0">gedefec@unizar.es</p>
 		</div>

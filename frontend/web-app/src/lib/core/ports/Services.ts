@@ -1,8 +1,6 @@
 import type {
 	DailyWeather,
 	NDVI,
-	Summary,
-	UserParcels,
 	ForecastWeather,
 	HistoricalWeather,
 	Enclosure,
@@ -12,11 +10,15 @@ import type {
 
 interface IenclosuresService {
 	getEnclosures(enclosureIds: string[], year: number): Promise<Enclosure[]>;
-	getOverviewSummary(userId: string): Promise<Summary>;
 	getHistoricalWeather(idema: string, startDate: Date, endDate: Date): Promise<HistoricalWeather[]>;
 	getDailyWeather(enclosureId: string): Promise<DailyWeather>;
 	getForecastWeather(enclosureId: string): Promise<ForecastWeather>;
-	getNDVI(enclosureIds: string[], startDate: Date, endDate: Date, limit: number): Promise<NDVI[]>;
+	getNDVI(
+		enclosureIds: string[],
+		startDate?: Date,
+		endDate?: Date,
+		limit?: number
+	): Promise<NDVI[]>;
 	getCropStats(enclosureId: string): Promise<any[]>;
 	getTreatments(enclosureId: string, startDate: Date, endDate: Date): Promise<Treatment[]>;
 }

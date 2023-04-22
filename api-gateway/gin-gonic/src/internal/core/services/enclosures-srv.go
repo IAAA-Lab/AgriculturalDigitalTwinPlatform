@@ -42,14 +42,7 @@ func (srv *enclosuresService) GetDailyWeather(enclosureId string) (domain.DailyW
 }
 
 func (srv *enclosuresService) GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time, limit int) ([]domain.NDVI, error) {
-	ndviList, err := srv.persistence.GetNDVI(enclosureIds, startDate, endDate, limit)
-	if err != nil {
-		return nil, err
-	}
-	sort.Slice(ndviList, func(i, j int) bool {
-		return ndviList[i].Date.Before(ndviList[j].Date)
-	})
-	return ndviList, nil
+	return srv.persistence.GetNDVI(enclosureIds, startDate, endDate, limit)
 }
 
 func (srv *enclosuresService) GetFertilizers(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error) {

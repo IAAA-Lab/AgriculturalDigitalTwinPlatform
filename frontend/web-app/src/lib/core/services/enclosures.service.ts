@@ -1,12 +1,4 @@
-import type {
-	UserParcels,
-	Summary,
-	DailyWeather,
-	NDVI,
-	ForecastWeather,
-	HistoricalWeather,
-	Enclosure
-} from '../Domain';
+import type { DailyWeather, NDVI, ForecastWeather, HistoricalWeather, Enclosure } from '../Domain';
 import type { IParcelsRepository } from '../ports/Repository';
 import type { IenclosuresService } from '../ports/Services';
 
@@ -15,9 +7,6 @@ class EnclosuresService implements IenclosuresService {
 
 	getEnclosures(enclosureIds: string[]): Promise<Enclosure[]> {
 		return this.parcelsRepository.getEnclosures(enclosureIds, 2022);
-	}
-	getOverviewSummary(userId: string): Promise<Summary> {
-		return this.parcelsRepository.getOverviewSummary(userId);
 	}
 	getHistoricalWeather(
 		idema: string,
@@ -37,7 +26,12 @@ class EnclosuresService implements IenclosuresService {
 	getForecastWeather(enclosureId: string): Promise<ForecastWeather> {
 		return this.parcelsRepository.getForecastWeather(enclosureId);
 	}
-	getNDVI(enclosureIds: string[], startDate: Date, endDate: Date, limit: number): Promise<NDVI[]> {
+	getNDVI(
+		enclosureIds: string[],
+		startDate?: Date,
+		endDate?: Date,
+		limit?: number
+	): Promise<NDVI[]> {
 		return this.parcelsRepository.getNDVI(enclosureIds, startDate, endDate, limit);
 	}
 	getTreatments(enclosureId: string, startDate: Date, endDate: Date) {

@@ -28,7 +28,7 @@ def extract():
 @task
 def transform_tratamientos(df: pd.DataFrame):
     # Convert to Digital Twin domain
-    ## Loop through the rows using intertuples()
+    # Loop through the rows using intertuples()
     # phytosanitaries = []
     # plagues = []
     treatments = []
@@ -70,12 +70,12 @@ def transform_tratamientos(df: pd.DataFrame):
         treatments.append(treatment)
     return treatments
 
+
 @task
 def load(treatments):
     # Connect to MongoDB
     MONGODB_HOST = os.environ.get("PREFECT_MONGODB_HOST")
     MONGODB_DB = os.environ.get("PREFECT_MONGODB_DB")
-    print(MONGODB_DB)
     mongo_client = MongoClient(MONGODB_HOST)
     db = mongo_client[MONGODB_DB]
 

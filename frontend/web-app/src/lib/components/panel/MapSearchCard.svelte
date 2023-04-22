@@ -53,7 +53,7 @@
 				{#await enclosuresService.getNDVI([enclosureName], null, null, 1)}
 					<Loading />
 				{:then ndvi}
-					{@const ndviVal = ndvi?.at(0)?.value}
+					{@const ndviVal = ndvi?.at(0)?.ndvi.at(-1)?.value}
 					<Range
 						value={ndviVal ?? 0}
 						to={1}

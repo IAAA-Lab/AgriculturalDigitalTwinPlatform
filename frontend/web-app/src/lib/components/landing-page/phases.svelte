@@ -85,7 +85,7 @@
 		display: grid;
 		place-items: center;
 		margin-top: 5rem;
-		background: url('illustration-section-02.svg') no-repeat right top 500px;
+		background: url('/illustration-section-02.svg') no-repeat right top 500px;
 
 		.phases-inner {
 			display: grid;

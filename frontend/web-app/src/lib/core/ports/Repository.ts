@@ -17,7 +17,12 @@ interface IParcelsRepository {
 	getHistoricalWeather(idema: string, startDate: Date, endDate: Date): Promise<HistoricalWeather[]>;
 	getDailyWeather(enclosureId: string, date: Date): Promise<DailyWeather>;
 	getForecastWeather(enclosureId: string): Promise<ForecastWeather>;
-	getNDVI(enclosureIds: string[], startDate: Date, endDate: Date, limit: number): Promise<NDVI[]>;
+	getNDVI(
+		enclosureIds: string[],
+		startDate?: Date,
+		endDate?: Date,
+		limit?: number
+	): Promise<NDVI[]>;
 	GetTreatments(enclosureId: string, startDate: Date, endDate: Date): Promise<Treatment[]>;
 	getFertilizers(enclosureId: string, startDate: Date, endDate: Date): Promise<Fertilizer[]>;
 	getCropStats(enclosureId: string): Promise<any[]>;

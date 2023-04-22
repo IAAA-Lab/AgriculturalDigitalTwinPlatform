@@ -8,7 +8,6 @@ import (
 	"digital-twin/main-server/src/pkg/apperrors"
 	"encoding/base64"
 	"encoding/hex"
-	"fmt"
 	"io"
 
 	"github.com/gin-gonic/gin"
@@ -60,7 +59,6 @@ func (mw *encryptionMiddleware) EncryptData(c *gin.Context) {
 
 	cipherText, err := encryptData(data.(string), mw.key, mw.iv)
 	if err != nil {
-		fmt.Print(err)
 		c.AbortWithStatusJSON(500, gin.H{"message": apperrors.ErrInternal.Error()})
 	}
 	c.JSON(200, gin.H{"result": cipherText})

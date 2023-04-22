@@ -7,14 +7,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-type NewsService interface {
-	FetchAll(numPage int64) ([]domain.News, int64, error)
-	Fetch(id string) (domain.News, error)
-	PostNewNews(news domain.News) error
-	UpdateNews(id string, news domain.News) error
-	DeleteNews(id string) error
-}
-
 type UsersService interface {
 	CheckLogin(username string, password string) (domain.User, error)
 	FetchAllUsers() ([]domain.User, error)

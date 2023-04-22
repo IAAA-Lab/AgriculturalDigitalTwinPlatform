@@ -32,6 +32,12 @@ const config = {
 		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
 
 		adapter: adapter()
+	},
+	// For inspecting components in the browser https://joyofcode.xyz/svelte-inspector
+	vitePlugin: {
+		experimental: {
+			inspector: true
+		}
 	}
 };
 

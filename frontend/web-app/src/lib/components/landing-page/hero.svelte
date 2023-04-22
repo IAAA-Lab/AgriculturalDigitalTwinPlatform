@@ -20,12 +20,8 @@
 					un tipo concreto de explotación agraria: frutos secos de cáscara.
 				</p>
 			</div>
-			<div
-				class="reveal-from-bottom illustration-element-01"
-				data-reveal-value="20px"
-				data-reveal-delay="200"
-			>
-				<img loading="lazy" src={'hero-image-initial.jpg'} alt="Hero" />
+			<div class="reveal-from-bottom" data-reveal-value="20px" data-reveal-delay="200">
+				<img loading="lazy" src={'/hero-image-initial.jpg'} alt="Hero" />
 			</div>
 			<p class="mt-32 pt-32 text-sm fw-700">
 				Los gemelos digitales permiten la digitalización de la realidad física como elemento de base

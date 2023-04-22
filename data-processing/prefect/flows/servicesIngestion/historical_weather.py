@@ -23,18 +23,23 @@ def extract(meteoStationId: str, startDate: str, endDate: str) -> dict:
     headers = {
         'Authorization': AUTH_TOKEN,
     }
-
-    response = requests.post(
-        AGROSLAB_API_URL, json=body, headers=headers)
-
-    return response.json()
+    try:
+        response = requests.post(
+            AGROSLAB_API_URL, json=body, headers=headers)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise Exception(
+            f"Error getting weather data from Agroslab API: {response.status_code} - {response.text}")
+    except Exception as e:
+        raise Exception(
+            f"Error getting weather data from Agroslab API: {e}")
 
 
 @task
 def transform(weather_data: dict):
     if weather_data is None:
         return None
-    logger = get_run_logger()
 
     weather_data_list = []
     for weather_data_item in weather_data:
@@ -81,6 +86,8 @@ async def load(weather_list: dict):
 def historical_weather(idema: str, startDate: str, endDate: str) -> dict:
     try:
         data = extract(idema, startDate, endDate)
+        logger = get_run_logger()
+        logger.info(data)
         processed_data = transform(data)
         load.submit(processed_data)
         return processed_data

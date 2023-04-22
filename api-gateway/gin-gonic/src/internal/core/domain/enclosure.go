@@ -2,31 +2,9 @@ package domain
 
 import (
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // --- Database models ---
-
-type News struct {
-	ID                primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	Title             string             `bson:"title" json:"title"`
-	LittleDescription string             `bson:"little_description" json:"subtitle"`
-	Author            string             `bson:"author" json:"author"`
-	Date              primitive.DateTime `bson:"date" json:"date"`
-	ReadMin           uint8              `bson:"read_min" json:"readTime"`
-	Image             string             `bson:"image" json:"thumbnail"`
-	Content           string             `bson:"content,omitempty" json:"content,omitempty"`
-}
-
-type User struct {
-	ID           primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	Email        string             `json:"email"`
-	Password     string             `json:"password"`
-	Role         string             `json:"role"`
-	EnclosureIds []string           `json:"enclosureIds"`
-}
-
 type Enclosure struct {
 	Id       string `json:"id"`
 	Year     int    `json:"year"`
@@ -112,15 +90,12 @@ type Treatment struct {
 }
 
 type NDVI struct {
-	EnclosureId string    `json:"enclosureId"`
-	Date        time.Time `json:"date"`
-	Value       float64   `json:"value"`
-}
-
-type NDVIMap struct {
-	Type     string    `json:"type"`
-	Date     time.Time `json:"date"`
-	ImageUri string    `json:"imageUri"`
+	EnclosureId string  `json:"enclosureId"`
+	AVG         float64 `json:"avg"`
+	NDVI        []struct {
+		Date  time.Time `json:"date"`
+		Value float64   `json:"value"`
+	} `json:"ndvi"`
 }
 
 type FarmHolder struct {

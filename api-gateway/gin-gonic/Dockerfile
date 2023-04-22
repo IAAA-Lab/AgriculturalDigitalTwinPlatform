@@ -10,7 +10,7 @@ RUN mkdir "/build"
 COPY . .
 RUN go get github.com/githubnemo/CompileDaemon
 RUN go install github.com/githubnemo/CompileDaemon
-ENTRYPOINT CompileDaemon -build="go build -C src/internal/cmd -o /build/app" -command="/build/app"
+ENTRYPOINT CompileDaemon -build="go build -C src/cmd -o /build/app" -command="/build/app"
 
 FROM golang:alpine as development
 
@@ -22,5 +22,5 @@ RUN go mod download
 ENV CGO_ENABLED 0 \
   GO111MODULE=on \
   GIN_MODE=release
-RUN go build -o /app/main src/internal/cmd/main.go
-CMD ["go", "run", "src/internal/cmd/main.go"]
+RUN go build -o /app/main src/cmd/main.go
+CMD ["go", "run", "src/cmd/main.go"]

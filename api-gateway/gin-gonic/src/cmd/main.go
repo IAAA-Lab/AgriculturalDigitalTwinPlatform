@@ -10,7 +10,6 @@ import (
 	"digital-twin/main-server/src/internal/adapters/secondary/redis"
 	"digital-twin/main-server/src/internal/core/domain"
 	"digital-twin/main-server/src/internal/core/services"
-	"fmt"
 
 	"os"
 
@@ -149,6 +148,5 @@ func main() {
 	go func() {
 		_ = m.Run(":9090")
 	}()
-	fmt.Println("FRONTEND: " + os.Getenv("FRONTEND_URL"))
 	r.Run(":" + port)
 }

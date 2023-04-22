@@ -34,7 +34,11 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: flex-start;
-		word-break: break-all;
+		white-space: nowrap;
+
+		@include media('<medium') {
+			white-space: normal;
+		}
 
 		.stat-icon {
 			width: 70px;

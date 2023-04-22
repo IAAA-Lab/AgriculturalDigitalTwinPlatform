@@ -1,5 +1,3 @@
-import type CustomError from './Exceptions';
-
 enum Role {
 	ADMIN = 'admin',
 	PRIVATE_FILES = 'private_access',
@@ -11,36 +9,6 @@ type User = {
 	id?: string;
 	name: string;
 	role: string;
-};
-
-type UserParcels = {
-	id?: string;
-	userId: string;
-	enclosureIds: string[];
-	summary: Summary;
-};
-
-type SummaryStat = {
-	enclosureId: string;
-	stat: Characteristics;
-	// cropIds: CropId[];
-	diff: number;
-};
-
-type Summary = {
-	ts: Date;
-	stats: {
-		all: SummaryStat[];
-		good: SummaryStat[];
-		bad: SummaryStat[];
-	};
-};
-
-type Characteristics = {
-	name: string;
-	value: number;
-	unit?: string;
-	state: StateNames;
 };
 
 type Enclosure = {
@@ -123,14 +91,10 @@ type Treatment = {
 
 type NDVI = {
 	enclosureId: string;
-	date: string;
-	value: number;
-};
-
-type NDVIMap = {
-	type: string;
-	date: string;
-	imageUri: string;
+	ndvi: {
+		date: string;
+		value: number;
+	}[];
 };
 
 type FarmHolder = {
@@ -267,42 +231,19 @@ type windState = {
 	value?: number;
 };
 
-enum StateNames {
-	GOOD = 'BIEN',
-	MEDIUM = 'MEDIO',
-	BAD = 'MAL',
-	NA = 'NA'
-}
-
-type Characteristic = {
-	name: string;
-	value: number;
-	unit?: string;
-	state?: StateNames;
-};
-
-type Result<T> = { error?: CustomError; data?: T };
-
 export type {
-	Result,
 	User,
-	Characteristic,
 	Enclosure,
 	Crop,
 	Fertilizer,
 	Treatment,
 	NDVI,
-	NDVIMap,
 	FarmHolder,
 	FarmHolderId,
 	ForecastWeather,
 	DailyWeather,
-	UserParcels,
-	Summary,
-	SummaryStat,
-	Characteristics,
 	Prediction,
 	HistoricalWeather
 };
 
-export { Role, StateNames };
+export { Role };

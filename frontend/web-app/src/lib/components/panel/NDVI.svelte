@@ -13,14 +13,15 @@
 </script>
 
 <section>
-	{#await enclosuresService.getNDVI([enclosureId], null, null, 30)}
+	{#await enclosuresService.getNDVI([enclosureId], undefined, undefined, 30)}
 		<Loading />
-	{:then ndviValues}
+	{:then ndviRes}
+		{@const ndvi = ndviRes.at(0)}
 		<a href="/panel/enclosure/{enclosureId}/map">
 			<Card>
 				<h6 slot="header" class="m-0 mb-8">Salud de las plantas (NDVI)</h6>
 				<svelte:fragment slot="body">
-					{@const currentNdviValue = ndviValues.at(-1)?.value}
+					{@const currentNdviValue = ndvi?.ndvi.at(-1)?.value}
 					<CardInner>
 						<div slot="body" class="ndvi__value__unit">
 							<Range
@@ -42,7 +43,7 @@
 										datasets: [
 											{
 												type: 'line',
-												data: ndviValues?.map((ndvi) => ({
+												data: ndvi?.ndvi.map((ndvi) => ({
 													x: ndvi.date.split('T')[0],
 													y: ndvi.value
 												})),
