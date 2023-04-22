@@ -3,7 +3,6 @@
 	import Chart from './Chart.svelte';
 	import { enclosuresService } from '$lib/config/config';
 	import CardInner from './CardInner.svelte';
-	import { onMount } from 'svelte';
 	import type { HistoricalWeather, NDVI } from '$lib/core/Domain';
 
 	export let startDate: string;
@@ -15,7 +14,7 @@
 	let ndviValues: NDVI | null = null;
 	let weatherValues: HistoricalWeather[] = [];
 
-	onMount(() => {
+	$: {
 		enclosuresService
 			.getNDVI([selectedEnclosure], new Date(startDate), new Date(endDate), undefined)
 			.then((ndvi) => {
@@ -36,7 +35,7 @@
 			.catch((error) => {
 				ndviValues = null;
 			});
-	});
+	}
 
 	$: endDate = new Date(new Date(startDate).setDate(new Date(startDate).getDate() + limit));
 </script>
