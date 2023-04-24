@@ -7,43 +7,37 @@ import io
 
 from etl.utils.functions import DB_MinioClient
 
-METADATA_KEY = "x-amz-meta-type"
-METADATA_VAL = "excel_almendros_cercanos"
 BUCKET_FROM_NAME = "landing-zone"
 BUCKET_TO_NAME = "trusted-zone"
 
+
 @task
-def extract_objects_to_process() -> list:
+def extract_objects_to_process(file_name: str) -> dict:
     logger = get_run_logger()
     # Connect to MinIO
     minio_client = DB_MinioClient().connect()
     # Fetch objects and filter by metadata
-    objects_name = []
-    for obj in minio_client.list_objects(BUCKET_FROM_NAME, include_user_meta=True):
-        stat = minio_client.stat_object(BUCKET_FROM_NAME, obj.object_name)
-        if stat.metadata.get(METADATA_KEY) == METADATA_VAL:
-            objects_name.append(obj.object_name)
-    # Read object and convert to dataframe
-    objects = []
-    for object_name in objects_name:
-            data = minio_client.get_object(BUCKET_FROM_NAME, object_name).read()
-            try:
-                dfParcels = pd.read_excel(io.BytesIO(data), engine="openpyxl",
-                                sheet_name="Parcelas", na_values=[''])
-            except Exception as e:
-                logger.error("Error reading object: ", e)
-            try:
-                dfTreatments = pd.read_excel(io.BytesIO(data), engine="openpyxl",
-                                sheet_name="Tratamientos", na_values=[''])
-            except Exception as e:
-                logger.error("Error reading object: ", e)
-            objects.append({
-                "treatments": dfTreatments,
-                "parcels": dfParcels,
-                "name": re.split(r"\.", object_name)[0]
-            })
-        
-    return objects
+    data = minio_client.get_object(BUCKET_FROM_NAME, file_name).read()
+    stat = minio_client.stat_object(BUCKET_FROM_NAME, file_name)
+    try:
+        dfParcels = pd.read_excel(io.BytesIO(data), engine="openpyxl",
+                                  sheet_name="Parcelas", na_values=[''])
+    except Exception as e:
+        logger.error("Error reading object: ", e)
+    try:
+        dfTreatments = pd.read_excel(io.BytesIO(data), engine="openpyxl",
+                                     sheet_name="Tratamientos", na_values=[''])
+    except Exception as e:
+        logger.error("Error reading object: ", e)
+    return {
+        "treatments": dfTreatments,
+        "parcels": dfParcels,
+        "name": re.split(r"\.", file_name)[0],
+        "metadata": {
+            "type": stat.metadata["x-amz-meta-type"]
+        }
+    }
+
 
 @task
 def transform_treatments(df: pd.DataFrame):
@@ -75,7 +69,8 @@ def transform_treatments(df: pd.DataFrame):
     df["secUserName"] = df["secUserName"].str.upper()
     # Convert string to datetime and format it
     df["harvestInitDate"] = pd.to_datetime(df["harvestInitDate"])
-    df["harvestInitDate"] = df["harvestInitDate"].dt.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+    df["harvestInitDate"] = df["harvestInitDate"].dt.strftime(
+        '%Y-%m-%dT%H:%M:%S.%fZ')
     # Get data year
     data_year = df['harvestYear'].iloc[:1].values[0]
     return df, data_year
@@ -87,41 +82,42 @@ def transform_parcels(df: pd.DataFrame):
     print("processing parcels data")
     logger.info("processing parcels data")
     # Modify data
-    ## Trim spaces
+    # Trim spaces
     df.columns = df.columns.str.replace('^ +| +$', '')
-    ## Convert strings to int in columns "Recinto" and "Agregado"
+    # Convert strings to int in columns "Recinto" and "Agregado"
     columns = ["Recinto", "Agregado"]
     for column in columns:
-        ### Remove spaces from columns
+        # Remove spaces from columns
         df.columns = df.columns.astype(str).str.replace(' ', '').str.strip()
-        ### Convert columns Recinto and Agregado to int
-        df[column] = pd.to_numeric(df[column], downcast='integer', errors='coerce')
-        ### Remove rows with NaN in Recinto
+        # Convert columns Recinto and Agregado to int
+        df[column] = pd.to_numeric(
+            df[column], downcast='integer', errors='coerce')
+        # Remove rows with NaN in Recinto
         df = df[df[column].notna()]
-        ### Convert columns Recinto to int
+        # Convert columns Recinto to int
         df[column] = df[column].astype(int)
-    ## Remove some columns
+    # Remove some columns
     df = df.drop(columns=['ProductorNIF', 'Marcoplantacionh',
                  'Marcoplantacionv', 'Asesoramiento'])
-    ## Change column names
+    # Change column names
     try:
         df.columns = ["harvestYear", "parcelProvinceId", "parcelMunicipalityId", "parcelPolygonId", "parcelId", "parcelEnclosureId", "parcelGeographicSpot", "parcelAggregatedId", "parcelZoneId", "orderPAC", "subOrderPAC", "areaSIGPAC", "area", "cropId",
                       "parcelVarietyId", "irrigationKind", "tenureRegimeId", "plantationYear", "numberOfTrees", "plantationDensity", "ATRIA_ADV_ASV", "parcelVulnerableArea", "specificZones", "parcelUse", "slope", "UHC", "UHCDescription", "ZepaZone", "SIEZone"]
     except Exception as e:
         raise ValueError("Error changing column names: ", e)
-    ## Remove rows with empty parcelUse
+    # Remove rows with empty parcelUse
     df = df[df["parcelUse"].notna()]
-    ## Convert 'N' and 'S' to True and False
+    # Convert 'N' and 'S' to True and False
     columns = ["specificZones", "parcelVulnerableArea", "ZepaZone", "SIEZone"]
     for column in columns:
         df[column] = df[column].map(lambda x: True if x == "S" else False)
-    ## Get data year
+    # Get data year
     data_year = df['harvestYear'].iloc[:1].values[0]
     return df, data_year
 
 
 @task
-def load(processed_data, data_year, file_name, file_type):
+def load(processed_data, data_year, file_name, metadata):
     logger = get_run_logger()
     print("loading data")
     logger.info("loading data")
@@ -143,29 +139,27 @@ def load(processed_data, data_year, file_name, file_type):
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         metadata={
             "source": "7eData",
-            "type": f"${METADATA_VAL}_${file_type}",
+            "type": metadata,
             "year": data_year,
         }
     )
 
 
-@flow(name="recintos_almendros_refined_etl")
-def recintos_almendros_refined_etl():
-    objects = extract_objects_to_process()
-    for object in objects:
-        dfTratamientos = object["treatments"]
-        dfParcels = object["parcels"]
-        name = object["name"]
-        if not dfTratamientos.empty:
-            processed_data_treatments, data_year = transform_treatments(dfTratamientos)
-            print(f"Treatments - {data_year}")
-            load(processed_data_treatments, data_year,
-            f"{name}_TRATAMIENTOS_{data_year}.xlsx", "tratamientos")
-        if not dfParcels.empty:
-            processed_data_parcels, data_year = transform_parcels(dfParcels)
-            print(f"Parcels - {data_year}")
-            load(processed_data_parcels, data_year, f"{name}_PARCELAS_{data_year}.xlsx", "parcelas")
-
-
-if __name__ == "__main__":
-    recintos_almendros_refined_etl()
+@flow(name="recintos_almendros_trusted_etl")
+def recintos_almendros_trusted_etl(file_name: str):
+    object = extract_objects_to_process(file_name)
+    dfTratamientos = object["treatments"]
+    dfParcels = object["parcels"]
+    name = object["name"]
+    metadata_type = object["metadata"]["type"]
+    if not dfTratamientos.empty:
+        processed_data_treatments, data_year = transform_treatments(
+            dfTratamientos)
+        print(f"Treatments - {data_year}")
+        load(processed_data_treatments, data_year,
+             f"{name}_TRATAMIENTOS_{data_year}.xlsx", f"{metadata_type}_treatments")
+    if not dfParcels.empty:
+        processed_data_parcels, data_year = transform_parcels(dfParcels)
+        print(f"Parcels - {data_year}")
+        load(processed_data_parcels, data_year,
+             f"{name}_PARCELAS_{data_year}.xlsx", f"{metadata_type}_parcels")

@@ -1,8 +1,10 @@
 #!/bin/bash
-
-# Execute rabbitmq consumer
-python3 -m messageQueue.rabbitmq.rabbitmq_listener &
+sleep 30
+# Execute rpc consumer
+python3 -m servicesIngestion.consumer.rpc_consumer &
+# Execute direct exchange consumer
+# python3 -m etl.consumer.direct_exchange_consumer &
 # Execute prefect server
-prefect server start --host 0.0.0.0
+prefect agent start &
 # Execute prefect agent
-prefect agent start
+prefect server start --host 0.0.0.0

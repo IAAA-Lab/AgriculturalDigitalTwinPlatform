@@ -91,10 +91,19 @@ class RabbitmqRpcConsumer():
         )
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
-    def start_receiver(self):
+    def consume(self):
         self.channel.basic_consume(
             queue=self.config['queue_name'], on_message_callback=self.on_request)
         self.channel.start_consuming()
+
+    def close(self):
+        self.channel.close()
+        self.connection.close()
+
+    def run(self):
+        self.connect()
+        self.consume()
+        self.close()
 
 
 if __name__ == '__main__':
@@ -107,6 +116,4 @@ if __name__ == '__main__':
         'password': PASSWORD
     }
     consumer = RabbitmqRpcConsumer(config)
-    # Connect to RabbitMQ and retry 3 times if it fails
-    consumer.connect()
-    consumer.start_receiver()
+    consumer.run()

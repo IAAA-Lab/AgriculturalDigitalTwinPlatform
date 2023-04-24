@@ -12,11 +12,6 @@ from etl.dtStorage.cultivos_identificadores_dt_etl import cultivos_identificador
 
 from etl.utils.functions import DB_MinioClient
 
-YEAR = 2022
-FILE_PATH = f"ERP/7eData/{YEAR}"
-METADATA_VAL = "excel_almendros_cercanos_parcelas"
-FILE_NAME = "Recintos_Almendros_Cercanos_y_Otros_Cultivos_PARCELAS_2022.xlsx"
-
 
 @task(retries=3, retry_delay_seconds=20)
 async def extract_enclosures_properties():

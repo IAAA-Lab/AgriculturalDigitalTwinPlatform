@@ -163,15 +163,27 @@ services:
   minio:
       image: minio/minio:RELEASE.2023-02-27T18-10-45Z
       environment:
-          MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-          MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      entrypoint: /bin/bash 
-      command: "-c 'mkdir -p /data/prefect-flows && sleep 10 && minio server /data --console-address :9001'"
+          - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+          - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+          - MINIO_URL=${MINIO_URL}
+          - MINIO_NOTIFY_AMQP_ENABLE_primary=on
+          - MINIO_NOTIFY_AMQP_URL_primary=${RABBITMQ_URI}
+          - MINIO_NOTIFY_AMQP_EXCHANGE_primary=storage
+          - MINIO_NOTIFY_AMQP_EXCHANGE_TYPE_primary=direct
+          - MINIO_NOTIFY_AMQP_ROUTING_KEY_primary=trusted
+      entrypoint:
+        - sh
+        - /usr/bin/entrypoint.sh
+
       ports:
           - 9000:${MINIO_PORT}
           - 9001:${MINIO_PANEL_PORT}
       volumes:
           - ./storage/minio/data:/data
+          - ./storage/minio/entrypoint.sh:/usr/bin/entrypoint.sh
+      restart: always
+      depends_on:
+          - rabbitmq
 
 # #############################################
 # #        Database for Prefect Server        #

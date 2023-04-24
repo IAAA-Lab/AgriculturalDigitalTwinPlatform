@@ -1,6 +1,7 @@
 **/mongodata/**
-redis/redisdata/**
+**/redis/data/**
 .DS_Store
-data
+**/minio/data/**
+**/postgres/data/**
 *.log
 *.env*
