@@ -16,6 +16,7 @@
     place-items: center;
     height: 100%;
     color: white;
+    width: 100%;
   }
 
   .error {

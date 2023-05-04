@@ -10,7 +10,7 @@ RUN mkdir "/build"
 COPY . .
 RUN go get github.com/githubnemo/CompileDaemon
 RUN go install github.com/githubnemo/CompileDaemon
-RUN sleep 10
+# RUN sleep 10
 ENTRYPOINT CompileDaemon -build="go build -C src/cmd -o /build/app" -command="/build/app"
 
 FROM golang:alpine as development

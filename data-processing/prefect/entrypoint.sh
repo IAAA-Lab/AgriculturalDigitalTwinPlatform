@@ -1,10 +1,8 @@
 #!/bin/bash
-sleep 30
+# sleep 20
 # Execute rpc consumer
-python3 -m servicesIngestion.consumer.rpc_consumer &
+python3 -m etl.event_driven.__consumers__.rpc_consumer &
 # Execute direct exchange consumer
-# python3 -m etl.consumer.direct_exchange_consumer &
-# Execute prefect server
-prefect agent start &
+python3 -m etl.event_driven.__consumers__.direct_exchange_consumer &
 # Execute prefect agent
 prefect server start --host 0.0.0.0

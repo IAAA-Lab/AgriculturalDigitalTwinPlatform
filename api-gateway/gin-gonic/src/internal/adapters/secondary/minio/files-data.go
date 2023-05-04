@@ -27,7 +27,7 @@ func (mc *MinioConn) UploadFile(file []byte, fileName string, bucket string, pat
 	_, err = mc.client.PutObject(ctx, bucket, path+"/"+fileName, bytes.NewReader(file), int64(len(file)), minio.PutObjectOptions{
 		ContentType: content_type,
 		UserMetadata: map[string]string{
-			"x-amz-meta-type": "excel_almendros_cercanos",
+			"x-amz-meta-type": "parcels_and_treatments",
 		},
 	})
 	if err != nil {

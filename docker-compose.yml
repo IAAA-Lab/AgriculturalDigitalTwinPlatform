@@ -90,8 +90,8 @@ services:
       - MINIO_ENDPOINT=${MINIO_ENDPOINT}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-      - MINIO_LANDING_BUCKET_NAME=${MINIO_LANDING_BUCKET_NAME}
-      - MINIO_IMAGES_BUCKET_NAME=${MINIO_IMAGES_BUCKET_NAME}
+      - MINIO_LANDING_ZONE=${MINIO_LANDING_ZONE}
+
 
 #############################################
 #               Redis server                #
@@ -123,7 +123,7 @@ services:
         - VITE_EMAIL_SENDER_TEMPLATEID=${VITE_EMAIL_SENDER_TEMPLATEID}
         - VITE_IV_BLOCK_PASSWD=${VITE_IV_BLOCK_PASSWD}
         - VITE_KEY_DECRYPT_PASSWD=${VITE_KEY_DECRYPT_PASSWD}
-        - VITE_IMAGES_SERVER_URL=${SVELTE_IMAGES_SERVER_URL}
+        - VITE_IMAGES_SERVER_URL=${VITE_IMAGES_SERVER_URL}
     volumes:
       - ./frontend/web-app/src:/app/src
       - ./frontend/web-app/static:/app/static
@@ -186,22 +186,6 @@ services:
           - rabbitmq
 
 # #############################################
-# #        Database for Prefect Server        #
-# #############################################
-
-  postgres:
-    image: postgres:15.2-alpine
-    restart: always
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-    ports:
-      - 5432:${POSTGRES_PORT}
-    volumes: 
-      - ./storage/postgres/data:/var/lib/postgresql/data
-
-# #############################################
 # #      Data ingestion, data processing      # 
 # #      processing and machine learning      #
 # #############################################
@@ -211,10 +195,11 @@ services:
     restart: on-failure
     volumes:
       - prefect:/root/.prefect
-      - ./data-processing/prefect/flows:/opt/prefect/flows
+      - ./data-processing/prefect:/opt/prefect
     environment:
+      - PREFECT_LOGGING_LEVEL=WARNING
       - PREFECT_API_URL=${PREFECT_API_URL}
-      - PREFECT_API_DATABASE_CONNECTION_URL=${PREFECT_API_DATABASE_CONNECTION_URL}
+      # - PREFECT_API_DATABASE_PASSWORD=${PREFECT_API_DATABASE_PASSWORD}
       - PREFECT_MINIO_ACCESS_ROOT=${MINIO_ROOT_USER}
       - PREFECT_MINIO_SECRET_ROOT=${MINIO_ROOT_PASSWORD}
       - PREFECT_MINIO_HOST=${MINIO_HOST}
@@ -223,10 +208,12 @@ services:
       - AGROSLAB_AUTH_TOKEN=${AGROSLAB_AUTH_TOKEN}
       - AGROSLAB_API_URL=${AGROSLAB_API_URL}
       - AGROSLAB_TELEDETECTION_URL=${AGROSLAB_TELEDETECTION_URL}
+      - STORAGE_LANDING_ZONE=${MINIO_LANDING_ZONE}
+      - STORAGE_TRUSTED_ZONE=${MINIO_TRUSTED_ZONE}
+      - STORAGE_REFINED_ZONE=${MINIO_REFINED_ZONE}
     ports:
       - 4200:${PREFECT_PORT}
     depends_on:
-      - postgres
       - rabbitmq
       - mongo
 

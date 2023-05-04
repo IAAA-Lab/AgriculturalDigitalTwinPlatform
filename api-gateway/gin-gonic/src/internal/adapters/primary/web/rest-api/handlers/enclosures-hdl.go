@@ -41,7 +41,6 @@ func (hdl *EnclosuresHTTPHandler) GetEnclosures(c *gin.Context) {
 		Year: 2022,
 	}
 	err := c.ShouldBind(&enclosuresIn)
-
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
 		return

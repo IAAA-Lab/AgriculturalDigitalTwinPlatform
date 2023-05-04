@@ -7,7 +7,6 @@ import (
 	"mime/multipart"
 	"os"
 
-	"github.com/gabriel-vasile/mimetype"
 	"github.com/gin-gonic/gin"
 )
 
@@ -44,7 +43,7 @@ func (hdl *FilesHTTPHandler) UploadFiles(c *gin.Context) {
 		return
 	}
 	files := form.File["files"]
-	landingBucket := os.Getenv("MINIO_LANDING_BUCKET_NAME")
+	landingBucket := os.Getenv("MINIO_LANDING_ZONE")
 	for _, fileIn := range files {
 		file, err := fileIn.Open()
 		if err != nil {
@@ -60,36 +59,4 @@ func (hdl *FilesHTTPHandler) UploadFiles(c *gin.Context) {
 			return
 		}
 	}
-}
-
-// @Summary Get image
-// @Description Get image
-// @Tags files
-// @Accept  json
-// @Produce  json
-// @Param filename path string true "filename"
-// @Success 200 {string} string "file name"
-// @Failure 400 {object} Error "Bad request"
-// @Failure 500 {object} Error "Internal server error"
-// @Router /files/{filename} [get]
-func (hdl *FilesHTTPHandler) GetImage(c *gin.Context) {
-	filename := c.Param("filename")
-	if filename == "" {
-		c.AbortWithStatusJSON(400, gin.H{"message": "filename is required"})
-		return
-	}
-	imagesBucket := os.Getenv("MINIO_IMAGES_BUCKET_NAME")
-	file, err := hdl.storageService.GetFile(filename, imagesBucket, "")
-	if err != nil {
-		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
-		return
-	}
-	c.Writer.Header().Set("Cache-Control", "max-age=86400")
-	// Get mimetype from file
-	mimetype, err := mimetype.DetectReader(bytes.NewReader(file))
-	if err != nil {
-		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
-		return
-	}
-	c.Data(200, mimetype.String(), file)
 }

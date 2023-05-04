@@ -25,17 +25,17 @@ type Enclosure struct {
 		Crop               Crop    `json:"crop"`
 		AreaSIGPAC         float64 `json:"areaSIGPAC"`
 		Area               float64 `json:"area"`
-		VarietyId          int     `json:"varietyId"`
+		VarietyId          string  `json:"varietyId"`
 		RainfedOrIrrigated string  `json:"rainfedOrIrrigated"`
-		TenureRegimeId     int     `json:"tenureRegimeId"`
+		TenureRegimeId     string  `json:"tenureRegimeId"`
 		PlantationYear     int     `json:"plantationYear"`
 		NumberOfTrees      int     `json:"numberOfTrees"`
-		PlantationDensity  float64 `json:"plantationDensity"`
+		PlantationDensity  string  `json:"plantationDensity"`
 		VulnerableArea     bool    `json:"vulnerableArea"`
 		SpecificZones      bool    `json:"specificZones"`
 		ParcelUse          string  `json:"parcelUse" bson:",truncate"`
 		Slope              float64 `json:"slope"`
-		UHC                float64 `json:"uhc"`
+		UHC                string  `json:"uhc"`
 		UHCDescription     string  `json:"uhcDescription"`
 		ZEPAZone           bool    `json:"zepaZone"`
 		SIEZone            bool    `json:"sieZone"`
@@ -43,10 +43,10 @@ type Enclosure struct {
 }
 
 type Crop struct {
-	Id                int    `json:"id"`
+	Id                string `json:"id"`
 	Name              string `json:"name"`
 	Variety           string `json:"variety,omitempty"`
-	VarietyId         int    `json:"varietyId,omitempty"`
+	VarietyId         string `json:"varietyId,omitempty"`
 	CodeType          string `json:"codeType,omitempty"`
 	PlantationKind    string `json:"plantationKind,omitempty"`
 	PlantationSubKind string `json:"plantationSubKind,omitempty"`
@@ -69,13 +69,13 @@ type Fertilizer struct {
 type Treatment struct {
 	Date         time.Time `json:"date"`
 	Broth        string    `json:"broth"`
-	DoseKind     int       `json:"doseKind"`
+	DoseKind     string    `json:"doseKind"`
 	DoseMovement float64   `json:"doseMovement"`
 	Quantity     float64   `json:"quantity"`
 	DoseUnit     string    `json:"doseUnit"`
-	// SafePeriod   int       `json:"safePeriod"`
-	HealthAgent struct {
-		Id   int    `json:"id"`
+	SafePeriod   string    `json:"safePeriod"`
+	HealthAgent  struct {
+		Id   string `json:"id"`
 		Name string `json:"name"`
 	} `json:"healthAgent"`
 	Phytosanitary struct {
@@ -84,7 +84,7 @@ type Treatment struct {
 		Formula string `json:"formula"`
 	} `json:"phytosanitary"`
 	Plague struct {
-		Id   int    `json:"id"`
+		Id   string `json:"id"`
 		Name string `json:"name"`
 	} `json:"plague"`
 }

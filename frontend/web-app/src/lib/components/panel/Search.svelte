@@ -49,6 +49,11 @@
 </Card>
 
 <style lang="scss">
+
+	:global(.card){
+		overflow: scroll;
+	}
+
 	.enclosures {
 		display: flex;
 		flex-direction: column;

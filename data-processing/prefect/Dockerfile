@@ -1,8 +1,8 @@
 FROM prefecthq/prefect:2.8.4-python3.11
 
-COPY requirements.txt /opt/prefect/flows/requirements.txt
+COPY requirements.txt /opt/prefect/requirements.txt
 COPY ./entrypoint.sh / 
-WORKDIR /opt/prefect/flows
+WORKDIR /opt/prefect
 
 RUN pip install --no-cache-dir --upgrade pip && \
   pip install -r requirements.txt

@@ -5,7 +5,7 @@ import HttpParcelsRepository from '$lib/repositories/http/parcel.repository';
 import HttpUserRepository from '$lib/repositories/http/user.repository';
 
 const IMAGES_SERVER_URL =
-	(import.meta.env.VITE_IMAGES_SERVER_URL as string) || 'http://localhost:9000/web-images';
+	(import.meta.env.VITE_IMAGES_SERVER_URL as string);
 const API_URL = (import.meta.env.VITE_API_URL as string) || 'http://localhost:8080';
 const IV_BLOCK_PASSWD = import.meta.env.VITE_IV_BLOCK_PASSWD;
 const KEY_DECRYPT_PASSWD = import.meta.env.VITE_KEY_DECRYPT_PASSWD;

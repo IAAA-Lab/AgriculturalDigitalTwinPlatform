@@ -2,7 +2,6 @@ package mongodb
 
 import (
 	"digital-twin/main-server/src/internal/core/domain"
-	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -36,7 +35,6 @@ func (mc *mongodbConn) GetEnclosures(enclosureIds []string, year int16) ([]domai
 
 func (mc *mongodbConn) GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time, limit int) ([]domain.NDVI, error) {
 	// if startDate or endDate are zero, then we don't filter by date
-	fmt.Println("GetNDVI", enclosureIds, startDate, endDate, limit)
 	pipeline := []bson.M{
 		{
 			"$match": bson.M{
