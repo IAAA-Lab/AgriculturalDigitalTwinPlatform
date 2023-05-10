@@ -1,0 +1,37 @@
+{
+  "$schema": "https://www.krakend.io/schema/v3.json",
+  "version": 3,
+  "plugin": {
+    "pattern": ".so",
+    "folder": "./plugins/"
+  },
+  "name": "KrakenD - API Gateway",
+  "timeout": "3000ms",
+  "cache_ttl": "1ms",
+  "extra_config": {
+    "security/http": {
+      "allowed_hosts": ["localhost"],
+      "browser_xss_filter": true,
+      "is_development": true
+    },
+    "plugin/http-server": {
+      "name": ["api-key-auth"]
+    }
+  },
+  "endpoints": [
+    {
+      "endpoint": "/digital-twin/ping",
+      "method": "GET",
+      "output_encoding": "negotiate",
+      "input_headers": ["Authorization"],
+      "backend": [
+        {
+          "method": "GET",
+          "encoding": "string",
+          "url_pattern": "/ping",
+          "host": ["192.168.1.204:8080"]
+        }
+      ]
+    }
+  ]
+}

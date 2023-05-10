@@ -255,31 +255,30 @@ async def transform_parcelas(df: pd.DataFrame):
 @task
 async def join_information(enclosureProperties, enclosure_geographic_info, enclosure_meteorological_stations, year: int):
     # Join enclosures with geographic info
-    try: 
+    try:
         joined_enclosure = {
-        "year": int(year),
-        "id": enclosureProperties["id"],
-        "type": "Feature",
-        "geometry": enclosure_geographic_info["features"][0]["geometry"],
-        "meteoStation": {
+            "year": int(year),
+            "id": enclosureProperties["id"],
+            "type": "Feature",
+            "geometry": enclosure_geographic_info["features"][0]["geometry"],
+            "meteoStation": {
                 "idema": enclosure_meteorological_stations["id"],
                 "name": enclosure_meteorological_stations["nombre"],
                 "distance(km)": enclosure_meteorological_stations["distancia (km)"],
-        },
-        "properties": {
-            **enclosureProperties,
-            "irrigationCoef": enclosure_geographic_info["features"][0]["properties"]["coef_regadio"],
-            "admisibility": enclosure_geographic_info["features"][0]["properties"]["admisibilidad"],
-        },
-        "crs": enclosure_geographic_info["crs"],
-    }
+            },
+            "properties": {
+                **enclosureProperties,
+                "irrigationCoef": enclosure_geographic_info["features"][0]["properties"]["coef_regadio"],
+                "admisibility": enclosure_geographic_info["features"][0]["properties"]["admisibilidad"],
+            },
+            "crs": enclosure_geographic_info["crs"],
+        }
         return joined_enclosure
     except Exception as e:
         logger = get_run_logger()
         logger.error(
             f"Error joining information for enclosureId: {enclosureProperties['id']} - {e}")
         return None
-
 
 
 @task
