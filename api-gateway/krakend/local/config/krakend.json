@@ -15,7 +15,10 @@
       "is_development": true
     },
     "plugin/http-server": {
-      "name": ["api-key-auth"]
+      "name": ["api-key-auth", "stripe-checkout"],
+      "api-key-auth": {
+        "protected_paths_regexp": "^/digital-twin/.*$"
+      }
     }
   },
   "endpoints": [

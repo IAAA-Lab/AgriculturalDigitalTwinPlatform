@@ -3,12 +3,17 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
+	"regexp"
+	"time"
 )
 
 var pluginName = "api-key-auth"
 var HandlerRegisterer = registerer(pluginName)
+
+const WORKERS = 5
 
 type registerer string
 
@@ -24,24 +29,47 @@ func (r registerer) registerHandlers(_ context.Context, extra map[string]interfa
 	if !ok {
 		return nil, errors.New("wrong config")
 	}
-	path, _ := config["paths"].(string)
-	apiKey, _ := os.LookupEnv("API_KEY_DT")
+	protected_paths, _ := config["protected_paths_regexp"].(string)
+	protected_paths_regexp := regexp.MustCompile(protected_paths)
+	apiKey := os.Getenv("API_KEY_DT")
+
+	inputChan := createPoolOfGoroutines(WORKERS)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check if the path is protected
-		// for _, path := range paths {
-		if path == r.URL.Path {
+		if protected_paths_regexp.MatchString(r.URL.Path) {
 			receivedApiKey := r.Header.Get("Authorization")
 			// Check if the API key is valid
 			if receivedApiKey != apiKey {
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
 			}
+			// Delegate payment to stripe in a goroutine
+			inputChan <- "payment"
+			return
+
 		}
-		// }
 		h.ServeHTTP(w, r)
 
 	}), nil
 }
 
 func main() {}
+
+func stripeCountWorker(inputChan <-chan string) {
+	// Call Stripe endpoint
+	time.Sleep(2 * time.Second)
+	fmt.Println("Stripe payment done")
+	// Log the result
+
+}
+
+func createPoolOfGoroutines(workers int) chan<- string {
+	inputChan := make(chan string)
+
+	for i := 0; i < workers; i++ {
+		go stripeCountWorker(inputChan)
+	}
+
+	return inputChan
+}
