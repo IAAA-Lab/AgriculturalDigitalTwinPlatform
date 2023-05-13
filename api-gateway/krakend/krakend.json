@@ -15,9 +15,15 @@
       "is_development": true
     },
     "plugin/http-server": {
-      "name": ["api-key-auth", "stripe-checkout"],
+      "name": ["api-key-auth", "payment-checkout", "payment-webhook"],
       "api-key-auth": {
         "protected_paths_regexp": "^/digital-twin/.*$"
+      },
+      "payment-checkout": {
+        "path": "/payment/checkout"
+      },
+      "payment-webhook": {
+        "path": "/payment/webhook"
       }
     }
   },
@@ -32,7 +38,7 @@
           "method": "GET",
           "encoding": "string",
           "url_pattern": "/ping",
-          "host": ["192.168.1.204:8080"]
+          "host": ["192.168.0.13:8080"]
         }
       ]
     }
