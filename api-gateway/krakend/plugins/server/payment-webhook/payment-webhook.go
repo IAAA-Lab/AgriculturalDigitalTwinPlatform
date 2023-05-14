@@ -35,6 +35,7 @@ func (r registerer) registerHandlers(_ context.Context, extra map[string]interfa
 
 	stripeStore := services.GetStoreInstance()
 	stripeService := services.GetStripeInstance(stripeStore)
+	emailService := services.GetEmailSenderInstance()
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Check if the path is protected
@@ -47,13 +48,13 @@ func (r registerer) registerHandlers(_ context.Context, extra map[string]interfa
 				return
 			}
 			stripeSignature := r.Header.Get("stripe-signature")
-			_, err = stripeService.ManageWebhook(webhookSecret, stripeSignature, payload)
+			err = stripeService.ManageWebhook(webhookSecret, stripeSignature, payload, emailService)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+			return
 		}
-
 		h.ServeHTTP(w, r)
 	}), nil
 }

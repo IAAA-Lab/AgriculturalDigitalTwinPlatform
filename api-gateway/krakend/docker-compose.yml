@@ -14,6 +14,8 @@ services:
       - STRIPE_KEY=${STRIPE_KEY}
       - STRIPE_PRICE_ID=${STRIPE_PRICE_ID}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - EMAIL_SENDER_MAIL=${EMAIL_SENDER_MAIL}
+      - EMAIL_SENDER_PASSWD=${EMAIL_SENDER_PASSWD}
     volumes:
       - ./stores:/etc/krakend/stores
       - ./krakend.json:/etc/krakend/krakend.json

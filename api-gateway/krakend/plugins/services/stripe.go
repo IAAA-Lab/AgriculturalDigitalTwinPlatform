@@ -38,8 +38,8 @@ func (ss *StripeService) Checkout() (*stripe.CheckoutSession, error) {
 			},
 		},
 		Mode:       stripe.String(string(stripe.CheckoutSessionModeSubscription)),
-		SuccessURL: stripe.String("http://localhost:8080/success"),
-		CancelURL:  stripe.String("http://localhost:8080/cancel"),
+		SuccessURL: stripe.String("http://localhost:8089/payment/success"),
+		CancelURL:  stripe.String("http://localhost:8089/payment/cancel"),
 	}
 	return session.New(params)
 }
@@ -64,11 +64,10 @@ func (ss *StripeService) CheckAuthorization(receivedApiKey string) error {
 	return nil
 }
 
-func (ss *StripeService) ManageWebhook(webhookSecret string, stripeSignature string, body []byte) (string, error) {
-	stripe.Key = os.Getenv("STRIPE_KEY")
+func (ss *StripeService) ManageWebhook(webhookSecret string, stripeSignature string, body []byte, emailSender *EmailService) error {
 	event, err := webhook.ConstructEvent(body, stripeSignature, webhookSecret)
 	if err != nil {
-		return "", err
+		return err
 	}
 	switch event.Type {
 	case "checkout.session.completed":
@@ -78,15 +77,14 @@ func (ss *StripeService) ManageWebhook(webhookSecret string, stripeSignature str
 		// Retrieve customer subscription
 		subscription, err := subscription.Get(subscriptionId, nil)
 		if err != nil {
-			return "", err
+			return err
 		}
 		itemId := subscription.Items.Data[0].ID
 		// Generate random API key and hash it to store in store
 		randomApiKey := generateRandomApiKey(32)
-		fmt.Println("[******] random api key: ", randomApiKey)
 		apiKeyHashed, err := bcrypt.GenerateFromPassword([]byte(randomApiKey), bcrypt.DefaultCost)
 		if err != nil {
-			return "", err
+			return err
 		}
 		// Store API key in store
 		ss.stripeStore.Set(randomApiKey, StripeStore{
@@ -95,13 +93,20 @@ func (ss *StripeService) ManageWebhook(webhookSecret string, stripeSignature str
 			ItemId:     itemId,
 			Active:     true,
 		})
-		return randomApiKey, nil
+		// Get customer email from checkout session and send API key to customer
+		sessonId := event.Data.Object["id"].(string)
+		checkoutSession, err := session.Get(sessonId, nil)
+		if err != nil {
+			return err
+		}
+		customerEmail := checkoutSession.CustomerDetails.Email
+		return emailSender.SendEmail(customerEmail, "Private API key - GEDEFEC", "Your private API key is: "+randomApiKey)
 	case "invoice.paid":
 		break
 	case "invoice.payment_failed":
 		break
 	}
-	return "", errors.New("stripe event not found - " + event.Type)
+	return errors.New("stripe event not found - " + event.Type)
 }
 
 func (ss *StripeService) RecordUsage(apiKey string) error {
