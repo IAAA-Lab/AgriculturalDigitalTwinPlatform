@@ -129,6 +129,8 @@ func (ss *StripeService) RecordUsage(apiKey string) error {
 	return err
 }
 
+// ----------- Utilities -------------
+
 func generateRandomApiKey(keyLength int) string {
 	b := make([]byte, keyLength)
 	rand.Read(b)

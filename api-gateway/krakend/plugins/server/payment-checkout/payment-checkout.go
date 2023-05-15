@@ -20,12 +20,13 @@ func (r registerer) RegisterHandlers(f func(
 }
 
 func (r registerer) registerHandlers(_ context.Context, extra map[string]interface{}, h http.Handler) (http.Handler, error) {
+	// Config from the krakend.json file
 	config, ok := extra[pluginName].(map[string]interface{})
 	if !ok {
 		return nil, errors.New("wrong config")
 	}
 	path := config["path"].(string)
-
+	// Business logic
 	stripeStore := services.GetStoreInstance()
 	stripeService := services.GetStripeInstance(stripeStore)
 
@@ -38,6 +39,7 @@ func (r registerer) registerHandlers(_ context.Context, extra map[string]interfa
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+			// When session is created, redirect to checkout page provided by stripe
 			http.Redirect(w, r, session.URL, http.StatusTemporaryRedirect)
 			return
 		}

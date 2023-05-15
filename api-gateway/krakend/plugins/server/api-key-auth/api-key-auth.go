@@ -24,16 +24,17 @@ func (r registerer) RegisterHandlers(f func(
 }
 
 func (r registerer) registerHandlers(_ context.Context, extra map[string]interface{}, h http.Handler) (http.Handler, error) {
+	// Config from the krakend.json file
 	config, ok := extra[pluginName].(map[string]interface{})
 	if !ok {
 		return nil, errors.New("wrong config")
 	}
 	protected_paths, _ := config["protected_paths_regexp"].(string)
 	protected_paths_regexp := regexp.MustCompile(protected_paths)
-
+	// Business logic
 	stripeStore := services.GetStoreInstance()
 	stripeService := services.GetStripeInstance(stripeStore)
-
+	// Handle payment actions asynchronously
 	inputChan := createPoolOfGoroutines(WORKERS, stripeService)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
