@@ -5,3 +5,4 @@
 **/postgres/data/**
 *.log
 *.env*
+**/**.db
