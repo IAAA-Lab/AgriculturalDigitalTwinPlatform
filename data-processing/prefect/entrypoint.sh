@@ -1,8 +1,38 @@
 #!/bin/bash
-# sleep 20
-# Execute rpc consumer
-python3 -m etl.event_driven.__consumers__.rpc_consumer &
-# Execute direct exchange consumer
-python3 -m etl.event_driven.__consumers__.direct_exchange_consumer &
-# Execute prefect agent
-prefect server start --host 0.0.0.0
+
+# Execute rpc consumer for on-demand etl
+python3 -m __consumers__.rpc_consumer &
+# Execute direct exchange consumer for event-based etl
+python3 -m __consumers__.direct_exchange_consumer &
+# Execute prefect server
+prefect server start --host 0.0.0.0 &
+sleep 3
+# Init a project where we will deploy our flows
+prefect project init --recipe local
+# For flows that required not to overload the external API
+prefect worker start --type process --pool third-party-blocking-work --name default-worker &
+prefect worker start --type process --pool local-blocking-work --name default-worker &
+prefect worker start --type process --pool lightweight-work --name default-worker &
+#  Set concurrency limits for work pools
+prefect work-pool set-concurrency-limit third-party-blocking-work 5
+prefect work-pool set-concurrency-limit local-blocking-work 6
+prefect work-pool set-concurrency-limit lightweight-work 3
+sleep 3
+
+# Register blocks
+prefect block register -m prefect_email
+
+# Scheduled (weekly every sunday at 00:00 timezone Europe/Madrid)
+prefect deploy ./etl/ndvi/ndvi_etl.scheduled.py:ndvi_scheduled_etl --name scheduled --cron "0 0 * * SUN" --timezone Europe/Madrid -p lightweight-work
+prefect deploy ./etl/weather/historical_weather_etl.scheduled.py:historical_weather_scheduled_etl --name scheduled --cron "0 0 * * SUN" --timezone Europe/Madrid -p lightweight-work
+# Event-driven (triggered by rpc or direct exchange using amqp)
+prefect deploy ./etl/ndvi/ndvi_etl.py:ndvi_etl --name event-driven -p third-party-blocking-work
+prefect deploy ./etl/weather/historical_weather_etl.py:historical_weather_dt_etl --name event-driven -p third-party-blocking-work
+prefect deploy ./etl/recintos_cercanos/recintos_almendros_parcels_trusted_etl.py:recintos_almendros_parcels_trusted_etl --name event-driven -p lightweight-work
+prefect deploy ./etl/recintos_cercanos/recintos_almendros_treatments_trusted_etl.py:recintos_almendros_treatments_trusted_etl --name event-driven -p lightweight-work
+prefect deploy ./etl/recintos_cercanos/recintos_almendros_parcels_dt_etl.py:recintos_almendros_parcels_dt_etl --name event-driven -p lightweight-work
+prefect deploy ./etl/recintos_cercanos/recintos_almendros_treatments_dt_etl.py:recintos_almendros_treatments_dt_etl --name event-driven -p third-party-blocking-work
+prefect deploy ./etl/cultivos_identificadores/cultivos_identificadores_dt_etl.py:cultivos_identificadores_dt_etl --name event-driven -p lightweight-work
+
+# Don't exit
+tail -f /dev/null

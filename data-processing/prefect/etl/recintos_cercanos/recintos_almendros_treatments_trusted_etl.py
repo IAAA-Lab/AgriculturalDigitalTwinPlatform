@@ -3,8 +3,8 @@ import re
 import pandera as pa
 import pandas as pd
 from prefect import flow, get_run_logger, task
-from etl.utils.functions import DB_MinioClient
-from etl.utils.constants import Constants
+from utils.functions import DB_MinioClient
+from utils.constants import Constants
 
 BUCKET_FROM_NAME = Constants.STORAGE_LANDING_ZONE.value
 BUCKET_TO_NAME = Constants.STORAGE_TRUSTED_ZONE.value
@@ -54,7 +54,6 @@ def clean(df: pd.DataFrame):
 
 @task
 def validate(df: pd.DataFrame) -> pd.DataFrame:
-    logger = get_run_logger()
     # Define schema
     schema = pa.DataFrameSchema({
         "MovimientoCosecha": pa.Column(pa.Int),
@@ -94,6 +93,7 @@ def validate(df: pd.DataFrame) -> pd.DataFrame:
     try:
         return schema.validate(df)
     except pa.errors.SchemaError as e:
+        logger = get_run_logger()
         logger.error("Schema validation error: ", e.failure_cases)
         return None
 

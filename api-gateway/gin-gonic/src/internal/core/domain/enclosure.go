@@ -43,14 +43,8 @@ type Enclosure struct {
 }
 
 type Crop struct {
-	Id                string `json:"id"`
-	Name              string `json:"name"`
-	Variety           string `json:"variety,omitempty"`
-	VarietyId         string `json:"varietyId,omitempty"`
-	CodeType          string `json:"codeType,omitempty"`
-	PlantationKind    string `json:"plantationKind,omitempty"`
-	PlantationSubKind string `json:"plantationSubKind,omitempty"`
-	// ImageUri    string  `json:"imageUri" bson:"imageUri"`
+	Id   string `json:"id"`
+	Name string `json:"name"`
 }
 
 type CropId struct {

@@ -2,11 +2,11 @@ import io
 import os
 import re
 
-from etl.utils.constants import Constants
+from utils.constants import Constants
 import pandera as pa
 import pandas as pd
 from prefect import flow, get_run_logger, task
-from etl.utils.functions import DB_MinioClient
+from utils.functions import DB_MinioClient
 
 BUCKET_FROM_NAME = Constants.STORAGE_LANDING_ZONE.value
 BUCKET_TO_NAME = Constants.STORAGE_TRUSTED_ZONE.value
@@ -35,9 +35,10 @@ def clean(df: pd.DataFrame):
     # Remove some columns
     if "ProductorNIF" in df.columns:
         df = df.drop(columns=['ProductorNIF', 'Marcoplantacionh',
-                 'Marcoplantacionv', 'Asesoramiento'])
+                              'Marcoplantacionv', 'Asesoramiento'])
     else:
-        df = df.drop(columns=['Marcoplantacionh', 'Marcoplantacionv', 'Asesoramiento'])
+        df = df.drop(columns=['Marcoplantacionh',
+                     'Marcoplantacionv', 'Asesoramiento'])
     # Change column names
     try:
         df.columns = ["harvestYear", "parcelProvinceId", "parcelMunicipalityId", "parcelPolygonId", "parcelId", "parcelEnclosureId", "parcelGeographicSpot", "parcelAggregatedId", "parcelZoneId", "orderPAC", "subOrderPAC", "areaSIGPAC", "area", "cropId",

@@ -1,8 +1,7 @@
 from prefect import flow, task, get_run_logger
 from .dto.daily_weather_dto import DailyWeather
-import requests
+import requests as request
 import os
-
 
 @task
 def extract(enclosureId: str):
@@ -29,8 +28,8 @@ def extract(enclosureId: str):
         'Authorization': AUTH_TOKEN,
     }
 
-    response = requests.post(
-            AGROSLAB_API_URL, json=body, headers=headers)
+    response = request.post(
+        AGROSLAB_API_URL, json=body, headers=headers)
     return response.json()
 
 
@@ -101,8 +100,8 @@ def transform(data, enclosureId) -> dict:
     return daily_weather
 
 
-@flow(name="daily_weather")
-def daily_weather(enclosureId: str) -> dict:
-        data = extract(enclosureId)
-        processed_data = transform(data, enclosureId)
-        return processed_data
+@flow(persist_result=True)
+def daily_weather(enclosure_id: str) -> dict:
+    data = extract(enclosure_id)
+    processed_data = transform(data, enclosure_id)
+    return processed_data

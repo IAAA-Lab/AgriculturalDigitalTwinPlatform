@@ -1,0 +1,2 @@
+# Executed every week on Sunday at 00:00 from the other machine to the host machine in order to mirror the database
+# mongodump --out=<directory> --uri="mongodb://<user>:<password>@<host>:<port>/<db>?ssl=false&authSource=<admin>"

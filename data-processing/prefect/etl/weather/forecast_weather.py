@@ -96,8 +96,8 @@ def transform(data, enclosureId) -> dict:
     return forecast_weather
 
 
-@flow(name="forecast_weather")
-def forecast_weather(enclosureId: str) -> dict:
-    data = extract(enclosureId)
-    processed_data = transform(data, enclosureId)
+@flow()
+def forecast_weather(enclosure_id: str) -> dict:
+    data = extract(enclosure_id)
+    processed_data = transform(data, enclosure_id)
     return processed_data

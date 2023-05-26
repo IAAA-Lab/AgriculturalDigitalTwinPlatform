@@ -1,11 +1,11 @@
 import io
 import os
 
-from etl.utils.constants import Constants
+from utils.constants import Constants
 import pandas as pd
 from prefect import flow, task, get_run_logger
 
-from etl.utils.functions import DB_MinioClient, DB_MongoClient
+from utils.functions import DB_MinioClient, DB_MongoClient
 
 BUCKET_FROM_NAME = Constants.STORAGE_TRUSTED_ZONE.value
 
@@ -73,12 +73,12 @@ def load(treatments):
         }, {"$set": treatment}, upsert=True)
 
 
-@flow(name="recintos_almendros_tratamientos_dt_etl")
-def recintos_almendros_tratamientos_dt_etl(file_name: str):
+@flow(name="recintos_almendros_treatments_dt_etl")
+def recintos_almendros_treatments_dt_etl(file_name: str):
     df = extract(file_name)
     treatments = transform(df)
     load(treatments)
 
 
 if __name__ == "__main__":
-    recintos_almendros_tratamientos_dt_etl()
+    recintos_almendros_treatments_dt_etl()
