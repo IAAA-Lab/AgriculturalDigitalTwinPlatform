@@ -57,6 +57,13 @@ services:
       environment:
           - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
           - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      healthcheck:
+          test: ["CMD", "rabbitmqctl", "ping"]
+          interval: 10s
+          timeout: 3s
+          retries: 5
+      mem_limit: 1024m
+      mem_reservation: 256m
 
 #############################################
 #              Web app server               #
@@ -72,8 +79,10 @@ services:
         - ./api-gateway/gin-gonic:/app
     restart: always
     depends_on:
-        - 'mongo'
-        - 'rabbitmq'
+        mongo:
+          condition: service_started
+        rabbitmq:
+          condition: service_healthy
     environment:
       - ENV_MODE=LOCAL
       - JWT_SECRET=${JWT_SECRET}
@@ -90,21 +99,10 @@ services:
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
       - MINIO_LANDING_ZONE=${MINIO_LANDING_ZONE}
+    mem_limit: 512m
+    mem_reservation: 128m
+    cpus: 0.5
 
-
-#############################################
-#               Redis server                #
-#############################################
-
-  # redis:
-  #   image: redis:7
-  #   ports:
-  #     - 6379:${REDIS_PORT}
-  #   # user and password
-  #   command: bash -c "redis-server --requirepass $REDIS_PASSWORD --appendonly yes"
-  #   volumes:
-  #     - ./storage/redis/data:/data
-  #   restart: always
 
 #############################################
 #             Digital twin panel            #
@@ -182,7 +180,8 @@ services:
           - ./storage/minio/entrypoint.sh:/usr/bin/entrypoint.sh
       restart: always
       depends_on:
-          - rabbitmq
+        rabbitmq:
+          condition: service_healthy
 
 # #############################################
 # #      Data ingestion, data processing      # 
@@ -214,9 +213,13 @@ services:
     ports:
       - 4200:${PREFECT_PORT}
     depends_on:
-      - rabbitmq
-      - mongo
-
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+    mem_limit: 2048m
+    mem_reservation: 256m
+    cpus: 0.75
 
 volumes:
   prefect:
