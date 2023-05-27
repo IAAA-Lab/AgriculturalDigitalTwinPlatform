@@ -99,6 +99,7 @@ services:
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
       - MINIO_LANDING_ZONE=${MINIO_LANDING_ZONE}
+    # Resources limits in case it consumes too much
     mem_limit: 512m
     mem_reservation: 128m
     cpus: 0.5
@@ -138,7 +139,7 @@ services:
 # #############################################
 
   mongo:
-      build: storage/mongodb
+      image: mongo:latest
       ports:
           - 27018:${MONGO_PORT}
       restart: always
@@ -152,6 +153,8 @@ services:
         - MONGO_FIRST_USER_NAME=${MONGO_FIRST_USER_NAME}
         - MONGO_FIRST_USER_PASSWORD=${MONGO_FIRST_USER_PASSWORD}
         - MONGO_FIRST_USER_ROLE=${MONGO_FIRST_USER_ROLE}
+      # To avoid logs in console
+      command: mongod --quiet --logpath /dev/null 
 
 # #############################################
 # #    Data lake and Prefect flows storage    #
@@ -184,6 +187,23 @@ services:
           condition: service_healthy
 
 # #############################################
+# #            Prefect server storage         #
+# #############################################
+
+  # Had to use postgres because sqlite3 is doesn't support many concurrent connections
+  postgres:
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - 5432
+    volumes:
+      - ./storage/postgres/data:/var/lib/postgresql/data
+
+# #############################################
 # #      Data ingestion, data processing      # 
 # #      processing and machine learning      #
 # #############################################
@@ -196,8 +216,10 @@ services:
       - ./data-processing/prefect:/opt/prefect
     environment:
       - PREFECT_LOGGING_LEVEL=WARNING
-      - PREFECT_API_URL=${PREFECT_API_URL}
-      # - PREFECT_API_DATABASE_PASSWORD=${PREFECT_API_DATABASE_PASSWORD}
+      - PREFECT_UI_URL=http://127.0.0.0:4200/api
+      - PREFECT_API_URL=http://127.0.0.1:4200/api
+      - PREFECT_SERVER_API_HOST=0.0.0.0
+      - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/prefect
       - PREFECT_MINIO_ACCESS_ROOT=${MINIO_ROOT_USER}
       - PREFECT_MINIO_SECRET_ROOT=${MINIO_ROOT_PASSWORD}
       - PREFECT_MINIO_HOST=${MINIO_HOST}
@@ -217,8 +239,11 @@ services:
         condition: service_healthy
       mongo:
         condition: service_started
+      postgres:
+        condition: service_started
+    # Resource limit because it tends to use a lot of memory
     mem_limit: 2048m
-    mem_reservation: 256m
+    mem_reservation: 512m
     cpus: 0.75
 
 volumes:
