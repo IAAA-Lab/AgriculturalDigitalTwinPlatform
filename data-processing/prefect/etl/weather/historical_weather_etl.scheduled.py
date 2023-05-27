@@ -10,13 +10,13 @@ HISTORIC_WEATHER_EXTRACT_FIRST_DATE = "01-01-2018"
 
 
 @task(retries=3, retry_delay_seconds=10, timeout_seconds=15)
-async def extract_distinct_meteo_stations_ids():
+def extract_distinct_meteo_stations_ids():
     mongo_client = DB_MongoClient().connect()
     return mongo_client.Enclosures.distinct("meteoStation.idema")
 
 
 @task(retries=3, retry_delay_seconds=10, timeout_seconds=15)
-async def extract_last_known_date(meteo_station_id: str):
+def extract_last_known_date(meteo_station_id: str):
     mongo_client = DB_MongoClient().connect()
     # Extract last known date
     last_known_date = mongo_client.Weather.find_one(
@@ -27,36 +27,31 @@ async def extract_last_known_date(meteo_station_id: str):
 
 
 @flow(name="historical_weather_scheduled_etl")
-async def historical_weather_scheduled_etl():
-    meteo_station_ids = await extract_distinct_meteo_stations_ids()
+def historical_weather_scheduled_etl():
+    meteo_station_ids = extract_distinct_meteo_stations_ids.submit().result(raise_on_failure=False)
     # Get the last week of data
     dateEnd = datetime.now().strftime("%d-%m-%Y")
     for meteo_station_id in meteo_station_ids:
-        try:
-            last_known_date = await extract_last_known_date(meteo_station_id)
-            await run_deployment("historical_weather_dt_etl/event-driven", parameters={
-                "meteo_station_id": meteo_station_id, "date_init": last_known_date, "date_end": dateEnd})
-        except Exception as e:
-            logger = get_run_logger()
-            logger.error(
-                f"Error running historic_weather_dt_etl for meteo_station_id: {meteo_station_id} - {e}")
-            await notify_exc_by_email(str(e))
+        last_known_date = extract_last_known_date.submit(meteo_station_id).result(raise_on_failure=False)
+        if isinstance(last_known_date, Exception):
             continue
+        run_deployment("historical_weather_dt_etl/event-driven", parameters={
+            "meteo_station_id": meteo_station_id, "date_init": last_known_date, "date_end": dateEnd})
 
 # -------------------- TEST -------------------- #
 
 
-async def test_historical_weather_scheduled_etl():
-    meteo_station_ids = await extract_distinct_meteo_stations_ids.fn()
+def test_historical_weather_scheduled_etl():
+    meteo_station_ids = extract_distinct_meteo_stations_ids.fn()
     # Get the last week of data
     dateEnd = datetime.now().strftime("%d-%m-%Y")
     for meteo_station_id in meteo_station_ids:
         try:
-            last_known_date = await extract_last_known_date.fn(meteo_station_id)
-            await test_historical_weather_dt_etl(meteo_station_id, last_known_date, dateEnd)
+            last_known_date = extract_last_known_date.fn(meteo_station_id)
+            test_historical_weather_dt_etl(meteo_station_id, last_known_date, dateEnd)
         except Exception as e:
             print(str(e))
             continue
 
 if __name__ == "__main__":
-    asyncio.run(test_historical_weather_scheduled_etl())
+    test_historical_weather_scheduled_etl()

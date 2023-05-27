@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Execute rpc consumer for on-demand etl
-python3 -m __consumers__.rpc_consumer &
+# python3 -m __consumers__.rpc_consumer &
 # Execute direct exchange consumer for event-based etl
 python3 -m __consumers__.direct_exchange_consumer &
 # Execute prefect server
@@ -14,9 +14,9 @@ prefect worker start --type process --pool third-party-blocking-work --name defa
 prefect worker start --type process --pool local-blocking-work --name default-worker &
 prefect worker start --type process --pool lightweight-work --name default-worker &
 #  Set concurrency limits for work pools
-prefect work-pool set-concurrency-limit third-party-blocking-work 5
-prefect work-pool set-concurrency-limit local-blocking-work 6
-prefect work-pool set-concurrency-limit lightweight-work 3
+prefect work-pool set-concurrency-limit third-party-blocking-work 7
+prefect work-pool set-concurrency-limit local-blocking-work 4
+prefect work-pool set-concurrency-limit lightweight-work 15
 sleep 3
 
 # Register blocks

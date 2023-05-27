@@ -1,5 +1,5 @@
 from prefect import flow, task, get_run_logger
-from .dto.forecast_weather_dto import ForecastWeather
+from etl.weather.dto.forecast_weather_dto import ForecastWeather
 import requests
 import os
 
@@ -61,25 +61,25 @@ def transform(data, enclosureId) -> dict:
         "municipality": response.nombre,
         "province": response.provincia,
         "prediction": {
-            "day": map(lambda day: {
-                "probPrec": map(lambda probPrec: {
+            "day": list(map(lambda day: {
+                "probPrec": list(map(lambda probPrec: {
                     "value": probPrec.value,
                     "period": probPrec.periodo
-                }, day.probPrecipitacion),
-                "snowQuote": map(lambda snowQuote: {
+                }, day.probPrecipitacion)),
+                "snowQuote": list(map(lambda snowQuote: {
                     "value": snowQuote.value,
                     "period": snowQuote.periodo
-                }, day.cotaNieveProv),
-                "skyState": map(lambda skyState: {
+                }, day.cotaNieveProv)),
+                "skyState": list(map(lambda skyState: {
                     "value": skyState.value,
                     "period": skyState.periodo,
                     "description": skyState.descripcion
-                }, day.estadoCielo),
-                "wind": map(lambda wind: {
+                }, day.estadoCielo)),
+                "wind": list(map(lambda wind: {
                     "direction": wind.direccion,
                     "speed": wind.velocidad,
                     "period": wind.periodo
-                }, day.viento),
+                }, day.viento)),
                 "ta": {
                     "tamax": day.temperatura.maxima,
                     "tamin": day.temperatura.minima
@@ -90,7 +90,7 @@ def transform(data, enclosureId) -> dict:
                 },
                 "uvMax": day.uvMax,
                 "date": day.fecha
-            }, response.prediccion.dia)
+            }, response.prediccion.dia))
         }
     }
     return forecast_weather
@@ -101,3 +101,12 @@ def forecast_weather(enclosure_id: str) -> dict:
     data = extract(enclosure_id)
     processed_data = transform(data, enclosure_id)
     return processed_data
+
+# ---------------- TEST ----------------
+def test_forecast_weather(enclousure_id: str):
+    data = extract.fn(enclousure_id)
+    processed_data = transform.fn(data, enclousure_id)
+    return processed_data
+
+if __name__ == "__main__":
+    test_forecast_weather("50-99-0-0-2-206-1")

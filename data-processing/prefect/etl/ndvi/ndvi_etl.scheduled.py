@@ -11,14 +11,17 @@ NDVI_EXTRACT_FIRST_DATE = "01-01-2020"
 
 
 @task(retries=3, retry_delay_seconds=10, timeout_seconds=15)
-async def extract_enclosures_ids():
+def extract_enclosures_ids():
     mongo_client = DB_MongoClient().connect()
     # Extract unique enclosure ids
-    return mongo_client.Enclosures.distinct("id")
+    result = mongo_client.Enclosures.distinct("id")
+    if result is None:
+        raise Exception("No enclosures found")
+    return result
 
 
 @task(retries=3, retry_delay_seconds=10, timeout_seconds=15)
-async def extract_last_known_date(enclosure_id: str):
+def extract_last_known_date(enclosure_id: str):
     mongo_client = DB_MongoClient().connect()
     # Extract last known date
     last_known_date = mongo_client.NDVI.find_one(
@@ -31,42 +34,42 @@ async def extract_last_known_date(enclosure_id: str):
 
 @flow(name="ndvi_scheduled_etl")
 async def ndvi_scheduled_etl():
-    enclosures_ids = await extract_enclosures_ids()
+    enclosures_ids = extract_enclosures_ids.submit().result(raise_on_failure=False)
+    if isinstance(enclosures_ids, Exception):
+        return
     # Get the last week of data
     date_end = datetime.now().strftime("%d-%m-%Y")
+    ndvi_flows = []
     for enclosure_id in enclosures_ids:
-        try:
-            last_known_date = await extract_last_known_date(enclosure_id)
-            if last_known_date is None:
-                continue
-            # Run the deployment in the background
-            await run_deployment("ndvi_etl/event-driven", parameters={
-                "enclosure_id": enclosure_id, "date_init": last_known_date, "date_end": date_end})
-        except Exception as e:
-            logger = get_run_logger()
-            logger.error(
-                f"Error running ndvi_etl for enclosure_id: {enclosure_id} - {e}")
-            await notify_exc_by_email(str(e))
+        last_known_date = extract_last_known_date.submit(
+            enclosure_id).result(raise_on_failure=False)
+        if isinstance(last_known_date, Exception):
             continue
+        ndvi_flows.append(run_deployment("ndvi_etl/event-driven", parameters={
+            "enclosure_id": enclosure_id, "date_init": last_known_date, "date_end": date_end}))
+    
+    await asyncio.gather(*ndvi_flows)
 
 # ------------------ TEST ------------------
 
 # Test and debug the flow locally
 
 
-async def test_ndvi_scheduled_etl():
-    enclosure_ids = await extract_enclosures_ids.fn()
+def test_ndvi_scheduled_etl():
+    enclosure_ids = extract_enclosures_ids.fn()
     # Get the last week of data
     date_end = datetime.now().strftime("%d-%m-%Y")
     for enclosure_id in enclosure_ids:
         try:
-            last_known_date = await extract_last_known_date.fn(enclosure_id)
+            last_known_date = extract_last_known_date.fn(enclosure_id)
             if last_known_date is None:
                 continue
-            await test_ndvi_etl(enclosure_id, last_known_date, date_end)
+            test_ndvi_etl(enclosure_id, last_known_date, date_end)
         except Exception as e:
             print(str(e))
             continue
 
+
 if __name__ == "__main__":
-    asyncio.run(test_ndvi_scheduled_etl())
+    # test_ndvi_scheduled_etl()
+    asyncio.run(ndvi_scheduled_etl())

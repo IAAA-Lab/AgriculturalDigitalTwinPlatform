@@ -29,30 +29,6 @@ def extract(file_name: str) -> dict:
 
 
 @task
-def clean(df: pd.DataFrame):
-    # Change column names
-    try:
-        df.columns = ["harvestYear", "harvestInitDate", "phytosanitaryId", "phytosanitaryName", "phytosanitaryFormula", "plagueTreatmentEffectsId", "plagueEffects", "plagueTreatmentWeedsId", "secUserName", "secUserNIF", "secUserId", "parcelProvinceId", "parcelMunicipalityId",
-                      "parcelPolygonId", "parcelId", "parcelEnclosureId", "parcelGeographicSpot", "parcelAggregatedId", "parcelZoneId", "parcelHarvestPACCode", "parcelHavestPACCropTree", "broth", "doseKind", "doseUnit", "treatedArea", "phytosanitaryQuantityMovement", "safePeriodMovement", "doseMovement", "parcelArea", "parcelAreaSIGPAC", "parcelVulnerableArea", "parcelSIGPACCode"]
-    except Exception as e:
-        # Finish flow with error
-        raise ValueError("Error changing column names: ", e)
-    # Trim spaces and tabs to all object columns
-    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-    # Convert NULL, NP, NaN, etc. to None
-    df = df.replace(
-        {pd.NA: None, "NP": None, "NaN": None, "": None, "NULL": None})
-    # Hide sensitive data
-    df = df.drop(columns=["secUserNIF"])
-    # NOTE: Thanks to Jupyter Notebook, I found out that some number columns are being read as objects
-    # Convert strings to uppercase
-    df["secUserName"] = df["secUserName"].str.upper()
-    # Get data year
-    data_year = df['harvestYear'].iloc[:1].values[0]
-    return df, data_year
-
-
-@task
 def validate(df: pd.DataFrame) -> pd.DataFrame:
     # Define schema
     schema = pa.DataFrameSchema({
@@ -96,6 +72,26 @@ def validate(df: pd.DataFrame) -> pd.DataFrame:
         logger = get_run_logger()
         logger.error("Schema validation error: ", e.failure_cases)
         return None
+
+
+@task
+def clean(df: pd.DataFrame):
+    # Change column names
+    df.rename(columns={"MovimientoCosecha": "harvestYear", "MovimientoFechaDeInicio": "harvestInitDate", "Producto": "phytosanitaryId", "ProductoNombre": "phytosanitaryName", "Formulado": "phytosanitaryFormula", "TratamientosPlagaEfectosEnPlagasId": "plagueTreatmentEffectsId", "EfectosEnPlagas": "plagueEffects", "TratamientosPlagaMalasHierbasId": "plagueTreatmentWeedsId", "SecUserNombre": "secUserName", "SecUserNIF": "secUserNIF", "SecUserId": "secUserId", "ParcelaProvinciaId": "parcelProvinceId", "ParcelaMunicipioId": "parcelMunicipalityId", "ParcelaPoligono": "parcelPolygonId", "Parcela": "parcelId", "ParcelaRecinto": "parcelEnclosureId",
+              "ParcelaParaje": "parcelGeographicSpot", "ParcelaAgregado": "parcelAggregatedId", "ParcelaZona": "parcelZoneId", "ParcelaCosechaCodigoPAC": "parcelHarvestPACCode", "ParcelaCosechaCultivoPAC": "parcelHavestPACCropTree", "Caldo": "broth", "TipoDeDosisId": "doseKind", "TipoDeDosisDetalle": "doseUnit", "MovimientoParcelaSuperficieTratada": "treatedArea", "Cantidad": "phytosanitaryQuantityMovement", "MovimientoPlazoDeSeguridad": "safePeriodMovement", "MovimientoDosis": "doseMovement", "ParcelaSuperficieCultivo": "parcelArea", "ParcelaSuperficieSIGPAC": "parcelAreaSIGPAC", "ParcelaZonaVulnerable": "parcelVulnerableArea", "UsoDeParcelasId": "parcelSIGPACCode"}, inplace=True)
+    # Trim spaces and tabs to all object columns
+    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+    # Convert NULL, NP, NaN, etc. to None
+    df = df.replace(
+        {pd.NA: None, "NP": None, "NaN": None, "": None, "NULL": None})
+    # Hide sensitive data
+    df = df.drop(columns=["secUserNIF"])
+    # NOTE: Thanks to Jupyter Notebook, I found out that some number columns are being read as objects
+    # Convert strings to uppercase
+    df["secUserName"] = df["secUserName"].str.upper()
+    # Get data year
+    data_year = df['harvestYear'].iloc[:1].values[0]
+    return df, data_year
 
 
 @task

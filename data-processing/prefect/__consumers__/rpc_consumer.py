@@ -53,18 +53,6 @@ async def main_rpc_consumer(loop, config):
                                 except Exception as e:
                                     print(str(e))
                                     error_message = "Error al obtener el clima pronosticado"
-                            # case "historical_weather":
-                            #     try:
-                            #         payload = json.loads(body)['payload']
-                            #         idema = payload['idema']
-                            #         startDate = payload['startDate']
-                            #         endDate = payload['endDate']
-                            #         payload = historical_weather(
-                            #             idema, startDate, endDate)
-                            #     except Exception as e:
-                            #         print(str(e))
-                            #         error_message = "Error al obtener el clima historico"
-
                             case _:
                                 error_message = "Unknown event type"
 

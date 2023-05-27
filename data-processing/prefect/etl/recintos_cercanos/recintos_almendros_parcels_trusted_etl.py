@@ -31,37 +31,6 @@ def extract(file_name: str) -> dict:
 
 
 @task
-def clean(df: pd.DataFrame):
-    # Remove some columns
-    if "ProductorNIF" in df.columns:
-        df = df.drop(columns=['ProductorNIF', 'Marcoplantacionh',
-                              'Marcoplantacionv', 'Asesoramiento'])
-    else:
-        df = df.drop(columns=['Marcoplantacionh',
-                     'Marcoplantacionv', 'Asesoramiento'])
-    # Change column names
-    try:
-        df.columns = ["harvestYear", "parcelProvinceId", "parcelMunicipalityId", "parcelPolygonId", "parcelId", "parcelEnclosureId", "parcelGeographicSpot", "parcelAggregatedId", "parcelZoneId", "orderPAC", "subOrderPAC", "areaSIGPAC", "area", "cropId",
-                      "parcelVarietyId", "irrigationKind", "tenureRegimeId", "plantationYear", "numberOfTrees", "plantationDensity", "ATRIA_ADV_ASV", "parcelVulnerableArea", "specificZones", "parcelUse", "slope", "UHC", "UHCDescription", "ZepaZone", "SIEZone"]
-    except Exception as e:
-        raise ValueError("Error changing column names: ", e)
-    # Trim spaces and tabs to all object columns
-    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-    # Convert NULL, NP, NaN, etc. to None
-    df = df.replace(
-        {pd.NA: None, "NP": None, "NaN": None, "": None, "NULL": None})
-    # Remove rows with empty parcelUse
-    df = df[df["parcelUse"].notna()]
-    # Convert 'N' and 'S' to True and False
-    columns = ["specificZones", "parcelVulnerableArea", "ZepaZone", "SIEZone"]
-    for column in columns:
-        df[column] = df[column].map(lambda x: True if x == "S" else False)
-    # Get data year
-    data_year = df['harvestYear'].iloc[:1].values[0]
-    return df, data_year
-
-
-@task
 def validate(df: pd.DataFrame) -> pd.DataFrame:
     logger = get_run_logger()
     # Define schema
@@ -105,6 +74,39 @@ def validate(df: pd.DataFrame) -> pd.DataFrame:
     except pa.errors.SchemaError as e:
         logger.error("Schema validation error: ", e.failure_cases)
         return None
+
+
+@task
+def clean(df: pd.DataFrame):
+    # Remove some columns
+    if "ProductorNIF" in df.columns:
+        df = df.drop(columns=['ProductorNIF', 'Marcoplantacionh',
+                              'Marcoplantacionv', 'Asesoramiento'])
+    else:
+        df = df.drop(columns=['Marcoplantacionh',
+                     'Marcoplantacionv', 'Asesoramiento'])
+    # Change column names
+    df.rename(columns={"Cosecha": "harvestYear", "Provincia Id": "parcelProvinceId", "Municipio Id": "parcelMunicipalityId", "Poligono": "parcelPolygonId", "Parcela": "parcelId", "Recinto": "parcelEnclosureId", "Paraje": "parcelGeographicSpot", "Agregado": "parcelAggregatedId", "Zona": "parcelZoneId", "OrdenPAC": "orderPAC", "SubOrdenPac": "subOrderPAC", "SuperficieSIGPAC": "areaSIGPAC", "SuperficieCultivo": "area", "Cultivo Id": "cropId", "ParcelaVariedad Id": "parcelVarietyId",
+              "SistemaDeRiego": "irrigationKind", "RegimenTenenciaId": "tenureRegimeId", "AñoPlantacion": "plantationYear", "Nº Arboles": "numberOfTrees", "Densidaddesiembra": "plantationDensity", "ATRIA / ADV / ASV": "ATRIA_ADV_ASV", "ZonaVulnerable": "parcelVulnerableArea", "ZonaEspecifica": "specificZones", "UsoParcela": "parcelUse", "Pendiente %": "slope", "UHC": "UHC", "Descripción UHC": "UHCDescription", "Zona Zepa": "ZepaZone", "Zona SIE": "SIEZone"}, inplace=True)
+    # Remove rows with empty parcelProvinceId, parcelMunicipalityId, parcelPolygonId, parcelId, parcelEnclosureId, parcelZoneId
+    rows_to_drop = ["parcelProvinceId", "parcelMunicipalityId",
+                    "parcelPolygonId", "parcelId", "parcelEnclosureId", "parcelZoneId"]
+    for row in rows_to_drop:
+        df = df[df[row].notna()]
+    # Trim spaces and tabs to all object columns
+    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+    # Convert NULL, NP, NaN, etc. to None
+    df = df.replace(
+        {pd.NA: None, "NP": None, "NaN": None, "": None, "NULL": None})
+    # Remove rows with empty parcelUse
+    df = df[df["parcelUse"].notna()]
+    # Convert 'N' and 'S' to True and False
+    columns = ["specificZones", "parcelVulnerableArea", "ZepaZone", "SIEZone"]
+    for column in columns:
+        df[column] = df[column].map(lambda x: True if x == "S" else False)
+    # Get data year
+    data_year = df['harvestYear'].iloc[:1].values[0]
+    return df, data_year
 
 
 @task
