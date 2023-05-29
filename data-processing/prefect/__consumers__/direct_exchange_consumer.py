@@ -16,30 +16,39 @@ async def process_message(message: AbstractIncomingMessage) -> None:
         data_lake_zone = data['Records'][0]['s3']['bucket']['name']
         file_name = data['Records'][0]['s3']['object']['key'].replace(
             '%2F', '/')
-        metadata_type = data['Records'][0]['s3']['object']['userMetadata']['X-Amz-Meta-Type']
+        try:
+            metadata_type = data['Records'][0]['s3']['object']['userMetadata']['X-Amz-Meta-Type']
+        except KeyError:
+            asyncio.create_task(run_deployment(
+                name="validate_raw_data_etl/event-driven", parameters={"file_name": file_name}))
+            return
         match data_lake_zone:
             case Constants.STORAGE_LANDING_ZONE.value:
                 match metadata_type:
-                    case Constants.LANDING_ZONE_METADATA_PARCELS_AND_TREATMENTS.value:
+                    case Constants.METADATA_PARCELS_AND_TREATMENTS.value:
                         asyncio.create_task(run_deployment(
                             name="recintos_almendros_parcels_trusted_etl/event-driven", parameters={"file_name": file_name}))
                         asyncio.create_task(run_deployment(
                             name="recintos_almendros_treatments_trusted_etl/event-driven", parameters={"file_name": file_name}))
+                    case Constants.METADATA_ACTIVITIES.value:
+                        asyncio.create_task(run_deployment(
+                            name="activities_trusted_etl/event-driven", parameters={"file_name": file_name}))
                     case _:
-                        raise Exception(
-                            f'Metadata type not found: {metadata_type}')
+                        print(f'Metadata type not found: {metadata_type}')
 
             case Constants.STORAGE_TRUSTED_ZONE.value:
                 match metadata_type:
-                    case Constants.TRUSTED_ZONE_METADATA_PARCELS_AND_TREATMENTS_TREATMENTS.value:
+                    case Constants.METADATA_PARCELS_AND_TREATMENTS_TREATMENTS.value:
                         asyncio.create_task(run_deployment(name="recintos_almendros_treatments_dt_etl/event-driven",
                                                            parameters={"file_name": file_name}))
-                    case Constants.TRUSTED_ZONE_METADATA_PARCELS_AND_TREATMENTS_PARCELS.value:
+                    case Constants.METADATA_PARCELS_AND_TREATMENTS_PARCELS.value:
                         asyncio.create_task(run_deployment(name="recintos_almendros_parcels_dt_etl/event-driven",
                                                            parameters={"file_name": file_name}))
+                    case Constants.METADATA_ACTIVITIES.value:
+                        asyncio.create_task(run_deployment(
+                            name="activities_dt_etl/event-driven", parameters={"file_name": file_name}))
                     case _:
-                        raise Exception(
-                            f'Metadata type not found: {metadata_type}')
+                        print(f'Metadata type not found: {metadata_type}')
 
             case Constants.STORAGE_REFINED_ZONE.value:
                 # TODO: to implement

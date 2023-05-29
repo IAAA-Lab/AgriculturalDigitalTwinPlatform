@@ -1,4 +1,6 @@
 {
+  "activities_dt_etl": "etl/activities/activities_dt_etl.py:activities_dt_etl",
+  "activities_trusted_etl": "etl/activities/activities_trusted_etl.py:activities_trusted_etl",
   "cultivos_identificadores_dt_etl": "etl/cultivos_identificadores/cultivos_identificadores_dt_etl.py:cultivos_identificadores_dt_etl",
   "historical_weather_dt_etl": "etl/weather/historical_weather_etl.py:historical_weather_dt_etl",
   "historical_weather_scheduled_etl": "etl/weather/historical_weather_etl.scheduled.py:historical_weather_scheduled_etl",
@@ -7,5 +9,6 @@
   "recintos_almendros_parcels_dt_etl": "etl/recintos_cercanos/recintos_almendros_parcels_dt_etl.py:recintos_almendros_parcels_dt_etl",
   "recintos_almendros_parcels_trusted_etl": "etl/recintos_cercanos/recintos_almendros_parcels_trusted_etl.py:recintos_almendros_parcels_trusted_etl",
   "recintos_almendros_treatments_dt_etl": "etl/recintos_cercanos/recintos_almendros_treatments_dt_etl.py:recintos_almendros_treatments_dt_etl",
-  "recintos_almendros_treatments_trusted_etl": "etl/recintos_cercanos/recintos_almendros_treatments_trusted_etl.py:recintos_almendros_treatments_trusted_etl"
+  "recintos_almendros_treatments_trusted_etl": "etl/recintos_cercanos/recintos_almendros_treatments_trusted_etl.py:recintos_almendros_treatments_trusted_etl",
+  "validate_raw_data_etl": "etl/__validation__/validate_raw_data_etl.py:validate_raw_data_etl"
 }

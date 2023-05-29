@@ -5,6 +5,7 @@ import pandas as pd
 from prefect import flow, get_run_logger, task
 from utils.functions import DB_MinioClient
 from utils.constants import Constants
+from etl.__validation__.schemas import recintos_almendros_tratamientos_schema
 
 BUCKET_FROM_NAME = Constants.STORAGE_LANDING_ZONE.value
 BUCKET_TO_NAME = Constants.STORAGE_TRUSTED_ZONE.value
@@ -21,57 +22,13 @@ def extract(file_name: str) -> dict:
                        sheet_name="Tratamientos", na_values=[''])
     return {
         "treatments": df,
-        "name": re.split(r"\.", file_name)[0],
-        "metadata": {
-            "type": stat.metadata["x-amz-meta-type"]
-        }
+        "name": re.split(r"\.", file_name)[0]
     }
 
 
 @task
-def validate(df: pd.DataFrame) -> pd.DataFrame:
-    # Define schema
-    schema = pa.DataFrameSchema({
-        "MovimientoCosecha": pa.Column(pa.Int),
-        "MovimientoFechaDeInicio": pa.Column(pa.DateTime),
-        "Producto": pa.Column(pa.String, nullable=True),
-        "ProductoNombre": pa.Column(pa.String),
-        "Formulado": pa.Column(pa.String, nullable=True),
-        "TratamientosPlagaEfectosEnPlagasId": pa.Column(pa.String, nullable=True),
-        "EfectosEnPlagas": pa.Column(pa.String),
-        "TratamientosPlagaMalasHierbasId": pa.Column(pa.String, nullable=True),
-        "SecUserNombre": pa.Column(pa.String),
-        "SecUserNIF": pa.Column(pa.String, nullable=True),
-        "SecUserId": pa.Column(pa.String),
-        "ParcelaProvinciaId": pa.Column(pa.String),
-        "ParcelaMunicipioId": pa.Column(pa.String),
-        "ParcelaPoligono": pa.Column(pa.String),
-        "Parcela": pa.Column(pa.String),
-        "ParcelaRecinto": pa.Column(pa.String),
-        "ParcelaParaje": pa.Column(pa.String, nullable=True),
-        "ParcelaAgregado": pa.Column(pa.String),
-        "ParcelaZona": pa.Column(pa.String),
-        "ParcelaCosechaCodigoPAC": pa.Column(pa.String),
-        "ParcelaCosechaCultivoPAC": pa.Column(pa.String),
-        "Caldo": pa.Column(pa.String, nullable=True),
-        "TipoDeDosisId": pa.Column(pa.String, nullable=True),
-        "TipoDeDosisDetalle": pa.Column(pa.String),
-        "MovimientoParcelaSuperficieTratada": pa.Column(pa.Float32),
-        "Cantidad": pa.Column(pa.Float32),
-        "MovimientoPlazoDeSeguridad": pa.Column(pa.String, nullable=True),
-        "MovimientoDosis": pa.Column(pa.Float32),
-        "ParcelaSuperficieCultivo": pa.Column(pa.Float32),
-        "ParcelaSuperficieSIGPAC": pa.Column(pa.Float32, nullable=True),
-        "ParcelaZonaVulnerable": pa.Column(pa.String, nullable=True),
-        "UsoDeParcelasId": pa.Column(pa.String, nullable=True),
-    }, coerce=True, unique_column_names=True)
-    # Validate schema
-    try:
-        return schema.validate(df)
-    except pa.errors.SchemaError as e:
-        logger = get_run_logger()
-        logger.error("Schema validation error: ", e.failure_cases)
-        return None
+def validate(df: pd.DataFrame):
+    return recintos_almendros_tratamientos_schema.validate(df)
 
 
 @task
@@ -125,50 +82,18 @@ def load(processed_data: bytes, data_year: int, file_name: str, metadata: str):
     minio_client.remove_object(BUCKET_FROM_NAME, f"invalid/{file_name}.xlsx")
 
 
-@task
-def load_invalid(raw_data: pd.DataFrame, metadata: str, file_name: str):
-    # Connect to MinIO
-    minio_client = DB_MinioClient().connect()
-    # Create bucket if it doesn't exist
-    if not minio_client.bucket_exists(BUCKET_FROM_NAME):
-        minio_client.make_bucket(BUCKET_FROM_NAME)
-    # Convert processed data to bytes
-    file_bytes = io.BytesIO()
-    raw_data.to_excel(file_bytes, index=False)
-    file_bytes.seek(0)
-    # Store processed data with metadata in MinIO
-    minio_client.put_object(
-        BUCKET_FROM_NAME,
-        f"invalid/{file_name}.xlsx",
-        file_bytes,
-        length=file_bytes.getbuffer().nbytes,
-        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        metadata={
-            "state": "raw_invalid",
-            "type": metadata,
-        }
-    )
-    # Delete file from MinIO
-    minio_client.remove_object(BUCKET_FROM_NAME, f"{file_name}.xlsx")
-    raise ValueError("Invalid data")
-
-
 @flow(name="recintos_almendros_treatments_trusted_etl")
 def recintos_almendros_treatments_trusted_etl(file_name):
     # Get data from MinIO
     raw_data = extract(file_name)
     treatments = raw_data["treatments"]
-    metadata_type = raw_data["metadata"]["type"]
     name = raw_data["name"]
     # Validate data
-    validated_data = validate(treatments)
-    if validated_data is None:
-        load_invalid(treatments, f"{metadata_type}_treatments", name)
-        return
+    data = validate(treatments)
     # Clean data
-    clean_data, data_year = clean(validated_data)
+    clean_data, data_year = clean(data)
     # Transform data
     processed_data = transform(clean_data)
     # Load data
     load(processed_data, data_year,
-         f"{name}_TRATAMIENTOS_{data_year}.xlsx", Constants.TRUSTED_ZONE_METADATA_PARCELS_AND_TREATMENTS_TREATMENTS.value)
+         f"{name}_TRATAMIENTOS_{data_year}.xlsx", Constants.METADATA_PARCELS_AND_TREATMENTS_TREATMENTS.value)

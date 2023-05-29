@@ -36,7 +36,7 @@ def load(crops: list):
         db.Enclosures.update_many(
             {"properties.crop.id": str(crop["id"])}, {"$set": {
                 "properties.crop": crop
-            }}, upsert=True)
+            }})
 
 
 @flow(name="cultivos_identificadores_dt_etl")

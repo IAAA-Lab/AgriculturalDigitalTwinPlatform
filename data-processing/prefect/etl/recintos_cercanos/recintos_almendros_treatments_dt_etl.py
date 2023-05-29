@@ -24,7 +24,7 @@ def extract(file_name: str):
 @task(name="transform_recintos_almendros_tratamientos_dt_etl")
 def transform(df: pd.DataFrame):
     # Convert to Digital Twin domain
-    treatments = []
+    activities = []
     for row in df.itertuples():
         enclosureId = f"{row.parcelProvinceId}-{row.parcelMunicipalityId}-{row.parcelAggregatedId}-{row.parcelZoneId}-{row.parcelPolygonId}-{row.parcelId}-{row.parcelEnclosureId}"
         # Get phytosanitaries
@@ -58,26 +58,29 @@ def transform(df: pd.DataFrame):
             "phytosanitary": phytosanitary,
         }
 
-        treatments.append(treatment)
-    return treatments
+        activity = {
+            "enclosureId": enclosureId,
+            "date": pd.to_datetime(row.harvestInitDate),
+            "activity": "TRATAMIENTO FITOSANITARIO",
+            "properties": treatment,
+        }
+
+        activities.append(activity)
+    return activities
 
 
 @task(name="load_recintos_almendros_tratamientos_dt_etl")
-def load(treatments):
+def load(activities):
     # Connect to MongoDB
     db = DB_MongoClient().connect()
-
-    for treatment in treatments:
-        db.Treatments.update_one({
-            "enclosureId": treatment["enclosureId"], "date": treatment["date"], "phytosanitary.id": treatment["phytosanitary"]["id"], "plague.id": treatment["plague"]["id"]
-        }, {"$set": treatment}, upsert=True)
+    db.Activities.insert_many(activities)
 
 
 @flow(name="recintos_almendros_treatments_dt_etl")
 def recintos_almendros_treatments_dt_etl(file_name: str):
     df = extract(file_name)
-    treatments = transform(df)
-    load(treatments)
+    activities = transform(df)
+    load(activities)
 
 
 if __name__ == "__main__":

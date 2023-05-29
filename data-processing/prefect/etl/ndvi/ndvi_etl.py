@@ -8,7 +8,8 @@ from utils.functions import DB_MongoClient
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-@task(retries=3, retry_delay_seconds=10, timeout_seconds=60, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=7), refresh_cache=False)
+
+@task(retries=1, retry_delay_seconds=10, timeout_seconds=60, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=7), refresh_cache=False)
 def extract_ndvi(enclosure_id: str, date_init: str, date_end: str):
 
     AGROSLAB_TELEDETECTION_URL = os.environ.get("AGROSLAB_TELEDETECTION_URL")

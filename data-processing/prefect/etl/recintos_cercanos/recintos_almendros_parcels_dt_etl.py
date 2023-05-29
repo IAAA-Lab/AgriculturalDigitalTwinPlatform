@@ -7,7 +7,7 @@ import os
 from etl.cultivos_identificadores.cultivos_identificadores_dt_etl import cultivos_identificadores_dt_etl
 import requests as request
 import pandas as pd
-from prefect import flow, task, get_run_logger
+from prefect import flow, task
 from prefect.tasks import task_input_hash
 from utils.functions import DB_MinioClient, DB_MongoClient
 from utils.constants import Constants
@@ -18,8 +18,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 BUCKET_FROM_NAME = Constants.STORAGE_TRUSTED_ZONE.value
-NDVI_EXTRACT_FIRST_DATE = "01-01-2020"
-HISTORIC_WEATHER_EXTRACT_FIRST_DATE = "01-01-2018"
 CURRENT_DATE_FORMATTED = datetime.datetime.now().strftime("%d-%m-%Y")
 
 
@@ -37,7 +35,7 @@ def extract_enclosures_properties(file_name: str):
     }
 
 
-@task(retries=3, retry_delay_seconds=10, timeout_seconds=15, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=10), refresh_cache=False)
+@task(retries=2, retry_delay_seconds=3, timeout_seconds=15, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=10), refresh_cache=False)
 async def extract_geographic_info(enclosureIds: list[str], year: int):
 
     AUTH_TOKEN = os.environ.get("AGROSLAB_AUTH_TOKEN")
@@ -62,7 +60,7 @@ async def extract_geographic_info(enclosureIds: list[str], year: int):
     return response.json()
 
 
-@task(retries=3, retry_delay_seconds=10, timeout_seconds=15, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=10), refresh_cache=False)
+@task(retries=2, retry_delay_seconds=3, timeout_seconds=15, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=10), refresh_cache=False)
 async def extract_meteorological_station(enclosureId: str):
 
     AUTH_TOKEN = os.environ.get("AGROSLAB_AUTH_TOKEN")
@@ -71,7 +69,7 @@ async def extract_meteorological_station(enclosureId: str):
     body = {
         "operation": "aemetestacionesdwithin",
         "id": enclosureId,
-        "distanceinkilometers": 50,
+        "distanceinkilometers": 100,
     }
 
     headers = {
@@ -166,31 +164,21 @@ def load_enclosures(enclosure: dict):
 @flow(name="recintos_almendros_parcels_dt_etl")
 async def recintos_almendros_parcels_dt_etl(file_name: str):
     # Extract
-    object = extract_enclosures_properties.submit(
-        file_name).result(raise_on_failure=False)
+    object = extract_enclosures_properties(file_name)
     dfParcels = object["parcels"]
     year = object["year"]
-    enclosuresProperties = transform_parcelas.submit(
-        dfParcels).result(raise_on_failure=False)
-    # Run the ndvi etl flow for each enclosure asynchronously
-    ndvi_flows = []
-    for enclosureProperties in enclosuresProperties:
-        enclosureId = enclosureProperties["id"]
-        ndvi_flows.append(run_deployment("ndvi_etl/event-driven", parameters={
-            "enclosure_id": enclosureId, "date_init": NDVI_EXTRACT_FIRST_DATE, "date_end": CURRENT_DATE_FORMATTED}))
-    future_ndvi_flows = asyncio.gather(*ndvi_flows)
+    enclosuresProperties = transform_parcelas(dfParcels)
     # Run the enclosures etl flow for each enclosure asynchronously
-    unique_meteoStationIds = []
     for enclosureProperties in enclosuresProperties:
         enclosureId = enclosureProperties["id"]
         # Extract
         results = await asyncio.gather(*[extract_geographic_info([enclosureId], year), extract_meteorological_station(enclosureId)], return_exceptions=True)
         geographic_data_raw = results[0]
         if isinstance(geographic_data_raw, Exception):
-            geographic_data_raw = None
+            continue
         meteo_data_raw = results[1]
         if isinstance(meteo_data_raw, Exception):
-            meteo_data_raw = None
+            continue
         # Transform
         joined_enclosure = join_information.submit(
             enclosureProperties, geographic_data_raw, meteo_data_raw, year).result(raise_on_failure=False)
@@ -198,14 +186,16 @@ async def recintos_almendros_parcels_dt_etl(file_name: str):
             continue
         # Load
         load_enclosures.submit(joined_enclosure).result(raise_on_failure=False)
-        if meteo_data_raw is not None:
-            unique_meteoStationIds.append(meteo_data_raw["id"])
 
     # Asynchronously extract the rest of the information
-    unique_meteoStationIds = list(set(unique_meteoStationIds))
-    await run_deployment(name="cultivos_identificadores_dt_etl/event-driven")
-    for meteoStationId in unique_meteoStationIds:
-        await run_deployment(name="historical_weather_dt_etl/event-driven", parameters={
-            "meteo_station_id": meteoStationId, "date_init": HISTORIC_WEATHER_EXTRACT_FIRST_DATE, "date_end": CURRENT_DATE_FORMATTED})
-    # Wait for the ndvi etl flows to finish
-    await future_ndvi_flows
+    await run_deployment(
+        name="cultivos_identificadores_dt_etl/event-driven")
+    await run_deployment(
+        name="historical_weather_scheduled_etl/scheduled")
+    await run_deployment(
+        name="ndvi_scheduled_etl/scheduled")
+
+
+if __name__ == "__main__":
+    asyncio.run(recintos_almendros_parcels_dt_etl(
+        file_name="recintos_almendros_parcels_dt_etl.csv"))
