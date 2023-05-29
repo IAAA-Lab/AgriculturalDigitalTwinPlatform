@@ -158,17 +158,17 @@ type ForecastWeather struct {
 
 type HistoricalWeather struct {
 	Idema        string    `json:"idema"`
-	Height       float32   `json:"height"`
+	Height       float64   `json:"height"`
 	Date         time.Time `json:"date"`
-	Prec         float32   `json:"prec"`
-	Tmin         float32   `json:"tmin"`
-	Tmax         float32   `json:"tmax"`
-	Tmed         float32   `json:"tmed"`
+	Prec         float64   `json:"prec"`
+	Tmin         float64   `json:"tmin"`
+	Tmax         float64   `json:"tmax"`
+	Tmed         float64   `json:"tmed"`
 	TminTime     string    `json:"tminTime"`
 	TmaxTime     string    `json:"tmaxTime"`
-	WindSpeed    float32   `json:"windSpeed"`
-	WindDir      float32   `json:"windDir"`
-	WindGust     float32   `json:"windGust"`
+	WindSpeed    float64   `json:"windSpeed"`
+	WindDir      float64   `json:"windDir"`
+	WindGust     float64   `json:"windGust"`
 	WindGustTime string    `json:"windGustTime"`
 }
 

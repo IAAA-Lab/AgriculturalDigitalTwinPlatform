@@ -42,25 +42,25 @@ def extract_historical_weather_data(meteoStationId: str, dateInit: str, dateEnd:
 def transform_historic_weather_data(weather_data: dict):
     weather_data_list = []
     for weather_data_item in weather_data:
-            historical_weather_dto = HistoricalWeatherDTO.from_dict(
-                weather_data_item)
-            weather_data_list.append(
-                {
-                    "date": pd.to_datetime(historical_weather_dto.fecha).strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                    "idema": historical_weather_dto.indicativo,
-                    "height": historical_weather_dto.altitud,
-                    "tmed": historical_weather_dto.tmed,
-                    "prec": historical_weather_dto.prec,
-                    "tmin": historical_weather_dto.tmin,
-                    "tminTime": historical_weather_dto.horatmin,
-                    "tmax": historical_weather_dto.tmax,
-                    "tmaxTime": historical_weather_dto.horatmax,
-                    "windDir": historical_weather_dto.dir,
-                    "windSpeed": historical_weather_dto.velmedia,
-                    "windGust": historical_weather_dto.racha,
-                    "windGustTime": historical_weather_dto.horaracha,
-                }
-            )
+        historical_weather_dto = HistoricalWeatherDTO.from_dict(
+            weather_data_item)
+        weather_data_list.append(
+            {
+                "date": pd.to_datetime(historical_weather_dto.fecha, format="%Y-%m-%d"),
+                "idema": str(historical_weather_dto.indicativo),
+                "height": float(historical_weather_dto.altitud),
+                "tmed": float(historical_weather_dto.tmed),
+                "prec": float(historical_weather_dto.prec),
+                "tmin": float(historical_weather_dto.tmin),
+                "tminTime": str(historical_weather_dto.horatmin),
+                "tmax": float(historical_weather_dto.tmax),
+                "tmaxTime": str(historical_weather_dto.horatmax),
+                "windDir": float(historical_weather_dto.dir),
+                "windSpeed": float(historical_weather_dto.velmedia),
+                "windGust": float(historical_weather_dto.racha),
+                "windGustTime": str(historical_weather_dto.horaracha),
+            }
+        )
     return weather_data_list
 
 
@@ -82,11 +82,16 @@ def historical_weather_dt_etl(meteo_station_id: str, date_init: str, date_end: s
         date_end_block = date_init + pd.DateOffset(years=3)
         if date_end_block > date_end:
             date_end_block = date_end
-        weather_data_raw = extract_historical_weather_data.submit(meteo_station_id, date_init.strftime("%d-%m-%Y"), date_end_block.strftime("%d-%m-%Y")).result(raise_on_failure=False)
-        if weather_data_raw is None:
-            return None
-        weather_data_processed = transform_historic_weather_data.submit(weather_data_raw).result(raise_on_failure=False)
-        load_weather_data.submit(weather_data_processed).result(raise_on_failure=False)
+        weather_data_raw = extract_historical_weather_data.submit(meteo_station_id, date_init.strftime(
+            "%d-%m-%Y"), date_end_block.strftime("%d-%m-%Y")).result(raise_on_failure=False)
+        if isinstance(weather_data_raw, Exception):
+            continue
+        weather_data_processed = transform_historic_weather_data.submit(
+            weather_data_raw).result(raise_on_failure=False)
+        if isinstance(weather_data_processed, Exception):
+            continue
+        load_weather_data.submit(weather_data_processed).result(
+            raise_on_failure=False)
         date_init = date_end_block
 
 # -------------- TEST -------------- #
@@ -100,12 +105,15 @@ def test_historical_weather_dt_etl(meteo_station_id: str, date_init: str, date_e
         date_end_block = date_init + pd.DateOffset(years=3)
         if date_end_block > date_end:
             date_end_block = date_end
-        weather_data_raw = extract_historical_weather_data.fn(meteo_station_id, date_init.strftime("%d-%m-%Y"), date_end_block.strftime("%d-%m-%Y"))
+        weather_data_raw = extract_historical_weather_data.fn(
+            meteo_station_id, date_init.strftime("%d-%m-%Y"), date_end_block.strftime("%d-%m-%Y"))
         if weather_data_raw is None:
             return None
-        weather_data_processed = transform_historic_weather_data.fn(weather_data_raw)
+        weather_data_processed = transform_historic_weather_data.fn(
+            weather_data_raw)
         load_weather_data.fn(weather_data_processed)
         date_init = date_end_block
+
 
 if __name__ == "__main__":
     meteo_station_id = "2539"

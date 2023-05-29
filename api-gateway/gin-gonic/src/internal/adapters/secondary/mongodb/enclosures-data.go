@@ -16,10 +16,10 @@ func (mc *mongodbConn) GetForecastWeather(enclosureId string) (domain.ForecastWe
 	return GetDocument[domain.ForecastWeather](mc, WEATHER_COLLECTION, filter, opts)
 }
 
-func (mc *mongodbConn) GetHistoricalWeather(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error) {
+func (mc *mongodbConn) GetHistoricalWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error) {
 	filter := bson.M{
-		"enclosureId": bson.M{"$eq": enclosureId},
-		"date":        bson.M{"$gte": startDate, "$lte": endDate},
+		"idema": bson.M{"$eq": idema},
+		"date":  bson.M{"$gte": startDate, "$lte": endDate},
 	}
 	opts := options.Find().SetSort(bson.M{"date": -1})
 	return GetDocuments[domain.HistoricalWeather](mc, WEATHER_COLLECTION, filter, opts)
