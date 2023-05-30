@@ -1,4 +1,5 @@
 import type {
+	Activity,
 	DailyWeather,
 	Enclosure,
 	Fertilizer,
@@ -6,9 +7,7 @@ import type {
 	HistoricalWeather,
 	NDVI,
 	Summary,
-	Treatment,
-	User,
-	UserParcels
+	Treatment
 } from '../Domain';
 
 interface IParcelsRepository {
@@ -23,7 +22,7 @@ interface IParcelsRepository {
 		endDate?: Date,
 		limit?: number
 	): Promise<NDVI[]>;
-	GetTreatments(enclosureId: string, startDate: Date, endDate: Date): Promise<Treatment[]>;
+	getActivities(enclosureId: string, startDate: Date, endDate: Date): Promise<Activity[]>;
 	getFertilizers(enclosureId: string, startDate: Date, endDate: Date): Promise<Fertilizer[]>;
 	getCropStats(enclosureId: string): Promise<any[]>;
 }

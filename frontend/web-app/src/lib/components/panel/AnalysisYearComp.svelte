@@ -8,8 +8,11 @@
 	let NUMBER_OF_CHARTS = 4;
 	// string dates list where dates are date - limit
 	let startDates = Array.from({ length: NUMBER_OF_CHARTS }, (_, i) => {
-		const date = new Date();
-		date.setDate(date.getDate() - (i + 1) * limit);
+		// date = beginning of the year
+		let date = new Date();
+		date.setMonth(0);
+		date.setDate(1);
+		date.setDate(date.getDate() - i * limit);
 		return date.toISOString().split('T')[0];
 	});
 </script>
@@ -31,12 +34,6 @@
 					</select>
 				</div>
 				<div class="input__wrapper">
-					<label for="date">Característica</label>
-					<select>
-						<option value="ndvi">NDVI</option>
-					</select>
-				</div>
-				<div class="input__wrapper">
 					<label for="date">Días para buscar</label>
 					<input type="number" placeholder="Días" bind:value={limit} min="0" max="365" />
 				</div>
@@ -52,11 +49,9 @@
 
 <style lang="scss">
 	.charts__wrapper {
-		// Two columns but it can be wrapped when the screen is too small
-		display: flex;
-		flex-wrap: wrap;
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
 		gap: 1rem;
-		overflow-x: scroll;
 	}
 
 	label {
@@ -90,13 +85,14 @@
 		gap: 1rem;
 	}
 
-	@include media('<small') {
-		.chart {
-			min-width: 100% !important;
-		}
+	@include media('<medium') {
 		.input__wrapper {
 			flex: 1;
 			align-items: flex-start;
+		}
+
+		.charts__wrapper {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>

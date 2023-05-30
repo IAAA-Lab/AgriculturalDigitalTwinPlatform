@@ -34,8 +34,6 @@ async def main_rpc_consumer(loop, config):
                         response = None
                         error_message = None
 
-                        print(" [.] %r" % message.body)
-
                         match event_type:
                             case 'daily_weather':
                                 try:
@@ -60,8 +58,6 @@ async def main_rpc_consumer(loop, config):
                             'errorMessage': error_message,
                             'payload': payload
                         }
-
-                        print(" [x] Response: %r" % response)
 
                         await exchange.publish(
                             aio_pika.Message(

@@ -2,14 +2,21 @@
 	import Chart from 'chart.js/auto';
 	import { onMount } from 'svelte';
 	import 'chartjs-adapter-date-fns';
+	import zoomPlugin from 'chartjs-plugin-zoom';
+
+	Chart.register(zoomPlugin);
 
 	export let data: any = null;
+	export const resetZoom = () => {
+		myChart.resetZoom();
+	};
 
 	let chartCanvas: any;
 	let myChart: any;
 
 	$: if (myChart) {
 		myChart.data = data?.data;
+		myChart.options = data?.options;
 		myChart.update();
 	}
 

@@ -39,19 +39,15 @@ func (srv *enclosuresService) GetNDVI(enclosureIds []string, startDate time.Time
 	return srv.persistence.GetNDVI(enclosureIds, startDate, endDate, limit)
 }
 
-func (srv *enclosuresService) GetFertilizers(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error) {
-	return srv.persistence.GetFertilizers(enclosureId, startDate, endDate)
-}
-
-func (srv *enclosuresService) GetTreatments(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Treatment, error) {
-	treatments, err := srv.persistence.GetTreatments(enclosureId, startDate, endDate)
+func (srv *enclosuresService) GetActivities(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Activity, error) {
+	activities, err := srv.persistence.GetActivities(enclosureId, startDate, endDate)
 	if err != nil {
 		return nil, err
 	}
-	sort.Slice(treatments, func(i, j int) bool {
-		return treatments[i].Date.Before(treatments[j].Date)
+	sort.Slice(activities, func(i, j int) bool {
+		return activities[i].Date.Before(activities[j].Date)
 	})
-	return treatments, nil
+	return activities, nil
 }
 
 func (srv *enclosuresService) GetFarmHolder(farmId domain.FarmHolderId) (domain.FarmHolder, error) {

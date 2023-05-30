@@ -89,6 +89,13 @@ type Treatment = {
 	};
 };
 
+type Activity = {
+	enclosureId: string;
+	date: Date;
+	activity: string;
+	properties: object;
+};
+
 type NDVI = {
 	enclosureId: string;
 	ndvi: {
@@ -243,7 +250,8 @@ export type {
 	ForecastWeather,
 	DailyWeather,
 	Prediction,
-	HistoricalWeather
+	HistoricalWeather,
+	Activity
 };
 
 export { Role };

@@ -90,31 +90,41 @@ table {
 	}
 }
 
-button,
-.button {
+button {
 	display: inline-flex;
+	border-radius: 7px;
+	outline: inherit;
+	letter-spacing: inherit;
+	text-align: center;
+	white-space: nowrap;
+	transition: background 0.15s ease;
+	padding: 0.4rem 1.25rem;
+	text-decoration: none !important;
+	cursor: pointer;
+}
+
+.button-primary {
 	@include font-size(button);
 	@include font-weight(button);
-	text-decoration: none !important;
 	color: color(button-light);
 	background-color: color-bg(button-light);
-	border-radius: 7px;
 	color: whitesmoke;
 	border: none;
-	padding: 0.4rem 1.5rem;
-	font: inherit;
-	cursor: pointer;
-	outline: inherit;
-	cursor: pointer;
-	justify-content: center;
-	text-align: center;
-	letter-spacing: inherit;
-	white-space: nowrap;
-	align-items: center;
 	background: color(primary);
-	transition: background 0.15s ease;
 }
 
 .button-sm {
 	padding: 0.2rem 1rem;
+}
+
+.button-xs {
+	padding: 0.15rem 0.2rem;
+}
+
+.button-secondary {
+	border: 2px solid color(secondary);
+	@include font-weight(button);
+	@include font-size(xxs);
+	color: color(button);
+	background: #ffffff;
 }

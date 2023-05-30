@@ -45,8 +45,6 @@ def transform(df: pd.DataFrame):
         }
 
         treatment = {
-            "enclosureId": enclosureId,
-            "date": pd.to_datetime(row.harvestInitDate),
             "broth": str(row.broth),
             "doseKind": row.doseKind,
             "doseUnit": row.doseUnit,

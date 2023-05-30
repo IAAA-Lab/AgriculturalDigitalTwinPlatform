@@ -7,7 +7,8 @@ import type {
 	UserParcels,
 	DailyWeather,
 	ForecastWeather,
-	NDVI
+	NDVI,
+	Activity
 } from '$lib/core/Domain';
 import { ServerError } from '$lib/core/Exceptions';
 import type { IParcelsRepository } from '$lib/core/ports/Repository';
@@ -65,9 +66,9 @@ class HttpParcelsRepository implements IParcelsRepository {
 				throw ServerError;
 			});
 	}
-	async GetTreatments(enclosureId: string, startDate: Date, endDate: Date): Promise<Treatment[]> {
+	async getActivities(enclosureId: string, startDate: Date, endDate: Date): Promise<Activity[]> {
 		return this.http
-			.get<Treatment[]>('treatments', {
+			.get<Activity[]>('activities', {
 				params: {
 					enclosureId,
 					startDate,

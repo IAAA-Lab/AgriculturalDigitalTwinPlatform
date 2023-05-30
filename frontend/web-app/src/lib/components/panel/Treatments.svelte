@@ -4,7 +4,7 @@
 	import Chart from '$lib/components/panel/Chart.svelte';
 	import PhytosTable from '$lib/components/panel/PhytosTable.svelte';
 	import { enclosuresService } from '$lib/config/config';
-	import type { Treatment } from '$lib/core/Domain';
+	import type { Activity, Treatment } from '$lib/core/Domain';
 	import { getColorList } from '$lib/core/functions';
 
 	export let enclosureId: string;
@@ -22,9 +22,17 @@
 
 	$: {
 		enclosuresService
-			.getTreatments(enclosureId, startDate, endDate)
-			.then((treatmentsList) => {
-				treatments = treatmentsList;
+			.getActivities(enclosureId, startDate, endDate)
+			.then((activitiesList) => {
+				// Filter activities by activity type = 'TRATAMIENTO FITOSANITARIO'
+				treatments = activitiesList
+					.filter((activity) => activity.activity === 'TRATAMIENTO FITOSANITARIO')
+					.map((activity) => {
+						return {
+							date: activity.date,
+							...activity.properties
+						};
+					}) as Treatment[];
 			})
 			.catch((error) => {
 				treatments = [];
@@ -46,37 +54,6 @@
 				<PhytosTable {treatments} />
 			</div>
 		</CardInner>
-		<div class="table__pie__chart__wrapper">
-			<!-- <CardInner class="chart__pie__wrapper">
-          <h4 slot="header" class="m-0">Eficacia</h4>
-          <div slot="body" class="chart__pie__body">
-            {@const selectedProductInfo = treatments.filter(
-              (phyto) => phyto.phytosanitary.name === selectedProduct
-            )}
-            {@const goodEfficacyCount = selectedProductInfo.filter(
-              (phyto) => phyto.efficacy === "Good"
-            ).length}
-            <div class="chart__pie">
-              <PieChart
-                data={[
-                  goodEfficacyCount,
-                  selectedProductInfo.length - goodEfficacyCount,
-                ]}
-                labels={["Buena", "Mala"]}
-                colors={["green", "red"]}
-              />
-            </div>
-            {@const uniqueProducts = [
-              ...new Set(treatments.map((phyto) => phyto.phytosanitary.name)),
-            ]}
-            <select bind:value={selectedProduct}>
-              {#each uniqueProducts as product}
-                <option value={product}>{product}</option>
-              {/each}
-            </select>
-          </div>
-        </CardInner> -->
-		</div>
 		<div class="chart__doughnut__line__wrapper">
 			<CardInner class="chart__doughnut__wrapper">
 				<h4 slot="header" class="m-0 mb-16">Dosis aplicada por producto</h4>

@@ -55,107 +55,36 @@ func (hdl *EnclosuresHTTPHandler) GetEnclosures(c *gin.Context) {
 
 // -----------------------------------------------------------------------
 
-type CropStatsIn struct {
+type ActivitiesIn struct {
 	EnclosureId string    `form:"enclosureId" binding:"required"`
 	StartDate   time.Time `form:"startDate" binding:"required"`
 	EndDate     time.Time `form:"endDate" binding:"required"`
 }
 
-// @Summary Get Crop Stats
-// @Description Get Crop Stats
+// @Summary Get Activities
+// @Description Get Activities
 // @Tags Enclosures
 // @Accept  json
 // @Produce  json
 // @Param enclosureId query string true "Enclosure Id"
-// @Param startDate query string true "Start Date"
-// @Param endDate query string true "End Date"
+// @Param date query string true "Date"
 // @Success 200 {object} []ports.Treatment
 // @Failure 400 {object} apperrors.Error
 // @Failure 500 {object} apperrors.Error
-// @Router /crops [get]
-func (hdl *EnclosuresHTTPHandler) GetCropStats(c *gin.Context) {
-	var cropStatsIn CropStatsIn
-	err := c.ShouldBind(&cropStatsIn)
+// @Router /activities [get]
+func (hdl *EnclosuresHTTPHandler) GetActivities(c *gin.Context) {
+	var activitiesIn ActivitiesIn
+	err := c.ShouldBind(&activitiesIn)
 	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
+		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error(), "valid_input": map[string]string{"enclosureId": "string, required", "date": "string, required"}})
 		return
 	}
-	cropStats, err := hdl.enclosuresService.GetTreatments(cropStatsIn.EnclosureId, cropStatsIn.StartDate, cropStatsIn.EndDate)
-	if err != nil {
-		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
-		return
-	}
-	c.JSON(200, cropStats)
-}
-
-// -----------------------------------------------------------------------
-
-type TreatmentsIn struct {
-	EnclosureId string    `form:"enclosureId" binding:"required"`
-	StartDate   time.Time `form:"startDate" binding:"required"`
-	EndDate     time.Time `form:"endDate" binding:"required"`
-}
-
-// @Summary Get Treatments
-// @Description Get Treatments
-// @Tags Enclosures
-// @Accept  json
-// @Produce  json
-// @Param enclosureId query string true "Enclosure Id"
-// @Param startDate query string true "Start Date"
-// @Param endDate query string true "End Date"
-// @Success 200 {object} []ports.Treatment
-// @Failure 400 {object} apperrors.Error
-// @Failure 500 {object} apperrors.Error
-// @Router /treatments [get]
-func (hdl *EnclosuresHTTPHandler) GetTreatments(c *gin.Context) {
-	var TreatmentsIn TreatmentsIn
-	err := c.ShouldBind(&TreatmentsIn)
-	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error(), "valid_input": map[string]string{"enclosureId": "string", "startDate": "time.Time", "endDate": "time.Time"}})
-		return
-	}
-	phytosanitaries, err := hdl.enclosuresService.GetTreatments(TreatmentsIn.EnclosureId, TreatmentsIn.StartDate, TreatmentsIn.EndDate)
+	activities, err := hdl.enclosuresService.GetActivities(activitiesIn.EnclosureId, activitiesIn.StartDate, activitiesIn.EndDate)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(200, phytosanitaries)
-}
-
-// -----------------------------------------------------------------------
-
-type FertilizersIn struct {
-	EnclosureId string    `form:"enclosureId" binding:"required"`
-	StartDate   time.Time `form:"startDate" binding:"required"`
-	EndDate     time.Time `form:"endDate" binding:"required"`
-}
-
-// @Summary Get Fertilizers
-// @Description Get Fertilizers
-// @Tags Enclosures
-// @Accept  json
-// @Produce  json
-// @Param enclosureId query string true "Enclosure Id"
-// @Param startDate query string true "Start Date"
-// @Param endDate query string true "End Date"
-// @Success 200 {object} []ports.Fertilizer
-// @Failure 400 {object} apperrors.Error
-// @Failure 500 {object} apperrors.Error
-// @Router /fertilizers [get]
-func (hdl *EnclosuresHTTPHandler) GetFertilizers(c *gin.Context) {
-	var fertilizersIn FertilizersIn
-	err := c.ShouldBind(&fertilizersIn)
-	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
-		return
-	}
-	fertilizers, err := hdl.enclosuresService.GetFertilizers(fertilizersIn.EnclosureId, fertilizersIn.StartDate, fertilizersIn.EndDate)
-	if err != nil {
-		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
-		return
-	}
-	c.JSON(200, fertilizers)
+	c.JSON(200, activities)
 }
 
 // -----------------------------------------------------------------------

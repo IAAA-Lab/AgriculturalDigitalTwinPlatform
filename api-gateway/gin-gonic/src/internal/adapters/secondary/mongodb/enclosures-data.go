@@ -83,20 +83,10 @@ func (mc *mongodbConn) GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder,
 	return GetDocument[domain.FarmHolder](mc, FARM_COLLECTION, filter, nil)
 }
 
-func (mc *mongodbConn) GetFertilizers(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Fertilizer, error) {
+func (mc *mongodbConn) GetActivities(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Activity, error) {
 	filter := bson.M{
 		"enclosureId": bson.M{"$eq": enclosureId},
 		"date":        bson.M{"$gte": startDate, "$lte": endDate},
 	}
-	opts := options.Find().SetSort(bson.M{"date": -1})
-	return GetDocuments[domain.Fertilizer](mc, FERTILIZERS_COLLECTION, filter, opts)
-}
-
-func (mc *mongodbConn) GetTreatments(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Treatment, error) {
-	filter := bson.M{
-		"enclosureId": bson.M{"$eq": enclosureId},
-		"date":        bson.M{"$gte": startDate, "$lte": endDate},
-	}
-	opts := options.Find().SetSort(bson.M{"date": -1})
-	return GetDocuments[domain.Treatment](mc, TREATMENTS_COLLECTION, filter, opts)
+	return GetDocuments[domain.Activity](mc, ACTIVITIES_COLLECTION, filter, nil)
 }

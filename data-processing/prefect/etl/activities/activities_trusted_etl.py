@@ -95,3 +95,22 @@ def activities_trusted_etl(file_name: str):
     transformed_data = transform(cleaned_data)
     load(transformed_data, data_year,
          extracted_data["name"], Constants.METADATA_ACTIVITIES.value)
+
+# ----------- TEST -----------
+
+
+def test_activities_trusted_etl(file_name: str):
+    extracted_data = extract.fn(file_name)
+    validated_data = validate.fn(extracted_data["activities"])
+    cleaned_data = clean.fn(validated_data)
+    print(cleaned_data)
+    transformed_data = transform.fn(cleaned_data)
+    load.fn(transformed_data, 2022,
+            extracted_data["name"], Constants.METADATA_ACTIVITIES.value)
+
+
+if __name__ == "__main__":
+    # Define flow parameters
+    file_name = "PISTACYL_2019-2020-2021.xlsx"
+    # Run flow
+    test_activities_trusted_etl(file_name)

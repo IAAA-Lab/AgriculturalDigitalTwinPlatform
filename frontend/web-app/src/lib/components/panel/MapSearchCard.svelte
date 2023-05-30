@@ -50,7 +50,7 @@
 			</div>
 			<div class="card-item">
 				<i class="fi fi-rr-heart" />
-				{#await enclosuresService.getNDVI([enclosureName], null, null, 1)}
+				{#await enclosuresService.getNDVI([enclosureName], undefined, undefined, 1)}
 					<Loading />
 				{:then ndvi}
 					{@const ndviVal = ndvi?.at(0)?.ndvi.at(-1)?.value}

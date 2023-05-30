@@ -60,27 +60,12 @@ type Fertilizer struct {
 	Quantity    float32   `json:"quantity"`
 }
 
-type Treatment struct {
-	Date         time.Time `json:"date"`
-	Broth        string    `json:"broth"`
-	DoseKind     string    `json:"doseKind"`
-	DoseMovement float64   `json:"doseMovement"`
-	Quantity     float64   `json:"quantity"`
-	DoseUnit     string    `json:"doseUnit"`
-	SafePeriod   string    `json:"safePeriod"`
-	HealthAgent  struct {
-		Id   string `json:"id"`
-		Name string `json:"name"`
-	} `json:"healthAgent"`
-	Phytosanitary struct {
-		Id      string `json:"id"`
-		Name    string `json:"name"`
-		Formula string `json:"formula"`
-	} `json:"phytosanitary"`
-	Plague struct {
-		Id   string `json:"id"`
-		Name string `json:"name"`
-	} `json:"plague"`
+type Activity struct {
+	Date        time.Time `json:"date"`
+	EnclosureId string    `json:"enclosureId"`
+	Activity    string    `json:"activity"`
+	// Properties is a json object that contains the properties of the activity
+	Properties map[string]interface{} `json:"properties"`
 }
 
 type NDVI struct {

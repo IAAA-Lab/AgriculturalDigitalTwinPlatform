@@ -23,6 +23,7 @@
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
 		"chartjs-adapter-date-fns": "^3.0.0",
+		"chartjs-plugin-zoom": "^2.0.1",
 		"date-fns": "^2.29.3",
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
