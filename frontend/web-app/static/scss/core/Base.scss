@@ -9,11 +9,6 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
-.leaflet-container {
-	border-radius: 6px;
-	z-index: 0;
-}
-
 select {
 	border: 2px solid color-border(base);
 	border-radius: 0.375rem;
@@ -127,4 +122,20 @@ button {
 	@include font-size(xxs);
 	color: color(button);
 	background: #ffffff;
+}
+
+// ----------------- LEAFLET -----------------
+
+.leaflet-container {
+	border-radius: 6px;
+	z-index: 0;
+}
+
+.leaflet-marker-icon {
+	background: white;
+	border-radius: 10px;
+	border: 2px solid color(primary);
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }

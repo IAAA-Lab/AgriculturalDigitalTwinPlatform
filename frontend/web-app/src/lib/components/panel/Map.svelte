@@ -4,6 +4,7 @@
 	import type { Enclosure } from '$lib/core/Domain';
 	import { getColorList } from '$lib/core/functions';
 	import Card from './Card.svelte';
+	import 'leaflet.markercluster';
 
 	export let enclosures: Enclosure[] = [];
 	let map: any;
@@ -15,12 +16,40 @@
 	onMount(async () => {
 		map = leaflet.map(mapElement);
 
-		leaflet
-			.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-				attribution:
-					'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+		const ign = leaflet.tileLayer
+			.wms('https://www.ign.es/wms-inspire/ign-base?', {
+				layers: 'IGNBaseTodo',
+				format: 'image/png',
+				transparent: true,
+				attribution: 'IGN'
 			})
 			.addTo(map);
+
+		const osm = leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 19,
+			attribution: '© OpenStreetMap'
+		});
+
+		const wms = leaflet.tileLayer
+			.wms('https://servicios.itacyl.es/arcgis/services/Visor_Suelos/MapServer/WMSServer?', {
+				layers: '0',
+				format: 'image/png',
+				transparent: true,
+				opacity: 0.85,
+				attribution: 'ITACyL'
+			})
+			.addTo(map);
+
+		const baseMaps = {
+			IGN: ign,
+			OSM: osm
+		};
+
+		const overlayMaps = {
+			'Suelos ITACyL': wms
+		};
+
+		leaflet.control.layers(baseMaps, overlayMaps).addTo(map);
 
 		const geojsonFeatures = {
 			type: 'FeatureCollection',
@@ -43,7 +72,24 @@
 			.addTo(map)
 			.bindPopup((e) => e.feature.properties.popupContent);
 
-		map.fitBounds(features.getBounds(), { padding: [25, 25] });
+		// Compute a polygon "center", use your favorite algorithm (centroid, etc.)
+		leaflet.Polygon.addInitHook(function () {
+			this._latlng = this._bounds.getCenter();
+		});
+
+		// Provide getLatLng and setLatLng methods for Leaflet.markercluster to be able to cluster polygons.
+		leaflet.Polygon.include({
+			getLatLng: function () {
+				return this._latlng;
+			},
+			setLatLng: function () {} // Dummy method.
+		});
+
+		// Create a marker cluster group.
+		const markers = leaflet.markerClusterGroup().addTo(map);
+		markers.addLayers(features.getLayers());
+
+		map.fitBounds(markers.getBounds());
 	});
 
 	onDestroy(async () => {

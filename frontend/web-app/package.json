@@ -31,6 +31,7 @@
 		"filepond": "^4.30.4",
 		"filepond-plugin-file-validate-type": "^1.2.8",
 		"geojson-to-svg": "^1.1.4",
+		"leaflet.markercluster": "^1.5.3",
 		"prettier": "^2.8.0",
 		"prettier-plugin-svelte": "^2.8.1",
 		"sass": "^1.62.0",
