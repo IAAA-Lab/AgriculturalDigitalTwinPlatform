@@ -25,6 +25,7 @@ type EnclosuresService interface {
 	GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time, limit int) ([]domain.NDVI, error)
 	GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder, error)
 	GetActivities(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Activity, error)
+	FetchAllEnclosureIds() ([]string, error)
 }
 
 type JWTService interface {

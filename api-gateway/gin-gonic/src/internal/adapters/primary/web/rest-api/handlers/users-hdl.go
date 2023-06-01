@@ -8,13 +8,12 @@ import (
 )
 
 type UsersHTTPHandler struct {
-	usersService ports.UsersService
+	usersService      ports.UsersService
+	enclosuresService ports.EnclosuresService
 }
 
-func NewUsersHTTPHandler(usersService ports.UsersService) *UsersHTTPHandler {
-	return &UsersHTTPHandler{
-		usersService: usersService,
-	}
+func NewUsersHTTPHandler(usersService ports.UsersService, enclosuresService ports.EnclosuresService) *UsersHTTPHandler {
+	return &UsersHTTPHandler{usersService: usersService, enclosuresService: enclosuresService}
 }
 
 // @Summary Authorize user
@@ -109,6 +108,17 @@ func (hdl *UsersHTTPHandler) FetchEnclosuresByUserId(c *gin.Context) {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
 	}
+
+	if user.Role == domain.ROLE_ADMIN {
+		enclosureIds, err := hdl.enclosuresService.FetchAllEnclosureIds()
+		if err != nil {
+			c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+			return
+		}
+		c.JSON(200, enclosureIds)
+		return
+	}
+
 	if user.EnclosureIds == nil {
 		c.JSON(200, []string{})
 		return

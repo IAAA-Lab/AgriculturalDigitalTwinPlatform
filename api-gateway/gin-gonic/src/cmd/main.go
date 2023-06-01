@@ -69,7 +69,7 @@ func setupRouter() *gin.Engine {
 	encryptionMiddleware := middleware.InitEncryptionMiddleware(ivKey, encKey)
 	JWTMiddleware := middleware.InitJwtMiddleware(authService, usersService, os.Getenv("ENV_MODE"))
 
-	usersHandler := handlers.NewUsersHTTPHandler(usersService)
+	usersHandler := handlers.NewUsersHTTPHandler(usersService, enclosuresService)
 	enclosuresHandler := handlers.NewEnclosuresHTTPHandler(enclosuresService)
 	filesHandler := handlers.NewFilesHTTPHandler(fileDumpService)
 

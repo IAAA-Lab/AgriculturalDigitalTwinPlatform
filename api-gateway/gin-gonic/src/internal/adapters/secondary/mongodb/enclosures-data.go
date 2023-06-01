@@ -1,6 +1,7 @@
 package mongodb
 
 import (
+	"context"
 	"digital-twin/main-server/src/internal/core/domain"
 	"time"
 
@@ -89,4 +90,16 @@ func (mc *mongodbConn) GetActivities(enclosureId string, startDate time.Time, en
 		"date":        bson.M{"$gte": startDate, "$lte": endDate},
 	}
 	return GetDocuments[domain.Activity](mc, ACTIVITIES_COLLECTION, filter, nil)
+}
+
+func (mc *mongodbConn) FetchAllEnclosureIds() ([]string, error) {
+	res, err := mc.db.Collection(ENCLOSURES_COLLECTION).Distinct(context.Background(), "id", bson.M{})
+	if err != nil {
+		return nil, err
+	}
+	enclosureIds := make([]string, len(res))
+	for i, id := range res {
+		enclosureIds[i] = id.(string)
+	}
+	return enclosureIds, nil
 }

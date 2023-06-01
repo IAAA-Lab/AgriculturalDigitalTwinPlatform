@@ -53,3 +53,7 @@ func (srv *enclosuresService) GetActivities(enclosureId string, startDate time.T
 func (srv *enclosuresService) GetFarmHolder(farmId domain.FarmHolderId) (domain.FarmHolder, error) {
 	return srv.persistence.GetFarmHolder(farmId)
 }
+
+func (srv *enclosuresService) FetchAllEnclosureIds() ([]string, error) {
+	return srv.persistence.FetchAllEnclosureIds()
+}
