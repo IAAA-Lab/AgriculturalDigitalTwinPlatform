@@ -32,7 +32,13 @@
 		{:then enclosures}
 			{@const properties = enclosures[0].properties}
 			<MapEnclosure {enclosures} />
-			<Crops enclosureId={$page.data.id} crop={properties.crop} />
+			<Crops
+				enclosureId={$page.data.id}
+				crop={{
+					id: properties.cropId,
+					name: properties.cropName
+				}}
+			/>
 			<CharacteristicsEnclosure {properties} />
 			<Ndvi enclosureId={id} />
 			<CurrentWeather enclosureId={id} />

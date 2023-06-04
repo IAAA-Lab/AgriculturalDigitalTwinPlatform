@@ -28,7 +28,8 @@ type Enclosure = {
 		irrigationCoef: number;
 		admisibility: number;
 		geographicSpot: string;
-		crop: Crop;
+		cropId: string;
+		cropName: string;
 		areaSIGPAC: number;
 		area: number;
 		varietyId: string;
@@ -48,19 +49,8 @@ type Enclosure = {
 	};
 };
 
-type Crop = {
-	id: string;
-	name: string;
-	variety: string;
-	varietyId: number;
-	codeType: string;
-	plantationKind?: string;
-	plantationSubKind?: string;
-};
-
 type Fertilizer = {
 	enclosureId: string;
-	crop: Crop;
 	name: string;
 	startDate: Date;
 	quantity: number;
@@ -241,7 +231,6 @@ type windState = {
 export type {
 	User,
 	Enclosure,
-	Crop,
 	Fertilizer,
 	Treatment,
 	NDVI,

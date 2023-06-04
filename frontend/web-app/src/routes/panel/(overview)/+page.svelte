@@ -40,7 +40,7 @@
 					{
 						key: 'Planta',
 						title: 'Planta',
-						value: (v) => v.properties.crop.name || 'N/A',
+						value: (v) => v.properties.cropName || 'N/A',
 						sortable: true
 					},
 					{

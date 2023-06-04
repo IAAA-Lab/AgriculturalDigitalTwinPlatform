@@ -10,5 +10,7 @@
   "recintos_almendros_parcels_trusted_etl": "etl/recintos_cercanos/recintos_almendros_parcels_trusted_etl.py:recintos_almendros_parcels_trusted_etl",
   "recintos_almendros_treatments_dt_etl": "etl/recintos_cercanos/recintos_almendros_treatments_dt_etl.py:recintos_almendros_treatments_dt_etl",
   "recintos_almendros_treatments_trusted_etl": "etl/recintos_cercanos/recintos_almendros_treatments_trusted_etl.py:recintos_almendros_treatments_trusted_etl",
+  "recintos_etl": "etl/recintos_cercanos/recintos_etl.py:recintos_etl",
+  "recintos_user_info_etl": "etl/recintos_cercanos/recintos_user_info_etl.py:recintos_user_info_etl",
   "validate_raw_data_etl": "etl/__validation__/validate_raw_data_etl.py:validate_raw_data_etl"
 }

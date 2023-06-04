@@ -1,5 +1,5 @@
 import asyncio
-import requests as request
+import requests
 from prefect.tasks import task_input_hash
 from datetime import timedelta
 from prefect import task, flow
@@ -8,12 +8,11 @@ import pandas as pd
 from prefect import flow, task
 import os
 from .dto.historical_weather_dto import HistoricalWeatherDTO
-import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+import httpx
 
 
 @task(retries=3, retry_delay_seconds=10, timeout_seconds=15, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=10), refresh_cache=False)
-def extract_historical_weather_data(meteoStationId: str, dateInit: str, dateEnd: str):
+async def extract_historical_weather_data(meteoStationId: str, dateInit: str, dateEnd: str) -> dict:
 
     AUTH_TOKEN = os.environ.get("AGROSLAB_AUTH_TOKEN")
     AGROSLAB_API_URL = os.environ.get("AGROSLAB_API_URL")
@@ -30,7 +29,7 @@ def extract_historical_weather_data(meteoStationId: str, dateInit: str, dateEnd:
         'Authorization': AUTH_TOKEN,
     }
 
-    response = request.post(
+    response = requests.post(
         AGROSLAB_API_URL, headers=headers, json=body, timeout=14)
     if response.status_code != 200:
         raise Exception(
@@ -39,7 +38,7 @@ def extract_historical_weather_data(meteoStationId: str, dateInit: str, dateEnd:
 
 
 @task
-def transform_historic_weather_data(weather_data: dict):
+async def transform_historic_weather_data(weather_data: dict):
     weather_data_list = []
     for weather_data_item in weather_data:
         historical_weather_dto = HistoricalWeatherDTO.from_dict(
@@ -65,7 +64,7 @@ def transform_historic_weather_data(weather_data: dict):
 
 
 @task
-def load_weather_data(weather_data_list: list):
+async def load_weather_data(weather_data_list: list):
     # Connect to MongoDB
     db = DB_MongoClient().connect()
     # Because update_one is really slow, we use insert_many
@@ -73,8 +72,7 @@ def load_weather_data(weather_data_list: list):
         db.Weather.insert_many(weather_data_list)
 
 
-@flow(name="historical_weather_dt_etl")
-def historical_weather_dt_etl(meteo_station_id: str, date_init: str, date_end: str):
+async def historical_weather_dt_etl(meteo_station_id: str, date_init: str, date_end: str):
     # Extract every 3 years
     date_init = pd.to_datetime(date_init, format="%d-%m-%Y")
     date_end = pd.to_datetime(date_end, format="%d-%m-%Y")
@@ -82,16 +80,14 @@ def historical_weather_dt_etl(meteo_station_id: str, date_init: str, date_end: s
         date_end_block = date_init + pd.DateOffset(years=3)
         if date_end_block > date_end:
             date_end_block = date_end
-        weather_data_raw = extract_historical_weather_data.submit(meteo_station_id, date_init.strftime(
-            "%d-%m-%Y"), date_end_block.strftime("%d-%m-%Y")).result(raise_on_failure=False)
-        if isinstance(weather_data_raw, Exception):
-            continue
-        weather_data_processed = transform_historic_weather_data.submit(
-            weather_data_raw).result(raise_on_failure=False)
-        if isinstance(weather_data_processed, Exception):
-            continue
-        load_weather_data.submit(weather_data_processed).result(
-            raise_on_failure=False)
+        try:
+            weather_data_raw = await extract_historical_weather_data(meteo_station_id, date_init.strftime(
+                "%d-%m-%Y"), date_end_block.strftime("%d-%m-%Y"))
+            weather_data_processed = await transform_historic_weather_data(
+                weather_data_raw)
+            await load_weather_data(weather_data_processed)
+        except Exception as e:
+            print(e)
         date_init = date_end_block
 
 # -------------- TEST -------------- #

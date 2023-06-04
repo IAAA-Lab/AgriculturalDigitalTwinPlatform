@@ -2,16 +2,18 @@ from prefect import task, flow
 import asyncio
 import pandas as pd
 from etl.__validation__.schemas import activities_schema
+import requests
+from multiprocessing import Pool
 
 
 @task()
-def extract(num):
-    asyncio.sleep(1)
+async def extract(num):
     return [1/num]
 
 
 @task()
 async def transform(data):
+    raise Exception("Error")
     return [i + 1 for i in data]
 
 
@@ -34,15 +36,12 @@ async def etl(num):
 
 @flow
 async def etl2(num):
-    # With asyncio.gather check for Exceptions
-    e = await asyncio.gather(extract(num), return_exceptions=True)
-    if isinstance(e[0], Exception):
-        print("Failed!")
-        return
-    t = await asyncio.gather([transform(e[0])], return_exceptions=True)
-    if isinstance(t[0], Exception):
-        return
-    await load(t[0])
+    try:
+        e = await extract(num)
+        t = await transform(e)
+        await load(t)
+    except Exception as e:
+        print(e)
 
 
 def etl_excel(file_name: str):
@@ -70,15 +69,30 @@ def etl_excel(file_name: str):
         df["date"] = pd.to_datetime(df["date"], format="%d/%m/%Y")
         print(df)
         print(df.columns)
-        
 
+
+@task
+async def pokemon_api_extract(i, session):
+    url = f"https://pokeapi.co/api/v2/pokemon/{i}"
+    data = requests.get(url).json()
+    await asyncio.sleep(10)
+    print(data["name"])
+    return data["name"]
+
+
+@flow
+async def execute_pokemon_api_extract(i, session):
+    return await pokemon_api_extract(i, session)
+
+
+@flow
+async def pokemon_api_etl():
+    session = requests.Session()
+    tasks = [execute_pokemon_api_extract(i, session) for i in range(1, 100)]
+    await asyncio.gather(*tasks)
+
+    # for i in range(1, 100):
+    #     await execute_pokemon_api_extract(i, session)
 
 if __name__ == "__main__":
-    # Fails
-    etl_excel("etl/test.xlsx")
-    # Works
-    # asyncio.run(etl(1))
-    # Fails
-    # asyncio.run(etl2(0))
-    # Works
-    # asyncio.run(etl2(1))
+    asyncio.run(etl2(1, return_state=True))

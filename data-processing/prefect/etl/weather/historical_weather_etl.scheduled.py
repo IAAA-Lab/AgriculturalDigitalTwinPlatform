@@ -1,10 +1,10 @@
 from __notifications__.email_notifications import notify_exc_by_email
-from prefect import flow, task, get_run_logger
-from etl.weather.historical_weather_etl import test_historical_weather_dt_etl
+from prefect import flow, task
+from etl.weather.historical_weather_etl import historical_weather_dt_etl, test_historical_weather_dt_etl
 from utils.functions import DB_MongoClient
 from datetime import datetime
-from prefect.deployments import run_deployment
 import asyncio
+import requests
 
 HISTORIC_WEATHER_EXTRACT_FIRST_DATE = "01-01-2018"
 
@@ -27,31 +27,25 @@ def extract_last_known_date(meteo_station_id: str):
 
 
 @flow(name="historical_weather_scheduled_etl")
-def historical_weather_scheduled_etl():
-    meteo_station_ids = extract_distinct_meteo_stations_ids.submit().result(raise_on_failure=False)
+async def historical_weather_scheduled_etl():
+    meteo_station_ids = extract_distinct_meteo_stations_ids.submit().result()
     # Get the last week of data
     dateEnd = datetime.now().strftime("%d-%m-%Y")
-    for meteo_station_id in meteo_station_ids:
-        last_known_date = extract_last_known_date.submit(meteo_station_id).result(raise_on_failure=False)
-        if isinstance(last_known_date, Exception):
-            continue
-        run_deployment("historical_weather_dt_etl/event-driven", parameters={
-            "meteo_station_id": meteo_station_id, "date_init": last_known_date, "date_end": dateEnd})
+    # Run in batches of BATCH_SIZE to avoid overloading the server
+    BATCH_SIZE = 30
+    for i in range(0, len(meteo_station_ids), BATCH_SIZE):
+        tasks = []
+        for meteo_station_id in meteo_station_ids[i:i+BATCH_SIZE]:
+            last_known_date = extract_last_known_date.submit(
+                meteo_station_id).result(raise_on_failure=False)
+            if isinstance(last_known_date, Exception):
+                continue
+            tasks.append(asyncio.create_task(historical_weather_dt_etl(
+                meteo_station_id, last_known_date, dateEnd)))
+        await asyncio.gather(*tasks, return_exceptions=True)
+        await asyncio.sleep(1)
+
 
 # -------------------- TEST -------------------- #
-
-
-def test_historical_weather_scheduled_etl():
-    meteo_station_ids = extract_distinct_meteo_stations_ids.fn()
-    # Get the last week of data
-    dateEnd = datetime.now().strftime("%d-%m-%Y")
-    for meteo_station_id in meteo_station_ids:
-        try:
-            last_known_date = extract_last_known_date.fn(meteo_station_id)
-            test_historical_weather_dt_etl(meteo_station_id, last_known_date, dateEnd)
-        except Exception as e:
-            print(str(e))
-            continue
-
 if __name__ == "__main__":
-    test_historical_weather_scheduled_etl()
+    asyncio.run(historical_weather_scheduled_etl())

@@ -3,8 +3,6 @@ import io
 import pandas as pd
 from utils.functions import DB_MinioClient, DB_MongoClient
 from utils.constants import Constants
-import sys
-sys.path.append('/utils')
 
 
 FILE_PATH = f"ERP/unknown"
@@ -31,12 +29,12 @@ def load(crops: list):
     # Connect to MongoDB
     db = DB_MongoClient().connect()
 
-    # Insert crops
+    # Add crops properties to "properties" object in Enclosures collection
     for crop in crops:
         db.Enclosures.update_many(
-            {"properties.crop.id": str(crop["id"])}, {"$set": {
-                "properties.crop": crop
-            }})
+            {"properties.cropId": crop["id"]},
+            {"$set": {"properties.cropName": crop["name"]}}
+        )
 
 
 @flow(name="cultivos_identificadores_dt_etl")

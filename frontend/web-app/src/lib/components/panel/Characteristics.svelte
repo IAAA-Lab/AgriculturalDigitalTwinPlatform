@@ -82,9 +82,9 @@
 			<h4 slot="header" class="m-0 mb-8 text-sm">Plantas por recinto</h4>
 			<div slot="body">
 				<!-- SHow the quantity of each plant in enclosures -->
-				{@const uniqueCrops = [...new Set(enclosures.map((e) => e.properties.crop.name))]}
+				{@const uniqueCrops = [...new Set(enclosures.map((e) => e.properties.cropName))]}
 				{@const countCrops = uniqueCrops.map(
-					(c) => enclosures.filter((e) => e.properties.crop.name === c).length
+					(c) => enclosures.filter((e) => e.properties.cropName === c).length
 				)}
 				<!-- Convert spaces in N/A -->
 				{@const labels = uniqueCrops.map((c) => (c === '' ? 'N/A' : c))}

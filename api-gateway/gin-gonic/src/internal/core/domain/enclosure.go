@@ -22,7 +22,8 @@ type Enclosure struct {
 		IrrigationCoef float64 `json:"irrigationCoef"`
 		// Admisibility      float64 `json:"admisibility"`
 		GeographicSpot     string  `json:"geographicSpot"`
-		Crop               Crop    `json:"crop"`
+		CropId             string  `json:"cropId"`
+		CropName           string  `json:"cropName"`
 		AreaSIGPAC         float64 `json:"areaSIGPAC"`
 		Area               float64 `json:"area"`
 		VarietyId          string  `json:"varietyId"`
@@ -42,19 +43,8 @@ type Enclosure struct {
 	} `json:"properties"`
 }
 
-type Crop struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
-}
-
-type CropId struct {
-	Name    string `json:"name"`
-	Variety string `json:"variety"`
-}
-
 type Fertilizer struct {
 	EnclosureId string    `json:"enclosureId"`
-	CropId      CropId    `json:"crop"`
 	Name        string    `json:"name"`
 	StartDate   time.Time `json:"startDate"`
 	Quantity    float32   `json:"quantity"`

@@ -15,11 +15,6 @@
 			value: (v) => v.date.split('T')[0]
 		},
 		{
-			key: 'phytoName',
-			title: 'Nombre fitosanitario',
-			value: (v) => v.phytosanitary.name
-		},
-		{
 			key: 'phytoFormula',
 			title: 'Formula fitosanitario',
 			value: (v) => v.phytosanitary.formula

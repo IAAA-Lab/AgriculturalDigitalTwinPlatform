@@ -32,12 +32,12 @@
 							area={enclosure.properties.area}
 							geojsonFeature={enclosure}
 							color={colorList[i]}
-							cropName={enclosure.properties.crop.name}
+							cropName={enclosure.properties.cropName}
 						>
 							<img
 								on:error={onCropImageError}
 								slot="crops"
-								src={`${IMAGES_SERVER_URL}/${enclosure.properties.crop.id}.png`}
+								src={`${IMAGES_SERVER_URL}/${enclosure.properties.cropId}.png`}
 								alt="img planta"
 								height="30"
 								class="ml-8"
