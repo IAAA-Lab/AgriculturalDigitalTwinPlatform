@@ -1,19 +1,20 @@
+<!-- https://js.do/code/166021: for clustering polygons -->
+
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import leaflet from 'leaflet';
 	import type { Enclosure } from '$lib/core/Domain';
-	import { getColorList } from '$lib/core/functions';
 	import Card from './Card.svelte';
 	import 'leaflet.markercluster';
+	import { getColor } from '$lib/core/functions';
 
 	export let enclosures: Enclosure[] = [];
-	let map: any;
+	let map: leaflet.Map;
 	let mapElement: any;
 	let i = 0;
 
-	const colorList = getColorList(enclosures.length);
-
-	onMount(async () => {
+	onMount(() => {
+		if (enclosures.length === 0) return;
 		map = leaflet.map(mapElement);
 
 		const ign = leaflet.tileLayer
@@ -50,45 +51,41 @@
 		};
 
 		leaflet.control.layers(baseMaps, overlayMaps).addTo(map);
+		// .bindPopup((e) => e.feature.properties.popupContent);
 
+		// Compute polygon center and add it to _latlng
+		leaflet.Polygon.addInitHook(function () {
+			this._latlng = this.getBounds().getCenter();
+		});
+
+		// Get getLatLngs() and setLatLngs() functions
+		leaflet.Polygon.include({
+			getLatLng: function () {
+				return this._latlng;
+			},
+			setLatLng: function () {}
+		});
+
+		// Add marker cluster
+		const markers = leaflet.markerClusterGroup().addTo(map);
 		const geojsonFeatures = {
 			type: 'FeatureCollection',
 			features: enclosures
 		} as any;
 
-		const features = leaflet
-			.geoJSON(geojsonFeatures, {
-				style: (feature) => {
-					return {
-						fillColor: colorList[i++],
-						weight: 2,
-						opacity: 1,
-						color: 'black',
-						fillOpacity: 0.7,
-						pane: 'markerPane'
-					};
-				}
-			})
-			.addTo(map)
-			.bindPopup((e) => e.feature.properties.popupContent);
-
-		// Compute a polygon "center", use your favorite algorithm (centroid, etc.)
-		leaflet.Polygon.addInitHook(function () {
-			this._latlng = this._bounds.getCenter();
+		const features = leaflet.geoJSON(geojsonFeatures, {
+			style: (feature) => {
+				return {
+					fillColor: getColor(i++),
+					weight: 2,
+					opacity: 1,
+					color: 'black',
+					fillOpacity: 0.7,
+					pane: 'markerPane'
+				};
+			}
 		});
-
-		// Provide getLatLng and setLatLng methods for Leaflet.markercluster to be able to cluster polygons.
-		leaflet.Polygon.include({
-			getLatLng: function () {
-				return this._latlng;
-			},
-			setLatLng: function () {} // Dummy method.
-		});
-
-		// Create a marker cluster group.
-		const markers = leaflet.markerClusterGroup().addTo(map);
-		markers.addLayers(features.getLayers());
-
+		markers.addLayer(features);
 		map.fitBounds(markers.getBounds());
 	});
 

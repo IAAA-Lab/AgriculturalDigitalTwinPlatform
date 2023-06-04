@@ -4,12 +4,11 @@
 	import Chart from '$lib/components/panel/Chart.svelte';
 	import PhytosTable from '$lib/components/panel/PhytosTable.svelte';
 	import { enclosuresService } from '$lib/config/config';
-	import type { Activity, Treatment } from '$lib/core/Domain';
-	import { getColorList } from '$lib/core/functions';
+	import type { Treatment } from '$lib/core/Domain';
+	import { getColor } from '$lib/core/functions';
 
 	export let enclosureId: string;
 
-	let selectedProduct;
 	let startDate = new Date('2021-03-03');
 	let endDate = new Date('2023-03-03');
 	let startDateInput = startDate.toISOString().split('T')[0];
@@ -76,10 +75,9 @@
 									{
 										label: '',
 										data: productsDosages,
-										backgroundColor: getColorList(uniqueProducts.length).map(
-											(color) => color + '9C'
-										),
-										borderColor: getColorList(uniqueProducts.length),
+										// Map each product to a random color
+										backgroundColor: uniqueProducts.map((_, i) => `${getColor(i)}9C`),
+										borderColor: uniqueProducts.map((_, i) => getColor(i)),
 										borderWidth: 1
 									}
 								],

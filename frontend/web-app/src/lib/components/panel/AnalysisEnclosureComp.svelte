@@ -7,7 +7,7 @@
 	import { listOfEnclosures } from '$lib/config/stores/selectedEnclosure';
 	import { es } from 'date-fns/locale';
 	import Loading from '../misc/Loading.svelte';
-	import { getColorList } from '$lib/core/functions';
+	import { getColor } from '$lib/core/functions';
 
 	let startDate: string;
 	let endDate: string;
@@ -56,7 +56,6 @@
 						{#await enclosuresService.getNDVI($listOfEnclosures, new Date(startDate), new Date(endDate), LIMIT)}
 							<Loading />
 						{:then ndvi}
-							{@const colorList = getColorList(ndvi.length)}
 							<Chart
 								data={{
 									data: {
@@ -67,7 +66,7 @@
 												y: data.value
 											})),
 											label: enclosureId,
-											borderColor: colorList[i],
+											borderColor: getColor(i),
 											tension: 0.2
 										}))
 									},

@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { enclosuresService } from '$lib/config/config';
 	import { numberWithCommas, getRangeBarColor } from '$lib/core/functions';
 	import { onMount } from 'svelte';
-	import Loading from '../misc/Loading.svelte';
 	import CardInner from './CardInner.svelte';
 	import geojson2svg from 'geojson-to-svg';
-	import Error from '../misc/Error.svelte';
 	import Range from '../misc/Range.svelte';
+	import type { NDVI } from '$lib/core/Domain';
 
 	export let enclosureName: string = '--';
 	export let location: string = '--';
@@ -14,6 +12,7 @@
 	export let geojsonFeature: any;
 	export let color: string;
 	export let cropName: string = '--';
+	export let ndvi: NDVI | undefined;
 
 	let icon: any = null;
 
@@ -31,6 +30,10 @@
 			// Replace the svg tag with a svg tag with the desired width and height and add border color black adapted to the shape
 			.replace('svg', "svg width='125' height='125'");
 	});
+
+	let ndviVal: number | undefined = undefined;
+
+	$: ndviVal = ndvi?.ndvi.at(-1)?.value;
 </script>
 
 <CardInner>
@@ -50,22 +53,15 @@
 			</div>
 			<div class="card-item">
 				<i class="fi fi-rr-heart" />
-				{#await enclosuresService.getNDVI([enclosureName], undefined, undefined, 1)}
-					<Loading />
-				{:then ndvi}
-					{@const ndviVal = ndvi?.at(0)?.ndvi.at(-1)?.value}
-					<Range
-						value={ndviVal ?? 0}
-						to={1}
-						height={12}
-						background={getRangeBarColor(ndviVal ?? -1)}
-					/>
-					<p class="text-sm m-0">
-						<strong>{numberWithCommas(ndviVal)}</strong>
-					</p>
-				{:catch}
-					<Error />
-				{/await}
+				<Range
+					value={ndviVal ?? 0}
+					to={1}
+					height={12}
+					background={getRangeBarColor(ndviVal ?? -1)}
+				/>
+				<p class="text-sm m-0">
+					<strong>{numberWithCommas(ndviVal)}</strong>
+				</p>
 			</div>
 		</div>
 	</div>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Enclosure } from '$lib/core/Domain';
-	import { getColorList, getIconByCharacteristic } from '$lib/core/functions';
+	import { getColor, getIconByCharacteristic } from '$lib/core/functions';
 	import Card from './Card.svelte';
 	import Chart from './Chart.svelte';
 	import StatsCard from './StatsCard.svelte';
@@ -96,8 +96,8 @@
 								datasets: [
 									{
 										data: countCrops,
-										backgroundColor: getColorList(countCrops.length).map((c) => `${c}9C`),
-										borderColor: getColorList(countCrops.length),
+										backgroundColor: countCrops.map((_, i) => `${getColor(i)}9C`),
+										borderColor: countCrops.map((_, i) => getColor(i)),
 										borderWidth: 1
 									}
 								],

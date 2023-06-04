@@ -8,7 +8,7 @@
 	import Tables from '$lib/components/panel/Tables.svelte';
 	import { enclosuresService } from '$lib/config/config';
 	import { listOfEnclosures } from '$lib/config/stores/selectedEnclosure';
-	import { getColorList } from '$lib/core/functions';
+	import { getColor } from '$lib/core/functions';
 </script>
 
 <div class="container-responsive">
@@ -21,7 +21,7 @@
 			<Map {enclosures} />
 			<Tables
 				rows={enclosures.map((enclosure, index) => ({
-					color: getColorList(enclosures.length)[index],
+					color: getColor(index),
 					id: enclosure.id,
 					area: enclosure.properties.area,
 					slope: enclosure.properties.slope,

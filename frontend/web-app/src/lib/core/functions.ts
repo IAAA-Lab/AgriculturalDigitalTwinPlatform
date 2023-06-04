@@ -69,11 +69,8 @@ Colors.names = [
 
 const COLORS_SIZE = Colors.names.length;
 
-const getColorList = (n: number): string[] => {
-	const mod = n % COLORS_SIZE;
-	return n > COLORS_SIZE
-		? Colors.names.slice(0).concat(Colors.names.slice(0, mod))
-		: Colors.names.slice(0, n);
+const getColor = (index: number): string => {
+	return Colors.names[index % COLORS_SIZE];
 };
 
 const getIconByCharacteristic = (characteristic: any) => {
@@ -213,7 +210,7 @@ export {
 	fixDefaultLeafletIcons,
 	numberWithCommas,
 	markerMapIconByColor,
-	getColorList,
+	getColor,
 	getIconByCharacteristic,
 	getRangeBarColor,
 	formattedDate,

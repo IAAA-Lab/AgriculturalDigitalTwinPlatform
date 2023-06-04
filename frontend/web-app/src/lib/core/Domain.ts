@@ -25,6 +25,7 @@ type Enclosure = {
 		'distance(km)': number;
 	};
 	properties: {
+		ndvi: NDVI | undefined;
 		irrigationCoef: number;
 		admisibility: number;
 		geographicSpot: string;

@@ -2,13 +2,12 @@
 	import { onMount } from 'svelte';
 	import leaflet from 'leaflet';
 	import type { Enclosure } from '$lib/core/Domain';
-	import { getColorList } from '$lib/core/functions';
 	import Card from './Card.svelte';
+	import { getColor } from '$lib/core/functions';
 
 	let mapElement: any;
 	let i = 0;
 	export let enclosures: Enclosure[];
-	const colorList = getColorList(enclosures.length);
 
 	onMount(async () => {
 		const map = leaflet.map(mapElement);
@@ -29,7 +28,7 @@
 			.geoJSON(geojsonFeatures, {
 				style: (feature) => {
 					return {
-						fillColor: colorList[i++],
+						fillColor: getColor(i++),
 						weight: 2,
 						opacity: 1,
 						color: 'black',
