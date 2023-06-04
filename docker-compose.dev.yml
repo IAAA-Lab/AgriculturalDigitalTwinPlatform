@@ -57,6 +57,13 @@ services:
       environment:
           - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
           - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      healthcheck:
+          test: ["CMD", "rabbitmqctl", "ping"]
+          interval: 10s
+          timeout: 3s
+          retries: 5
+      mem_limit: 1024m
+      mem_reservation: 256m
 
 #############################################
 #              Web app server               #
@@ -72,8 +79,10 @@ services:
         - ./api-gateway/gin-gonic:/app
     restart: always
     depends_on:
-        - 'mongo'
-        - 'rabbitmq'
+        mongo:
+          condition: service_started
+        rabbitmq:
+          condition: service_healthy
     environment:
       - ENV_MODE=LOCAL
       - JWT_SECRET=${JWT_SECRET}
@@ -89,28 +98,16 @@ services:
       - MINIO_ENDPOINT=${MINIO_ENDPOINT}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-      - MINIO_LANDING_BUCKET_NAME=${MINIO_LANDING_BUCKET_NAME}
-      - MINIO_IMAGES_BUCKET_NAME=${MINIO_IMAGES_BUCKET_NAME}
+      - MINIO_LANDING_ZONE=${MINIO_LANDING_ZONE}
+    # Resources limits in case it consumes too much
+    mem_limit: 512m
+    mem_reservation: 128m
+    cpus: 0.5
+
 
 #############################################
-#               Redis server                #
+#             Digital twin panel            #
 #############################################
-
-  # redis:
-  #   image: redis:7
-  #   ports:
-  #     - 6379:${REDIS_PORT}
-  #   # user and password
-  #   command: bash -c "redis-server --requirepass $REDIS_PASSWORD --appendonly yes"
-  #   volumes:
-  #     - ./storage/redis/data:/data
-  #   restart: always
-
-
-# #############################################
-# #                 Frontend                  #
-# #############################################
-
 
   frontend:
     build:
@@ -123,8 +120,8 @@ services:
         - VITE_EMAIL_SENDER_TEMPLATEID=${VITE_EMAIL_SENDER_TEMPLATEID}
         - VITE_IV_BLOCK_PASSWD=${VITE_IV_BLOCK_PASSWD}
         - VITE_KEY_DECRYPT_PASSWD=${VITE_KEY_DECRYPT_PASSWD}
-        - VITE_IMAGES_SERVER_URL=${SVELTE_IMAGES_SERVER_URL}
-
+        - VITE_IMAGES_SERVER_URL=${VITE_IMAGES_SERVER_URL}
+    
     restart: always
     ports:
       - 3000:${VITE_PORT}
@@ -151,13 +148,12 @@ services:
       - ./data/certbot/www:/var/www/certbot:rw
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
-
 # #############################################
 # #            Digital twin storage           #
 # #############################################
 
   mongo:
-      build: storage/mongodb
+      image: mongo:latest
       ports:
           - 27018:${MONGO_PORT}
       restart: always
@@ -171,6 +167,8 @@ services:
         - MONGO_FIRST_USER_NAME=${MONGO_FIRST_USER_NAME}
         - MONGO_FIRST_USER_PASSWORD=${MONGO_FIRST_USER_PASSWORD}
         - MONGO_FIRST_USER_ROLE=${MONGO_FIRST_USER_ROLE}
+      # To avoid logs in console
+      command: mongod --quiet --logpath /dev/null 
 
 # #############################################
 # #    Data lake and Prefect flows storage    #
@@ -179,30 +177,44 @@ services:
   minio:
       image: minio/minio:RELEASE.2023-02-27T18-10-45Z
       environment:
-          MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-          MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      entrypoint: /bin/bash 
-      command: "-c 'mkdir -p /data/prefect-flows && sleep 10 && minio server /data --console-address :9001'"
+          - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+          - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+          - MINIO_URL=${MINIO_URL}
+          - MINIO_NOTIFY_AMQP_ENABLE_primary=on
+          - MINIO_NOTIFY_AMQP_URL_primary=${RABBITMQ_URI}
+          - MINIO_NOTIFY_AMQP_EXCHANGE_primary=storage
+          - MINIO_NOTIFY_AMQP_EXCHANGE_TYPE_primary=direct
+          - MINIO_NOTIFY_AMQP_ROUTING_KEY_primary=trusted
+      entrypoint:
+        - sh
+        - /usr/bin/entrypoint.sh
+
       ports:
           - 9000:${MINIO_PORT}
           - 9001:${MINIO_PANEL_PORT}
       volumes:
           - ./storage/minio/data:/data
+          - ./storage/minio/entrypoint.sh:/usr/bin/entrypoint.sh
+      restart: always
+      depends_on:
+        rabbitmq:
+          condition: service_healthy
 
 # #############################################
-# #        Database for Prefect Server        #
+# #            Prefect server storage         #
 # #############################################
 
+  # Had to use postgres because sqlite3 is doesn't support many concurrent connections
   postgres:
     image: postgres:15.2-alpine
     restart: always
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - 5432:${POSTGRES_PORT}
-    volumes: 
+      - 5432
+    volumes:
       - ./storage/postgres/data:/var/lib/postgresql/data
 
 # #############################################
@@ -215,10 +227,13 @@ services:
     restart: on-failure
     volumes:
       - prefect:/root/.prefect
-      - ./data-processing/prefect/flows:/opt/prefect/flows
+      - ./data-processing/prefect:/opt/prefect
     environment:
-      - PREFECT_API_URL=${PREFECT_API_URL}
-      - PREFECT_API_DATABASE_CONNECTION_URL=${PREFECT_API_DATABASE_CONNECTION_URL}
+      - PREFECT_LOGGING_LEVEL=WARNING
+      - PREFECT_UI_URL=http://127.0.0.0:4200/api
+      - PREFECT_API_URL=http://127.0.0.1:4200/api
+      - PREFECT_SERVER_API_HOST=0.0.0.0
+      - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/prefect
       - PREFECT_MINIO_ACCESS_ROOT=${MINIO_ROOT_USER}
       - PREFECT_MINIO_SECRET_ROOT=${MINIO_ROOT_PASSWORD}
       - PREFECT_MINIO_HOST=${MINIO_HOST}
@@ -227,13 +242,23 @@ services:
       - AGROSLAB_AUTH_TOKEN=${AGROSLAB_AUTH_TOKEN}
       - AGROSLAB_API_URL=${AGROSLAB_API_URL}
       - AGROSLAB_TELEDETECTION_URL=${AGROSLAB_TELEDETECTION_URL}
+      - STORAGE_LANDING_ZONE=${MINIO_LANDING_ZONE}
+      - STORAGE_TRUSTED_ZONE=${MINIO_TRUSTED_ZONE}
+      - STORAGE_REFINED_ZONE=${MINIO_REFINED_ZONE}
+      - RABBITMQ_URI=${RABBITMQ_URI}
     ports:
       - 4200:${PREFECT_PORT}
     depends_on:
-      - postgres
-      - rabbitmq
-      - mongo
-
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      postgres:
+        condition: service_started
+    # Resource limit because it tends to use a lot of memory
+    mem_limit: 2048m
+    mem_reservation: 512m
+    cpus: 1.0
 
 volumes:
   prefect:
