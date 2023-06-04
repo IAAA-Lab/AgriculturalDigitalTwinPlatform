@@ -18,7 +18,7 @@
 				on:error={onCropImageError}
 			/>
 			<h4 class="m-0">{crop.name.toUpperCase()}</h4>
-			<span class="text-xs">{crop.variety || '--'}</span>
+			<span class="text-xs">{crop.varietyId || '--'}</span>
 		</div>
 		<div class="crop__divider" />
 		<div class="crop__body">

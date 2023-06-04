@@ -36,7 +36,8 @@
 				enclosureId={$page.data.id}
 				crop={{
 					id: properties.cropId,
-					name: properties.cropName
+					name: properties.cropName,
+					varietyId: properties.varietyId
 				}}
 			/>
 			<CharacteristicsEnclosure {properties} />

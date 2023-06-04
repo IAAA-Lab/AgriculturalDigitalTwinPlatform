@@ -6,12 +6,11 @@ import type {
 	ForecastWeather,
 	HistoricalWeather,
 	NDVI,
-	Summary,
-	Treatment
+	Summary
 } from '../Domain';
 
 interface IParcelsRepository {
-	getEnclosures(enclosureIds: string[], year: number): Promise<Enclosure[]>;
+	getEnclosures(enclosureIds: string[], year?: number): Promise<Enclosure[]>;
 	getOverviewSummary(userId: string): Promise<Summary>;
 	getHistoricalWeather(idema: string, startDate: Date, endDate: Date): Promise<HistoricalWeather[]>;
 	getDailyWeather(enclosureId: string, date: Date): Promise<DailyWeather>;

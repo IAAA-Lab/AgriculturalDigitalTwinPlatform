@@ -27,9 +27,12 @@ func (mc *mongodbConn) GetHistoricalWeather(idema string, startDate time.Time, e
 }
 
 func (mc *mongodbConn) GetEnclosures(enclosureIds []string, year int16) ([]domain.Enclosure, error) {
+	// if year is zero, then we don't filter by year
 	filter := bson.M{
-		"id":   bson.M{"$in": enclosureIds},
-		"year": bson.M{"$eq": year},
+		"id": bson.M{"$in": enclosureIds},
+	}
+	if year != 0 {
+		filter["year"] = bson.M{"$eq": year}
 	}
 	return GetDocuments[domain.Enclosure](mc, ENCLOSURES_COLLECTION, filter, nil)
 }

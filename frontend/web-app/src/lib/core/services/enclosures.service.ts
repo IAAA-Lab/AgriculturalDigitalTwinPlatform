@@ -6,7 +6,7 @@ class EnclosuresService implements IenclosuresService {
 	constructor(private readonly parcelsRepository: IParcelsRepository) {}
 
 	getEnclosures(enclosureIds: string[]): Promise<Enclosure[]> {
-		return this.parcelsRepository.getEnclosures(enclosureIds, 2022);
+		return this.parcelsRepository.getEnclosures(enclosureIds, undefined);
 	}
 	getHistoricalWeather(
 		idema: string,

@@ -37,9 +37,7 @@ type ParcelsIn struct {
 // @Failure 500 {object} apperrors.Error
 // @Router /enclosures [get]
 func (hdl *EnclosuresHTTPHandler) GetEnclosures(c *gin.Context) {
-	enclosuresIn := ParcelsIn{
-		Year: 2022,
-	}
+	var enclosuresIn ParcelsIn
 	err := c.ShouldBind(&enclosuresIn)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
