@@ -18,6 +18,9 @@
 	});
 
 	let enclosures: Enclosure[] | undefined = [];
+	let enclosuresFiltered: Enclosure[] | undefined;
+
+	$: console.log(enclosuresFiltered);
 
 	onMount(() => {
 		enclosuresService
@@ -57,7 +60,7 @@
 			<Map {enclosures} />
 			{#if isInMobile}
 				<SearchPopup>
-					<Search {enclosures} />
+					<Search {enclosures} bind:enclosuresFiltered />
 				</SearchPopup>
 			{:else}
 				<Search {enclosures} />
@@ -69,10 +72,13 @@
 </section>
 
 <style lang="scss">
+	section {
+		overflow-y: scroll;
+	}
 	.inner__container {
 		display: grid;
 		gap: 0.8rem;
-		height: calc(100vh - 8.5rem);
+		height: calc(100vh - 6.3rem);
 		grid-template-columns: 1fr 400px;
 	}
 

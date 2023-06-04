@@ -12,13 +12,13 @@
 	<time class="m-0 text-xs">{formattedTime(date)}</time>
 </div>
 <div class="main-preview mb-16">
-	<p class="m-0 text-sm">
+	<p class="m-0">
 		{address}
 	</p>
 	<div class="skyState__wrapper">
 		<div class="skyState">
 			<slot name="icon" />
-			<p class="m-0 text-sm skyState">{skyState}</p>
+			<p class="m-0 skyState">{skyState}</p>
 		</div>
 		<p class="m-0 fw-700 temp" style="white-space: nowrap; margin-top: 1rem">
 			{ta} °

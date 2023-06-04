@@ -61,7 +61,7 @@
 					}}
 				/>
 			</div>
-			<p class="text-sm m-0"><strong>{minHr} %</strong></p>
+			<p class="m-0"><strong>{minHr} %</strong></p>
 		</div>
 	</WeatherStat>
 </div>

@@ -23,14 +23,14 @@
 
 <svelte:component this={primary ? CardInnerPrimary : CardInner}>
 	<div slot="header" class="card-header pt-8 tt-u">
-		<h4 class="text-sm stat-header m-0">
+		<h4 class="stat-header m-0">
 			{title}
 		</h4>
 	</div>
 	<div slot="body" class="stat-body">
 		<div class="value-unit">
 			<h2 class="m-0 fw-700">{numberWithCommas(value)}</h2>
-			<span class="text-sm {unit && 'ml-4'}">{unit}</span>
+			<span class={unit && 'ml-4'}>{unit}</span>
 		</div>
 		<div class="icon-diff">
 			<span class="diff text-xs {diffColor}">

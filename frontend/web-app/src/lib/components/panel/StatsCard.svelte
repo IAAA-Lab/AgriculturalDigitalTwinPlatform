@@ -13,7 +13,7 @@
 			<slot />
 		</div>
 		<div class="ml-8 stat-content">
-			<h4 class="text-sm m-0">
+			<h4 class="m-0">
 				{statName}
 			</h4>
 			<div class="stat-value-unit">
@@ -41,8 +41,8 @@
 		}
 
 		.stat-icon {
-			width: 70px;
-			height: 70px;
+			width: 50px;
+			height: 50px;
 			background: color-bg(primary);
 			border-radius: 10px;
 			border: solid 2px color(primary);
@@ -51,7 +51,7 @@
 			justify-content: center;
 
 			:global(i) {
-				font-size: 45px;
+				font-size: 30px;
 				color: color(primary);
 			}
 		}

@@ -27,13 +27,15 @@
 	});
 </script>
 
-{#if loading}
-	<Loading />
-{:else}
-	<main>
-		<slot />
-	</main>
-{/if}
+<div class="panel">
+	{#if loading}
+		<Loading />
+	{:else}
+		<main>
+			<slot />
+		</main>
+	{/if}
+</div>
 
 <style>
 	main {

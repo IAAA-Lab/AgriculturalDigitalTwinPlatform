@@ -16,9 +16,9 @@
 		<WeatherCard class="child">
 			<div slot="header" class="header">
 				<i class="fi fi-rr-cloud-showers-heavy" />
-				<p class="m-0 text-sm">Precipitaciones (Últimos 7 días)</p>
+				<p class="m-0">Precipitaciones (Últimos 7 días)</p>
 			</div>
-			<div slot="body" class="body" style="max-height: 200px; min-height: 100px;">
+			<div slot="body" class="body" style="max-height: 300px; min-height: 100px;">
 				{#await enclosuresService.getHistoricalWeather('9434', startDate, new Date())}
 					<Loading />
 				{:then hw}
@@ -110,7 +110,7 @@
 		<WeatherCard class="child">
 			<div slot="header" class="header">
 				<i class="fi fi-rr-wind" />
-				<p class="m-0 text-sm">Viento</p>
+				<p class="m-0">Viento</p>
 			</div>
 			<div slot="body" class="body">
 				<img src="$lib/assets/compass.svg" alt="wind direction" height="100" width="100" />
@@ -125,7 +125,7 @@
 		<WeatherCard class="child">
 			<div slot="header" class="header">
 				<i class="fi fi-rr-sun" />
-				<p class="m-0 text-sm">UV</p>
+				<p class="m-0">UV</p>
 			</div>
 			<div slot="body" class="body">
 				<br />
@@ -136,7 +136,7 @@
 		<WeatherCard class="child">
 			<div slot="header" class="header">
 				<i class="fi fi-rr-temperature-high" />
-				<p class="m-0 text-sm">Temperatura</p>
+				<p class="m-0">Temperatura</p>
 			</div>
 			<div slot="body" class="body">
 				<div style="max-height: 250px; min-height: 150px; width: 100%;">
@@ -203,10 +203,10 @@
 					/>
 				</div>
 				<div class="temp__min__max">
-					<p class="text-sm m-0">
+					<p class="m-0">
 						<strong>Min: {Math.min(...pred.ta.map((ta) => ta.value))} °C</strong>
 					</p>
-					<p class="text-sm m-0">
+					<p class="m-0">
 						<strong>Max: {Math.max(...pred.ta.map((ta) => ta.value))} °C</strong>
 					</p>
 				</div>

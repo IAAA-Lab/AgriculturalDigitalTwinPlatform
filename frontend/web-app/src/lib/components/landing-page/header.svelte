@@ -62,7 +62,7 @@
 							</li>
 						{/if}
 						<li>
-							<a href="/panel" class="button-primary button" on:click={() => closeMenu()}>
+							<a href="/panel" class="button button-primary" on:click={() => closeMenu()}>
 								Accede
 							</a>
 						</li>

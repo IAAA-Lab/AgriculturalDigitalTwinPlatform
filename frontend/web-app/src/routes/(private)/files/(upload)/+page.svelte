@@ -65,9 +65,7 @@
 		/>
 		<br />
 		<br />
-		<p class="text-sm">
-			Los archivos subidos tienen que estar en formato: .xlsx, .csv, .pdf o .json
-		</p>
+		<p>Los archivos subidos tienen que estar en formato: .xlsx, .csv, .pdf o .json</p>
 	</div>
 </section>
 

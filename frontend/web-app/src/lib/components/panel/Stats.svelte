@@ -49,24 +49,24 @@
 </script>
 
 <Card>
+	<div slot="header" class="header">
+		<h4 class="m-0">Media</h4>
+	</div>
 	<div slot="body" class="p-8 body">
-		<div class="left">
-			<h4 class="m-0">Media</h4>
-			<CardInner class="ndvi__card">
-				<div slot="body" class="range__bar">
-					{@const ndviAvg = ndviValues
-						? ndviValues?.ndvi.reduce((a, b) => a + b?.value, 0) / ndviValues?.ndvi.length
-						: -1}
-					<Range value={ndviAvg} to={1} background={getRangeBarColor(ndviAvg)} />
-					<h3 class="m-0">
-						<strong>{numberWithCommas(ndviAvg)}<strong /></strong>
-					</h3>
-				</div>
-			</CardInner>
-			<div class="date__picker">
-				<input type="date" bind:value={startDate} />
-				<input type="date" bind:value={endDate} />
+		<CardInner class="ndvi__card">
+			<div slot="body" class="range__bar">
+				{@const ndviAvg = ndviValues
+					? ndviValues?.ndvi.reduce((a, b) => a + b?.value, 0) / ndviValues?.ndvi.length
+					: -1}
+				<Range value={ndviAvg} to={1} background={getRangeBarColor(ndviAvg)} />
+				<h3 class="m-0">
+					<strong>{numberWithCommas(ndviAvg)}<strong /></strong>
+				</h3>
 			</div>
+		</CardInner>
+		<div class="date__picker">
+			<input type="date" bind:value={startDate} />
+			<input type="date" bind:value={endDate} />
 		</div>
 		<CardInner class="card__wrapper">
 			<div class="chart__wrapper" slot="body">
@@ -152,21 +152,11 @@
 		display: flex;
 		flex-direction: row;
 		flex-wrap: wrap;
-		gap: 2rem;
+		gap: 0.5rem;
 
 		:global(.card__wrapper) {
 			flex: 3;
 		}
-	}
-
-	.left {
-		flex: 1;
-		min-width: 250px;
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		justify-content: center;
-		gap: 1rem;
 	}
 
 	.range__bar {
@@ -178,13 +168,12 @@
 	}
 
 	:global(.ndvi__card) {
-		width: 95%;
+		width: 100%;
 	}
 
 	.chart__wrapper {
 		max-height: 600px;
 		min-height: 300px;
-		height: 100%;
 		width: 100%;
 		min-width: 200px;
 	}

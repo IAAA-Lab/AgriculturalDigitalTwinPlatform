@@ -16,7 +16,7 @@
 				<h2 class="m-0">Resumen</h2>
 				<!-- <ToggleSwitch bind:checked /> -->
 			</div>
-			<p class="text-xs">Última actualización: --</p>
+			<span>Última actualización: --</span>
 		</svelte:fragment>
 		<div slot="body" class="body">
 			<div class="body-stats mb-16">
@@ -87,7 +87,7 @@
 		}
 
 		.body {
-			height: 700px;
+			max-height: 500px;
 			padding: 0px 5px 10px 5px;
 		}
 		.body-stats {

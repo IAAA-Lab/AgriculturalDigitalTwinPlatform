@@ -5,7 +5,7 @@
 <a href="/">
 	<div class="brand">
 		<img src={light ? '/logo-light.svg' : '/logo.svg'} alt="GEDEFEC" width={60} />
-		<p class="m-0 ml-8 text-sm" style={'--color-text: ' + (light ? 'white' : 'black')}>GEDEFEC</p>
+		<p class="m-0 ml-8" style={'--color-text: ' + (light ? 'white' : 'black')}>GEDEFEC</p>
 	</div>
 </a>
 

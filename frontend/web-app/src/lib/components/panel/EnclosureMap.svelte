@@ -50,7 +50,7 @@
 
 <style lang="scss">
 	div {
-		min-height: 200px;
+		min-height: 300px;
 		max-height: 500px;
 		height: 100%;
 	}

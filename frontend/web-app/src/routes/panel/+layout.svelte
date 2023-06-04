@@ -39,10 +39,10 @@
 	});
 </script>
 
-{#if loading}
-	<Loading />
-{:else}
-	<div>
+<div class="panel">
+	{#if loading}
+		<Loading />
+	{:else}
 		<Header />
 		{#if isInMobile}
 			<SidebarMobile />
@@ -52,8 +52,8 @@
 		<main>
 			<slot />
 		</main>
-	</div>
-{/if}
+	{/if}
+</div>
 
 <style lang="scss">
 	div {
@@ -64,21 +64,10 @@
 			'sidebar header'
 			'sidebar main';
 
-		:global(h1) {
-			font-size: 40px !important;
-			margin: 0 !important;
-		}
-
-		:global(h2) {
-			font-size: 30px !important;
-			margin: 0 !important;
-		}
-
 		main {
 			grid-area: main;
 			position: relative;
 			overflow: hidden;
-			margin: 0 1rem;
 		}
 	}
 </style>

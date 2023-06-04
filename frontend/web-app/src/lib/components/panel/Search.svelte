@@ -7,7 +7,7 @@
 
 	export let enclosures: Enclosure[] = [];
 	let search = '';
-	let enclosuresFiltered: Enclosure[] = enclosures;
+	export let enclosuresFiltered: Enclosure[] | undefined = undefined;
 
 	$: {
 		// Search can filter by crop name, geographic spot or enclosure id

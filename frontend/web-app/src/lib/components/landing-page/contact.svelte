@@ -25,7 +25,7 @@
 				<input class="text-xs" required name="name" placeholder="Nombre" />
 				<input class="text-xs" required name="email" type="email" placeholder="Email" />
 				<textarea class="text-xs" required name="message" placeholder="Mensaje..." />
-				<button type="submit"> Enviar </button>
+				<button class="button button-primary" type="submit"> Enviar </button>
 			</form>
 		</div>
 	</div>

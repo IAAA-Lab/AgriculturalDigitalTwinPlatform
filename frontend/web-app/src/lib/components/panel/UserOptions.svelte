@@ -17,7 +17,7 @@
 	]}
 >
 	<i class="fi fi-rr-portrait user-menu" />
-	<p class="user-options text-sm m-0">{$user?.name}</p>
+	<p class="user-options m-0">{$user?.name}</p>
 </Dropdown>
 
 <style lang="scss">

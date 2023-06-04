@@ -31,7 +31,7 @@
 			margin: 0;
 			padding: 0;
 			li {
-				padding: 7px;
+				padding: 3px;
 			}
 		}
 	}

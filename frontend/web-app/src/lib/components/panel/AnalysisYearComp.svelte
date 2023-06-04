@@ -22,7 +22,7 @@
 		<div slot="header" class="header__wrapper">
 			<div>
 				<h2 class="m-0">Comparación de fechas</h2>
-				<p class="text-sm m-0">Compara las características de un recinto</p>
+				<p class="m-0">Compara las características de un recinto</p>
 			</div>
 			<div class="header__input__wrapper">
 				<div class="input__wrapper">

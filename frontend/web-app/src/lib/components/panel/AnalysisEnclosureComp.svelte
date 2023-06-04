@@ -27,7 +27,7 @@
 		<div slot="header" class="header__wrapper">
 			<div>
 				<h2 class="m-0">Comparación de recintos</h2>
-				<p class="text-sm m-0">Compara características de varios recintos</p>
+				<p class="m-0">Compara características de varios recintos</p>
 			</div>
 			<div class="header__input__wrapper">
 				<div class="input__wrapper">
@@ -53,7 +53,7 @@
 						<div />
 					</div>
 					<div slot="body" class="chart">
-						{#await enclosuresService.getNDVI($listOfEnclosures, new Date(startDate), new Date(endDate), LIMIT)}
+						{#await enclosuresService.getNDVI($listOfEnclosures.slice(0, 10), new Date(startDate), new Date(endDate), LIMIT)}
 							<Loading />
 						{:then ndvi}
 							<Chart

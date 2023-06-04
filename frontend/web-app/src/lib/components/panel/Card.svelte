@@ -13,7 +13,7 @@
 		background: color-bg(card);
 		border: 2px solid color-border(base);
 		border-radius: 10px;
-		padding: 10px;
+		padding: 0.4rem;
 		height: var(--height);
 		width: var(--width);
 	}

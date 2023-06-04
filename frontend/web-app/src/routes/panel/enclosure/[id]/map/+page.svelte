@@ -10,20 +10,23 @@
 	}
 </script>
 
-<div class="container-responsive">
+<section class="container-responsive">
 	<h1 class="title pb-16">Recinto#{id} · Mapa</h1>
 	<div class="inner__container">
 		<Map enclosureId={id} />
 		<Stats enclosureId={id} {idema} />
 	</div>
-</div>
+</section>
 
 <style lang="scss">
+	section {
+		overflow-y: scroll;
+	}
 	.inner__container {
 		display: grid;
 		gap: 0.8rem;
-		height: calc(100vh - 7rem);
-		grid-template-rows: 0.75fr 1fr;
+		grid-template-rows: 1.5fr 1fr;
+		height: calc(100vh - 7.1rem);
 	}
 
 	@include media('<large') {

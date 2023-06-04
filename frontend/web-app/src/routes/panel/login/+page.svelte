@@ -24,13 +24,13 @@
 		<h1>Iniciar sesión</h1>
 		<h3>Panel • GEDEFEC</h3>
 
-		<label class="text-sm" for="username">Usuario</label>
+		<label for="username">Usuario</label>
 		<input class="text-xs" type="text" id="username" required />
 
-		<label class="text-sm" for="password">Contraseña</label>
+		<label for="password">Contraseña</label>
 		<input class="text-xs" type="password" id="password" required />
 
-		<button type="submit">Acceder</button>
+		<button class="button button-primary" type="submit">Acceder</button>
 	</form>
 </section>
 
@@ -41,11 +41,6 @@
 		align-items: center;
 		height: 100vh;
 		width: 100%;
-	}
-
-	h1 {
-		font-size: 2.5rem;
-		margin-bottom: 0.5rem;
 	}
 
 	.background {

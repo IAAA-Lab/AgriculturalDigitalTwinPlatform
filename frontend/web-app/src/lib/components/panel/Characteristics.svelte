@@ -52,8 +52,8 @@
 </script>
 
 <section>
-	<h2 class="m-0 pt-16">Recintos del usuario</h2>
-	<summary class="text-sm m-0 mb-8">Promedio de características</summary>
+	<h2 class="m-0 pt-8">Recintos del usuario</h2>
+	<span class="m-0 mb-16">Promedio de características</span>
 	<div class="characteristics">
 		{#each characteristics as characteristic}
 			<div class="characteristic-item">
@@ -67,8 +67,7 @@
 			</div>
 		{/each}
 	</div>
-	<br />
-	<div class="dynamic__characteristics">
+	<div class="dynamic__characteristics mt-16">
 		<!-- <Card>
       <h4 slot="header" class="m-0 mb-8 text-sm">
         Salud de las plantas (NDVI)
@@ -79,7 +78,7 @@
       </div>
     </Card> -->
 		<Card>
-			<h4 slot="header" class="m-0 mb-8 text-sm">Plantas por recinto</h4>
+			<h4 slot="header" class="m-0 mb-8">Plantas por recinto</h4>
 			<div slot="body">
 				<!-- SHow the quantity of each plant in enclosures -->
 				{@const uniqueCrops = [...new Set(enclosures.map((e) => e.properties.cropName))]}

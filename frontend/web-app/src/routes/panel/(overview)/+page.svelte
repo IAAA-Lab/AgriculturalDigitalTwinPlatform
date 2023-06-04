@@ -38,8 +38,8 @@
 						renderComponent: FirstColTable
 					},
 					{
-						key: 'Planta',
-						title: 'Planta',
+						key: 'cultivo',
+						title: 'Cultivo',
 						value: (v) => v.properties.cropName || 'N/A',
 						sortable: true
 					},

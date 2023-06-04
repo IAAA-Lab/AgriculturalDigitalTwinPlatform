@@ -8,7 +8,7 @@
 		<i slot="header-icon" class="fi fi-rr-wind pt-4" />
 		<div slot="body" class="body">
 			<img src="$lib/assets/compass.svg" alt="compass" width="100%" height="100%" />
-			<p class="text-sm m-0 mt-16"><strong>{windSpeed} km/h</strong></p>
+			<p class="m-0 mt-16"><strong>{windSpeed} km/h</strong></p>
 		</div>
 	</WeatherStat>
 </div>

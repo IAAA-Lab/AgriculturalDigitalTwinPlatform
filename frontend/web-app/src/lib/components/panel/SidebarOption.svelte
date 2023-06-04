@@ -7,7 +7,7 @@
 	<div class="pt-4 pl-4 pr-4">
 		<slot />
 	</div>
-	<p class="sidebar-option-text m-0 ml-16 text-sm">
+	<p class="sidebar-option-text m-0 ml-16">
 		{text}
 	</p>
 </div>

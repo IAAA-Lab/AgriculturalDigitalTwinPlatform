@@ -40,11 +40,11 @@
 	<div slot="body" class="body">
 		{@html icon}
 		<div class="content">
-			<p class="text-sm m-0"><strong>{enclosureName}</strong></p>
+			<p class="m-0"><strong>{enclosureName}</strong></p>
 			<p class="text-xs mb-4">{location}</p>
 			<div class="card-item">
 				<i class="fi fi-rr-map-marker" />
-				<p class="text-sm m-0 pl-8">{numberWithCommas(area)} Ha</p>
+				<p class="m-0 pl-8">{numberWithCommas(area)} Ha</p>
 			</div>
 			<div class="card-item">
 				<i class="fi fi-rr-corn" />
@@ -59,7 +59,7 @@
 					height={12}
 					background={getRangeBarColor(ndviVal ?? -1)}
 				/>
-				<p class="text-sm m-0">
+				<p class="m-0">
 					<strong>{numberWithCommas(ndviVal)}</strong>
 				</p>
 			</div>

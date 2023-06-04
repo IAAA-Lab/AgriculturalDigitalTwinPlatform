@@ -8,13 +8,13 @@
 	import 'leaflet.markercluster';
 	import { getColor } from '$lib/core/functions';
 
-	export let enclosures: Enclosure[] = [];
+	export let enclosures: Enclosure[] | undefined = undefined;
 	let map: leaflet.Map;
 	let mapElement: any;
 	let i = 0;
 
 	onMount(() => {
-		if (enclosures.length === 0) return;
+		if (!enclosures) return;
 		map = leaflet.map(mapElement);
 
 		const ign = leaflet.tileLayer

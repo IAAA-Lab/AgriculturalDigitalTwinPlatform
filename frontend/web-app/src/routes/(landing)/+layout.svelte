@@ -17,11 +17,13 @@
 	});
 </script>
 
-<Header />
-<main class="has-animations">
-	<slot />
-</main>
-<Footer />
+<div class="landing">
+	<Header />
+	<main class="has-animations">
+		<slot />
+	</main>
+	<Footer />
+</div>
 
 <style global lang="scss">
 </style>

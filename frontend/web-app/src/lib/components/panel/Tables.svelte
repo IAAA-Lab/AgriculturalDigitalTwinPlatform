@@ -23,7 +23,7 @@
 		margin-top: 1.25rem;
 
 		div {
-			max-height: 750px;
+			max-height: 600px;
 			overflow: scroll;
 		}
 	}
