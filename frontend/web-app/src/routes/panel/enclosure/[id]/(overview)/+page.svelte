@@ -19,7 +19,7 @@
 	}
 </script>
 
-<div class="container-responsive">
+<div class="container">
 	<div class="title">
 		<h1 class="pb-16">Recinto#{id}</h1>
 		{#if vulnerableArea}

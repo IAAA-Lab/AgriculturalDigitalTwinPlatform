@@ -11,7 +11,7 @@
 	import { getColor } from '$lib/core/functions';
 </script>
 
-<div class="container-responsive">
+<div class="container">
 	<h1 class="title pb-16">Overview</h1>
 	<div class="inner__container">
 		{#await enclosuresService.getEnclosures($listOfEnclosures)}

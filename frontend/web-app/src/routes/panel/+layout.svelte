@@ -68,6 +68,10 @@
 			grid-area: main;
 			position: relative;
 			overflow: hidden;
+			margin: 0 0.25rem;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
 		}
 	}
 </style>

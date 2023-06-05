@@ -3,7 +3,9 @@
 	import AnalysisYearComp from '$lib/components/panel/AnalysisYearComp.svelte';
 </script>
 
-<AnalysisEnclosureComp />
-<br />
-<AnalysisYearComp />
-<br />
+<div class="container-responsive">
+	<AnalysisEnclosureComp />
+	<br />
+	<AnalysisYearComp />
+	<br />
+</div>
