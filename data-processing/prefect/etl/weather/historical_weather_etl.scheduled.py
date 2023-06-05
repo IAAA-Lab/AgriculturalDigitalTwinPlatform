@@ -4,7 +4,6 @@ from etl.weather.historical_weather_etl import historical_weather_dt_etl, test_h
 from utils.functions import DB_MongoClient
 from datetime import datetime
 import asyncio
-import requests
 
 HISTORIC_WEATHER_EXTRACT_FIRST_DATE = "01-01-2018"
 
@@ -20,7 +19,7 @@ def extract_last_known_date(meteo_station_id: str):
     mongo_client = DB_MongoClient().connect()
     # Extract last known date
     last_known_date = mongo_client.Weather.find_one(
-        {"meteoStationId": meteo_station_id}, sort=[("date", -1)])
+        {"idema": meteo_station_id}, sort=[("date", -1)])
     if last_known_date:
         return last_known_date["date"]
     return HISTORIC_WEATHER_EXTRACT_FIRST_DATE
