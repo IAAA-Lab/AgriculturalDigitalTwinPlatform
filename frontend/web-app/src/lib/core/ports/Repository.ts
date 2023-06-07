@@ -12,7 +12,12 @@ import type {
 interface IParcelsRepository {
 	getEnclosures(enclosureIds: string[], year?: number): Promise<Enclosure[]>;
 	getOverviewSummary(userId: string): Promise<Summary>;
-	getHistoricalWeather(idema: string, startDate: Date, endDate: Date): Promise<HistoricalWeather[]>;
+	getHistoricalWeather(
+		idema: string,
+		startDate: Date,
+		endDate: Date,
+		queryFields?: string[]
+	): Promise<HistoricalWeather[]>;
 	getDailyWeather(enclosureId: string, date: Date): Promise<DailyWeather>;
 	getForecastWeather(enclosureId: string): Promise<ForecastWeather>;
 	getNDVI(

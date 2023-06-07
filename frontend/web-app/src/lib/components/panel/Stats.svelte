@@ -33,7 +33,8 @@
 					.getHistoricalWeather(
 						idema,
 						new Date(ndvi[0].ndvi.at(-1)?.date || startDate),
-						new Date(ndvi[0].ndvi.at(0)?.date || endDate)
+						new Date(ndvi[0].ndvi.at(0)?.date || endDate),
+						['date', 'prec']
 					)
 					.then((weather) => {
 						weatherValues = weather;

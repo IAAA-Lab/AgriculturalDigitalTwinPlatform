@@ -11,7 +11,12 @@ import type {
 
 interface IenclosuresService {
 	getEnclosures(enclosureIds: string[], year: number): Promise<Enclosure[]>;
-	getHistoricalWeather(idema: string, startDate: Date, endDate: Date): Promise<HistoricalWeather[]>;
+	getHistoricalWeather(
+		idema: string,
+		startDate: Date,
+		endDate: Date,
+		queryFields?: string[]
+	): Promise<HistoricalWeather[]>;
 	getDailyWeather(enclosureId: string): Promise<DailyWeather>;
 	getForecastWeather(enclosureId: string): Promise<ForecastWeather>;
 	getNDVI(

@@ -3,6 +3,7 @@ package handlers
 import (
 	"digital-twin/main-server/src/internal/core/ports"
 	"digital-twin/main-server/src/pkg/apperrors"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -47,6 +48,10 @@ func (hdl *EnclosuresHTTPHandler) GetEnclosures(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
+	}
+	// Don't cache this endpoint when something fails
+	if err == nil {
+		c.Writer.Header().Set("Cache-Control", "public, max-age=1800")
 	}
 	c.JSON(200, enclosures)
 }
@@ -162,6 +167,7 @@ type HistoricalWeatherIn struct {
 	Idema     string    `form:"idema" binding:"required"`
 	StartDate time.Time `form:"startDate" binding:"required"`
 	EndDate   time.Time `form:"endDate" binding:"required"`
+	Fields    string    `form:"fields"`
 }
 
 // @Summary Get Historical Weather
@@ -172,18 +178,25 @@ type HistoricalWeatherIn struct {
 // @Param idema query string true "Idema"
 // @Param startDate query string true "Start Date"
 // @Param endDate query string true "End Date"
+// @Param fields query string false "Fields"
 // @Success 200 {object} []ports.HistoricalWeather
 // @Failure 400 {object} apperrors.Error
 // @Failure 500 {object} apperrors.Error
 // @Router /weather/historical [get]
 func (hdl *EnclosuresHTTPHandler) GetHistoricalWeather(c *gin.Context) {
+	// Get Fields from query
 	var historicalWeatherIn HistoricalWeatherIn
 	err := c.ShouldBind(&historicalWeatherIn)
+	// Extract fields from query, separated by comma
+	fields := strings.Split(historicalWeatherIn.Fields, ",")
+	if len(fields) == 1 && fields[0] == "" {
+		fields = []string{}
+	}
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"message": err.Error(), "valid_input": map[string]string{"idema": "string, required", "startDate": "string, required", "endDate": "string, required"}})
 		return
 	}
-	historicalWeather, err := hdl.enclosuresService.GetHistoricalWeather(historicalWeatherIn.Idema, historicalWeatherIn.StartDate, historicalWeatherIn.EndDate)
+	historicalWeather, err := hdl.enclosuresService.GetHistoricalWeather(historicalWeatherIn.Idema, historicalWeatherIn.StartDate, historicalWeatherIn.EndDate, fields)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
@@ -229,6 +242,10 @@ func (hdl *EnclosuresHTTPHandler) GetNDVI(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
+	}
+	// Don't cache this endpoint when something fails
+	if err == nil {
+		c.Writer.Header().Set("Cache-Control", "public, max-age=1800")
 	}
 	c.JSON(200, ndvi)
 }

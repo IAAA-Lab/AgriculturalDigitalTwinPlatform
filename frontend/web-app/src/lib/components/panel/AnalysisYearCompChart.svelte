@@ -33,7 +33,7 @@
 
 	$: {
 		enclosuresService
-			.getHistoricalWeather(idema, new Date(startDate), new Date(endDate))
+			.getHistoricalWeather(idema, new Date(startDate), new Date(endDate), ['date', 'prec'])
 			.then((weather) => {
 				weatherValues = [...weather];
 			})

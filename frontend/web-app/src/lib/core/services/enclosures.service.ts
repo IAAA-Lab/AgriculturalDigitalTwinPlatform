@@ -11,11 +11,10 @@ class EnclosuresService implements IenclosuresService {
 	getHistoricalWeather(
 		idema: string,
 		startDate: Date,
-		endDate: Date
+		endDate: Date,
+		queryFields?: string[]
 	): Promise<HistoricalWeather[]> {
-		startDate.setHours(0, 0, 0, 0);
-		endDate.setHours(0, 0, 0, 0);
-		return this.parcelsRepository.getHistoricalWeather(idema, startDate, endDate);
+		return this.parcelsRepository.getHistoricalWeather(idema, startDate, endDate, queryFields);
 	}
 	getDailyWeather(enclosureId: string): Promise<DailyWeather> {
 		// Get the current day like this: 2022-10-31T00:00:00.000Z in ISO format

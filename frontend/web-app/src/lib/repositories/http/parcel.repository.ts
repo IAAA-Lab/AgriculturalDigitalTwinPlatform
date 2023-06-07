@@ -45,14 +45,16 @@ class HttpParcelsRepository implements IParcelsRepository {
 	async getHistoricalWeather(
 		idema: string,
 		startDate: Date,
-		endDate: Date
+		endDate: Date,
+		queryFields?: string[]
 	): Promise<HistoricalWeather[]> {
 		return this.http
 			.get<HistoricalWeather[]>('weather/historical', {
 				params: {
 					idema,
 					startDate,
-					endDate
+					endDate,
+					fields: queryFields?.join(',')
 				},
 				withCredentials: true
 			})

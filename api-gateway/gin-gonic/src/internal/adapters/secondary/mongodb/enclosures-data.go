@@ -3,6 +3,7 @@ package mongodb
 import (
 	"context"
 	"digital-twin/main-server/src/internal/core/domain"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -17,12 +18,21 @@ func (mc *mongodbConn) GetForecastWeather(enclosureId string) (domain.ForecastWe
 	return GetDocument[domain.ForecastWeather](mc, WEATHER_COLLECTION, filter, opts)
 }
 
-func (mc *mongodbConn) GetHistoricalWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error) {
+func (mc *mongodbConn) GetHistoricalWeather(idema string, startDate time.Time, endDate time.Time, fields []string) ([]domain.HistoricalWeather, error) {
 	filter := bson.M{
 		"idema": bson.M{"$eq": idema},
 		"date":  bson.M{"$gte": startDate, "$lte": endDate},
 	}
 	opts := options.Find().SetSort(bson.M{"date": -1})
+	// If fields is empty, then we project all fields
+	projection := bson.M{}
+	fmt.Println(len(fields))
+	if len(fields) > 0 {
+		for _, field := range fields {
+			projection[field] = 1
+		}
+		opts = opts.SetProjection(projection)
+	}
 	return GetDocuments[domain.HistoricalWeather](mc, WEATHER_COLLECTION, filter, opts)
 }
 

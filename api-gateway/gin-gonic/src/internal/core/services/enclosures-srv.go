@@ -23,8 +23,8 @@ func (srv *enclosuresService) GetEnclosures(enclosureIds []string, year int16) (
 	return srv.persistence.GetEnclosures(enclosureIds, year)
 }
 
-func (srv *enclosuresService) GetHistoricalWeather(idema string, startDate time.Time, endDate time.Time) ([]domain.HistoricalWeather, error) {
-	return srv.persistence.GetHistoricalWeather(idema, startDate, endDate)
+func (srv *enclosuresService) GetHistoricalWeather(idema string, startDate time.Time, endDate time.Time, fields []string) ([]domain.HistoricalWeather, error) {
+	return srv.persistence.GetHistoricalWeather(idema, startDate, endDate, fields)
 }
 
 func (srv *enclosuresService) GetForecastWeather(enclosureId string) (domain.ForecastWeather, error) {
