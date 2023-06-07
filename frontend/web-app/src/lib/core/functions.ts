@@ -14,7 +14,15 @@ const fixDefaultLeafletIcons = () => {
 };
 
 // Formats a number to a string with a fixed number of decimals
-const numberWithCommas = (num?: number) => {
+const numberWithCommas = (num?: number | string) => {
+	// If number is an string, return it
+	if (typeof num === 'string') {
+		return num;
+	}
+	// if num is an integer, return it
+	if (Number.isInteger(num)) {
+		return num;
+	}
 	// Also negative numbers
 	return Number(num)
 		.toFixed(2)
