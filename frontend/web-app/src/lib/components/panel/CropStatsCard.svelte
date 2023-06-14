@@ -1,6 +1,9 @@
 <script lang="ts">
+	import { numberWithCommas } from '$lib/core/functions';
+	import { es } from 'date-fns/locale';
 	import CardInner from './CardInner.svelte';
 	import CardInnerPrimary from './CardInnerPrimary.svelte';
+	import Chart from './Chart.svelte';
 
 	export let title: string;
 	export let value: number;
@@ -15,10 +18,6 @@
 
 	$: diffColor = diff > 0 ? 'text-color-success' : 'text-color-error';
 	$: diffIcon = diff > 0 ? 'up' : 'down';
-
-	function numberWithCommas(value: number) {
-		throw new Error('Function not implemented.');
-	}
 </script>
 
 <svelte:component this={primary ? CardInnerPrimary : CardInner}>
@@ -39,16 +38,45 @@
 			</span>
 		</div>
 		<div class="chart">
-			<!-- <LineChart
-        {labels}
-        datasets={[
-          {
-            ...(primary ? cropStatsPrimaryChartConfig : cropStatsChartConfig),
-            data: datasets,
-          },
-        ]}
-        {config}
-      /> -->
+			<Chart
+				data={{
+					data: {
+						datasets: [
+							{
+								type: 'line',
+								data: datasets.map((data, i) => ({
+									x: labels[i],
+									y: data
+								})),
+								label: title,
+								backgroundColor: 'rgba(0, 0, 0, 0)',
+								borderColor: '#1e88e5',
+								borderWidth: 2,
+								// pointRadius: 0,
+								pointHoverRadius: 5,
+								tension: 0.3
+							}
+						]
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						plugins: {
+							legend: {
+								display: false
+							}
+						},
+						scales: {
+							y: {
+								display: false
+							},
+							x: {
+								display: false
+							}
+						}
+					}
+				}}
+			/>
 		</div>
 	</div>
 </svelte:component>

@@ -116,6 +116,7 @@ func setupRouter() *gin.Engine {
 	agrarianGroup.POST("/enclosures", enclosuresHandler.GetEnclosures)
 	agrarianGroup.POST("/ndvi", enclosuresHandler.GetNDVI)
 	agrarianGroup.GET("/activities", enclosuresHandler.GetActivities)
+	agrarianGroup.GET("/crop-stats", enclosuresHandler.GetCropStats)
 
 	return r
 }

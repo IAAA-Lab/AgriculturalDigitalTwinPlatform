@@ -4,6 +4,7 @@ import pandas as pd
 from etl.__validation__.schemas import activities_schema
 import requests
 from multiprocessing import Pool
+import httpx
 
 
 @task()
@@ -71,28 +72,40 @@ def etl_excel(file_name: str):
         print(df.columns)
 
 
-@task
 async def pokemon_api_extract(i, session):
     url = f"https://pokeapi.co/api/v2/pokemon/{i}"
-    data = requests.get(url).json()
-    await asyncio.sleep(10)
-    print(data["name"])
-    return data["name"]
-
-
-@flow
-async def execute_pokemon_api_extract(i, session):
-    return await pokemon_api_extract(i, session)
-
+    data = await session.get(url)
+    return data.json()
 
 @flow
 async def pokemon_api_etl():
-    session = requests.Session()
-    tasks = [execute_pokemon_api_extract(i, session) for i in range(1, 100)]
+    session = httpx.AsyncClient()
+    tasks = [pokemon_api_extract(i, session) for i in range(1, 100)]
     await asyncio.gather(*tasks)
+    await session.aclose()
 
     # for i in range(1, 100):
     #     await execute_pokemon_api_extract(i, session)
 
+def my_task_completion_hook(task, task_run, state):
+    print("Our task completed successfully!")
+
+def my_task_failure_hook(task, task_run, state):
+    print(task_run.task_inputs["param"])
+
+@task(on_completion=[my_task_completion_hook], on_failure=[my_task_failure_hook])
+def my_task(param):
+    raise Exception(param)
+
+@flow
+def my_flow():
+    my_task.submit(param="foo")
+
 if __name__ == "__main__":
-    asyncio.run(etl2(1, return_state=True))
+    # Start time seconds
+    init = pd.Timestamp.now()
+    asyncio.run(pokemon_api_etl())
+    # End time
+    end = pd.Timestamp.now()
+    # Time elapsed in seconds
+    print((end - init).total_seconds())

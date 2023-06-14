@@ -1,18 +1,17 @@
 <script lang="ts">
-	import type { Crop } from '$lib/core/Domain';
 	import Card from './Card.svelte';
 	import CropCard from './CropCard.svelte';
 
 	export let enclosureId: string;
-	export let crop: Crop;
+	export let crop: any;
 </script>
 
 <section>
 	<Card>
 		<h3 slot="header" class="m-0 mb-16">Plantas cultivadas</h3>
 		<svelte:fragment slot="body">
-			<a href="/enclosure/{enclosureId}/crops">
-				<CropCard {crop} />
+			<a href="/panel/enclosure/{enclosureId}/crops">
+				<CropCard {crop} {enclosureId} />
 			</a>
 		</svelte:fragment>
 	</Card>

@@ -43,6 +43,15 @@ type Enclosure struct {
 	} `json:"properties"`
 }
 
+type CropStats struct {
+	EnclosureId string    `json:"enclosureId"`
+	Date        time.Time `json:"date"`
+	Area        float64   `json:"area"`
+	Production  float64   `json:"production"`
+	Performance float64   `json:"performance"`
+	Harvest     float64   `json:"harvest"`
+}
+
 type Fertilizer struct {
 	EnclosureId string    `json:"enclosureId"`
 	Name        string    `json:"name"`

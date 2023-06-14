@@ -1,6 +1,5 @@
 import io
-
-import requests
+from etl.recintos_cercanos.recintos_etl import recintos_etl
 
 from etl.recintos_cercanos.recintos_user_info_etl import recintos_user_info_etl
 from utils.constants import Constants
@@ -9,9 +8,11 @@ from prefect import flow, task
 import asyncio
 from datetime import timedelta
 from utils.functions import DB_MinioClient, DB_MongoClient
+from prefect.deployments import run_deployment
+
 
 BUCKET_FROM_NAME = Constants.STORAGE_TRUSTED_ZONE.value
-USER_INFO_FROM_DATE = "01-01-2014"
+USER_INFO_FROM_DATE = "01-01-2017"
 USER_INFO_TO_DATE = "01-01-2023"
 
 
@@ -38,6 +39,7 @@ def transform(df: pd.DataFrame):
             "enclosureId": enclosureId,
             "date": pd.to_datetime(row.harvestInitDate),
             "activity": "TRATAMIENTO FITOSANITARIO",
+            "cropId": row.cropId,
             "properties": {
                 "broth": str(row.broth),
                 "doseKind": row.doseKind,
@@ -65,6 +67,17 @@ def transform(df: pd.DataFrame):
     return activities
 
 
+def activities_by_user_id(data: list):
+    # Group activities by userId and mantain only enclosureId, date and activity columns
+    activities_by_user_id = {}
+    for activity in data:
+        if activity["userId"] not in activities_by_user_id:
+            activities_by_user_id[activity["userId"]] = []
+        activities_by_user_id[activity["userId"]].append(
+            {"enclosureId": activity["enclosureId"], "date": activity["date"], "cropId": activity["cropId"]})
+    return activities_by_user_id
+
+
 @task(name="load_recintos_almendros_tratamientos_dt_etl")
 def load(activities):
     # Connect to MongoDB
@@ -72,43 +85,46 @@ def load(activities):
     db.Activities.insert_many(activities)
 
 
+@task(name="load_recintos_almendros_tratamientos_dt_etl_after")
+def load_crop_info(activities_list):
+    # Connect to MongoDB
+    db = DB_MongoClient().connect()
+    for userId, activities in activities_list.items():
+        for activity in activities:
+            db.Enclosures.update_one(
+                {"id": activity["enclosureId"]}, {"$set": {"properties.cropId": activity["cropId"]}})
+
+
 @flow(name="recintos_almendros_treatments_dt_etl")
-async def recintos_almendros_treatments_dt_etl(file_name: str):
-    df = extract.submit(file_name).result()
-    activities = transform.submit(df).result()
-    load.submit(activities)
+def recintos_almendros_treatments_dt_etl(file_name: str):
+    df = extract(file_name)
+    activities = transform(df)
+    load(activities)
     # ETL for user info, including crops
     date_init = pd.to_datetime(USER_INFO_FROM_DATE, format="%d-%m-%Y")
     date_end = pd.to_datetime(USER_INFO_TO_DATE, format="%d-%m-%Y")
 
     # List of unique tuples (userId, enclosureId)
-    activities = list({(activity["userId"], activity["enclosureId"])
-                          for activity in activities})
+    activities = activities_by_user_id(activities)
 
-    # Create a limit to the number of concurrent requests
-    BATCH_SIZE = 50
     while date_init < date_end:
         date_end_block = date_init + timedelta(days=365)
         if date_end_block > date_end:
             date_end_block = date_end
-        # Activities in batches of BATCH_SIZE
-        for i in range(0, len(activities), BATCH_SIZE):
-            tasks = []
-            try:
-                for activity in activities[i:i + BATCH_SIZE]:
-                    # Run code in different threads
-                    tasks.append(asyncio.create_task(recintos_user_info_etl(
-                        activity[0], date_init, [activity[1]])))
-                # Wait for all tasks to complete
-                await asyncio.gather(*tasks, return_exceptions=True)
-                await asyncio.sleep(0.5)
-            except Exception as e:
-                print(e)
-                continue
+        for userId, activity in activities.items():
+            # Get all enclosureIds in the activities block
+            enclosureIds = [activity["enclosureId"] for activity in activity]
+            recintos_user_info_etl(
+                userId, date_init, enclosureIds)
+            if date_init.year == 2022:
+                recintos_etl(date_init.year, enclosureIds)
         date_init = date_end_block
 
-
+    load_crop_info(activities)
+    # Asynchronously extract the rest of the information
+    run_deployment(
+        name="cultivos_identificadores_dt_etl/event-driven")
 #  ----------- TESTS ------------
 if __name__ == "__main__":
     asyncio.run(recintos_almendros_treatments_dt_etl(
-        "/ERP/7eData/2022/Recintos_Almendros_Cercanos_y_Otros_Cultivos_TRATAMIENTOS_2022.xlsx.parquet"))
+        "/ERP/7eData/2022/Recintos_Almendros_Cercanos_y_Otros_Cultivos_TRATAMIENTOS_2022.parquet"))

@@ -9,8 +9,9 @@
 
 	export let enclosureId: string;
 
-	let startDate = new Date('2021-03-03');
-	let endDate = new Date('2023-03-03');
+	let endDate = new Date();
+	// endDate - 4 years
+	let startDate = new Date(endDate.getFullYear() - 4, endDate.getMonth(), endDate.getDate());
 	let startDateInput = startDate.toISOString().split('T')[0];
 	let endDateInput = endDate.toISOString().split('T')[0];
 

@@ -21,7 +21,7 @@ func NewEnclosuresHTTPHandler(parcelService ports.EnclosuresService) *Enclosures
 
 // -----------------------------------------------------------------------
 
-type ParcelsIn struct {
+type EnclosuresIn struct {
 	EnclosureIds []string `form:"enclosureIds" binding:"required"`
 	Year         int16    `form:"year default=2022"`
 }
@@ -38,7 +38,7 @@ type ParcelsIn struct {
 // @Failure 500 {object} apperrors.Error
 // @Router /enclosures [get]
 func (hdl *EnclosuresHTTPHandler) GetEnclosures(c *gin.Context) {
-	var enclosuresIn ParcelsIn
+	var enclosuresIn EnclosuresIn
 	err := c.ShouldBind(&enclosuresIn)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
@@ -57,6 +57,40 @@ func (hdl *EnclosuresHTTPHandler) GetEnclosures(c *gin.Context) {
 }
 
 // -----------------------------------------------------------------------
+
+type CropStatsIn struct {
+	EnclosureId string    `form:"enclosureId" binding:"required"`
+	StartDate   time.Time `form:"startDate"`
+	EndDate     time.Time `form:"endDate"`
+}
+
+// @Summary Get Crops Stats
+// @Description Get Crops Stats
+// @Tags Enclosures
+// @Accept  json
+// @Produce  json
+// @Param enclosureId query string true "Enclosure Id"
+// @Param startDate query date false "Start Date"
+// @Param endDate query date false "End Date"
+// @Success 200 {object} []ports.Crop
+// @Failure 400 {object} apperrors.Error
+// @Failure 500 {object} apperrors.Error
+// @Router /crops [get]
+func (hdl *EnclosuresHTTPHandler) GetCropStats(c *gin.Context) {
+	var cropsIn CropStatsIn
+	err := c.ShouldBind(&cropsIn)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error(), "valid_input": map[string]string{"enclosureId": "string, required", "startDate": "date, optional", "endDate": "date, optional"}})
+		return
+	}
+	crops, err := hdl.enclosuresService.GetCropStats(cropsIn.EnclosureId, cropsIn.StartDate, cropsIn.EndDate)
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	c.Writer.Header().Set("Cache-Control", "public, max-age=1800")
+	c.JSON(200, crops)
+}
 
 type ActivitiesIn struct {
 	EnclosureId string    `form:"enclosureId" binding:"required"`
@@ -119,10 +153,7 @@ func (hdl *EnclosuresHTTPHandler) GetDailyWeather(c *gin.Context) {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
 	}
-	// Don't cache this endpoint when something fails
-	if err == nil {
-		c.Writer.Header().Set("Cache-Control", "public, max-age=1800")
-	}
+	c.Writer.Header().Set("Cache-Control", "public, max-age=1800")
 	c.JSON(200, dailyWeather)
 }
 

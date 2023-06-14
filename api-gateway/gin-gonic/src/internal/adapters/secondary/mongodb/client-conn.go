@@ -20,7 +20,7 @@ const (
 	NDVI_COLLECTION          = "NDVI"
 	FARM_COLLECTION          = "Farm"
 	ACTIVITIES_COLLECTION    = "Activities"
-	CROPSTATS_COLLECTION     = "CropStats"
+	CROP_STATS_COLLECTION    = "Crops"
 	SENSOR_DATA_COLLECTION   = "SensorData"
 	NOTIFICATIONS_COLLECTION = "Notifications"
 	NEWS_COLLECTION          = "News"

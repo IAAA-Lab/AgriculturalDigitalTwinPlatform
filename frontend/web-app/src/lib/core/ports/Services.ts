@@ -6,7 +6,8 @@ import type {
 	Enclosure,
 	Treatment,
 	User,
-	Activity
+	Activity,
+	CropStats
 } from '../Domain';
 
 interface IenclosuresService {
@@ -25,7 +26,7 @@ interface IenclosuresService {
 		endDate?: Date,
 		limit?: number
 	): Promise<NDVI[]>;
-	getCropStats(enclosureId: string): Promise<any[]>;
+	getCropStats(enclosureId: string, startDate: Date, endDate: Date): Promise<CropStats[]>;
 	getActivities(enclosureId: string, startDate: Date, endDate: Date): Promise<Activity[]>;
 }
 

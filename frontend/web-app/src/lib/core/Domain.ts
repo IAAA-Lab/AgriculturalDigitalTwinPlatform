@@ -50,6 +50,15 @@ type Enclosure = {
 	};
 };
 
+type CropStats = {
+	enclosureId: string;
+	date: Date;
+	area: number;
+	production: number;
+	performance: number;
+	harvest: number;
+};
+
 type Fertilizer = {
 	enclosureId: string;
 	name: string;
@@ -241,7 +250,8 @@ export type {
 	DailyWeather,
 	Prediction,
 	HistoricalWeather,
-	Activity
+	Activity,
+	CropStats
 };
 
 export { Role };

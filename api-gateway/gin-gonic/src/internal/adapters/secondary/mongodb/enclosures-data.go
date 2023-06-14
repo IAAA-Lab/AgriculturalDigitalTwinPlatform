@@ -92,6 +92,16 @@ func (mc *mongodbConn) GetNDVI(enclosureIds []string, startDate time.Time, endDa
 	return AggregateDocuments[domain.NDVI](mc, NDVI_COLLECTION, pipeline, nil)
 }
 
+func (mc *mongodbConn) GetCropStats(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error) {
+	filter := bson.M{
+		"enclosureId": bson.M{"$eq": enclosureId},
+	}
+	if !startDate.IsZero() && !endDate.IsZero() {
+		filter["date"] = bson.M{"$gte": startDate, "$lte": endDate}
+	}
+	return GetDocuments[domain.CropStats](mc, CROP_STATS_COLLECTION, filter, nil)
+}
+
 func (mc *mongodbConn) GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder, error) {
 	filter := bson.M{"id": bson.M{"$eq": id}}
 	return GetDocument[domain.FarmHolder](mc, FARM_COLLECTION, filter, nil)

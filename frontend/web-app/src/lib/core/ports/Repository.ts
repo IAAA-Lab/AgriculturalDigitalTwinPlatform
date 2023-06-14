@@ -1,5 +1,6 @@
 import type {
 	Activity,
+	CropStats,
 	DailyWeather,
 	Enclosure,
 	Fertilizer,
@@ -28,7 +29,7 @@ interface IParcelsRepository {
 	): Promise<NDVI[]>;
 	getActivities(enclosureId: string, startDate: Date, endDate: Date): Promise<Activity[]>;
 	getFertilizers(enclosureId: string, startDate: Date, endDate: Date): Promise<Fertilizer[]>;
-	getCropStats(enclosureId: string): Promise<any[]>;
+	getCropStats(enclosureId: string, startDate?: Date, endDate?: Date): Promise<CropStats[]>;
 }
 interface IUserRepository {
 	validateLogin(): Promise<string | null>;

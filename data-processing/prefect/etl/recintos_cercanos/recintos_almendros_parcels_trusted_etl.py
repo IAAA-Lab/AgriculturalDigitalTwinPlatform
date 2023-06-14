@@ -45,18 +45,16 @@ def clean(df: pd.DataFrame):
     # Change column names
     df.rename(columns={"Cosecha": "harvestYear", "Provincia Id": "parcelProvinceId", "Municipio Id": "parcelMunicipalityId", "Poligono": "parcelPolygonId", "Parcela": "parcelId", "Recinto": "parcelEnclosureId", "Paraje": "parcelGeographicSpot", "Agregado": "parcelAggregatedId", "Zona": "parcelZoneId", "OrdenPAC": "orderPAC", "SubOrdenPac": "subOrderPAC", "SuperficieSIGPAC": "areaSIGPAC", "SuperficieCultivo": "area", "Cultivo Id": "cropId", "ParcelaVariedad Id": "parcelVarietyId",
               "SistemaDeRiego": "irrigationKind", "RegimenTenenciaId": "tenureRegimeId", "AñoPlantacion": "plantationYear", "Nº Arboles": "numberOfTrees", "Densidaddesiembra": "plantationDensity", "ATRIA / ADV / ASV": "ATRIA_ADV_ASV", "ZonaVulnerable": "parcelVulnerableArea", "ZonaEspecifica": "specificZones", "UsoParcela": "parcelUse", "Pendiente %": "slope", "UHC": "UHC", "Descripción UHC": "UHCDescription", "Zona Zepa": "ZepaZone", "Zona SIE": "SIEZone"}, inplace=True)
-    # Remove rows with empty parcelProvinceId, parcelMunicipalityId, parcelPolygonId, parcelId, parcelEnclosureId, parcelZoneId
-    rows_to_drop = ["parcelProvinceId", "parcelMunicipalityId",
-                    "parcelPolygonId", "parcelId", "parcelEnclosureId", "parcelZoneId"]
-    for row in rows_to_drop:
-        df = df[df[row].notna()]
     # Trim spaces and tabs to all object columns
     df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
     # Convert NULL, NP, NaN, etc. to None
     df = df.replace(
         {pd.NA: None, "NP": None, "NaN": None, "": None, "NULL": None})
-    # Remove rows with empty parcelUse
-    df = df[df["parcelUse"].notna()]
+    # Remove rows with empty parcelProvinceId, parcelMunicipalityId, parcelPolygonId, parcelId, parcelEnclosureId, parcelZoneId
+    rows_to_drop = ["parcelProvinceId", "parcelMunicipalityId",
+                    "parcelPolygonId", "parcelId", "parcelEnclosureId", "parcelZoneId", "parcelAggregatedId"]
+    for row in rows_to_drop:
+        df = df[df[row].notna()]
     # Convert 'N' and 'S' to True and False
     columns = ["specificZones", "parcelVulnerableArea", "ZepaZone", "SIEZone"]
     for column in columns:
@@ -111,4 +109,24 @@ def recintos_almendros_parcels_trusted_etl(file_name):
     processed_data = transform(clean_data)
     # Load data
     load(processed_data, data_year,
-         f"{name}_PARCELS_{data_year}.xlsx", Constants.METADATA_PARCELS_AND_TREATMENTS_PARCELS.value)
+         f"{name}_PARCELS_{data_year}", Constants.METADATA_PARCELS_AND_TREATMENTS_PARCELS.value)
+
+# ---------- TEST ---------- #
+def test_recintos_almendros_parcels_trusted_etl(file_name):
+    # Get data from MinIO
+    raw_data = extract.fn(file_name)
+    parcels = raw_data["parcels"]
+    name = raw_data["name"]
+    # Validate data
+    data = validate.fn(parcels)
+    # Clean data
+    clean_data, data_year = clean.fn(data)
+    # Transform data
+    processed_data = transform.fn(clean_data)
+    # Load data
+    load.fn(processed_data, data_year,
+            f"{name}_PARCELS_{data_year}", Constants.METADATA_PARCELS_AND_TREATMENTS_PARCELS.value)
+    
+if __name__ == "__main__":
+    # Execute only if run as a script
+    test_recintos_almendros_parcels_trusted_etl("Recintos_Almendros_Cercanos_y_Otros_Cultivos_2.xlsx")

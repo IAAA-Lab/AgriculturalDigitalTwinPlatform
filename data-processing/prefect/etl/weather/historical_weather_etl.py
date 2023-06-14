@@ -1,4 +1,3 @@
-import asyncio
 import requests
 from prefect.tasks import task_input_hash
 from datetime import timedelta
@@ -8,10 +7,11 @@ import pandas as pd
 from prefect import flow, task
 import os
 from .dto.historical_weather_dto import HistoricalWeatherDTO
-import httpx
+# Get rid of insecure warning
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
-@task(retries=3, retry_delay_seconds=10, timeout_seconds=15, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=10), refresh_cache=False)
+@task(tags=["agroslab"], retries=3, retry_delay_seconds=10, timeout_seconds=15, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=7))
 async def extract_historical_weather_data(meteoStationId: str, dateInit: str, dateEnd: str) -> dict:
 
     AUTH_TOKEN = os.environ.get("AGROSLAB_AUTH_TOKEN")

@@ -8,7 +8,8 @@ import type {
 	DailyWeather,
 	ForecastWeather,
 	NDVI,
-	Activity
+	Activity,
+	CropStats
 } from '$lib/core/Domain';
 import { ServerError } from '$lib/core/Exceptions';
 import type { IParcelsRepository } from '$lib/core/ports/Repository';
@@ -91,8 +92,23 @@ class HttpParcelsRepository implements IParcelsRepository {
 	async getFertilizers(enclosureId: string, startDate: Date, endDate: Date): Promise<Fertilizer[]> {
 		throw new Error('Not implemented');
 	}
-	async getCropStats(enclosureId: string): Promise<any[]> {
-		throw new Error('Not implemented');
+	async getCropStats(enclosureId: string, startDate: Date, endDate: Date): Promise<CropStats[]> {
+		console.log('getCropStats', enclosureId, startDate, endDate);
+		return this.http
+			.get<CropStats[]>('crop-stats', {
+				params: {
+					enclosureId,
+					startDate,
+					endDate
+				},
+				withCredentials: true
+			})
+			.then((response) => {
+				if (response.status === 200) {
+					return response.data;
+				}
+				throw ServerError;
+			});
 	}
 
 	setAuthorizationHeader(authorization: string): void {

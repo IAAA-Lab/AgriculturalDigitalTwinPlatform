@@ -25,6 +25,7 @@ type ParcelsRepository interface {
 	GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder, error)
 	GetActivities(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Activity, error)
 	FetchAllEnclosureIds() ([]string, error)
+	GetCropStats(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
 }
 
 type ParcelsESB interface {

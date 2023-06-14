@@ -4,7 +4,7 @@ import io
 from etl.recintos_cercanos.recintos_etl import recintos_etl
 import pandas as pd
 from prefect import flow, task
-from utils.functions import DB_MinioClient
+from utils.functions import DB_MinioClient, DB_MongoClient
 from utils.constants import Constants
 from prefect.deployments import run_deployment
 
@@ -36,7 +36,6 @@ def transform_parcelas(df: pd.DataFrame):
         # Get enclosures
         enclosureProperties = {
             "id": enclosureId,
-            "geographicSpot": row.parcelGeographicSpot,
             "cropId": str(row.cropId),
             "areaSIGPAC": row.areaSIGPAC,
             "area": row.area,
@@ -55,41 +54,44 @@ def transform_parcelas(df: pd.DataFrame):
             "UHCDescription": row.UHCDescription,
             "ZEPAZone": row.ZepaZone,
             "SIEZone": row.SIEZone,
-            "cropName": row.cropName if row.cropName != "None" else None,
+            # If row.cropName key exists, return its value, otherwise return None
+            "cropName": row.cropName if hasattr(row, "cropName") else None,
         }
 
         enclosuresProperties.append(enclosureProperties)
 
     return enclosuresProperties
 
+@task
+def load(year: int, enclosure_properties: dict):
+    # Connect to MongoDB
+    mongo_client = DB_MongoClient().connect()
+    # Add the properties to the existing enclosure properties
+    mongo_client.Enclosures.update_one(
+        {"year": year, "id": enclosure_properties["id"]},
+        {"$set": {
+            "properties": enclosure_properties
+        }},
+        upsert=False
+    )
 
 # ----------------- Flows -----------------
 
 @flow(name="recintos_almendros_parcels_dt_etl")
-async def recintos_almendros_parcels_dt_etl(file_name: str):
+def recintos_almendros_parcels_dt_etl(file_name: str):
     # Extract
-    object = extract_enclosures_properties.submit(file_name).result()
+    object = extract_enclosures_properties(file_name)
     dfParcels = object["parcels"]
     year = int(object["year"])
-    enclosuresProperties = transform_parcelas.submit(dfParcels).result()
-    # Run in batches of BATCH_SIZE to avoid overloading the server
-    BATCH_SIZE = 30
-    for i in range(0, len(enclosuresProperties), BATCH_SIZE):
-        tasks = []
-        for enclosureProperties in enclosuresProperties[i:i+BATCH_SIZE]:
-            tasks.append(asyncio.create_task(
-                recintos_etl(year, enclosureProperties)))
-        await asyncio.gather(*tasks, return_exceptions=True)
-        await asyncio.sleep(1)
+    # Transform
+    enclosuresProperties = transform_parcelas(dfParcels)
+    recintos_etl(year, [enclosureProperties["id"] for enclosureProperties in enclosuresProperties])
+    # Load
+    for enclosureProperties in enclosuresProperties:
+        load(year, enclosureProperties)
     # Asynchronously extract the rest of the information
-    await run_deployment(
+    run_deployment(
         name="cultivos_identificadores_dt_etl/event-driven")
-    await run_deployment(
-        name="historical_weather_scheduled_etl/scheduled")
-    await run_deployment(
-        name="ndvi_scheduled_etl/scheduled")
-
-
 if __name__ == "__main__":
     asyncio.run(recintos_almendros_parcels_dt_etl(
-        file_name="/ERP/7eData/2022/Recintos_Almendros_Cercanos_y_Otros_Cultivos_PARCELS_2022.xlsx.parquet"))
+        file_name="/ERP/7eData/2022/Recintos_Almendros_Cercanos_y_Otros_Cultivos_PARCELS_2022.parquet"))

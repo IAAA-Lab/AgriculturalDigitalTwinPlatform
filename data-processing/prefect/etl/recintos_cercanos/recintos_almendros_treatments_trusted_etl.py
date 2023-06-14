@@ -35,12 +35,17 @@ def validate(df: pd.DataFrame):
 def clean(df: pd.DataFrame):
     # Change column names
     df.rename(columns={"MovimientoCosecha": "harvestYear", "MovimientoFechaDeInicio": "harvestInitDate", "Producto": "phytosanitaryId", "ProductoNombre": "phytosanitaryName", "Formulado": "phytosanitaryFormula", "TratamientosPlagaEfectosEnPlagasId": "plagueTreatmentEffectsId", "EfectosEnPlagas": "plagueEffects", "TratamientosPlagaMalasHierbasId": "plagueTreatmentWeedsId", "SecUserNombre": "secUserName", "SecUserNIF": "secUserNIF", "SecUserId": "secUserId", "ParcelaProvinciaId": "parcelProvinceId", "ParcelaMunicipioId": "parcelMunicipalityId", "ParcelaPoligono": "parcelPolygonId", "Parcela": "parcelId", "ParcelaRecinto": "parcelEnclosureId",
-              "ParcelaParaje": "parcelGeographicSpot", "ParcelaAgregado": "parcelAggregatedId", "ParcelaZona": "parcelZoneId", "ParcelaCosechaCodigoPAC": "parcelHarvestPACCode", "ParcelaCosechaCultivoPAC": "parcelHavestPACCropTree", "Caldo": "broth", "TipoDeDosisId": "doseKind", "TipoDeDosisDetalle": "doseUnit", "MovimientoParcelaSuperficieTratada": "treatedArea", "Cantidad": "phytosanitaryQuantityMovement", "MovimientoPlazoDeSeguridad": "safePeriodMovement", "MovimientoDosis": "doseMovement", "ParcelaSuperficieCultivo": "parcelArea", "ParcelaSuperficieSIGPAC": "parcelAreaSIGPAC", "ParcelaZonaVulnerable": "parcelVulnerableArea", "UsoDeParcelasId": "parcelSIGPACCode"}, inplace=True)
+              "ParcelaParaje": "parcelGeographicSpot", "ParcelaAgregado": "parcelAggregatedId", "ParcelaZona": "parcelZoneId", "ParcelaCosechaCodigoPAC": "cropId", "ParcelaCosechaCultivoPAC": "crop", "Caldo": "broth", "TipoDeDosisId": "doseKind", "TipoDeDosisDetalle": "doseUnit", "MovimientoParcelaSuperficieTratada": "treatedArea", "Cantidad": "phytosanitaryQuantityMovement", "MovimientoPlazoDeSeguridad": "safePeriodMovement", "MovimientoDosis": "doseMovement", "ParcelaSuperficieCultivo": "parcelArea", "ParcelaSuperficieSIGPAC": "parcelAreaSIGPAC", "ParcelaZonaVulnerable": "parcelVulnerableArea", "UsoDeParcelasId": "parcelSIGPACCode"}, inplace=True)
     # Trim spaces and tabs to all object columns
     df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
     # Convert NULL, NP, NaN, etc. to None
     df = df.replace(
         {pd.NA: None, "NP": None, "NaN": None, "": None, "NULL": None})
+    # Remove rows with empty parcelProvinceId, parcelMunicipalityId, parcelPolygonId, parcelId, parcelEnclosureId, parcelZoneId
+    rows_to_drop = ["parcelProvinceId", "parcelMunicipalityId",
+                    "parcelPolygonId", "parcelId", "parcelEnclosureId", "parcelZoneId", "parcelAggregatedId"]
+    for row in rows_to_drop:
+        df = df[df[row].notna()]
     # Hide sensitive data
     df = df.drop(columns=["secUserNIF"])
     # NOTE: Thanks to Jupyter Notebook, I found out that some number columns are being read as objects
@@ -96,4 +101,25 @@ def recintos_almendros_treatments_trusted_etl(file_name):
     processed_data = transform(clean_data)
     # Load data
     load(processed_data, data_year,
-         f"{name}_TRATAMIENTOS_{data_year}.xlsx", Constants.METADATA_PARCELS_AND_TREATMENTS_TREATMENTS.value)
+         f"{name}_TRATAMIENTOS_{data_year}", Constants.METADATA_PARCELS_AND_TREATMENTS_TREATMENTS.value)
+
+# ---------- TEST ----------
+def test_recintos_almendros_treatments_trusted_etl(file_name):
+    # Get data from MinIO
+    raw_data = extract.fn(file_name)
+    treatments = raw_data["treatments"]
+    name = raw_data["name"]
+    # Validate data
+    data = validate.fn(treatments)
+    # Clean data
+    clean_data, data_year = clean.fn(data)
+    print(clean_data)
+    # Transform data
+    processed_data = transform.fn(clean_data)
+    # Load data
+    load.fn(processed_data, data_year,
+         f"{name}_TRATAMIENTOS_{data_year}", Constants.METADATA_PARCELS_AND_TREATMENTS_TREATMENTS.value)
+
+
+if __name__ == "__main__":
+    test_recintos_almendros_treatments_trusted_etl("Recintos_Almendros_Cercanos_y_Otros_Cultivos.xlsx")

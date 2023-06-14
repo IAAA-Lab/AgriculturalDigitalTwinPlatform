@@ -1,4 +1,4 @@
-FROM prefecthq/prefect:2.10.10-python3.11
+FROM prefecthq/prefect:2.10.13-python3.11
 
 COPY requirements.txt /opt/prefect/requirements.txt
 COPY ./entrypoint.sh / 

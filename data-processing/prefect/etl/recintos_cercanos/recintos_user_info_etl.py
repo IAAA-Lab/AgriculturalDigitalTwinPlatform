@@ -6,10 +6,13 @@ from utils.functions import DB_MongoClient
 import pandas as pd
 import requests
 import asyncio
+# Get rid of insecure warning
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-@task(retries=1, retry_delay_seconds=3, timeout_seconds=30, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=10), refresh_cache=False)
-async def extract(user_id: str, year: int, enclosure_ids: list[str]) -> dict:
+@task(tags=["agroslab"], retries=1, retry_delay_seconds=3, timeout_seconds=30, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=10), refresh_cache=False, name="extract_user_info")
+def extract(user_id: str, year: int, enclosure_ids: list[str]) -> dict:
 
     AUTH_TOKEN = os.environ.get("AGROSLAB_AUTH_TOKEN")
     AGROSLAB_API_URL = os.environ.get("AGROSLAB_API_URL")
@@ -33,7 +36,7 @@ async def extract(user_id: str, year: int, enclosure_ids: list[str]) -> dict:
     return response.json()
 
 
-@task
+@task(name="transform-user-info")
 def transform(crops: dict, date: str):
     crops_out = []
     phytosanitaries_out = []
@@ -83,7 +86,7 @@ def transform(crops: dict, date: str):
     return crops_out, phytosanitaries_out, fertilizers_out
 
 
-@task
+@task(name="load-user-info")
 def load(crops: list[dict], phytosanitaries: list[dict], fertilizers: list[dict]):
     # Connect to MongoDB
     db = DB_MongoClient().connect()
@@ -95,12 +98,12 @@ def load(crops: list[dict], phytosanitaries: list[dict], fertilizers: list[dict]
         db.Activities.insert_many(fertilizers)
 
 
-async def recintos_user_info_etl(user_id: str, date: str, enclosure_ids: list[str]):
+def recintos_user_info_etl(user_id: str, date: str, enclosure_ids: list[str]):
     year = pd.to_datetime(date).year
-    crops = await extract(user_id, year, enclosure_ids)
-    crops, phytosanitaries, fertilizers = transform.submit(
-        crops, date).result()
-    load.submit(crops, phytosanitaries, fertilizers).result()
+    crops = extract(user_id, year, enclosure_ids)
+    crops, phytosanitaries, fertilizers = transform(
+        crops, date)
+    load(crops, phytosanitaries, fertilizers)
 
 # ------------- TEST -------------
 

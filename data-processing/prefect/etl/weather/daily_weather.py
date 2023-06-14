@@ -1,10 +1,14 @@
 from prefect import flow, task, get_run_logger
+from prefect.tasks import task_input_hash
+from datetime import timedelta
 from etl.weather.dto.daily_weather_dto import DailyWeather
 import requests as request
 import os
+# Get rid of insecure warning
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
-@task
+@task(tags=["agroslab"], retries=2, retry_delay_seconds=3, timeout_seconds=15, cache_key_fn=task_input_hash, cache_expiration=timedelta(minutes=30))
 def extract(enclosureId: str):
 
     # Extract data from Rest API

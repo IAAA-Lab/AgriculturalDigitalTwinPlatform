@@ -39,8 +39,8 @@ class EnclosuresService implements IenclosuresService {
 	getFertilizers(enclosureId: string, startDate: Date, endDate: Date) {
 		return this.parcelsRepository.getFertilizers(enclosureId, startDate, endDate);
 	}
-	getCropStats(enclosureId: string) {
-		return this.parcelsRepository.getCropStats(enclosureId);
+	getCropStats(enclosureId: string, startDate?: Date, endDate?: Date) {
+		return this.parcelsRepository.getCropStats(enclosureId, startDate, endDate);
 	}
 }
 

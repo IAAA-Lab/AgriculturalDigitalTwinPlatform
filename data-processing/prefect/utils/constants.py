@@ -12,4 +12,5 @@ class Constants(Enum):
     METADATA_PARCELS_AND_TREATMENTS_TREATMENTS = "parcels_and_treatments_treatments"
     METADATA_PARCELS_AND_TREATMENTS_PARCELS = "parcels_and_treatments_parcels"
     METADATA_ACTIVITIES = "activities"
-
+    # --- Prefect tags ---
+    PREFECT_NDVI_TAG = "ndvi_extract"

@@ -12,28 +12,62 @@
 
 <section>
 	<div class="crop__stats__wrapper">
-		{#await enclosuresService.getCropStats(enclosureId)}
+		{#await enclosuresService.getCropStats(enclosureId, undefined, undefined)}
 			<Loading />
 		{:then cropStats}
-			{#each cropStats as cropStat}
-				<button on:click={() => (selectedCropStat = cropStat)}>
-					<CropStatsCard
-						title={cropStat.title}
-						value={cropStat.value}
-						unit={cropStat.unit}
-						diff={cropStat.diff}
-						datasets={cropStat.datasets}
-						labels={cropStat.labels}
-						primary={selectedCropStat.title === cropStat.title}
-					/>
-				</button>
-			{/each}
+			{@const cropStatsOrdered = cropStats.sort(
+				(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+			)}
+			{@const cropStatLast = cropStatsOrdered.at(-1) || {
+				production: '--',
+				area: '--',
+				harvest: '--',
+				plantation: '--',
+				date: '--'
+			}}
+			<!-- <button on:click={() => (selectedCropStat = cropStat)}> -->
+			<CropStatsCard
+				title="Producción"
+				value={cropStatLast.production}
+				unit="Kg"
+				diff={cropStatLast.production - cropStats.at(-2).production}
+				datasets={cropStatsOrdered.map((cropStat) => cropStat.production)}
+				labels={cropStatsOrdered.map((cropStat) => cropStat.date)}
+				primary={selectedCropStat.title === ''}
+			/>
+			<CropStatsCard
+				title="Área"
+				value={cropStatLast.area}
+				unit="Ha"
+				diff={cropStatLast.area - cropStats.at(-2).area}
+				datasets={cropStatsOrdered.map((cropStat) => cropStat.area)}
+				labels={cropStatsOrdered.map((cropStat) => cropStat.date)}
+				primary={selectedCropStat.title === ''}
+			/>
+			<CropStatsCard
+				title="Cosecha"
+				value={cropStatLast.harvest}
+				diff={cropStatLast.harvest - cropStats.at(-2).harvest}
+				datasets={cropStatsOrdered.map((cropStat) => cropStat.harvest)}
+				labels={cropStatsOrdered.map((cropStat) => cropStat.date)}
+				primary={selectedCropStat.title === ''}
+			/>
+			<CropStatsCard
+				title="Rendimiento"
+				value={cropStatLast.performance}
+				unit="Kg/Ha"
+				diff={cropStatLast.performance - cropStats.at(-2).performance}
+				datasets={cropStatsOrdered.map((cropStat) => cropStat.performance)}
+				labels={cropStatsOrdered.map((cropStat) => cropStat.date)}
+				primary={selectedCropStat.title === ''}
+			/>
+			<!-- </button> -->
 		{:catch}
 			<Error />
 		{/await}
 	</div>
 	<br />
-	<Card>
+	<!-- <Card>
 		<div slot="body" class="chart">
 			<Chart
 				data={{
@@ -63,7 +97,7 @@
 				}}
 			/>
 		</div>
-	</Card>
+	</Card> -->
 </section>
 
 <style>

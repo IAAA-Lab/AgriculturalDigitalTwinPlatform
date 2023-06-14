@@ -1,13 +1,18 @@
-from prefect import task, flow
+from prefect import task, flow, unmapped
 import os
 from datetime import timedelta
 from prefect.tasks import task_input_hash
 from utils.functions import DB_MongoClient
 import requests
+import asyncio
+from prefect.deployments import run_deployment
+# Get rid of insecure warning
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-@task(retries=2, retry_delay_seconds=3, timeout_seconds=15, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=10), refresh_cache=False)
-async def extract_geographic_info(enclosureIds: list[str], year: int):
+@task(retries=2, retry_delay_seconds=3, timeout_seconds=30, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=10), refresh_cache=False)
+def extract_geographic_info(enclosureIds: list[str], year: int):
 
     AUTH_TOKEN = os.environ.get("AGROSLAB_AUTH_TOKEN")
     AGROSLAB_API_URL = os.environ.get("AGROSLAB_API_URL")
@@ -24,7 +29,7 @@ async def extract_geographic_info(enclosureIds: list[str], year: int):
     }
 
     response = requests.post(
-        AGROSLAB_API_URL, headers=headers, json=body, timeout=14)
+        AGROSLAB_API_URL, headers=headers, json=body, timeout=28)
     if response.status_code != 200:
         raise Exception(
             f"Error getting enclosure geographic info for enclosureIds: {enclosureIds} - request: {response.text}")
@@ -32,7 +37,7 @@ async def extract_geographic_info(enclosureIds: list[str], year: int):
 
 
 @task(retries=2, retry_delay_seconds=3, timeout_seconds=15, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=10), refresh_cache=False)
-async def extract_meteorological_station(enclosureId: str):
+def extract_meteorological_station(enclosureId: str):
 
     AUTH_TOKEN = os.environ.get("AGROSLAB_AUTH_TOKEN")
     AGROSLAB_API_URL = os.environ.get("AGROSLAB_API_URL")
@@ -62,22 +67,26 @@ async def extract_meteorological_station(enclosureId: str):
 
 
 @task
-def join_information(enclosure_geographic_info, enclosure_meteorological_stations, year: int, enclosureProperties=None):
+def join_information(enclosure_geographic_info, crs, enclosure_meteorological_stations, year: int):
     joined_enclosure = {
         "year": int(year),
         "type": "Feature",
-        "geometry": enclosure_geographic_info["features"][0]["geometry"],
+        "geometry": enclosure_geographic_info["geometry"],
         "meteoStation": {
             "idema": enclosure_meteorological_stations["id"],
             "name": enclosure_meteorological_stations["nombre"],
             "distance(km)": enclosure_meteorological_stations["distancia (km)"],
         },
         "properties": {
-            **enclosureProperties,
-            "irrigationCoef": enclosure_geographic_info["features"][0]["properties"]["coef_regadio"],
-            "admisibility": enclosure_geographic_info["features"][0]["properties"]["admisibilidad"],
+            # m2 to ha
+            "area": enclosure_geographic_info["properties"]["superficie"] / 10000,
+            "slope": enclosure_geographic_info["properties"]["pendiente_media"],
+            "parcelUse": enclosure_geographic_info["properties"]["uso_sigpac"],
+            "region": enclosure_geographic_info["properties"]["region"],
+            "irrigationCoef": enclosure_geographic_info["properties"]["coef_regadio"],
+            "admisibility": enclosure_geographic_info["properties"]["admisibilidad"],
         },
-        "crs": enclosure_geographic_info["crs"],
+        "crs": crs
     }
     return joined_enclosure
 
@@ -92,21 +101,35 @@ def load_enclosures(enclosure: dict, enclosure_id: str):
         {"id": enclosure_id, "year": enclosure["year"]}, {"$set": enclosure}, upsert=True)
 
 
-async def recintos_etl(year: int, enclosure_properties: dict):
-    enclosureId = enclosure_properties["id"]
-    enclosure_geographic_info = await extract_geographic_info([enclosureId], year)
-    enclosure_meteorological_stations = await extract_meteorological_station(enclosureId)
-    joined_information = join_information.submit(enclosure_geographic_info, enclosure_meteorological_stations, year, enclosure_properties).result()
-    load_enclosures.submit(joined_information, enclosureId).result()
+@flow(name="recintos_etl")
+def recintos_etl(year: int, enclosure_ids: list[str]):
+    enclosures_geographic_info = extract_geographic_info(enclosure_ids, year)
+    for enclosure_geographic_info in enclosures_geographic_info["features"]:
+        try:
+            properties = enclosure_geographic_info["properties"]
+            enclosure_id = f"{properties['provincia']}-{properties['municipio']}-{properties['agregado']}-{properties['zona']}-{properties['poligono']}-{properties['parcela']}-{properties['recinto']}"
+            meteorological_info = extract_meteorological_station(enclosure_id)
+            joined_information = join_information(
+                enclosure_geographic_info, enclosures_geographic_info["crs"], meteorological_info, year)
+            load_enclosures(joined_information, enclosure_id)
+        except Exception as e:
+            print(e)
 
 
 # ------------- TEST -------------
-
+async def test_recintos_etl(year: int, enclosure_ids: list[str]):
+    enclosure_geographic_info = extract_geographic_info.fn(
+        enclosure_ids, year)
+    # Run meteorological station extraction in batches of 20
+    tasks = []
+    for enclosureId in enclosure_ids:
+        tasks.append(asyncio.create_task(
+            extract_meteorological_station.fn(enclosureId)))
+    enclosure_meteorological_stations = await asyncio.gather(*tasks)
+    # joined_information = join_information.map(
+    #     enclosure_geographic_info["features"], enclosure_meteorological_stations, year, unmapped(enclosure_properties))
+    # return joined_information
 if __name__ == "__main__":
-    enclosureIds = [{
-        "id": "ES0000010000000000000001",
-    }, {
-        "id": "ES0000010000000000000002",
-    }]
-    year = 2019
-    recintos_etl(enclosureIds, year)
+    enclosureIds = ["45-137-0-0-9-23-1", "45-137-0-0-9-23-2"]
+    year = 2022
+    asyncio.run(test_recintos_etl(year, enclosureIds))

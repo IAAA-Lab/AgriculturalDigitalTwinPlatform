@@ -40,28 +40,18 @@ def load(activities: list):
 
 
 @flow(name="activities_dt_etl")
-async def activities_dt_etl(file_name: str):
-    df = extract.submit(file_name)
-    activities_future = transform.submit(df)
-    load.submit(activities_future)
-    # Wait for the activities to be transformed
-    activities = activities_future.result()
+def activities_dt_etl(file_name: str):
+    df = extract.submit(file_name).result()
+    activities = transform.submit(df).result()
+    load.submit(activities).result()
     # Get unique enclosures ids
     enclosures_ids = list(set([activity["enclosureId"]
                           for activity in activities]))
-    # Run the enclosures etl flow for each enclosure asynchronously in batches of 10
-    BATCH_SIZE = 20
-    for i in range(0, len(enclosures_ids), BATCH_SIZE):
-        await asyncio.gather(*[asyncio.create_task(recintos_etl(year=2022, enclosure_properties={"id": enclosure_id})) for enclosure_id in enclosures_ids[i:i+BATCH_SIZE]])
-        await asyncio.sleep(1.5)
-
+    # Run recintos_etl
+    recintos_etl(2022, enclosures_ids)
     # Asynchronously extract the rest of the information
-    await run_deployment(
+    run_deployment(
         name="cultivos_identificadores_dt_etl/event-driven")
-    await run_deployment(
-        name="historical_weather_scheduled_etl/scheduled")
-    await run_deployment(
-        name="ndvi_scheduled_etl/scheduled")
 
 
 # ----------- TEST -----------
@@ -71,8 +61,8 @@ def test_activities_dt_etl(file_name: str):
     load.fn(activities)
     enclosures_ids = list(set([activity["enclosureId"]
                           for activity in activities]))
-    for enclosure_id in enclosures_ids:
-        recintos_etl(year=2022, enclosure_properties={"id": enclosure_id})
+    # Run recintos_etl
+    recintos_etl(2022, enclosures_ids)
 
 
 if __name__ == "__main__":

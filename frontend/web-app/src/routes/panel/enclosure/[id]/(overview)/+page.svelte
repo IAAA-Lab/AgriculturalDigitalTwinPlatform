@@ -33,7 +33,7 @@
 			{@const properties = enclosures[0].properties}
 			<MapEnclosure {enclosures} />
 			<Crops
-				enclosureId={$page.data.id}
+				enclosureId={id}
 				crop={{
 					id: properties.cropId,
 					name: properties.cropName,

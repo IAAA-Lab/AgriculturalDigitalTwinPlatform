@@ -19,6 +19,10 @@
 			})
 			.addTo(map);
 
+		// Take the last 10 enclosures
+		enclosures = enclosures.slice(-10);
+		console.log(enclosures);
+
 		const geojsonFeatures = {
 			type: 'FeatureCollection',
 			features: enclosures
