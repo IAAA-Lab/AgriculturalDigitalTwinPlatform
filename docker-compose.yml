@@ -209,17 +209,43 @@ services:
 # #############################################
 
   prefect-server:
-    build: data-processing/prefect
+    image: prefecthq/prefect:2.10.13-python3.11
     restart: on-failure
     volumes:
       - prefect:/root/.prefect
-      - ./data-processing/prefect:/opt/prefect
     environment:
       - PREFECT_LOGGING_LEVEL=WARNING
       - PREFECT_UI_URL=http://127.0.0.0:4200/api
       - PREFECT_API_URL=http://127.0.0.1:4200/api
       - PREFECT_SERVER_API_HOST=0.0.0.0
       - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/prefect
+    ports:
+      - 4200:${PREFECT_PORT}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      postgres:
+        condition: service_started
+    # Resource limit because it tends to use a lot of memory
+    mem_limit: 512m
+    mem_reservation: 128m
+    cpus: 1.0
+    command: prefect server start
+
+#############################################
+#              Prefect workers              #
+#############################################
+
+  prefect-worker:
+    build: data-processing/prefect
+    restart: on-failure
+    volumes:
+      - ./data-processing/prefect:/opt/prefect
+    environment:
+      - PREFECT_LOGGING_LEVEL=WARNING
+      - PREFECT_API_URL=http://prefect-server:4200/api
       - PREFECT_MINIO_ACCESS_ROOT=${MINIO_ROOT_USER}
       - PREFECT_MINIO_SECRET_ROOT=${MINIO_ROOT_PASSWORD}
       - PREFECT_MINIO_HOST=${MINIO_HOST}
@@ -232,9 +258,9 @@ services:
       - STORAGE_TRUSTED_ZONE=${MINIO_TRUSTED_ZONE}
       - STORAGE_REFINED_ZONE=${MINIO_REFINED_ZONE}
       - RABBITMQ_URI=${RABBITMQ_URI}
-    ports:
-      - 4200:${PREFECT_PORT}
     depends_on:
+      prefect-server:
+        condition: service_started
       rabbitmq:
         condition: service_healthy
       mongo:
@@ -245,6 +271,7 @@ services:
     mem_limit: 2048m
     mem_reservation: 512m
     cpus: 1.0
+  
 
 volumes:
   prefect:

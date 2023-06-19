@@ -5,7 +5,6 @@ from prefect.tasks import task_input_hash
 from utils.functions import DB_MongoClient
 import requests
 import asyncio
-from prefect.deployments import run_deployment
 # Get rid of insecure warning
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)

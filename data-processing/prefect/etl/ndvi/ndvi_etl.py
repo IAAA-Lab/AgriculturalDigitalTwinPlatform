@@ -87,15 +87,16 @@ async def ndvi_etl(enclosure_ids_init: list[dict], date_end: str):
     #         print(e)
     logger = get_run_logger()
 
-    BATCH_SIZE = 2
+    BATCH_SIZE = 20
     client = httpx.AsyncClient(verify=False)
     tasks = []
     for i in range(0, len(ndvi_req_list), BATCH_SIZE):
         batch = ndvi_req_list[i:i+BATCH_SIZE]
         for nvi_req in batch:
             tasks.append(extract_ndvi.fn(nvi_req["enclosure_id"],
-                                      nvi_req["date_init"], nvi_req["date_end"], client))
+                                         nvi_req["date_init"], nvi_req["date_end"], client))
         ndvi_raw_list = await asyncio.gather(*tasks, return_exceptions=True)
+        await asyncio.sleep(3)
         for ndvi_raw in ndvi_raw_list:
             if isinstance(ndvi_raw, Exception):
                 logger.error(f"Error getting ndvi: {ndvi_raw}")

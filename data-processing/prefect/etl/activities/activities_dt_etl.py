@@ -1,11 +1,11 @@
 import io
 import json
+from etl.cultivos_identificadores.cultivos_identificadores_dt_etl import cultivos_identificadores_dt_etl
 import pandas as pd
 from prefect import task, flow
 from etl.recintos_cercanos.recintos_etl import recintos_etl
 from utils.functions import DB_MinioClient, DB_MongoClient
 from utils.constants import Constants
-from prefect.deployments import run_deployment
 import asyncio
 
 
@@ -50,8 +50,7 @@ def activities_dt_etl(file_name: str):
     # Run recintos_etl
     recintos_etl(2022, enclosures_ids)
     # Asynchronously extract the rest of the information
-    run_deployment(
-        name="cultivos_identificadores_dt_etl/event-driven")
+    cultivos_identificadores_dt_etl()
 
 
 # ----------- TEST -----------

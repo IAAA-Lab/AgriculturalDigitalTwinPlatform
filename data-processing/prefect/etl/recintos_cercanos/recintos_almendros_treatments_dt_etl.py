@@ -1,4 +1,6 @@
 import io
+
+from etl.cultivos_identificadores.cultivos_identificadores_dt_etl import cultivos_identificadores_dt_etl
 from etl.recintos_cercanos.recintos_etl import recintos_etl
 
 from etl.recintos_cercanos.recintos_user_info_etl import recintos_user_info_etl
@@ -8,7 +10,6 @@ from prefect import flow, task
 import asyncio
 from datetime import timedelta
 from utils.functions import DB_MinioClient, DB_MongoClient
-from prefect.deployments import run_deployment
 
 
 BUCKET_FROM_NAME = Constants.STORAGE_TRUSTED_ZONE.value
@@ -122,8 +123,9 @@ def recintos_almendros_treatments_dt_etl(file_name: str):
 
     load_crop_info(activities)
     # Asynchronously extract the rest of the information
-    run_deployment(
-        name="cultivos_identificadores_dt_etl/event-driven")
+    cultivos_identificadores_dt_etl()
+
+
 #  ----------- TESTS ------------
 if __name__ == "__main__":
     asyncio.run(recintos_almendros_treatments_dt_etl(

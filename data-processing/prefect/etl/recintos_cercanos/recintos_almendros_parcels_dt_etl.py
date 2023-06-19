@@ -1,12 +1,13 @@
 import asyncio
 import datetime
 import io
+
+from etl.cultivos_identificadores.cultivos_identificadores_dt_etl import cultivos_identificadores_dt_etl
 from etl.recintos_cercanos.recintos_etl import recintos_etl
 import pandas as pd
 from prefect import flow, task
 from utils.functions import DB_MinioClient, DB_MongoClient
 from utils.constants import Constants
-from prefect.deployments import run_deployment
 
 
 BUCKET_FROM_NAME = Constants.STORAGE_TRUSTED_ZONE.value
@@ -62,6 +63,7 @@ def transform_parcelas(df: pd.DataFrame):
 
     return enclosuresProperties
 
+
 @task
 def load(year: int, enclosure_properties: dict):
     # Connect to MongoDB
@@ -77,6 +79,7 @@ def load(year: int, enclosure_properties: dict):
 
 # ----------------- Flows -----------------
 
+
 @flow(name="recintos_almendros_parcels_dt_etl")
 def recintos_almendros_parcels_dt_etl(file_name: str):
     # Extract
@@ -85,13 +88,15 @@ def recintos_almendros_parcels_dt_etl(file_name: str):
     year = int(object["year"])
     # Transform
     enclosuresProperties = transform_parcelas(dfParcels)
-    recintos_etl(year, [enclosureProperties["id"] for enclosureProperties in enclosuresProperties])
+    recintos_etl(year, [enclosureProperties["id"]
+                 for enclosureProperties in enclosuresProperties])
     # Load
     for enclosureProperties in enclosuresProperties:
         load(year, enclosureProperties)
     # Asynchronously extract the rest of the information
-    run_deployment(
-        name="cultivos_identificadores_dt_etl/event-driven")
+    cultivos_identificadores_dt_etl()
+
+
 if __name__ == "__main__":
     asyncio.run(recintos_almendros_parcels_dt_etl(
         file_name="/ERP/7eData/2022/Recintos_Almendros_Cercanos_y_Otros_Cultivos_PARCELS_2022.parquet"))

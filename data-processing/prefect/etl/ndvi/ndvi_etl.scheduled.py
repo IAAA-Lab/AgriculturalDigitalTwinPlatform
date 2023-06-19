@@ -4,7 +4,6 @@ from utils.functions import DB_MongoClient
 from datetime import datetime
 import asyncio
 from datetime import timedelta
-from prefect.deployments import run_deployment
 
 NDVI_EXTRACT_FIRST_DATE = "01-01-2020"
 
@@ -41,10 +40,8 @@ async def ndvi_scheduled_etl():
     for enclosure_id in enclosures_ids:
         enclosure_ids_new.append(
             {"enclosure_id": enclosure_id, "date_init": extract_last_known_date(enclosure_id)})
-    
+
     await ndvi_etl(enclosure_ids_new, date_end)
-    # await run_deployment(name="ndvi_etl/event-driven", parameters=dict(
-    #     enclosure_ids_init=enclosure_ids_new, date_end=date_end))
 # ------------------ TEST ------------------
 
 # Test and debug the flow locally
