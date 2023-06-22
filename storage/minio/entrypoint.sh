@@ -1,6 +1,7 @@
 sleep 15
 # Create buckets
 mkdir -p /data/prefect-flows
+mkdir -p /data/mlflow
 mkdir -p /data/landing-zone
 mkdir -p /data/trusted-zone
 mkdir -p /data/refined-zone
