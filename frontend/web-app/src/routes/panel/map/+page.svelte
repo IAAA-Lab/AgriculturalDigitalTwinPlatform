@@ -1,6 +1,6 @@
+<svelte:options immutable />
+
 <script lang="ts">
-	import Error from '$lib/components/misc/Error.svelte';
-	import Loading from '$lib/components/misc/Loading.svelte';
 	import Map from '$lib/components/panel/Map.svelte';
 	import Search from '$lib/components/panel/Search.svelte';
 	import SearchPopup from '$lib/components/panel/SearchPopup.svelte';
@@ -8,7 +8,6 @@
 	import type { Enclosure, NDVI } from '$lib/core/Domain';
 	import { TABLET_WIDTH } from '$lib/config/constants';
 	import { listOfEnclosures } from '$lib/config/stores/selectedEnclosure';
-	import { onMount } from 'svelte';
 
 	let mediaQueryMobile = window.matchMedia(`(max-width: ${TABLET_WIDTH}px)`);
 	let isInMobile = mediaQueryMobile.matches;
@@ -17,56 +16,70 @@
 		isInMobile = mediaQueryMobile.matches;
 	});
 
-	let enclosures: Enclosure[] | undefined = [];
-	let enclosuresFiltered: Enclosure[] | undefined;
+	let distance: number;
+	let enclosures: Enclosure[] | undefined = undefined;
+	let filteredEnclosures: Enclosure[] | undefined = undefined;
+	let selectedEnclosure: Enclosure | undefined = undefined;
 
-	$: console.log(enclosuresFiltered);
+	$: {
+		// When a enclosure is not selected, we need to get all the enclosures
+		if (!selectedEnclosure) {
+			enclosuresService
+				.getEnclosures($listOfEnclosures)
+				.then((enclosuresRes) => {
+					enclosures = [...enclosuresRes];
+					getNDVI([...enclosuresRes].map((e) => e.id));
+				})
+				.catch((err) => {
+					enclosures = undefined;
+				});
+		}
+	}
 
-	onMount(() => {
+	$: {
+		// When distance changes, we need to search for the neighbors of the selected enclosure
+		if (distance && selectedEnclosure) {
+			enclosuresService
+				.getEnclosureNeighbors(selectedEnclosure.id, distance)
+				.then((enclosuresRes) => {
+					enclosures = [...enclosuresRes];
+					getNDVI([...enclosuresRes].map((e) => e.id));
+				})
+				.catch((err) => {
+					enclosures = undefined;
+				});
+		}
+	}
+
+	const getNDVI = (enclosureIds: string[]) => {
 		enclosuresService
-			.getEnclosures($listOfEnclosures)
-			.then((enclosuresRes) => {
-				enclosures = [...enclosuresRes];
-				enclosuresService
-					.getNDVI($listOfEnclosures, undefined, undefined, 1)
-					.then((res: NDVI[]) => {
-						enclosures = enclosuresRes.map((enclosure) => {
-							const ndvi = res.find((ndvi) => ndvi.enclosureId === enclosure.id);
-							return {
-								...enclosure,
-								properties: {
-									...enclosure.properties,
-									ndvi: ndvi
-								}
-							};
-						});
-					})
-					.catch((err) => {
-						enclosures = undefined;
-					});
+			.getNDVI(enclosureIds, undefined, undefined, 1)
+			.then((res: NDVI[]) => {
+				enclosures = enclosures?.map((enclosure) => {
+					const ndvi = res.find((ndvi) => ndvi.enclosureId === enclosure.id);
+					return {
+						...enclosure,
+						properties: {
+							...enclosure.properties,
+							ndvi: ndvi
+						}
+					};
+				});
 			})
-			.catch((err) => {
-				enclosures = undefined;
-			});
-	});
+			.catch((err) => {});
+	};
 </script>
 
 <section class="container-responsive">
 	<h1 class="title">Mapa</h1>
 	<div class="inner__container">
-		{#if enclosures?.length === 0}
-			<Loading />
-		{:else if enclosures?.length > 0}
-			<Map {enclosures} />
-			{#if isInMobile}
-				<SearchPopup>
-					<Search {enclosures} bind:enclosuresFiltered />
-				</SearchPopup>
-			{:else}
-				<Search {enclosures} />
-			{/if}
+		<Map enclosures={filteredEnclosures} bind:selectedEnclosure bind:distance />
+		{#if isInMobile}
+			<SearchPopup>
+				<Search bind:filteredEnclosures {enclosures} bind:selectedEnclosure />
+			</SearchPopup>
 		{:else}
-			<Error />
+			<Search bind:filteredEnclosures {enclosures} bind:selectedEnclosure />
 		{/if}
 	</div>
 </section>

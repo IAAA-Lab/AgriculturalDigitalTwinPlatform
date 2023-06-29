@@ -13,10 +13,11 @@
 	export let color: string;
 	export let cropName: string = '--';
 	export let ndvi: NDVI | undefined;
+	export let enclosureId: string = '--';
 
 	let icon: any = null;
 
-	onMount(() => {
+	$: {
 		// Convert geojson features to the svg image we see, imitating the ones in the map
 		icon = geojson2svg()
 			.styles((e: any, i: any, a: any) => {
@@ -29,7 +30,7 @@
 			.render()
 			// Replace the svg tag with a svg tag with the desired width and height and add border color black adapted to the shape
 			.replace('svg', "svg width='125' height='125'");
-	});
+	}
 
 	let ndviVal: number | undefined = undefined;
 
@@ -64,6 +65,9 @@
 				</p>
 			</div>
 		</div>
+		<a href={`/panel/enclosure/${enclosureId}`} class="button button-xs button-secondary">
+			<i class="fi fi-rr-redo" />
+		</a>
 	</div>
 </CardInner>
 
@@ -74,6 +78,13 @@
 		justify-content: flex-start;
 		align-items: center;
 		gap: 1rem;
+		position: relative;
+		a {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: auto;
+		}
 
 		.content {
 			flex: 1;

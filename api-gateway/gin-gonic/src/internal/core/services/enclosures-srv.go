@@ -23,6 +23,14 @@ func (srv *enclosuresService) GetEnclosures(enclosureIds []string, year int16) (
 	return srv.persistence.GetEnclosures(enclosureIds, year)
 }
 
+func (srv *enclosuresService) GetEnclosuresInRadius(enclosureId string, radius float64, year int16) ([]domain.Enclosure, error) {
+	enclosure, err := srv.persistence.GetEnclosures([]string{enclosureId}, year)
+	if err != nil {
+		return nil, err
+	}
+	return srv.persistence.GetEnclosuresInRadius(enclosure[0].Geometry.Coordinates[0][0], radius, year)
+}
+
 func (srv *enclosuresService) GetCropStats(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error) {
 	return srv.persistence.GetCropStats(enclosureId, startDate, endDate)
 }

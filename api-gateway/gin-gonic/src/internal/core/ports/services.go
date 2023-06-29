@@ -22,6 +22,7 @@ type EnclosuresService interface {
 	GetDailyWeather(enclosureId string) (domain.DailyWeather, error)
 	GetHistoricalWeather(enclosureId string, startDate time.Time, endDate time.Time, fields []string) ([]domain.HistoricalWeather, error)
 	GetEnclosures(enclosureIds []string, year int16) ([]domain.Enclosure, error)
+	GetEnclosuresInRadius(enclosureId string, radius float64, year int16) ([]domain.Enclosure, error)
 	GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time, limit int) ([]domain.NDVI, error)
 	GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder, error)
 	GetActivities(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Activity, error)

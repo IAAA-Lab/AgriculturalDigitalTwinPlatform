@@ -2,7 +2,6 @@ import type {
 	Enclosure,
 	Summary,
 	HistoricalWeather,
-	Treatment,
 	Fertilizer,
 	UserParcels,
 	DailyWeather,
@@ -40,6 +39,26 @@ class HttpParcelsRepository implements IParcelsRepository {
 				throw ServerError;
 			});
 	}
+
+	async getEnclosureNeighbors(enclosureId: string, radius: number): Promise<Enclosure[]> {
+		return this.http
+			.get<Enclosure[]>(`enclosures/${enclosureId}/neighbours`, {
+				params: {
+					radius
+				},
+				withCredentials: true
+			})
+			.then((response) => {
+				if (response.status === 200) {
+					return response.data;
+				}
+				throw ServerError;
+			})
+			.catch((_) => {
+				throw ServerError;
+			});
+	}
+
 	async getOverviewSummary(userId: string): Promise<Summary> {
 		throw new Error('Not implemented');
 	}

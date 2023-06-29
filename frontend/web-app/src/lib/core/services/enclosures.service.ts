@@ -8,6 +8,9 @@ class EnclosuresService implements IenclosuresService {
 	getEnclosures(enclosureIds: string[]): Promise<Enclosure[]> {
 		return this.parcelsRepository.getEnclosures(enclosureIds, undefined);
 	}
+	getEnclosureNeighbors(enclosureId: string, radius: number): Promise<Enclosure[]> {
+		return this.parcelsRepository.getEnclosureNeighbors(enclosureId, radius);
+	}
 	getHistoricalWeather(
 		idema: string,
 		startDate: Date,

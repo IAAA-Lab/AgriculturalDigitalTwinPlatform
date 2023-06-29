@@ -3,6 +3,7 @@ package handlers
 import (
 	"digital-twin/main-server/src/internal/core/ports"
 	"digital-twin/main-server/src/pkg/apperrors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -57,6 +58,40 @@ func (hdl *EnclosuresHTTPHandler) GetEnclosures(c *gin.Context) {
 }
 
 // -----------------------------------------------------------------------
+
+type EnclosuresInRadiusIn struct {
+	Radius float64 `form:"radius" binding:"required"`
+	Year   int16   `form:"year default=2022"`
+}
+
+// @Summary Get Enclosures In Radius
+// @Description Get Enclosures In Radius
+// @Tags Enclosures
+// @Accept  json
+// @Produce  json
+// @Param radius query float64 true "Radius"
+// @Param year query int true "Year"
+// @Success 200 {object} []ports.Enclosure
+// @Failure 400 {object} apperrors.Error
+// @Failure 500 {object} apperrors.Error
+// @Router /enclosures/radius [get]
+func (hdl *EnclosuresHTTPHandler) GetEnclosuresInRadius(c *gin.Context) {
+	enclosureId := c.Param("id")
+	var enclosuresInRadiusIn EnclosuresInRadiusIn
+	err := c.ShouldBind(&enclosuresInRadiusIn)
+	fmt.Println(enclosuresInRadiusIn, enclosureId)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error()})
+		return
+	}
+	enclosures, err := hdl.enclosuresService.GetEnclosuresInRadius(enclosureId, enclosuresInRadiusIn.Radius, enclosuresInRadiusIn.Year)
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	c.Writer.Header().Set("Cache-Control", "public, max-age=1800")
+	c.JSON(200, enclosures)
+}
 
 type CropStatsIn struct {
 	EnclosureId string    `form:"enclosureId" binding:"required"`

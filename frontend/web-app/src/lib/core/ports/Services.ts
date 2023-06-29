@@ -12,6 +12,7 @@ import type {
 
 interface IenclosuresService {
 	getEnclosures(enclosureIds: string[], year: number): Promise<Enclosure[]>;
+	getEnclosureNeighbors(enclosureId: string, radius: number): Promise<Enclosure[]>;
 	getHistoricalWeather(
 		idema: string,
 		startDate: Date,

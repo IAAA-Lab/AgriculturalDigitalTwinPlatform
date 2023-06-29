@@ -4,8 +4,8 @@
 </script>
 
 <div class="container-responsive">
-	<AnalysisEnclosureComp />
-	<br />
 	<AnalysisYearComp />
+	<br />
+	<AnalysisEnclosureComp />
 	<br />
 </div>

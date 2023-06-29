@@ -2,17 +2,17 @@
 	import { IMAGES_SERVER_URL } from '$lib/config/config';
 	import type { Enclosure } from '$lib/core/Domain';
 	import { getColor, onCropImageError } from '$lib/core/functions';
+	import mapStore from '../../../routes/panel/map/store';
 	import Card from './Card.svelte';
 	import MapSearchCard from './MapSearchCard.svelte';
 
 	export let enclosures: Enclosure[] = [];
+	export let filteredEnclosures: Enclosure[] = [];
+	export let selectedEnclosure: Enclosure | undefined = undefined;
 	let search = '';
-	export let enclosuresFiltered: Enclosure[] | undefined = undefined;
 
 	$: {
-		// Search can filter by crop name, geographic spot or enclosure id
-		// NOTE: This is very inefficient, but we don't have a lot of enclosures so it's fine
-		enclosuresFiltered = enclosures.filter((enclosure) => {
+		filteredEnclosures = enclosures.filter((enclosure) => {
 			const cropName = enclosure.properties.cropName.toLowerCase();
 			const geographicSpot = enclosure.properties.geographicSpot.toLowerCase();
 			const id = enclosure.id.toLowerCase();
@@ -23,6 +23,11 @@
 			);
 		});
 	}
+
+	const selectEnclosure = (enclosure: Enclosure) => {
+		$mapStore.flyToCoords(enclosure.geometry.coordinates[0]);
+		selectedEnclosure = { ...enclosure };
+	};
 </script>
 
 <div style="overflow-y: scroll">
@@ -32,7 +37,7 @@
 			<input type="search" bind:value={search} placeholder="Buscar..." style="width: 100%;" />
 			<div class="search-more">
 				<span class="text-xs"
-					><strong>{enclosuresFiltered.length} resultados<strong /></strong></span
+					><strong>{filteredEnclosures.length} resultados<strong /></strong></span
 				>
 				<div class="filter-order">
 					<i class="fi fi-rr-settings-sliders" />
@@ -41,8 +46,8 @@
 			</div>
 			<br />
 			<div class="enclosures">
-				{#each enclosuresFiltered as enclosure, i}
-					<a href="/panel/enclosure/{enclosure.id}">
+				{#each filteredEnclosures as enclosure, i}
+					<a on:click={() => selectEnclosure(enclosure)} href="#">
 						<MapSearchCard
 							location={enclosure.properties.geographicSpot}
 							enclosureName={enclosure.id}
@@ -51,6 +56,7 @@
 							color={getColor(i)}
 							cropName={enclosure.properties.cropName}
 							ndvi={enclosure.properties.ndvi}
+							enclosureId={enclosure.id}
 						>
 							<img
 								on:error={onCropImageError}

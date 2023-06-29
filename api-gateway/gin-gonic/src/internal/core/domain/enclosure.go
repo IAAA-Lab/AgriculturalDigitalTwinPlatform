@@ -10,8 +10,8 @@ type Enclosure struct {
 	Year     int    `json:"year"`
 	Type     string `json:"type"`
 	Geometry struct {
-		Type        string      `json:"type"`
-		Coordinates interface{} `json:"coordinates"`
+		Type        string        `json:"type"`
+		Coordinates [][][]float64 `json:"coordinates"`
 	} `json:"geometry"`
 	MeteoStation struct {
 		Idema    string  `json:"idema"`

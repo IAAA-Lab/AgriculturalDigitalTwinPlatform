@@ -162,6 +162,12 @@ canvas {
 		}
 	}
 
+	a {
+		text-decoration: none;
+		color: inherit;
+		transition: all 0.2s ease-in-out;
+	}
+
 	input[type='date'] {
 		padding: 1px 3px;
 	}
@@ -199,7 +205,8 @@ canvas {
 		}
 	}
 
-	button {
+	button,
+	.button {
 		display: inline-flex;
 		border-radius: 7px;
 		outline: inherit;
@@ -212,6 +219,7 @@ canvas {
 		cursor: pointer;
 		@include font-size(xs);
 		padding: 0.2rem 1rem;
+		background: whitesmoke;
 	}
 
 	.button-primary {

@@ -47,6 +47,25 @@ func (mc *mongodbConn) GetEnclosures(enclosureIds []string, year int16) ([]domai
 	return GetDocuments[domain.Enclosure](mc, ENCLOSURES_COLLECTION, filter, nil)
 }
 
+func (mc *mongodbConn) GetEnclosuresInRadius(coords []float64, radius float64, year int16) ([]domain.Enclosure, error) {
+	// if year is zero, then we don't filter by year
+	filter := bson.M{
+		"geometry": bson.M{
+			"$near": bson.M{
+				"$geometry": bson.M{
+					"type":        "Point",
+					"coordinates": coords,
+				},
+				"$maxDistance": radius,
+			},
+		},
+	}
+	if year != 0 {
+		filter["year"] = bson.M{"$eq": year}
+	}
+	return GetDocuments[domain.Enclosure](mc, ENCLOSURES_COLLECTION, filter, nil)
+}
+
 func (mc *mongodbConn) GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time, limit int) ([]domain.NDVI, error) {
 	// if startDate or endDate are zero, then we don't filter by date
 	pipeline := []bson.M{

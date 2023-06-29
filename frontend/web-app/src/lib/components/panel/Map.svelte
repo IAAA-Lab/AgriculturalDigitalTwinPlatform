@@ -7,16 +7,81 @@
 	import Card from './Card.svelte';
 	import 'leaflet.markercluster';
 	import { getColor } from '$lib/core/functions';
+	import mapStore from '../../../routes/panel/map/store';
+	import '$lib/components/panel/Leaflet.Control.Custom';
 
-	export let enclosures: Enclosure[] | undefined = undefined;
 	let map: leaflet.Map;
 	let mapElement: any;
 	let i = 0;
+	export let enclosures: Enclosure[] | undefined;
+	export let distance = 100;
+	export let selectedEnclosure: Enclosure | undefined;
+
+	$: {
+		// Update map markers
+		if (enclosures && enclosures.length > 0 && map) {
+			// Remove previous markers
+			map.eachLayer((layer) => {
+				if (layer instanceof leaflet.MarkerClusterGroup) {
+					map.removeLayer(layer);
+				}
+				if (layer instanceof leaflet.GeoJSON) {
+					map.removeLayer(layer);
+				}
+			});
+			const geojsonFeatures = {
+				type: 'FeatureCollection',
+				features: enclosures
+			} as any;
+
+			const features = leaflet.geoJSON(geojsonFeatures, {
+				style: (feature) => {
+					return {
+						fillColor: selectedEnclosure
+							? feature?.id === selectedEnclosure?.id
+								? 'red'
+								: 'grey'
+							: getColor(i++),
+						weight: 2,
+						opacity: 1,
+						color: 'black',
+						fillOpacity: 0.7,
+						pane: 'markerPane'
+					};
+				}
+			});
+
+			let points: leaflet.LatLngBoundsExpression;
+
+			if (!selectedEnclosure) {
+				// If all enclosures are shown, we need to cluster them to see them better
+				const markers = leaflet.markerClusterGroup().addTo(map);
+				markers.addLayer(features);
+				map.fitBounds(markers.getBounds());
+				points = markers.getBounds();
+			} else {
+				// If only one enclosure is shown, we show all the available enclosures at once
+				features.addTo(map);
+				map.fitBounds(features.getBounds());
+				points = features.getBounds();
+			}
+			// Set mapStore
+			mapStore.update((store) => {
+				return {
+					flyToCoords: (coords: number[][]) => {
+						coords = coords.map((coord) => [coord[1], coord[0]]);
+						map.fitBounds(coords);
+					},
+					centerMap: () => {
+						map.fitBounds(points);
+					}
+				};
+			});
+		}
+	}
 
 	onMount(() => {
-		if (!enclosures) return;
 		map = leaflet.map(mapElement);
-
 		const ign = leaflet.tileLayer
 			.wms('https://www.ign.es/wms-inspire/ign-base?', {
 				layers: 'IGNBaseTodo',
@@ -51,42 +116,65 @@
 		};
 
 		leaflet.control.layers(baseMaps, overlayMaps).addTo(map);
-		// .bindPopup((e) => e.feature.properties.popupContent);
 
-		// Compute polygon center and add it to _latlng
+		// ------- This is needed for the clustering of polygons
 		leaflet.Polygon.addInitHook(function () {
 			this._latlng = this.getBounds().getCenter();
 		});
 
-		// Get getLatLngs() and setLatLngs() functions
 		leaflet.Polygon.include({
 			getLatLng: function () {
 				return this._latlng;
 			},
 			setLatLng: function () {}
 		});
+		// -------
 
-		// Add marker cluster
-		const markers = leaflet.markerClusterGroup().addTo(map);
-		const geojsonFeatures = {
-			type: 'FeatureCollection',
-			features: enclosures
-		} as any;
+		leaflet.control
+			.custom({
+				position: 'topright',
+				content:
+					'<button type="button" class="leaflet-center">' +
+					'    <i class="fi fi-rr-home-location"></i>' +
+					'</button>',
+				events: {
+					click: function (data) {
+						$mapStore.centerMap();
+					}
+				}
+			})
+			.addTo(map);
 
-		const features = leaflet.geoJSON(geojsonFeatures, {
-			style: (feature) => {
-				return {
-					fillColor: getColor(i++),
-					weight: 2,
-					opacity: 1,
-					color: 'black',
-					fillOpacity: 0.7,
-					pane: 'markerPane'
-				};
-			}
-		});
-		markers.addLayer(features);
-		map.fitBounds(markers.getBounds());
+		leaflet.control
+			.custom({
+				position: 'topright',
+				content:
+					'<button type="button" class="leaflet-center">' +
+					'    <i class="fi fi-rr-trash-undo-alt"></i>' +
+					'</button>',
+				events: {
+					click: function (data) {
+						selectedEnclosure = undefined;
+					}
+				}
+			})
+			.addTo(map);
+
+		leaflet.control
+			.custom({
+				position: 'bottomright',
+				content: `<input type="range" min="100" max="1000" value="${distance}" class="slider" step="100">`,
+				style: {
+					margin: '10px',
+					padding: '0px'
+				},
+				events: {
+					input: function (data) {
+						distance = Number(data.target.value);
+					}
+				}
+			})
+			.addTo(map);
 	});
 
 	onDestroy(async () => {
@@ -107,5 +195,9 @@
 		min-width: 250px;
 		min-height: 350px;
 		height: 100%;
+	}
+
+	.leaflet-center {
+		padding: 0 !important;
 	}
 </style>

@@ -12,6 +12,7 @@ import type {
 
 interface IParcelsRepository {
 	getEnclosures(enclosureIds: string[], year?: number): Promise<Enclosure[]>;
+	getEnclosureNeighbors(enclosureId: string, radius: number): Promise<Enclosure[]>;
 	getOverviewSummary(userId: string): Promise<Summary>;
 	getHistoricalWeather(
 		idema: string,

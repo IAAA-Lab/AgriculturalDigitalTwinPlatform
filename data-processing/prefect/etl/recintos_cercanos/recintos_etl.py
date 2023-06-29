@@ -66,8 +66,9 @@ def extract_meteorological_station(enclosureId: str):
 
 
 @task
-def join_information(enclosure_geographic_info, crs, enclosure_meteorological_stations, year: int):
+def join_information(enclosure_geographic_info, crs, enclosure_meteorological_stations, year: int, enclosure_id: str):
     joined_enclosure = {
+        "id": enclosure_id,
         "year": int(year),
         "type": "Feature",
         "geometry": enclosure_geographic_info["geometry"],
@@ -91,28 +92,32 @@ def join_information(enclosure_geographic_info, crs, enclosure_meteorological_st
 
 
 @task
-def load_enclosures(enclosure: dict, enclosure_id: str):
+def load_enclosures(enclosures):
     # Connect to MongoDB
     db = DB_MongoClient().connect()
-
     # Insert enclosures filtered by id and year
-    db.Enclosures.update_one(
-        {"id": enclosure_id, "year": enclosure["year"]}, {"$set": enclosure}, upsert=True)
+    for enclosure in enclosures:
+        db.Enclosures.update_one(
+            {"id": enclosure["id"], "year": enclosure["year"]}, {"$set": enclosure}, upsert=True)
+    # Create a 2dsphere index for the geometry field
+    db.Enclosures.create_index([("geometry", "2dsphere")])
 
 
 @flow(name="recintos_etl")
 def recintos_etl(year: int, enclosure_ids: list[str]):
     enclosures_geographic_info = extract_geographic_info(enclosure_ids, year)
+    joined_enclosures = []
     for enclosure_geographic_info in enclosures_geographic_info["features"]:
         try:
             properties = enclosure_geographic_info["properties"]
             enclosure_id = f"{properties['provincia']}-{properties['municipio']}-{properties['agregado']}-{properties['zona']}-{properties['poligono']}-{properties['parcela']}-{properties['recinto']}"
             meteorological_info = extract_meteorological_station(enclosure_id)
-            joined_information = join_information(
-                enclosure_geographic_info, enclosures_geographic_info["crs"], meteorological_info, year)
-            load_enclosures(joined_information, enclosure_id)
+            joined_enclosure = join_information(
+                enclosure_geographic_info, enclosures_geographic_info["crs"], meteorological_info, year, enclosure_id)
+            joined_enclosures.append(joined_enclosure)
         except Exception as e:
             print(e)
+    load_enclosures(joined_enclosures)
 
 
 # ------------- TEST -------------
