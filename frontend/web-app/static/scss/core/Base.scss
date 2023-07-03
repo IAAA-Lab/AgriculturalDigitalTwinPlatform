@@ -140,6 +140,10 @@ canvas {
 		&:hover {
 			border-color: color(primary);
 		}
+
+		&:has(option:disabled:checked[hidden]) {
+			color: gray;
+		}
 	}
 
 	input,
@@ -208,18 +212,21 @@ canvas {
 	button,
 	.button {
 		display: inline-flex;
+		border: 2px solid gray;
 		border-radius: 7px;
 		outline: inherit;
 		letter-spacing: inherit;
 		text-align: center;
 		white-space: nowrap;
 		transition: background 0.15s ease;
-		padding: 0.4rem 1.25rem;
 		text-decoration: none !important;
 		cursor: pointer;
 		@include font-size(xs);
-		padding: 0.2rem 1rem;
-		background: whitesmoke;
+		padding: 0.15rem 0.75rem 0.1rem 0.75rem;
+		background: white;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 
 	.button-primary {

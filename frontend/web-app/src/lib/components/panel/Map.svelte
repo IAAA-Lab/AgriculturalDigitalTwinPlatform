@@ -66,16 +66,14 @@
 				points = features.getBounds();
 			}
 			// Set mapStore
-			mapStore.update((store) => {
-				return {
-					flyToCoords: (coords: number[][]) => {
-						coords = coords.map((coord) => [coord[1], coord[0]]);
-						map.fitBounds(coords);
-					},
-					centerMap: () => {
-						map.fitBounds(points);
-					}
-				};
+			mapStore.set({
+				flyToCoords: (coords: number[][]) => {
+					coords = coords.map((coord) => [coord[1], coord[0]]);
+					map.fitBounds(coords);
+				},
+				centerMap: () => {
+					map.fitBounds(points);
+				}
 			});
 		}
 	}

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { numberWithCommas, getRangeBarColor } from '$lib/core/functions';
-	import { onMount } from 'svelte';
 	import CardInner from './CardInner.svelte';
 	import geojson2svg from 'geojson-to-svg';
 	import Range from '../misc/Range.svelte';

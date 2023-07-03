@@ -55,6 +55,7 @@ def transform_parcelas(df: pd.DataFrame):
             "UHCDescription": row.UHCDescription,
             "ZEPAZone": row.ZepaZone,
             "SIEZone": row.SIEZone,
+            "geographicSpot": row.parcelGeographicSpot,
             # If row.cropName key exists, return its value, otherwise return None
             "cropName": row.cropName if hasattr(row, "cropName") else None,
         }

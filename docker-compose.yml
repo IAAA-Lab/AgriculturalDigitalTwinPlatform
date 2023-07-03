@@ -280,24 +280,24 @@ services:
 #              MLflow server                #
 #############################################
 
-  mlflow:
-    build: data-processing/mlflow
-    restart: always
-    ports:
-      - 5000:5000
-      - 5001:5001
-    depends_on:
-      - postgres
-      - minio
-    environment:
-      - MLFLOW_TRACKING_URI=${POSTGRES_URI_MLFLOW}
-      - MLFLOW_S3_ENDPOINT_URL=http://minio:9000
-      - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
-      - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
-    command: mlflow server --backend-store-uri ${POSTGRES_URI_MLFLOW} --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
-    mem_limit: 512m
-    mem_reservation: 128m
-    cpus: 0.5
+  # mlflow:
+  #   build: data-processing/mlflow
+  #   restart: always
+  #   ports:
+  #     - 5000:5000
+  #     - 5001:5001
+  #   depends_on:
+  #     - postgres
+  #     - minio
+  #   environment:
+  #     - MLFLOW_TRACKING_URI=${POSTGRES_URI_MLFLOW}
+  #     - MLFLOW_S3_ENDPOINT_URL=http://minio:9000
+  #     - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
+  #     - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
+  #   command: mlflow server --backend-store-uri ${POSTGRES_URI_MLFLOW} --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
+  #   mem_limit: 512m
+  #   mem_reservation: 128m
+  #   cpus: 0.5
 
 
 volumes:
