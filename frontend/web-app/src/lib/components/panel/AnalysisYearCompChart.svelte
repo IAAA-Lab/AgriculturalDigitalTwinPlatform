@@ -12,13 +12,12 @@
 	export let idema = '9434';
 
 	let resetZoom: () => void = () => {};
-	let uniqueActivities: string[] = [];
-	let selectedActivity: string = '';
+	let uniqueActivities: Activity[] = [];
+	let selectedActivity: string | undefined;
 
 	let endDate: Date;
 	let ndviValues: NDVI | null = null;
 	let weatherValues: HistoricalWeather[] = [];
-	let activities: Activity[] = [];
 
 	$: {
 		enclosuresService
@@ -47,22 +46,13 @@
 		enclosuresService
 			.getActivities(selectedEnclosure, new Date(startDate), new Date(endDate))
 			.then((activityList) => {
-				activities = [...activityList];
-				uniqueActivities = [...new Set([...activityList].map((activity) => activity.activity))];
+				const activities = [...new Set([...activityList])];
+				uniqueActivities = [...activities];
+				selectedActivity = activities.at(0)?.activity ?? '';
 			})
 			.catch((error) => {
-				activities = [];
 				uniqueActivities = [];
-			})
-			.finally(() => {
-				selectedActivity = '';
 			});
-	}
-
-	$: {
-		if (!selectedActivity && uniqueActivities.length > 0) {
-			selectedActivity = uniqueActivities.at(0) ?? '';
-		}
 	}
 
 	$: endDate = new Date(new Date(startDate).setDate(new Date(startDate).getDate() + limit));
@@ -84,7 +74,7 @@
 						on:change={(e) => (selectedActivity = e.target?.value ?? '')}
 					>
 						{#each uniqueActivities as activity}
-							<option value={activity}>{activity}</option>
+							<option value={activity.activity}>{activity.activity}</option>
 						{/each}
 					</select>
 				{/if}
@@ -128,13 +118,13 @@
 						},
 						{
 							type: 'bar',
-							data: activities
+							data: uniqueActivities
 								.filter((activity) => activity.activity === selectedActivity)
 								.map((activity) => ({
 									x: activity.date,
 									y: 1
 								})),
-							label: selectedActivity ?? '',
+							label: selectedActivity || '',
 							fill: true,
 							backgroundColor: selectedActivity ? 'green' : 'transparent',
 							yAxisID: 'y2',
