@@ -128,9 +128,10 @@ func (hdl *EnclosuresHTTPHandler) GetCropStats(c *gin.Context) {
 }
 
 type ActivitiesIn struct {
-	EnclosureId string    `form:"enclosureId" binding:"required"`
-	StartDate   time.Time `form:"startDate" binding:"required"`
-	EndDate     time.Time `form:"endDate" binding:"required"`
+	EnclosureIds []string  `form:"enclosureId" binding:"required"`
+	StartDate    time.Time `form:"startDate"`
+	EndDate      time.Time `form:"endDate"`
+	Limit        int       `form:"limit" default:"365"`
 }
 
 // @Summary Get Activities
@@ -143,15 +144,17 @@ type ActivitiesIn struct {
 // @Success 200 {object} []ports.Treatment
 // @Failure 400 {object} apperrors.Error
 // @Failure 500 {object} apperrors.Error
-// @Router /activities [get]
+// @Router /activities [post]
 func (hdl *EnclosuresHTTPHandler) GetActivities(c *gin.Context) {
-	var activitiesIn ActivitiesIn
+	activitiesIn := ActivitiesIn{
+		Limit: 365,
+	}
 	err := c.ShouldBind(&activitiesIn)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"message": apperrors.ErrInvalidInput.Error(), "valid_input": map[string]string{"enclosureId": "string, required", "date": "string, required"}})
 		return
 	}
-	activities, err := hdl.enclosuresService.GetActivities(activitiesIn.EnclosureId, activitiesIn.StartDate, activitiesIn.EndDate)
+	activities, err := hdl.enclosuresService.GetActivities(activitiesIn.EnclosureIds, activitiesIn.StartDate, activitiesIn.EndDate, activitiesIn.Limit)
 	if err != nil {
 		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 		return
@@ -294,7 +297,7 @@ type NDVIIn struct {
 // @Success 200 {object} []ports.NDVI
 // @Failure 400 {object} apperrors.Error
 // @Failure 500 {object} apperrors.Error
-// @Router /ndvi [get]
+// @Router /ndvi [post]
 func (hdl *EnclosuresHTTPHandler) GetNDVI(c *gin.Context) {
 	ndviIn := NDVIIn{
 		Limit: 365,

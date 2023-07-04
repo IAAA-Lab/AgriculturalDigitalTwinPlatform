@@ -25,7 +25,7 @@ type EnclosuresService interface {
 	GetEnclosuresInRadius(enclosureId string, radius float64, year int16) ([]domain.Enclosure, error)
 	GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time, limit int) ([]domain.NDVI, error)
 	GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder, error)
-	GetActivities(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Activity, error)
+	GetActivities(enclosureIds []string, startDate time.Time, endDate time.Time, Limit int) ([]domain.Activity, error)
 	FetchAllEnclosureIds() ([]string, error)
 	GetCropStats(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
 }

@@ -126,12 +126,46 @@ func (mc *mongodbConn) GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder,
 	return GetDocument[domain.FarmHolder](mc, FARM_COLLECTION, filter, nil)
 }
 
-func (mc *mongodbConn) GetActivities(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Activity, error) {
-	filter := bson.M{
-		"enclosureId": bson.M{"$eq": enclosureId},
-		"date":        bson.M{"$gte": startDate, "$lte": endDate},
+func (mc *mongodbConn) GetActivities(enclosureIds []string, startDate time.Time, endDate time.Time, limit int) ([]domain.Activity, error) {
+	fmt.Println(enclosureIds)
+	pipeline := []bson.M{
+		{
+			"$match": bson.M{
+				"enclosureId": bson.M{"$in": enclosureIds},
+				// "date":        bson.M{"$gte": startDate, "$lte": endDate},
+			},
+		},
+		{
+			"$sort": bson.M{
+				"date": -1,
+			},
+		},
+		{
+			"$group": bson.M{
+				"_id": "$enclosureId",
+				"activities": bson.M{
+					"$push": bson.M{
+						"date":       "$date",
+						"activity":   "$activity",
+						"properties": "$properties",
+					},
+				},
+			},
+		},
+		{
+			"$project": bson.M{
+				"_id":         0,
+				"enclosureId": "$_id",
+				"activities": bson.M{
+					"$slice": []interface{}{"$activities", limit},
+				},
+			},
+		},
 	}
-	return GetDocuments[domain.Activity](mc, ACTIVITIES_COLLECTION, filter, nil)
+	if !startDate.IsZero() && !endDate.IsZero() {
+		pipeline[0]["$match"].(bson.M)["date"] = bson.M{"$gte": startDate, "$lte": endDate}
+	}
+	return AggregateDocuments[domain.Activity](mc, ACTIVITIES_COLLECTION, pipeline, nil)
 }
 
 func (mc *mongodbConn) FetchAllEnclosureIds() ([]string, error) {

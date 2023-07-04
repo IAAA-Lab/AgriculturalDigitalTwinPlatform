@@ -27,8 +27,13 @@ interface IenclosuresService {
 		endDate?: Date,
 		limit?: number
 	): Promise<NDVI[]>;
-	getCropStats(enclosureId: string, startDate: Date, endDate: Date): Promise<CropStats[]>;
-	getActivities(enclosureId: string, startDate: Date, endDate: Date): Promise<Activity[]>;
+	getCropStats(enclosureId: string, startDate?: Date, endDate?: Date): Promise<CropStats[]>;
+	getActivities(
+		enclosureIds: string[],
+		startDate: Date,
+		endDate: Date,
+		limit?: number
+	): Promise<Activity[]>;
 }
 
 interface IUserService {

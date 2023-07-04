@@ -88,16 +88,25 @@ class HttpParcelsRepository implements IParcelsRepository {
 				throw ServerError;
 			});
 	}
-	async getActivities(enclosureId: string, startDate: Date, endDate: Date): Promise<Activity[]> {
+	async getActivities(
+		enclosureIds: string[],
+		startDate?: Date,
+		endDate?: Date,
+		limit?: number
+	): Promise<Activity[]> {
 		return this.http
-			.get<Activity[]>('activities', {
-				params: {
-					enclosureId,
+			.post<Activity[]>(
+				'activities',
+				{
+					enclosureIds,
 					startDate,
-					endDate
+					endDate,
+					limit
 				},
-				withCredentials: true
-			})
+				{
+					withCredentials: true
+				}
+			)
 			.then((response) => {
 				if (response.status === 200) {
 					return response.data;

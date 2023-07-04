@@ -44,11 +44,11 @@
 	$: {
 		// If selectedActivity is empty, get all activities
 		enclosuresService
-			.getActivities(selectedEnclosure, new Date(startDate), new Date(endDate))
+			.getActivities([selectedEnclosure], new Date(startDate), new Date(endDate))
 			.then((activityList) => {
 				const activities = [...new Set([...activityList])];
 				uniqueActivities = [...activities];
-				selectedActivity = activities.at(0)?.activity ?? '';
+				selectedActivity = activities.at(0)?.activities[0].activity;
 			})
 			.catch((error) => {
 				uniqueActivities = [];
@@ -74,7 +74,9 @@
 						on:change={(e) => (selectedActivity = e.target?.value ?? '')}
 					>
 						{#each uniqueActivities as activity}
-							<option value={activity.activity}>{activity.activity}</option>
+							<option value={activity.activities[0].activity}
+								>{activity.activities[0].activity}</option
+							>
 						{/each}
 					</select>
 				{/if}
@@ -119,9 +121,9 @@
 						{
 							type: 'bar',
 							data: uniqueActivities
-								.filter((activity) => activity.activity === selectedActivity)
+								.filter((activity) => activity.activities[0].activity === selectedActivity)
 								.map((activity) => ({
-									x: activity.date,
+									x: activity.activities[0].date,
 									y: 1
 								})),
 							label: selectedActivity || '',

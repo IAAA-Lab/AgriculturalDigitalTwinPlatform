@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { tabs } from '$lib/config/constants';
 	import Card from './Card.svelte';
 	import CardInner from './CardInner.svelte';
 	import SummaryStatCard from './SummaryStatCard.svelte';
@@ -56,14 +55,7 @@
               .filter((s) => s.stat.name === selectedChartStat)
               .map((s) => s.stat.value)}
           /> -->
-					<h3 class="m-0">En construcción</h3>
 					<br />
-					<img
-						src={'under_construction.png'}
-						alt="Under construction"
-						width="100%"
-						style="max-width: 700px;"
-					/>
 				</div>
 			</CardInner>
 		</div>

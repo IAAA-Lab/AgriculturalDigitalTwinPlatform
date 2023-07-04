@@ -6,7 +6,7 @@
 	import type { Enclosure } from '$lib/core/Domain';
 	import Card from './Card.svelte';
 	import 'leaflet.markercluster';
-	import { getColor } from '$lib/core/functions';
+	import { formattedDate, formattedTime, getColor } from '$lib/core/functions';
 	import mapStore from '../../../routes/panel/map/store';
 	import '$lib/components/panel/Leaflet.Control.Custom';
 
@@ -57,13 +57,26 @@
 				// If all enclosures are shown, we need to cluster them to see them better
 				const markers = leaflet.markerClusterGroup().addTo(map);
 				markers.addLayer(features);
-				map.fitBounds(markers.getBounds());
 				points = markers.getBounds();
+				map.fitBounds(points);
 			} else {
 				// If only one enclosure is shown, we show all the available enclosures at once
-				features.addTo(map);
-				map.fitBounds(features.getBounds());
+				features
+					.eachLayer((layer) => {
+						// Add tooltip
+						if (selectedEnclosure?.id === layer.feature.id) return;
+						layer.bindTooltip(
+							layer.feature?.properties?.activities
+								?.map((activity) => activity.activity + ' - ' + formattedTime(activity.date))
+								?.join('<br>'),
+							{
+								permanent: true
+							}
+						);
+					})
+					.addTo(map);
 				points = features.getBounds();
+				map.fitBounds(points);
 			}
 			// Set mapStore
 			mapStore.set({
@@ -161,7 +174,7 @@
 		leaflet.control
 			.custom({
 				position: 'bottomright',
-				content: `<input type="range" min="100" max="1000" value="${distance}" class="slider" step="100">`,
+				content: `<div class="button radius-input"><label>Radio</label><input type="range" min="100" max="1000" value="${distance}" class="slider" step="100"></div>`,
 				style: {
 					margin: '10px',
 					padding: '0px'
@@ -193,6 +206,12 @@
 		min-width: 250px;
 		min-height: 350px;
 		height: 100%;
+	}
+
+	:global(.radius-input) {
+		display: flex;
+		flex-direction: column;
+		align-items: start !important;
 	}
 
 	.leaflet-center {

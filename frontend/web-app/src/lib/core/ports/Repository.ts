@@ -28,7 +28,12 @@ interface IParcelsRepository {
 		endDate?: Date,
 		limit?: number
 	): Promise<NDVI[]>;
-	getActivities(enclosureId: string, startDate: Date, endDate: Date): Promise<Activity[]>;
+	getActivities(
+		enclosureIds: string[],
+		startDate?: Date,
+		endDate?: Date,
+		limit?: number
+	): Promise<Activity[]>;
 	getFertilizers(enclosureId: string, startDate: Date, endDate: Date): Promise<Fertilizer[]>;
 	getCropStats(enclosureId: string, startDate?: Date, endDate?: Date): Promise<CropStats[]>;
 }

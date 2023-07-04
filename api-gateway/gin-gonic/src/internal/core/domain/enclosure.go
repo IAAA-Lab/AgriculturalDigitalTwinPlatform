@@ -60,11 +60,13 @@ type Fertilizer struct {
 }
 
 type Activity struct {
-	Date        time.Time `json:"date"`
-	EnclosureId string    `json:"enclosureId"`
-	Activity    string    `json:"activity"`
-	// Properties is a json object that contains the properties of the activity
-	Properties map[string]interface{} `json:"properties"`
+	EnclosureId string `json:"enclosureId"`
+	Activities  []struct {
+		Date     time.Time `json:"date"`
+		Activity string    `json:"activity"`
+		// Properties is a json object that contains the properties of the activity
+		Properties map[string]interface{} `json:"properties"`
+	} `json:"activities"`
 }
 
 type NDVI struct {

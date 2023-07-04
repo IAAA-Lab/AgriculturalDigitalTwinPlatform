@@ -44,6 +44,7 @@
 				.then((enclosuresRes) => {
 					enclosures = [...enclosuresRes];
 					getNDVI([...enclosuresRes].map((e) => e.id));
+					getActivities([...enclosuresRes].map((e) => e.id));
 				})
 				.catch((err) => {
 					enclosures = undefined;
@@ -54,7 +55,7 @@
 	const getNDVI = (enclosureIds: string[]) => {
 		enclosuresService
 			.getNDVI(enclosureIds, undefined, undefined, 1)
-			.then((res: NDVI[]) => {
+			.then((res) => {
 				enclosures = enclosures?.map((enclosure) => {
 					const ndvi = res.find((ndvi) => ndvi.enclosureId === enclosure.id);
 					return {
@@ -62,6 +63,24 @@
 						properties: {
 							...enclosure.properties,
 							ndvi: ndvi
+						}
+					};
+				});
+			})
+			.catch((err) => {});
+	};
+
+	const getActivities = (enclosureIds: string[]) => {
+		enclosuresService
+			.getActivities(enclosureIds, undefined, undefined, 10)
+			.then((res) => {
+				enclosures = enclosures?.map((enclosure) => {
+					const activities = res.find((activity) => activity.enclosureId === enclosure.id);
+					return {
+						...enclosure,
+						properties: {
+							...enclosure.properties,
+							activities: activities?.activities
 						}
 					};
 				});

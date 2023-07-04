@@ -36,8 +36,8 @@ class EnclosuresService implements IenclosuresService {
 	): Promise<NDVI[]> {
 		return this.parcelsRepository.getNDVI(enclosureIds, startDate, endDate, limit);
 	}
-	getActivities(enclosureId: string, startDate: Date, endDate: Date) {
-		return this.parcelsRepository.getActivities(enclosureId, startDate, endDate);
+	getActivities(enclosureIds: string[], startDate?: Date, endDate?: Date, limit?: number) {
+		return this.parcelsRepository.getActivities(enclosureIds, startDate, endDate, limit);
 	}
 	getFertilizers(enclosureId: string, startDate: Date, endDate: Date) {
 		return this.parcelsRepository.getFertilizers(enclosureId, startDate, endDate);

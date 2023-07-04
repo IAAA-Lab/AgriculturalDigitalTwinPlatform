@@ -91,9 +91,11 @@ type Treatment = {
 
 type Activity = {
 	enclosureId: string;
-	date: Date;
-	activity: string;
-	properties: object;
+	activities: {
+		date: Date;
+		activity: string;
+		properties: object;
+	}[];
 };
 
 type NDVI = {

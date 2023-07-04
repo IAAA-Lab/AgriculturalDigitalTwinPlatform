@@ -3,7 +3,6 @@ package services
 import (
 	"digital-twin/main-server/src/internal/core/domain"
 	"digital-twin/main-server/src/internal/core/ports"
-	"sort"
 	"time"
 )
 
@@ -51,15 +50,8 @@ func (srv *enclosuresService) GetNDVI(enclosureIds []string, startDate time.Time
 	return srv.persistence.GetNDVI(enclosureIds, startDate, endDate, limit)
 }
 
-func (srv *enclosuresService) GetActivities(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.Activity, error) {
-	activities, err := srv.persistence.GetActivities(enclosureId, startDate, endDate)
-	if err != nil {
-		return nil, err
-	}
-	sort.Slice(activities, func(i, j int) bool {
-		return activities[i].Date.Before(activities[j].Date)
-	})
-	return activities, nil
+func (srv *enclosuresService) GetActivities(enclosureIds []string, startDate time.Time, endDate time.Time, Limit int) ([]domain.Activity, error) {
+	return srv.persistence.GetActivities(enclosureIds, startDate, endDate, Limit)
 }
 
 func (srv *enclosuresService) GetFarmHolder(farmId domain.FarmHolderId) (domain.FarmHolder, error) {
