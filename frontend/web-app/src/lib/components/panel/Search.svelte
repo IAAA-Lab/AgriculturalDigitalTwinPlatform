@@ -13,17 +13,23 @@
 	let search: string | undefined = undefined;
 	let selectedCrop: string | undefined = undefined;
 	let selectedLocation: string | undefined = undefined;
+	let orderBy: string | undefined = undefined;
+	let limit: number = 0;
 	let openFilterDialog = false;
 
+	// Client side filtering and ordering of enclosures
 	$: {
 		filteredEnclosures = enclosures
 			.filter((enclosure) => {
-				// Filter by selected crop and location
-				if (selectedCrop || selectedLocation) {
+				if (selectedCrop && selectedLocation) {
 					return (
-						enclosure.properties.cropName === selectedCrop ||
+						enclosure.properties.cropName === selectedCrop &&
 						enclosure.properties.geographicSpot === selectedLocation
 					);
+				} else if (selectedCrop) {
+					return enclosure.properties.cropName === selectedCrop;
+				} else if (selectedLocation) {
+					return enclosure.properties.geographicSpot === selectedLocation;
 				}
 				return true;
 			})
@@ -37,7 +43,30 @@
 					);
 				}
 				return true;
-			});
+			})
+			.sort((a, b) => {
+				switch (orderBy) {
+					case 'area':
+						return b.properties.area - a.properties.area;
+					case 'crop':
+						return a.properties.cropName.localeCompare(b.properties.cropName);
+					case 'location':
+						return a.properties.geographicSpot.localeCompare(b.properties.geographicSpot);
+					case 'ndviAsc':
+						if (!a.properties.ndvi || !b.properties.ndvi) {
+							return 0;
+						}
+						return a.properties.ndvi.ndvi[0].value - b.properties.ndvi.ndvi[0].value;
+					case 'ndviDesc':
+						if (!a.properties.ndvi || !b.properties.ndvi) {
+							return 0;
+						}
+						return b.properties.ndvi.ndvi[0].value - a.properties.ndvi.ndvi[0].value;
+					default:
+						return 0;
+				}
+			})
+			.slice(0, limit === 0 ? enclosures.length : limit);
 	}
 
 	const selectEnclosure = (enclosure: Enclosure) => {
@@ -47,7 +76,14 @@
 </script>
 
 <div style="overflow-y: scroll; position: relative;">
-	<FilterDialog bind:open={openFilterDialog} {enclosures} bind:selectedCrop bind:selectedLocation />
+	<FilterDialog
+		bind:open={openFilterDialog}
+		{enclosures}
+		bind:selectedCrop
+		bind:selectedLocation
+		bind:orderBy
+		bind:limit
+	/>
 	<Card>
 		<h2 class="m-0 mb-8 ml-8" slot="header">Recintos</h2>
 		<div slot="body" class="p-8">
@@ -56,14 +92,9 @@
 				<span class="text-xs"
 					><strong>{filteredEnclosures.length} resultados<strong /></strong></span
 				>
-				<div class="filter-order">
-					<button on:click={() => (openFilterDialog = !openFilterDialog)}>
-						<i class="fi fi-rr-settings-sliders" />
-					</button>
-					<button on:click={() => {}}>
-						<i class="fi fi-rr-sort-amount-down-alt" />
-					</button>
-				</div>
+				<button on:click={() => (openFilterDialog = !openFilterDialog)}>
+					<i class="fi fi-rr-settings-sliders" />
+				</button>
 			</div>
 			<br />
 			<div class="enclosures">
@@ -115,12 +146,5 @@
 		align-items: center;
 		padding-left: 8px;
 		padding-right: 8px;
-	}
-	.filter-order {
-		margin-top: 8px;
-		display: flex;
-		flex-direction: row;
-		gap: 1rem;
-		cursor: pointer;
 	}
 </style>

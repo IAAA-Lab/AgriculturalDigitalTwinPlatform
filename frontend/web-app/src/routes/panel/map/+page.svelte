@@ -72,7 +72,7 @@
 
 	const getActivities = (enclosureIds: string[]) => {
 		enclosuresService
-			.getActivities(enclosureIds, undefined, undefined, 10)
+			.getActivities(enclosureIds, undefined, undefined, 1)
 			.then((res) => {
 				enclosures = enclosures?.map((enclosure) => {
 					const activities = res.find((activity) => activity.enclosureId === enclosure.id);

@@ -25,7 +25,7 @@ const numberWithCommas = (num?: number | string) => {
 	}
 	// Also negative numbers
 	return Number(num)
-		.toFixed(2)
+		.toFixed(3)
 		.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 

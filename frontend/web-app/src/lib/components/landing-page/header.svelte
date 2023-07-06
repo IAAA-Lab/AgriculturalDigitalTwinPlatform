@@ -56,9 +56,7 @@
 						</li>
 						{#if $page.url.pathname === '/'}
 							<li>
-								<a class="m-0 fw-700" href="#contact" on:click|preventDefault={scrollIntoView}
-									>Contacto</a
-								>
+								<a class="m-0 fw-700" on:click|preventDefault={scrollIntoView}>Contacto</a>
 							</li>
 						{/if}
 						<li>
@@ -126,6 +124,12 @@
 			cursor: pointer;
 			@include anchor-aspect(header);
 			@include font-weight(header-link);
+		}
+		a.button {
+			// quit the underline
+			text-decoration: none;
+			padding: 0.5rem 1rem;
+			border-radius: 8px;
 		}
 	}
 

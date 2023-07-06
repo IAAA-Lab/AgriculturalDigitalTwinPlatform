@@ -6,7 +6,7 @@
 	import type { Enclosure } from '$lib/core/Domain';
 	import Card from './Card.svelte';
 	import 'leaflet.markercluster';
-	import { formattedDate, formattedTime, getColor } from '$lib/core/functions';
+	import { formattedDate, formattedTime, getColor, numberWithCommas } from '$lib/core/functions';
 	import mapStore from '../../../routes/panel/map/store';
 	import '$lib/components/panel/Leaflet.Control.Custom';
 
@@ -67,12 +67,30 @@
 						if (selectedEnclosure?.id === layer.feature.id) return;
 						layer.bindTooltip(
 							layer.feature?.properties?.activities
-								?.map((activity) => activity.activity + ' - ' + formattedTime(activity.date))
+								?.map((activity) => tooltipContent(activity))
 								?.join('<br>'),
 							{
 								permanent: true
 							}
 						);
+						layer.on('click', (e) => {
+							e.target.setStyle({
+								fillOpacity: e.target.options.fillOpacity === 0.7 ? 0.3 : 0.7
+							});
+							// Toogle tooltip
+							if (e.target.getTooltip()) {
+								e.target.unbindTooltip();
+							} else {
+								e.target.bindTooltip(
+									e.target.feature?.properties?.activities
+										?.map((activity) => tooltipContent(activity))
+										?.join('<br>'),
+									{
+										permanent: true
+									}
+								);
+							}
+						});
 					})
 					.addTo(map);
 				points = features.getBounds();
@@ -193,6 +211,25 @@
 			map.remove();
 		}
 	});
+
+	const tooltipContent = (activity) => {
+		return (
+			'<strong>' +
+			activity.activity +
+			' (' +
+			formattedTime(activity.date) +
+			')</strong>' +
+			'<br>Plaga: ' +
+			activity.properties?.plague.name +
+			'<br>Fito: ' +
+			activity.properties?.phytosanitary.name +
+			'<br>Dosis: ' +
+			numberWithCommas(activity.properties?.quantity) +
+			activity.properties?.doseUnit +
+			'<br>Agente: ' +
+			activity.properties?.healthAgent.name
+		);
+	};
 </script>
 
 <Card>
