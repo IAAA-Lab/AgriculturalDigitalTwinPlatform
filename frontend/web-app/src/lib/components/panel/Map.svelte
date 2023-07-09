@@ -61,40 +61,39 @@
 				map.fitBounds(points);
 			} else {
 				// If only one enclosure is shown, we show all the available enclosures at once
-				features
-					.eachLayer((layer) => {
-						// Add tooltip
-						if (selectedEnclosure?.id === layer.feature.id) return;
-						layer.bindTooltip(
-							layer.feature?.properties?.activities
-								?.map((activity) => tooltipContent(activity))
-								?.join('<br>'),
-							{
-								permanent: true
-							}
-						);
-						layer.on('click', (e) => {
-							e.target.setStyle({
-								fillOpacity: e.target.options.fillOpacity === 0.7 ? 0.3 : 0.7
-							});
-							// Toogle tooltip
-							if (e.target.getTooltip()) {
-								e.target.unbindTooltip();
-							} else {
-								e.target.bindTooltip(
-									e.target.feature?.properties?.activities
-										?.map((activity) => tooltipContent(activity))
-										?.join('<br>'),
-									{
-										permanent: true
-									}
-								);
-							}
-						});
-					})
-					.addTo(map);
+				const featuresMap = features.addTo(map);
 				points = features.getBounds();
 				map.fitBounds(points);
+				featuresMap.eachLayer((layer) => {
+					// Add tooltip
+					if (selectedEnclosure?.id === layer.feature.id) return;
+					layer.bindTooltip(
+						layer.feature?.properties?.activities
+							?.map((activity) => tooltipContent(activity))
+							?.join('<br>'),
+						{
+							permanent: true
+						}
+					);
+					layer.on('click', (e) => {
+						e.target.setStyle({
+							fillOpacity: e.target.options.fillOpacity === 0.7 ? 0.3 : 0.7
+						});
+						// Toogle tooltip
+						if (e.target.getTooltip()) {
+							e.target.unbindTooltip();
+						} else {
+							e.target.bindTooltip(
+								e.target.feature?.properties?.activities
+									?.map((activity) => tooltipContent(activity))
+									?.join('<br>'),
+								{
+									permanent: true
+								}
+							);
+						}
+					});
+				});
 			}
 			// Set mapStore
 			mapStore.set({
@@ -111,29 +110,30 @@
 
 	onMount(() => {
 		map = leaflet.map(mapElement);
-		const ign = leaflet.tileLayer
-			.wms('https://www.ign.es/wms-inspire/ign-base?', {
-				layers: 'IGNBaseTodo',
-				format: 'image/png',
-				transparent: true,
-				attribution: 'IGN'
+		const ign = leaflet.tileLayer.wms('https://www.ign.es/wms-inspire/ign-base?', {
+			layers: 'IGNBaseTodo',
+			format: 'image/png',
+			transparent: true,
+			attribution: 'IGN'
+		});
+
+		const osm = leaflet
+			.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				maxZoom: 19,
+				attribution: '© OpenStreetMap'
 			})
 			.addTo(map);
 
-		const osm = leaflet.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			maxZoom: 19,
-			attribution: '© OpenStreetMap'
-		});
-
-		const wms = leaflet.tileLayer
-			.wms('https://servicios.itacyl.es/arcgis/services/Visor_Suelos/MapServer/WMSServer?', {
+		const wms = leaflet.tileLayer.wms(
+			'https://servicios.itacyl.es/arcgis/services/Visor_Suelos/MapServer/WMSServer?',
+			{
 				layers: '0',
 				format: 'image/png',
 				transparent: true,
 				opacity: 0.85,
 				attribution: 'ITACyL'
-			})
-			.addTo(map);
+			}
+		);
 
 		const baseMaps = {
 			IGN: ign,
@@ -240,9 +240,8 @@
 
 <style lang="scss">
 	div {
-		min-width: 250px;
-		min-height: 350px;
 		height: 100%;
+		width: 100%;
 	}
 
 	:global(.radius-input) {

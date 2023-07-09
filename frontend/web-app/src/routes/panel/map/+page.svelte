@@ -8,6 +8,7 @@
 	import type { Enclosure, NDVI } from '$lib/core/Domain';
 	import { TABLET_WIDTH } from '$lib/config/constants';
 	import { listOfEnclosures } from '$lib/config/stores/selectedEnclosure';
+	import AnalysisEnclosureComp from '$lib/components/panel/AnalysisEnclosureComp.svelte';
 
 	let mediaQueryMobile = window.matchMedia(`(max-width: ${TABLET_WIDTH}px)`);
 	let isInMobile = mediaQueryMobile.matches;
@@ -91,8 +92,11 @@
 
 <section class="container-responsive">
 	<h1 class="title">Mapa</h1>
-	<div class="inner__container">
-		<Map enclosures={filteredEnclosures} bind:selectedEnclosure bind:distance />
+	<div class="inner__container__group">
+		<div class="map__analysis__wrapper">
+			<Map enclosures={filteredEnclosures} bind:selectedEnclosure bind:distance />
+			<AnalysisEnclosureComp listOfEnclosures={filteredEnclosures?.map((e) => e.id)} />
+		</div>
 		{#if isInMobile}
 			<SearchPopup>
 				<Search bind:filteredEnclosures {enclosures} bind:selectedEnclosure />
@@ -107,7 +111,17 @@
 	section {
 		overflow-y: scroll;
 	}
-	.inner__container {
+
+	.map__analysis__wrapper {
+		display: flex;
+		flex-direction: column;
+		row-gap: 0.5rem;
+		:global(:first-child) {
+			flex: 1;
+		}
+	}
+
+	.inner__container__group {
 		display: grid;
 		gap: 0.8rem;
 		height: calc(100vh - 6.3rem);
@@ -115,7 +129,7 @@
 	}
 
 	@include media('<large') {
-		.inner__container {
+		.inner__container__group {
 			padding: 0;
 			margin-top: 16px;
 			grid-template-columns: 1fr;

@@ -209,7 +209,7 @@ class HttpParcelsRepository implements IParcelsRepository {
 			.post<NDVI[]>(
 				'ndvi',
 				{
-					enclosureIds,
+					enclosureIds: enclosureIds.length > 0 ? enclosureIds : ['djsk'],
 					startDate,
 					endDate,
 					limit

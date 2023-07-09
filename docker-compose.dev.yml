@@ -153,7 +153,7 @@ services:
 # #############################################
 
   mongo:
-      image: mongo:latest
+      image: mongo:6.0.7
       ports:
           - 27018:${MONGO_PORT}
       restart: always

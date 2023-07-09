@@ -105,11 +105,11 @@
 							enclosureName={enclosure.id}
 							area={enclosure.properties.area}
 							geojsonFeature={enclosure}
-							color={selectedEnclosure
-								? 'grey'
-								: selectedEnclosure?.id === enclosure.id
+							color={!selectedEnclosure
+								? getColor(i)
+								: selectedEnclosure.id === enclosure.id
 								? 'red'
-								: getColor(i)}
+								: 'grey'}
 							cropName={enclosure.properties.cropName}
 							ndvi={enclosure.properties.ndvi}
 							enclosureId={enclosure.id}

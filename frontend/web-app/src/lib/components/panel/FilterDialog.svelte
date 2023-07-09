@@ -8,6 +8,10 @@
 	export let orderBy: string | undefined = undefined;
 	export let limit: number = 0;
 	let limitValue: number = 0;
+	// inputs refs
+	let cropSelect: HTMLSelectElement;
+	let locationSelect: HTMLSelectElement;
+	let orderBySelect: HTMLSelectElement;
 
 	let uniqueCrops: string[] = [];
 	$: uniqueCrops = [...new Set(enclosures.map((enclosure) => enclosure.properties.cropName))];
@@ -17,18 +21,9 @@
 	];
 
 	const applyFilters = () => {
-		selectedCrop =
-			document.querySelector('select')?.value === 'undefined'
-				? undefined
-				: document.querySelector('select')?.value;
-		selectedLocation =
-			document.querySelectorAll('select')[1]?.value === 'undefined'
-				? undefined
-				: document.querySelectorAll('select')[1]?.value;
-		orderBy =
-			document.querySelectorAll('select')[2]?.value === 'undefined'
-				? undefined
-				: document.querySelectorAll('select')[2]?.value;
+		selectedCrop = cropSelect.value === 'undefined' ? undefined : cropSelect.value;
+		selectedLocation = locationSelect.value === 'undefined' ? undefined : locationSelect.value;
+		orderBy = orderBySelect.value === 'undefined' ? undefined : orderBySelect.value;
 		limit = limitValue;
 		open = false;
 	};
@@ -40,9 +35,9 @@
 		limit = 0;
 		open = false;
 		// Empty selects
-		document.querySelectorAll('select').forEach((select) => {
-			select.selectedIndex = 0;
-		});
+		cropSelect.selectedIndex = 0;
+		locationSelect.selectedIndex = 0;
+		orderBySelect.selectedIndex = 0;
 	};
 </script>
 
@@ -51,50 +46,69 @@
 		<h2 class="m-0 mb-16">Filtros</h2>
 		<div>
 			<label> Cultivo </label>
-			<select placeholder="Cultivo">
-				<option selected disabled hidden value={undefined}>Elige un cultivo</option>
-				{#each uniqueCrops as crop}
-					<option value={crop}> {crop} </option>
-				{/each}
-			</select>
-		</div>
-		<div>
-			<label> Localización </label>
-			<select placeholder="Cultivo">
-				<option selected disabled hidden value={undefined}>Localización</option>
-				{#each uniqueLocations as location}
-					<option value={location}> {location} </option>
-				{/each}
-			</select>
-		</div>
-		<h2 class="m-0 mb-16 mt-16">Ordenar por</h2>
-		<div>
-			<select placeholder="Ordenar por...">
-				<option selected disabled hidden value={undefined}>Ordenar por...</option>
-				<option value="crop"> Cultivo </option>
-				<option value="location"> Localización </option>
-				<option value="area"> Área - Descendente </option>
-				<option value="ndviDesc"> NDVI - Descendente </option>
-				<option value="ndviAsc"> NDVI - Ascendente </option>
-			</select>
-		</div>
-		<h2 class="m-0 mb-16 mt-16">Límite de resultados</h2>
-		<div class="limit-input-group">
-			<input type="range" name="limit" min="0" max="200" bind:value={limitValue} step="10" />
-			<span>{limitValue}</span>
-		</div>
-		<div class="button-group mt-32">
-			<button class="button-primary" type="submit" on:click={() => applyFilters()}>
-				Aplicar
-			</button>
-			<button class="button-secondary" type="button" on:click={() => resetFilters()}>
-				Resetear
-			</button>
+			<div class="select-button-group">
+				<select placeholder="Cultivo" bind:this={cropSelect}>
+					<option selected disabled hidden value={undefined}>Elige un cultivo</option>
+					{#each uniqueCrops as crop}
+						<option value={crop}> {crop} </option>
+					{/each}
+				</select>
+				<button class="button-xs button-secondary" on:click={() => (cropSelect.selectedIndex = 0)}>
+					<i class="fi fi-rr-cross" />
+				</button>
+			</div>
+			<div>
+				<label> Localización </label>
+				<div class="select-button-group">
+					<select placeholder="Localización" bind:this={locationSelect}>
+						<option selected disabled hidden value={undefined}>Localización</option>
+						{#each uniqueLocations as location}
+							<option value={location}> {location} </option>
+						{/each}
+					</select>
+					<button
+						class="button-xs button-secondary"
+						on:click={() => (locationSelect.selectedIndex = 0)}
+					>
+						<i class="fi fi-rr-cross" />
+					</button>
+				</div>
+			</div>
+			<h2 class="m-0 mb-16 mt-16">Ordenar por</h2>
+			<div class="select-button-group">
+				<select placeholder="Ordenar por..." bind:this={orderBySelect}>
+					<option selected disabled hidden value={undefined}>Ordenar por...</option>
+					<option value="crop"> Cultivo </option>
+					<option value="location"> Localización </option>
+					<option value="area"> Área - Descendente </option>
+					<option value="ndviDesc"> NDVI - Descendente </option>
+					<option value="ndviAsc"> NDVI - Ascendente </option>
+				</select>
+				<button
+					class="button button-xs button-secondary"
+					on:click={() => (orderBySelect.selectedIndex = 0)}
+				>
+					<i class="fi fi-rr-cross" />
+				</button>
+			</div>
+			<h2 class="m-0 mb-16 mt-16">Límite de resultados</h2>
+			<div class="limit-input-group">
+				<input type="range" name="limit" min="0" max="200" bind:value={limitValue} step="10" />
+				<span>{limitValue}</span>
+			</div>
+			<div class="button-group mt-32">
+				<button class="button-primary" type="submit" on:click={() => applyFilters()}>
+					Aplicar
+				</button>
+				<button class="button-secondary" type="button" on:click={() => resetFilters()}>
+					Resetear
+				</button>
+			</div>
 		</div>
 	</form>
 </dialog>
 
-<style>
+<style lang="scss">
 	dialog {
 		border: 2px solid #ccc;
 		border-radius: 10px;
@@ -121,9 +135,14 @@
 		column-gap: 1rem;
 	}
 
-	.button-group {
+	.button-group,
+	.select-button-group {
 		display: flex;
 		justify-content: space-between;
+		column-gap: 0.5rem;
+		i {
+			font-size: 0.5rem;
+		}
 	}
 
 	.body {

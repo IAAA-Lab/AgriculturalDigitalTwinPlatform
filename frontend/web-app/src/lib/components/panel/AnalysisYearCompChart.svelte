@@ -32,7 +32,7 @@
 
 	$: {
 		enclosuresService
-			.getHistoricalWeather(idema, new Date(startDate), new Date(endDate), ['date', 'prec'])
+			.getHistoricalWeather(idema, new Date(startDate), new Date(endDate), ['date', 'prec', 'tmed'])
 			.then((weather) => {
 				weatherValues = [...weather];
 			})
@@ -99,10 +99,26 @@
 							})),
 							label: ndviValues ? 'ndvi' : '',
 							fill: true,
-							borderColor: ndviValues ? '#fc9b68' : 'transparent',
+							borderColor: ndviValues ? '#800791' : 'transparent',
 							backgroundColor: 'transparent',
 							tension: 0.2,
+							pointRadius: 0,
 							yAxisID: 'y1'
+						},
+						{
+							type: 'line',
+							data: weatherValues?.map((weather) => ({
+								x: weather.date,
+								y: weather.tmed
+							})),
+							label: weatherValues ? 'temperatura' : '',
+							fill: true,
+							borderColor: weatherValues ? '#E02D07CC' : 'transparent',
+							backgroundColor: 'transparent',
+							tension: 0.3,
+							yAxisID: 'ytmed',
+							pointRadius: 0,
+							hidden: true
 						},
 						{
 							type: 'bar',
@@ -112,7 +128,7 @@
 							})),
 							label: weatherValues ? 'lluvias' : '',
 							fill: true,
-							backgroundColor: weatherValues ? 'blue' : 'transparent',
+							backgroundColor: weatherValues ? '#076F91' : 'transparent',
 							tension: 0.2,
 							yAxisID: 'y',
 							barPercentage: 4,
@@ -136,6 +152,8 @@
 					]
 				},
 				options: {
+					animation: false,
+
 					plugins: {
 						legend: {
 							position: 'top',
@@ -198,6 +216,14 @@
 							beginAtZero: false,
 							max: 1,
 							min: 0,
+							grid: {
+								drawOnChartArea: false
+							}
+						},
+						ytmed: {
+							type: 'linear',
+							display: false,
+							beginAtZero: false,
 							grid: {
 								drawOnChartArea: false
 							}

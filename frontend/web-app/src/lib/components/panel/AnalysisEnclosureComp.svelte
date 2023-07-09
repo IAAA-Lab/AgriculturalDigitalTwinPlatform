@@ -1,17 +1,17 @@
 <script lang="ts">
-	import AnalysisYearComp from '$lib/components/panel/AnalysisYearComp.svelte';
 	import Card from '$lib/components/panel/Card.svelte';
 	import CardInner from '$lib/components/panel/CardInner.svelte';
-	import Chart from '$lib/components/panel/Chart.svelte';
 	import { enclosuresService } from '$lib/config/config';
-	import { listOfEnclosures } from '$lib/config/stores/selectedEnclosure';
+	import { getColor } from '$lib/core/functions';
 	import { es } from 'date-fns/locale';
 	import Loading from '../misc/Loading.svelte';
-	import { getColor } from '$lib/core/functions';
+	import Chart from './Chart.svelte';
 
 	let startDate: string;
 	let endDate: string;
 	let LIMIT: number | undefined = 30;
+	let collapsed = false;
+	export let listOfEnclosures: string[] = [];
 
 	$: {
 		if (startDate && endDate) {
@@ -20,9 +20,13 @@
 	}
 </script>
 
-<h1 class="pb-8">Análisis</h1>
-
-<section>
+<div class="dropdown__wrapper" class:collapsed>
+	<button
+		class="button-xs button-secondary dropdown__close"
+		on:click={() => (collapsed = !collapsed)}
+	>
+		<i class="fi fi-rr-angle-down" />
+	</button>
 	<Card>
 		<div slot="header" class="header__wrapper">
 			<div>
@@ -53,7 +57,7 @@
 						<div />
 					</div>
 					<div slot="body" class="chart">
-						{#await enclosuresService.getNDVI($listOfEnclosures.slice(0, 10), new Date(startDate), new Date(endDate), LIMIT)}
+						{#await enclosuresService.getNDVI(listOfEnclosures.slice(0, 10), new Date(startDate), new Date(endDate), LIMIT)}
 							<Loading />
 						{:then ndvi}
 							<Chart
@@ -122,9 +126,24 @@
 			</div>
 		</div>
 	</Card>
-</section>
+</div>
 
 <style lang="scss">
+	.dropdown__wrapper {
+		position: relative;
+		max-height: 350px;
+		transition: max-height 0.1s ease-in;
+		overflow: hidden;
+		&.collapsed {
+			max-height: 40px;
+		}
+	}
+	.dropdown__close {
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		font-size: 0.4rem;
+	}
 	.charts__wrapper {
 		// Two columns but it can be wrapped when the screen is too small
 		display: flex;
@@ -133,9 +152,8 @@
 		overflow-x: scroll;
 
 		.chart {
-			min-height: 250px;
-			max-height: 450px;
-			min-width: 600px;
+			min-width: 500px;
+			max-height: 200px;
 		}
 
 		.chart__wrapper {

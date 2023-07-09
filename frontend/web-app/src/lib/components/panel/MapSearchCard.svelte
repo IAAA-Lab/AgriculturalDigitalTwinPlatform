@@ -64,8 +64,17 @@
 				</p>
 			</div>
 		</div>
-		<a href={`/panel/enclosure/${enclosureId}`} class="button button-xs button-secondary">
+		<a
+			href={`/panel/enclosure/${enclosureId}`}
+			class="button button-xs button-secondary href-enclosure"
+		>
 			<i class="fi fi-rr-redo" />
+		</a>
+		<a
+			href={`/panel/analysis?enclosureId=${enclosureId}`}
+			class="button button-xs button-secondary href-analysis"
+		>
+			<i class="fi fi-rr-stats" />
 		</a>
 	</div>
 </CardInner>
@@ -80,9 +89,16 @@
 		position: relative;
 		a {
 			position: absolute;
-			left: 0;
-			top: 0;
 			width: auto;
+			top: 0;
+		}
+
+		.href-enclosure {
+			left: 0;
+		}
+
+		.href-analysis {
+			left: 2rem;
 		}
 
 		.content {

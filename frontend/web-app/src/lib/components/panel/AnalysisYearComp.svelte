@@ -2,8 +2,9 @@
 	import Card from '$lib/components/panel/Card.svelte';
 	import { listOfEnclosures } from '$lib/config/stores/selectedEnclosure';
 	import AnalysisYearCompChart from './AnalysisYearCompChart.svelte';
+	import { page } from '$app/stores';
 
-	let selectedEnclosure: string = $listOfEnclosures.at(0) || '';
+	let selectedEnclosure: string;
 	let limit: number = 365;
 	let NUMBER_OF_CHARTS = 4;
 	// string dates list where dates are date - limit
@@ -15,6 +16,9 @@
 		date.setDate(date.getDate() - i * limit);
 		return date.toISOString().split('T')[0];
 	});
+
+	// Get 'enclosureId' param from url
+	$: selectedEnclosure = $page.url.searchParams.get('enclosureId') || $listOfEnclosures.at(0) || '';
 </script>
 
 <section>

@@ -1633,11 +1633,6 @@ kleur@^4.1.5:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-4.1.5.tgz#95106101795f7050c6c650f350c683febddb1780"
   integrity sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==
 
-leaflet-cascade-buttons@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/leaflet-cascade-buttons/-/leaflet-cascade-buttons-1.0.9.tgz#3bbd28abfc89647a92a1a51121d4bb06a674d2d9"
-  integrity sha512-zk+M94On8eXMAD1uhkeC8c8rKgbazab+wonTdx0kr1MeOJDdcG2zDsBVDjMf2Znzo9JnW33Gz5oBRx0Kew/sLw==
-
 leaflet.markercluster@^1.5.3:
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/leaflet.markercluster/-/leaflet.markercluster-1.5.3.tgz#9cdb52a4eab92671832e1ef9899669e80efc4056"
@@ -2420,6 +2415,11 @@ svelte-check@^3.0.1:
     sade "^1.7.4"
     svelte-preprocess "^5.0.3"
     typescript "^5.0.3"
+
+svelte-grid@^5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/svelte-grid/-/svelte-grid-5.1.1.tgz#a181b9b147e7f6b584b003dd37d6ea5e82fc6309"
+  integrity sha512-PJTC4PUejb8RzcUjymWnf1HALqseUBwxl+p+i5uJlDIC1+zXKok1J16IDoHQxXhNj+INcF9KHE7hIm++NurSAQ==
 
 svelte-hmr@^0.15.1:
   version "0.15.1"
