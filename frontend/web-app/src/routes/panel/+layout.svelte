@@ -4,8 +4,9 @@
 	import Header from '$lib/components/panel/Header.svelte';
 	import Sidebar from '$lib/components/panel/Sidebar.svelte';
 	import SidebarMobile from '$lib/components/panel/SidebarMobile.svelte';
-	import { userService } from '$lib/config/config';
+	import { enclosuresService, userService } from '$lib/config/config';
 	import { TABLET_WIDTH } from '$lib/config/constants';
+	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import { Role } from '$lib/core/Domain';
 	import { onMount } from 'svelte';
 
@@ -17,8 +18,10 @@
 			switch (role) {
 				case Role.ADMIN:
 				case Role.AGRARIAN:
-					await userService.getEnclosureIds(id ?? '');
-					await goto('/panel');
+					const enclosureIds = await userService.getEnclosureIds(id ?? '');
+					const enclosures = await enclosuresService.getEnclosures(enclosureIds);
+					$userEnclosures = JSON.parse(JSON.stringify(enclosures));
+					await goto('/panel/map', { replaceState: true });
 					break;
 				default:
 					alert('No tienes permisos para acceder a esta página');

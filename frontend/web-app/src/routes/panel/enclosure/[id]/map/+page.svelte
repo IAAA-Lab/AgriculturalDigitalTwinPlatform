@@ -2,11 +2,13 @@
 	import { page } from '$app/stores';
 	import Stats from '$lib/components/panel/Stats.svelte';
 	import Map from '$lib/components/panel/MapEnclosureConc.svelte';
+	import { userEnclosures } from '$lib/config/stores/enclosures';
 
 	let id: string;
-	export let idema = '9434';
+	let idema: string;
 	$: {
 		id = $page.params.id;
+		idema = $userEnclosures?.find((e) => e.id === id)?.meteoStation?.idema || '';
 	}
 </script>
 

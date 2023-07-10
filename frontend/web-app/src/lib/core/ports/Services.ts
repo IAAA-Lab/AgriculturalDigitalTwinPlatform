@@ -41,7 +41,7 @@ interface IUserService {
 	refresh(): Promise<User>;
 	getUserCredentials(): Promise<User>;
 	login(username: string, password: string): Promise<void>;
-	getEnclosureIds(userId: string): Promise<void>;
+	getEnclosureIds(userId: string): Promise<string[]>;
 }
 
 export type { IenclosuresService, IUserService };

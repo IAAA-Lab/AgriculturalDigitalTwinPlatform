@@ -10,6 +10,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func (mc *mongodbConn) GetEnclosures(enclosureIds []string, year int16) ([]domain.Enclosure, error) {
+	// if year is zero, then we don't filter by year
+	filter := bson.M{
+		"id": bson.M{"$in": enclosureIds},
+	}
+	if year != 0 {
+		filter["year"] = bson.M{"$eq": year}
+	}
+	return GetDocuments[domain.Enclosure](mc, ENCLOSURES_COLLECTION, filter, nil)
+}
+
 func (mc *mongodbConn) GetForecastWeather(enclosureId string) (domain.ForecastWeather, error) {
 	filter := bson.M{
 		"enclosureId": bson.M{"$eq": enclosureId},
@@ -34,17 +45,6 @@ func (mc *mongodbConn) GetHistoricalWeather(idema string, startDate time.Time, e
 		opts = opts.SetProjection(projection)
 	}
 	return GetDocuments[domain.HistoricalWeather](mc, WEATHER_COLLECTION, filter, opts)
-}
-
-func (mc *mongodbConn) GetEnclosures(enclosureIds []string, year int16) ([]domain.Enclosure, error) {
-	// if year is zero, then we don't filter by year
-	filter := bson.M{
-		"id": bson.M{"$in": enclosureIds},
-	}
-	if year != 0 {
-		filter["year"] = bson.M{"$eq": year}
-	}
-	return GetDocuments[domain.Enclosure](mc, ENCLOSURES_COLLECTION, filter, nil)
 }
 
 func (mc *mongodbConn) GetEnclosuresInRadius(coords []float64, radius float64, year int16) ([]domain.Enclosure, error) {

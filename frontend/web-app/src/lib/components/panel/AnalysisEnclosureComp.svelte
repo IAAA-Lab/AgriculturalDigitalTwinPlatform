@@ -4,19 +4,29 @@
 	import { enclosuresService } from '$lib/config/config';
 	import { getColor } from '$lib/core/functions';
 	import { es } from 'date-fns/locale';
-	import Loading from '../misc/Loading.svelte';
 	import Chart from './Chart.svelte';
+	import type { NDVI } from '$lib/core/Domain';
 
 	let startDate: string;
 	let endDate: string;
 	let LIMIT: number | undefined = 30;
+	let MAX_ENCLOSURES = 10;
 	let collapsed = false;
 	export let listOfEnclosures: string[] = [];
+	let ndvi: NDVI[] = [];
 
 	$: {
-		if (startDate && endDate) {
-			LIMIT = undefined;
-		}
+		enclosuresService
+			.getNDVI(
+				listOfEnclosures.slice(0, MAX_ENCLOSURES),
+				new Date(startDate),
+				new Date(endDate),
+				LIMIT
+			)
+			.then((ndviRes) => {
+				ndvi = [...ndviRes];
+			})
+			.catch((err) => {});
 	}
 </script>
 
@@ -57,70 +67,66 @@
 						<div />
 					</div>
 					<div slot="body" class="chart">
-						{#await enclosuresService.getNDVI(listOfEnclosures.slice(0, 10), new Date(startDate), new Date(endDate), LIMIT)}
-							<Loading />
-						{:then ndvi}
-							<Chart
-								data={{
-									data: {
-										datasets: ndvi.map(({ ndvi, enclosureId }, i) => ({
-											type: 'line',
-											data: ndvi.map((data) => ({
-												x: data.date,
-												y: data.value
-											})),
-											label: enclosureId,
-											borderColor: getColor(i),
-											tension: 0.2
-										}))
-									},
-									options: {
-										responsive: true,
-										maintainAspectRatio: false,
-										plugins: {
-											legend: {
-												position: 'right',
-												labels: {
-													usePointStyle: true,
-													pointStyle: 'rectRounded',
-													boxWidth: 10,
-													font: {
-														size: 14
-													}
+						<Chart
+							data={{
+								data: {
+									datasets: ndvi.map(({ ndvi, enclosureId }, i) => ({
+										type: 'line',
+										data: ndvi.map((data) => ({
+											x: data.date,
+											y: data.value
+										})),
+										label: enclosureId,
+										borderColor: getColor(i),
+										tension: 0.2
+									}))
+								},
+								options: {
+									responsive: true,
+									maintainAspectRatio: false,
+									plugins: {
+										legend: {
+											position: 'right',
+											labels: {
+												usePointStyle: true,
+												pointStyle: 'rectRounded',
+												boxWidth: 10,
+												font: {
+													size: 14
 												}
 											}
-										},
-										elements: {
-											point: {
-												radius: 0
-											}
-										},
-										scales: {
-											y: {
-												type: 'linear',
-												display: true,
-												position: 'left',
-												title: {
-													display: true
-												},
-												min: -0.2,
-												max: 1
+										}
+									},
+									elements: {
+										point: {
+											radius: 0
+										}
+									},
+									scales: {
+										y: {
+											type: 'linear',
+											display: true,
+											position: 'left',
+											title: {
+												display: true
 											},
-											x: {
-												display: true,
-												position: 'bottom',
-												type: 'time',
-												adapters: {
-													date: {
-														locale: es
-													}
+											min: -0.2,
+											max: 1
+										},
+										x: {
+											display: true,
+											position: 'bottom',
+											type: 'time',
+											adapters: {
+												date: {
+													locale: es
 												}
 											}
 										}
 									}
-								}}
-							/>
-						{/await}
+								}
+							}}
+						/>
 					</div>
 				</CardInner>
 			</div>

@@ -1,10 +1,9 @@
 <script lang="ts">
 	import Error from '$lib/components/misc/Error.svelte';
 	import Loading from '$lib/components/misc/Loading.svelte';
-	import Card from '$lib/components/panel/Card.svelte';
-	import Chart from '$lib/components/panel/Chart.svelte';
 	import CropStatsCard from '$lib/components/panel/CropStatsCard.svelte';
 	import { enclosuresService } from '$lib/config/config';
+	import { numberWithCommas } from '$lib/core/functions';
 
 	let selectedCropStat: any = {};
 	export let enclosureId: string;
@@ -28,35 +27,35 @@
 			<!-- <button on:click={() => (selectedCropStat = cropStat)}> -->
 			<CropStatsCard
 				title="Producción"
-				value={cropStatLast.production}
+				value={numberWithCommas(cropStatLast.production)}
 				unit="Kg"
-				diff={cropStatLast.production - cropStats.at(-2).production}
+				diff={numberWithCommas(cropStatLast.production - cropStats.at(-2).production)}
 				datasets={cropStatsOrdered.map((cropStat) => cropStat.production)}
 				labels={cropStatsOrdered.map((cropStat) => cropStat.date)}
 				primary={selectedCropStat.title === ''}
 			/>
 			<CropStatsCard
 				title="Área"
-				value={cropStatLast.area}
+				value={numberWithCommas(cropStatLast.area)}
 				unit="Ha"
-				diff={cropStatLast.area - cropStats.at(-2).area}
+				diff={numberWithCommas(cropStatLast.area - cropStats.at(-2).area)}
 				datasets={cropStatsOrdered.map((cropStat) => cropStat.area)}
 				labels={cropStatsOrdered.map((cropStat) => cropStat.date)}
 				primary={selectedCropStat.title === ''}
 			/>
 			<CropStatsCard
 				title="Cosecha"
-				value={cropStatLast.harvest}
-				diff={cropStatLast.harvest - cropStats.at(-2).harvest}
+				value={numberWithCommas(cropStatLast.harvest)}
+				diff={numberWithCommas(cropStatLast.harvest - cropStats.at(-2).harvest)}
 				datasets={cropStatsOrdered.map((cropStat) => cropStat.harvest)}
 				labels={cropStatsOrdered.map((cropStat) => cropStat.date)}
 				primary={selectedCropStat.title === ''}
 			/>
 			<CropStatsCard
 				title="Rendimiento"
-				value={cropStatLast.performance}
+				value={numberWithCommas(cropStatLast.performance)}
 				unit="Kg/Ha"
-				diff={cropStatLast.performance - cropStats.at(-2).performance}
+				diff={numberWithCommas(cropStatLast.performance - cropStats.at(-2).performance)}
 				datasets={cropStatsOrdered.map((cropStat) => cropStat.performance)}
 				labels={cropStatsOrdered.map((cropStat) => cropStat.date)}
 				primary={selectedCropStat.title === ''}

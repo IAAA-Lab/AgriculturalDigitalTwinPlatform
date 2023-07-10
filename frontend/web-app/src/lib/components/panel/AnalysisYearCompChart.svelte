@@ -9,7 +9,7 @@
 	export let selectedEnclosure: string;
 	export let limit: number;
 	// TODO: get idema from selectedEnclosure
-	export let idema = '9434';
+	export let idema: string;
 
 	let resetZoom: () => void = () => {};
 	let uniqueActivities: Activity[] = [];
@@ -82,7 +82,9 @@
 				{/if}
 			</div>
 		</div>
-		<button class="button-secondary button-xs" on:click={() => resetZoom()}>Zoom</button>
+		<button class="button-secondary button-xs" on:click={() => resetZoom()}>
+			<i class="fi fi-rr-expand" />
+		</button>
 	</div>
 
 	<div slot="body" class="chart">
@@ -137,11 +139,15 @@
 						{
 							type: 'bar',
 							data: uniqueActivities
-								.filter((activity) => activity.activities[0].activity === selectedActivity)
-								.map((activity) => ({
-									x: activity.activities[0].date,
-									y: 1
-								})),
+								// .filter((activity) => activity.activities[0].activity === selectedActivity)
+								.flatMap((activity) =>
+									activity.activities
+										.filter((activity) => activity.activity === selectedActivity)
+										.map((activity) => ({
+											x: activity.date,
+											y: 1
+										}))
+								),
 							label: selectedActivity || '',
 							fill: true,
 							backgroundColor: selectedActivity ? 'green' : 'transparent',

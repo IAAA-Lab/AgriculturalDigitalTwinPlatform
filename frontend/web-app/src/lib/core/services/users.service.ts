@@ -4,7 +4,6 @@ import jwtDecode from 'jwt-decode';
 import type { IUserRepository } from '../ports/Repository';
 import type { IUserService } from '../ports/Services';
 import type { User } from '../Domain';
-import { listOfEnclosures } from '$lib/config/stores/selectedEnclosure';
 
 class UserService implements IUserService {
 	constructor(private readonly userRepository: IUserRepository) {}
@@ -36,8 +35,8 @@ class UserService implements IUserService {
 		this.userRepository.setAuthorizationHeader(`Bearer ${jwtRaw}`);
 		user.set(this.extractTokenInfo(jwtRaw));
 	}
-	async getEnclosureIds(userId: string): Promise<void> {
-		listOfEnclosures.set(await this.userRepository.getEnclosureIds(userId));
+	async getEnclosureIds(userId: string): Promise<string[]> {
+		return await this.userRepository.getEnclosureIds(userId);
 	}
 
 	extractTokenInfo(rawToken: string): User {

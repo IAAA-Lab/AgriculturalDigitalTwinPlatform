@@ -22,10 +22,11 @@
 
 	$: {
 		enclosuresService
-			.getActivities(enclosureId, startDate, endDate)
+			.getActivities([enclosureId], startDate, endDate)
 			.then((activitiesList) => {
 				// Filter activities by activity type = 'TRATAMIENTO FITOSANITARIO'
-				treatments = activitiesList
+				const activities = activitiesList.find((activity) => activity.enclosureId === enclosureId);
+				treatments = activities?.activities
 					.filter((activity) => activity.activity === 'TRATAMIENTO FITOSANITARIO')
 					.map((activity) => {
 						return {

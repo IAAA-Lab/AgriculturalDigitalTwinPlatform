@@ -7,7 +7,7 @@
 	import { enclosuresService } from '$lib/config/config';
 	import type { Enclosure, NDVI } from '$lib/core/Domain';
 	import { TABLET_WIDTH } from '$lib/config/constants';
-	import { listOfEnclosures } from '$lib/config/stores/selectedEnclosure';
+	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import AnalysisEnclosureComp from '$lib/components/panel/AnalysisEnclosureComp.svelte';
 
 	let mediaQueryMobile = window.matchMedia(`(max-width: ${TABLET_WIDTH}px)`);
@@ -25,15 +25,8 @@
 	$: {
 		// When a enclosure is not selected, we need to get all the enclosures
 		if (!selectedEnclosure) {
-			enclosuresService
-				.getEnclosures($listOfEnclosures)
-				.then((enclosuresRes) => {
-					enclosures = [...enclosuresRes];
-					getNDVI([...enclosuresRes].map((e) => e.id));
-				})
-				.catch((err) => {
-					enclosures = undefined;
-				});
+			enclosures = $userEnclosures;
+			getNDVI($userEnclosures.map((e) => e.id));
 		}
 	}
 

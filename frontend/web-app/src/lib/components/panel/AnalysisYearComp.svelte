@@ -1,8 +1,9 @@
 <script lang="ts">
 	import Card from '$lib/components/panel/Card.svelte';
-	import { listOfEnclosures } from '$lib/config/stores/selectedEnclosure';
+	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import AnalysisYearCompChart from './AnalysisYearCompChart.svelte';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 
 	let selectedEnclosure: string;
 	let limit: number = 365;
@@ -16,9 +17,14 @@
 		date.setDate(date.getDate() - i * limit);
 		return date.toISOString().split('T')[0];
 	});
+	let idema: string;
 
-	// Get 'enclosureId' param from url
-	$: selectedEnclosure = $page.url.searchParams.get('enclosureId') || $listOfEnclosures.at(0) || '';
+	onMount(() => {
+		selectedEnclosure =
+			$page.url.searchParams.get('enclosureId') || $userEnclosures?.map((e) => e.id).at(0) || '';
+	});
+
+	$: idema = $userEnclosures?.find((e) => e.id === selectedEnclosure)?.meteoStation?.idema || '';
 </script>
 
 <section>
@@ -32,8 +38,8 @@
 				<div class="input__wrapper">
 					<label>Recinto</label>
 					<select bind:value={selectedEnclosure}>
-						{#each $listOfEnclosures as enclosure}
-							<option value={enclosure}>{enclosure}</option>
+						{#each $userEnclosures as enclosure}
+							<option value={enclosure.id}>{enclosure.id}</option>
 						{/each}
 					</select>
 				</div>
@@ -45,7 +51,7 @@
 		</div>
 		<div slot="body" class="charts__wrapper">
 			{#each startDates as date}
-				<AnalysisYearCompChart {selectedEnclosure} {limit} startDate={date} />
+				<AnalysisYearCompChart {selectedEnclosure} {limit} startDate={date} {idema} />
 			{/each}
 		</div>
 	</Card>

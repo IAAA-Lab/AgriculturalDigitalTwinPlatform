@@ -1,20 +1,21 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import Error from '$lib/components/misc/Error.svelte';
-	import Loading from '$lib/components/misc/Loading.svelte';
 	import CharacteristicsEnclosure from '$lib/components/panel/CharacteristicsEnclosure.svelte';
 	import Crops from '$lib/components/panel/Crops.svelte';
 	import CurrentWeather from '$lib/components/panel/CurrentWeather.svelte';
 	import MapEnclosure from '$lib/components/panel/MapEnclosure.svelte';
 	import Ndvi from '$lib/components/panel/NDVI.svelte';
 	import ProtectedAreaCard from '$lib/components/panel/ProtectedAreaCard.svelte';
-	import { enclosuresService } from '$lib/config/config';
-	import { selectedEnclosure } from '$lib/config/stores/selectedEnclosure';
+	import { selectedEnclosure, userEnclosures } from '$lib/config/stores/enclosures';
+	import type { Enclosure } from '$lib/core/Domain';
 	// Set enclosure id to store (global state) in memory
 	let vulnerableArea = true;
 	let id = '';
+	let enclosure: Enclosure | undefined = undefined;
+
 	$: {
 		id = $page.params.id;
+		enclosure = $userEnclosures?.find((e) => e.id === id);
 		$selectedEnclosure = id;
 	}
 </script>
@@ -27,25 +28,18 @@
 		{/if}
 	</div>
 	<div class="overview">
-		{#await enclosuresService.getEnclosures([id])}
-			<Loading />
-		{:then enclosures}
-			{@const properties = enclosures[0].properties}
-			<MapEnclosure {enclosures} />
-			<Crops
-				enclosureId={id}
-				crop={{
-					id: properties.cropId,
-					name: properties.cropName,
-					varietyId: properties.varietyId
-				}}
-			/>
-			<CharacteristicsEnclosure {properties} />
-			<Ndvi enclosureId={id} />
-			<CurrentWeather enclosureId={id} />
-		{:catch error}
-			<Error errorMessage={error.message} />
-		{/await}
+		<MapEnclosure enclosures={!enclosure ? [] : [enclosure]} />
+		<Crops
+			enclosureId={id}
+			crop={{
+				id: enclosure?.properties?.cropId,
+				name: enclosure?.properties?.cropName,
+				varietyId: enclosure?.properties?.varietyId
+			}}
+		/>
+		<CharacteristicsEnclosure properties={enclosure?.properties} />
+		<Ndvi enclosureId={id} />
+		<CurrentWeather enclosureId={id} />
 	</div>
 </div>
 

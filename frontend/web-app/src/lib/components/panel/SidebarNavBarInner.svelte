@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { tabsInner } from '$lib/config/constants';
-	import { selectedEnclosure } from '$lib/config/stores/selectedEnclosure';
 	import SidebarOption from './SidebarOption.svelte';
 	import { page } from '$app/stores';
+	import { selectedEnclosure } from '$lib/config/stores/enclosures';
 </script>
 
 <nav>

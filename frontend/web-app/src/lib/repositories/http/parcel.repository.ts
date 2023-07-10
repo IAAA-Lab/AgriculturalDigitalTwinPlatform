@@ -121,7 +121,6 @@ class HttpParcelsRepository implements IParcelsRepository {
 		throw new Error('Not implemented');
 	}
 	async getCropStats(enclosureId: string, startDate: Date, endDate: Date): Promise<CropStats[]> {
-		console.log('getCropStats', enclosureId, startDate, endDate);
 		return this.http
 			.get<CropStats[]>('crop-stats', {
 				params: {
