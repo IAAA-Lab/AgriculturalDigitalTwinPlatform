@@ -47,7 +47,7 @@
 			.getActivities([selectedEnclosure], new Date(startDate), new Date(endDate))
 			.then((activityList) => {
 				const activitiesFlat = [...activityList.flatMap((activity) => activity.activities)];
-				if (!selectedActivity) selectedActivity = activitiesFlat.at(0)?.activity;
+				selectedActivity = activitiesFlat.at(0)?.activity;
 				activities = activitiesFlat;
 			})
 			.catch((error) => {
@@ -69,7 +69,12 @@
 				{#if activities.length > 0}
 					<label>Actividades</label>
 					<!--NOTE: If I use bind:value, the whole component is re-rendered, I don't know why-->
-					<select bind:value={selectedActivity}>
+					<select
+						value={selectedActivity}
+						on:change={(e) => {
+							selectedActivity = e.target?.value;
+						}}
+					>
 						{#each [...new Set(activities.map((activity) => activity.activity))] as activity}
 							<option value={activity}>{activity}</option>
 						{/each}
