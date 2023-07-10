@@ -12,7 +12,7 @@
 	export let idema: string;
 
 	let resetZoom: () => void = () => {};
-	let uniqueActivities: Activity[] = [];
+	let activities: any[] = [];
 	let selectedActivity: string | undefined;
 
 	let endDate: Date;
@@ -46,12 +46,12 @@
 		enclosuresService
 			.getActivities([selectedEnclosure], new Date(startDate), new Date(endDate))
 			.then((activityList) => {
-				const activities = [...new Set([...activityList])];
-				uniqueActivities = [...activities];
-				selectedActivity = activities.at(0)?.activities[0].activity;
+				const activitiesFlat = [...activityList.flatMap((activity) => activity.activities)];
+				if (!selectedActivity) selectedActivity = activitiesFlat.at(0)?.activity;
+				activities = activitiesFlat;
 			})
 			.catch((error) => {
-				uniqueActivities = [];
+				activities = [];
 			});
 	}
 
@@ -66,17 +66,12 @@
 				<input type="date" bind:value={startDate} />
 			</div>
 			<div class="input__wrapper" style="flex: 1;">
-				{#if uniqueActivities.length > 0}
+				{#if activities.length > 0}
 					<label>Actividades</label>
 					<!--NOTE: If I use bind:value, the whole component is re-rendered, I don't know why-->
-					<select
-						value={selectedActivity}
-						on:change={(e) => (selectedActivity = e.target?.value ?? '')}
-					>
-						{#each uniqueActivities as activity}
-							<option value={activity.activities[0].activity}
-								>{activity.activities[0].activity}</option
-							>
+					<select bind:value={selectedActivity}>
+						{#each [...new Set(activities.map((activity) => activity.activity))] as activity}
+							<option value={activity}>{activity}</option>
 						{/each}
 					</select>
 				{/if}
@@ -138,16 +133,12 @@
 						},
 						{
 							type: 'bar',
-							data: uniqueActivities
-								// .filter((activity) => activity.activities[0].activity === selectedActivity)
-								.flatMap((activity) =>
-									activity.activities
-										.filter((activity) => activity.activity === selectedActivity)
-										.map((activity) => ({
-											x: activity.date,
-											y: 1
-										}))
-								),
+							data: activities
+								.filter((activity) => activity.activity === selectedActivity)
+								.map((activity) => ({
+									x: activity.date,
+									y: 1
+								})),
 							label: selectedActivity || '',
 							fill: true,
 							backgroundColor: selectedActivity ? 'green' : 'transparent',

@@ -30,7 +30,7 @@
 					on:error={onCropImageError}
 				/>
 				<h4 class="m-0">{crop.name.toUpperCase()}</h4>
-				<span class="text-xs fw-700">{crop.varietyId || '--'}</span>
+				<span class="text-xs fw-700">{crop.varietyId == 0 ? '---' : crop.varietyId}</span>
 				<span class="text-xxs">{formattedTime(stat.date)}</span>
 			</div>
 			<div class="crop__divider" />

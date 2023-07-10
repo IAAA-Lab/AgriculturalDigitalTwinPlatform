@@ -52,7 +52,7 @@
 		{:else}
 			<Sidebar />
 		{/if}
-		<main>
+		<main class="p-8">
 			<slot />
 		</main>
 	{/if}
