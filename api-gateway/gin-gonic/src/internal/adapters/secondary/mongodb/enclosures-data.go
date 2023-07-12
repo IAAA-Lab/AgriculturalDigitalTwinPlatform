@@ -114,6 +114,8 @@ func (mc *mongodbConn) GetNDVI(enclosureIds []string, startDate time.Time, endDa
 func (mc *mongodbConn) GetCropStats(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error) {
 	filter := bson.M{
 		"enclosureId": bson.M{"$eq": enclosureId},
+		// TODO: remove mocked
+		"mocked": bson.M{"$eq": true},
 	}
 	if !startDate.IsZero() && !endDate.IsZero() {
 		filter["date"] = bson.M{"$gte": startDate, "$lte": endDate}

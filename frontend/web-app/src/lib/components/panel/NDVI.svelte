@@ -21,7 +21,7 @@
 			<Card>
 				<h6 slot="header" class="m-0 mb-8">Salud de las plantas (NDVI)</h6>
 				<svelte:fragment slot="body">
-					{@const currentNdviValue = ndvi?.ndvi.at(-1)?.value}
+					{@const currentNdviValue = ndvi?.ndvi.at(0)?.value}
 					<CardInner>
 						<div slot="body" class="ndvi__value__unit">
 							<Range

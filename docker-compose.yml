@@ -209,7 +209,7 @@ services:
 # #############################################
 
   prefect-server:
-    image: prefecthq/prefect:2.10.13-python3.11
+    image: prefecthq/prefect:2.10.20-python3.11
     restart: on-failure
     volumes:
       - prefect:/root/.prefect
@@ -219,6 +219,7 @@ services:
       - PREFECT_API_URL=http://127.0.0.1:4200/api
       - PREFECT_SERVER_API_HOST=0.0.0.0
       - PREFECT_API_DATABASE_CONNECTION_URL=${PREFECT_API_DATABASE_CONNECTION_URL}
+      - PREFECT_EXPERIMENTAL_ENABLE_WORKSPACE_DASHBOARD=True
     ports:
       - 4200:${PREFECT_PORT}
     depends_on:

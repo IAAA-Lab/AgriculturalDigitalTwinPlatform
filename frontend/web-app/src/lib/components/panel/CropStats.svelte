@@ -3,10 +3,13 @@
 	import Loading from '$lib/components/misc/Loading.svelte';
 	import CropStatsCard from '$lib/components/panel/CropStatsCard.svelte';
 	import { enclosuresService } from '$lib/config/config';
-	import { numberWithCommas } from '$lib/core/functions';
+	import { userEnclosures } from '$lib/config/stores/enclosures';
+	import { formattedTime, numberWithCommas } from '$lib/core/functions';
 
 	let selectedCropStat: any = {};
 	export let enclosureId: string;
+
+	let enclosure = $userEnclosures.find((enclosure) => enclosure.id === enclosureId);
 </script>
 
 <section>
@@ -15,7 +18,7 @@
 			<Loading />
 		{:then cropStats}
 			{@const cropStatsOrdered = cropStats.sort(
-				(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+				(a, b) => new Date(a.harvestDate).getTime() - new Date(b.harvestDate).getTime()
 			)}
 			{@const cropStatLast = cropStatsOrdered.at(-1) || {
 				production: '--',
@@ -27,11 +30,24 @@
 			<!-- <button on:click={() => (selectedCropStat = cropStat)}> -->
 			<CropStatsCard
 				title="Producción"
-				value={numberWithCommas(cropStatLast.production)}
+				value={numberWithCommas(
+					cropStatsOrdered
+						.map((cropStat) => cropStat.performance * enclosure.properties.area)
+						.at(-1)
+				)}
 				unit="Kg"
-				diff={numberWithCommas(cropStatLast.production - cropStats.at(-2).production)}
-				datasets={cropStatsOrdered.map((cropStat) => cropStat.production)}
-				labels={cropStatsOrdered.map((cropStat) => cropStat.date)}
+				diff={numberWithCommas(
+					cropStatsOrdered
+						.map((cropStat) => cropStat.performance * enclosure.properties.area)
+						.at(-1) -
+						cropStatsOrdered
+							.map((cropStat) => cropStat.performance * enclosure.properties.area)
+							.at(-2)
+				)}
+				datasets={cropStatsOrdered.map(
+					(cropStat) => cropStat.performance * enclosure.properties.area
+				)}
+				labels={cropStatsOrdered.map((cropStat) => formattedTime(cropStat.harvestDate))}
 				primary={selectedCropStat.title === ''}
 			/>
 			<CropStatsCard
@@ -39,25 +55,25 @@
 				value={numberWithCommas(cropStatLast.area)}
 				unit="Ha"
 				diff={numberWithCommas(cropStatLast.area - cropStats.at(-2).area)}
-				datasets={cropStatsOrdered.map((cropStat) => cropStat.area)}
-				labels={cropStatsOrdered.map((cropStat) => cropStat.date)}
+				datasets={Array.from({ length: cropStatsOrdered.length }, () => enclosure.properties.area)}
+				labels={cropStatsOrdered.map((cropStat) => formattedTime(cropStat.harvestDate))}
 				primary={selectedCropStat.title === ''}
 			/>
-			<CropStatsCard
+			<!-- <CropStatsCard
 				title="Cosecha"
 				value={numberWithCommas(cropStatLast.harvest)}
 				diff={numberWithCommas(cropStatLast.harvest - cropStats.at(-2).harvest)}
 				datasets={cropStatsOrdered.map((cropStat) => cropStat.harvest)}
 				labels={cropStatsOrdered.map((cropStat) => cropStat.date)}
 				primary={selectedCropStat.title === ''}
-			/>
+			/> -->
 			<CropStatsCard
 				title="Rendimiento"
 				value={numberWithCommas(cropStatLast.performance)}
 				unit="Kg/Ha"
 				diff={numberWithCommas(cropStatLast.performance - cropStats.at(-2).performance)}
 				datasets={cropStatsOrdered.map((cropStat) => cropStat.performance)}
-				labels={cropStatsOrdered.map((cropStat) => cropStat.date)}
+				labels={cropStatsOrdered.map((cropStat) => formattedTime(cropStat.harvestDate))}
 				primary={selectedCropStat.title === ''}
 			/>
 			<!-- </button> -->

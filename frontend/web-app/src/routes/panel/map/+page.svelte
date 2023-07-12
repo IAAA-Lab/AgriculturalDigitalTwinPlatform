@@ -109,10 +109,8 @@
 		display: flex;
 		flex-direction: column;
 		row-gap: 0.5rem;
-		&:first-child {
-			:global(.card) {
-				flex: 1;
-			}
+		:global(.card) {
+			flex: 1;
 		}
 	}
 

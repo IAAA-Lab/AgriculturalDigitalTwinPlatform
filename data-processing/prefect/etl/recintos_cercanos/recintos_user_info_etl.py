@@ -47,6 +47,8 @@ def transform(crops: dict, date: str):
         crops_out.append({
             "enclosureId": enclosure_id,
             "date": pd.to_datetime(date),
+            "cropName": crop["Cultivos"][0]["Cultivo"],
+            "cropVariety": crop["Cultivos"][0]["Variedad"],
             "area": crop["Cultivos"][0]["Superficie (Ha)"],
             "production": crop["Cultivos"][0]["Produccion (Kg)"],
             "performance": crop["Cultivos"][0]["Rendimiento (Kg/Ha)"],
@@ -106,6 +108,7 @@ def recintos_user_info_etl(user_id: str, date: str, enclosure_ids: list[str]):
     load(crops, phytosanitaries, fertilizers)
 
 # ------------- TEST -------------
+
 
 if __name__ == "__main__":
     user_id = "901046400000000010"

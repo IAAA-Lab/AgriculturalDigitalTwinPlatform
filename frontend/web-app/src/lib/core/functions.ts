@@ -23,10 +23,11 @@ const numberWithCommas = (num?: number | string) => {
 	if (Number.isInteger(num)) {
 		return num;
 	}
-	// Also negative numbers
+	// Also negative numbers and substitue the dot for a comma and the comma for a dot
 	return Number(num)
 		.toFixed(3)
-		.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		.replace('.', ',')
+		.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
 };
 
 const markerMapIconByColor = (color: string) => {

@@ -44,12 +44,15 @@ type Enclosure struct {
 }
 
 type CropStats struct {
-	EnclosureId string    `json:"enclosureId"`
-	Date        time.Time `json:"date"`
-	Area        float64   `json:"area"`
-	Production  float64   `json:"production"`
-	Performance float64   `json:"performance"`
-	Harvest     float64   `json:"harvest"`
+	EnclosureId  string    `json:"enclosureId"`
+	Date         time.Time `json:"date"`
+	Area         float64   `json:"area"`
+	Production   float64   `json:"production"`
+	Performance  float64   `json:"performance"`
+	Harvest      float64   `json:"harvest"`
+	HarvestDate  time.Time `json:"harvestDate"`
+	PlantingDate time.Time `json:"plantingDate"`
+	Mocked       bool      `json:"mocked"`
 }
 
 type Fertilizer struct {

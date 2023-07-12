@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { IMAGES_SERVER_URL, enclosuresService } from '$lib/config/config';
-	import { formattedDate, formattedTime, onCropImageError } from '$lib/core/functions';
+	import { userEnclosures } from '$lib/config/stores/enclosures';
+	import { numberWithCommas, onCropImageError } from '$lib/core/functions';
 	import Error from '../misc/Error.svelte';
 	import Loading from '../misc/Loading.svelte';
 	import CardInner from './CardInner.svelte';
 
 	export let crop: any;
 	export let enclosureId: string;
+
+	let enclosure = $userEnclosures.find((e) => e.id === enclosureId);
 </script>
 
 <CardInner>
@@ -17,7 +20,6 @@
 			{@const stat = stats.at(-1) || {
 				production: '--',
 				area: '--',
-				harvest: '--',
 				plantation: '--',
 				date: '--'
 			}}
@@ -31,27 +33,29 @@
 				/>
 				<h4 class="m-0">{crop.name.toUpperCase()}</h4>
 				<span class="text-xs fw-700">{crop.varietyId == 0 ? '---' : crop.varietyId}</span>
-				<span class="text-xxs">{formattedTime(stat.date)}</span>
+				<!-- <span class="text-xxs">{formattedTime(stat?.harvestDate)}</span> -->
 			</div>
 			<div class="crop__divider" />
 			<!-- Await -->
 			<div class="crop__body">
 				<div class="crop__body__item">
 					<i class="fi fi-rr-map-marker" />
-					<span class="text-xs m-0"> {stat.area} Ha</span>
+					<span class="text-xs m-0"> {numberWithCommas(enclosure.properties.area)} Ha</span>
 				</div>
 				<div class="crop__body__item">
 					<i class="fi fi-rr-money" />
-					<span class="text-xs m-0"> {stat.production} Kg</span>
+					<span class="text-xs m-0">
+						{numberWithCommas(stat.performance * enclosure.properties.area)} Kg</span
+					>
 				</div>
 				<div class="crop__body__item">
 					<i class="fi fi-rr-stats" />
-					<span class="text-xs m-0"> {stat.performance} Kg/Ha </span>
+					<span class="text-xs m-0"> {numberWithCommas(stat.performance)} Kg/Ha </span>
 				</div>
-				<div class="crop__body__item">
+				<!-- <div class="crop__body__item">
 					<i class="fi fi-rr-hand-holding-seeding" />
 					<span class="text-xs m-0"> {stat.harvest} cosechadas</span>
-				</div>
+				</div> -->
 			</div>
 		{:catch error}
 			<Error errorMessage={error.message} />

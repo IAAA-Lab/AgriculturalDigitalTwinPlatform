@@ -8,7 +8,6 @@
 	export let startDate: string;
 	export let selectedEnclosure: string;
 	export let limit: number;
-	// TODO: get idema from selectedEnclosure
 	export let idema: string;
 
 	let resetZoom: () => void = () => {};
