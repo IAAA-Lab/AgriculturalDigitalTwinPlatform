@@ -21,7 +21,8 @@
 					const enclosureIds = await userService.getEnclosureIds(id ?? '');
 					const enclosures = await enclosuresService.getEnclosures(enclosureIds);
 					$userEnclosures = JSON.parse(JSON.stringify(enclosures));
-					await goto('/panel/map', { replaceState: true });
+					if (!location.pathname.startsWith('/panel'))
+						await goto('/panel/map', { replaceState: true });
 					break;
 				default:
 					alert('No tienes permisos para acceder a esta página');

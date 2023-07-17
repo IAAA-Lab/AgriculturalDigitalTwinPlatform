@@ -16,5 +16,6 @@
 		padding: 0.4rem;
 		height: var(--height);
 		width: var(--width);
+		overflow: hidden;
 	}
 </style>
