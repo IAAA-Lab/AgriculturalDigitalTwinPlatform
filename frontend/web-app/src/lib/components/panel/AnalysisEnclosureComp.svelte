@@ -7,9 +7,10 @@
 	import Chart from './Chart.svelte';
 	import type { NDVI } from '$lib/core/Domain';
 
-	let startDate: string;
-	let endDate: string;
-	let LIMIT: number | undefined = 30;
+	let endDate: string = new Date().toISOString().split('T')[0];
+	let startDate: string = new Date(new Date().setDate(new Date().getDate() - 30))
+		.toISOString()
+		.split('T')[0];
 	let MAX_ENCLOSURES = 10;
 	let collapsed = false;
 	export let listOfEnclosures: string[] = [];
@@ -21,7 +22,7 @@
 				listOfEnclosures.slice(0, MAX_ENCLOSURES),
 				new Date(startDate),
 				new Date(endDate),
-				LIMIT
+				undefined
 			)
 			.then((ndviRes) => {
 				ndvi = [...ndviRes];

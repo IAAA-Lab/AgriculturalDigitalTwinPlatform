@@ -5,7 +5,7 @@
 	import Summary from '$lib/components/panel/Summary.svelte';
 	import Tables from '$lib/components/panel/Tables.svelte';
 	import { userEnclosures } from '$lib/config/stores/enclosures';
-	import { getColor } from '$lib/core/functions';
+	import { getColor, numberWithCommas } from '$lib/core/functions';
 
 	$: enclosures = $userEnclosures;
 </script>
@@ -42,13 +42,13 @@
 				{
 					key: 'area',
 					title: 'Área (Ha)',
-					value: (v) => v.area,
+					value: (v) => numberWithCommas(v.area),
 					sortable: true
 				},
 				{
 					key: 'areaSIGPAC',
 					title: 'Área SIGPAC (Ha)',
-					value: (v) => v.usedArea,
+					value: (v) => numberWithCommas(v.usedArea),
 					sortable: true
 				},
 				{ key: 'slope', title: 'Pendiente (%)', value: (v) => v.slope },

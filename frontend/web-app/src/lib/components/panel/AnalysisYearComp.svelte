@@ -51,7 +51,7 @@
 		</div>
 		<div slot="body" class="charts__wrapper">
 			{#each startDates as date}
-				<AnalysisYearCompChart {selectedEnclosure} {limit} startDate={date} {idema} />
+				<AnalysisYearCompChart enclosures={[selectedEnclosure]} {limit} startDate={date} {idema} />
 			{/each}
 		</div>
 	</Card>

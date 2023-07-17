@@ -3,12 +3,12 @@
 	import Chart from './Chart.svelte';
 	import { enclosuresService } from '$lib/config/config';
 	import CardInner from './CardInner.svelte';
-	import type { Activity, HistoricalWeather, NDVI } from '$lib/core/Domain';
+	import type { HistoricalWeather, NDVI } from '$lib/core/Domain';
 
 	export let startDate: string;
-	export let selectedEnclosure: string;
-	export let limit: number;
-	export let idema: string;
+	export let enclosures: string[] | undefined = undefined;
+	export let limit: number | undefined = undefined;
+	export let idema: string | undefined = undefined;
 
 	let resetZoom: () => void = () => {};
 	let activities: any[] = [];
@@ -19,42 +19,58 @@
 	let weatherValues: HistoricalWeather[] = [];
 
 	$: {
-		enclosuresService
-			.getNDVI([selectedEnclosure], new Date(startDate), new Date(endDate), undefined)
-			.then((ndvi) => {
-				ndviValues = ndvi[0];
-			})
-			.catch((error) => {
-				ndviValues = null;
-			});
+		if (enclosures) {
+			enclosuresService
+				.getNDVI(enclosures, new Date(startDate), new Date(endDate), undefined)
+				.then((ndvi) => {
+					ndviValues = ndvi[0];
+				})
+				.catch((error) => {
+					ndviValues = null;
+				});
+		}
 	}
 
 	$: {
-		enclosuresService
-			.getHistoricalWeather(idema, new Date(startDate), new Date(endDate), ['date', 'prec', 'tmed'])
-			.then((weather) => {
-				weatherValues = [...weather];
-			})
-			.catch((error) => {
-				weatherValues = [];
-			});
+		if (idema) {
+			enclosuresService
+				.getHistoricalWeather(idema, new Date(startDate), new Date(endDate), [
+					'date',
+					'prec',
+					'tmed'
+				])
+				.then((weather) => {
+					weatherValues = [...weather];
+				})
+				.catch((error) => {
+					weatherValues = [];
+				});
+		}
 	}
 
 	$: {
 		// If selectedActivity is empty, get all activities
-		enclosuresService
-			.getActivities([selectedEnclosure], new Date(startDate), new Date(endDate))
-			.then((activityList) => {
-				const activitiesFlat = [...activityList.flatMap((activity) => activity.activities)];
-				selectedActivity = activitiesFlat.at(0)?.activity;
-				activities = activitiesFlat;
-			})
-			.catch((error) => {
-				activities = [];
-			});
+		if (enclosures) {
+			enclosuresService
+				.getActivities(enclosures, new Date(startDate), new Date(endDate))
+				.then((activityList) => {
+					const activitiesFlat = [...activityList.flatMap((activity) => activity.activities)];
+					selectedActivity = activitiesFlat.at(0)?.activity;
+					activities = activitiesFlat;
+				})
+				.catch((error) => {
+					activities = [];
+				});
+		}
 	}
 
-	$: endDate = new Date(new Date(startDate).setDate(new Date(startDate).getDate() + limit));
+	$: {
+		if (!limit) {
+			endDate = new Date();
+		} else {
+			endDate = new Date(new Date(startDate).setDate(new Date(startDate).getDate() + limit));
+		}
+	}
 </script>
 
 <CardInner>
@@ -64,6 +80,12 @@
 				<label for="date">Fecha de inicio</label>
 				<input type="date" bind:value={startDate} />
 			</div>
+			{#if !limit}
+				<div class="input__wrapper">
+					<label for="date">Fecha de fin</label>
+					<input type="date" bind:value={endDate} />
+				</div>
+			{/if}
 			<div class="input__wrapper" style="flex: 1;">
 				{#if activities.length > 0}
 					<label>Actividades</label>
