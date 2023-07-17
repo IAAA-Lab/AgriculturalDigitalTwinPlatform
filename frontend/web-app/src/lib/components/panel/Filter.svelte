@@ -59,13 +59,15 @@
 					/>{crop}
 				</label>
 			{/each}
-			<button
-				class="button-secondary"
-				type="button"
-				on:click={() => (showMoreCrops = !showMoreCrops)}
-			>
-				{showMoreCrops ? 'Mostrar menos' : 'Mostrar más'}
-			</button>
+			{#if uniqueCrops.length > 10}
+				<button
+					class="button-secondary"
+					type="button"
+					on:click={() => (showMoreCrops = !showMoreCrops)}
+				>
+					{showMoreCrops ? 'Mostrar menos' : 'Mostrar más'}
+				</button>
+			{/if}
 			<div>
 				<h4 class="m-0 mt-16">Localización</h4>
 				{#each showMoreLocations ? uniqueLocations : uniqueLocations.slice(0, 10) as location}
@@ -80,13 +82,15 @@
 						/>{location}
 					</label>
 				{/each}
-				<button
-					class="button-secondary"
-					type="button"
-					on:click={() => (showMoreLocations = !showMoreLocations)}
-				>
-					{showMoreLocations ? 'Mostrar menos' : 'Mostrar más'}
-				</button>
+				{#if uniqueLocations.length > 10}
+					<button
+						class="button-secondary"
+						type="button"
+						on:click={() => (showMoreLocations = !showMoreLocations)}
+					>
+						{showMoreLocations ? 'Mostrar menos' : 'Mostrar más'}
+					</button>
+				{/if}
 			</div>
 			<h2 class="m-0 mb-16 mt-16">Ordenar por</h2>
 			<div class="select-button-group">

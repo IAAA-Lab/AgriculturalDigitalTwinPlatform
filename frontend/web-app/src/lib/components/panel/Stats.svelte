@@ -14,8 +14,10 @@
 
 	let ndviValues: NDVI | null = null;
 	let weatherValues: HistoricalWeather[] = [];
-	let startDate: string;
-	let endDate: string;
+	let startDate: string = new Date(new Date().setDate(new Date().getDate() - 90))
+		.toISOString()
+		.split('T')[0];
+	let endDate: string = new Date().toISOString().split('T')[0];
 	let LIMIT: number | undefined = 30;
 
 	$: {
@@ -54,20 +56,20 @@
 		<h4 class="m-0">Media</h4>
 	</div>
 	<div slot="body" class="p-8 body">
-		<CardInner class="ndvi__card">
-			<div slot="body" class="range__bar">
-				{@const ndviAvg = ndviValues
-					? ndviValues?.ndvi.reduce((a, b) => a + b?.value, 0) / ndviValues?.ndvi.length
-					: -1}
-				<Range value={ndviAvg} to={1} background={getRangeBarColor(ndviAvg)} />
-				<h3 class="m-0">
-					<strong>{numberWithCommas(ndviAvg)}<strong /></strong>
-				</h3>
-			</div>
-		</CardInner>
 		<div class="date__picker">
 			<input type="date" bind:value={startDate} />
 			<input type="date" bind:value={endDate} />
+			<CardInner class="ndvi__card">
+				<div slot="body" class="range__bar">
+					{@const ndviAvg = ndviValues
+						? ndviValues?.ndvi.reduce((a, b) => a + b?.value, 0) / ndviValues?.ndvi.length
+						: -1}
+					<Range value={ndviAvg} to={1} background={getRangeBarColor(ndviAvg)} />
+					<h3 class="m-0">
+						<strong>{numberWithCommas(ndviAvg)}<strong /></strong>
+					</h3>
+				</div>
+			</CardInner>
 		</div>
 		<CardInner class="card__wrapper">
 			<div class="chart__wrapper" slot="body">
@@ -154,9 +156,11 @@
 		flex-direction: row;
 		flex-wrap: wrap;
 		gap: 0.5rem;
+		height: 80%;
 
 		:global(.card__wrapper) {
-			flex: 3;
+			flex: 1;
+			height: 80% !important;
 		}
 	}
 
@@ -169,13 +173,12 @@
 	}
 
 	:global(.ndvi__card) {
-		width: 100%;
+		flex: 1;
 	}
 
 	.chart__wrapper {
-		max-height: 600px;
-		min-height: 300px;
 		width: 100%;
+		height: 100%;
 		min-width: 200px;
 	}
 
@@ -183,7 +186,6 @@
 		width: 100%;
 		display: flex;
 		flex-direction: row;
-		justify-content: space-between;
 		align-items: center;
 		flex-wrap: wrap;
 		gap: 0.5rem;

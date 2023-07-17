@@ -7,7 +7,7 @@
 </script>
 
 <div class="container-responsive">
-	<br />
+	<h1>Análisis</h1>
 	<AnalysisYearComp />
 	<Tables
 		rows={$userEnclosures.map((enclosure, index) => ({

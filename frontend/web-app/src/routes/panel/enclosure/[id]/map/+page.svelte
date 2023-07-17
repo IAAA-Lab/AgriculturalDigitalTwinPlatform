@@ -27,7 +27,7 @@
 	.inner__container {
 		display: grid;
 		gap: 0.8rem;
-		grid-template-rows: 1.5fr 1fr;
+		grid-template-rows: 1.5fr 400px;
 		height: calc(100vh - 7.1rem);
 	}
 

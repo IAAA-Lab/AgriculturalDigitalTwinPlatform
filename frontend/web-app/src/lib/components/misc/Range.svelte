@@ -1,6 +1,6 @@
 <script lang="ts">
 	export let value: number;
-	export let height: number = 20;
+	export let height: number = 15;
 	export let background: string = 'grey';
 	export let to: number = 100;
 

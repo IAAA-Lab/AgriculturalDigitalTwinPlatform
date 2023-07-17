@@ -115,15 +115,11 @@
 	</Card> -->
 </section>
 
-<style>
+<style lang="scss">
 	.crop__stats__wrapper {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 		gap: 1rem;
-	}
-
-	.chart {
-		height: 300px;
 	}
 
 	button {
@@ -131,5 +127,12 @@
 		border: none;
 		padding: 0;
 		cursor: pointer;
+	}
+
+	@include media('<medium') {
+		.crop__stats__wrapper {
+			display: flex;
+			flex-direction: column;
+		}
 	}
 </style>
