@@ -153,10 +153,10 @@
 		</div>
 		{#if isInMobile}
 			<SearchPopup>
-				<Search bind:filteredEnclosures bind:selectedEnclosure />
+				<Search bind:filteredEnclosures bind:selectedEnclosure bind:search />
 			</SearchPopup>
 		{:else}
-			<Search bind:filteredEnclosures bind:selectedEnclosure />
+			<Search bind:filteredEnclosures bind:selectedEnclosure bind:search />
 		{/if}
 	</div>
 </section>
