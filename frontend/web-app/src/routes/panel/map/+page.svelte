@@ -28,6 +28,9 @@
 	let orderBy: string | undefined = undefined;
 	let limit: number = 0;
 	let search: string | undefined = undefined;
+	// Dialogs
+	let showFilters = false;
+	let showAnalysis = false;
 
 	// Client side filtering and ordering of enclosures
 	$: {
@@ -144,24 +147,68 @@
 </script>
 
 <section class="container-responsive">
-	<h1 class="title">Mapa</h1>
+	<div class="header">
+		<h1 class="title mt-0">Mapa</h1>
+		<i
+			class="fi fi-rr-settings-sliders"
+			on:click={() => {
+				showFilters = !showFilters;
+				showAnalysis = false;
+			}}
+		/>
+		<i
+			class="fi fi-rr-chart-simple"
+			on:click={() => {
+				showAnalysis = !showAnalysis;
+				showFilters = false;
+			}}
+		/>
+	</div>
 	<div class="inner__container__group">
-		<Filter {enclosures} bind:checkedCrops bind:checkedLocations bind:orderBy bind:limit />
-		<div class="map__analysis__wrapper">
-			<Map enclosures={filteredEnclosures} bind:selectedEnclosure bind:distance />
-			<AnalysisEnclosureComp listOfEnclosures={filteredEnclosures?.map((e) => e.id)} />
-		</div>
 		{#if isInMobile}
+			<dialog open={showFilters}>
+				<Filter {enclosures} bind:checkedCrops bind:checkedLocations bind:orderBy bind:limit />
+			</dialog>
+			<dialog open={showAnalysis}>
+				<AnalysisEnclosureComp listOfEnclosures={filteredEnclosures?.map((e) => e.id)} />
+			</dialog>
+			<Map enclosures={filteredEnclosures} bind:selectedEnclosure bind:distance />
 			<SearchPopup>
 				<Search bind:filteredEnclosures bind:selectedEnclosure bind:search />
 			</SearchPopup>
 		{:else}
+			<Filter {enclosures} bind:checkedCrops bind:checkedLocations bind:orderBy bind:limit />
+			<div class="map__analysis__wrapper">
+				<Map enclosures={filteredEnclosures} bind:selectedEnclosure bind:distance />
+				<AnalysisEnclosureComp listOfEnclosures={filteredEnclosures?.map((e) => e.id)} />
+			</div>
 			<Search bind:filteredEnclosures bind:selectedEnclosure bind:search />
 		{/if}
 	</div>
 </section>
 
 <style lang="scss">
+	dialog {
+		width: 100%;
+		height: 85vh;
+		bottom: 0;
+		position: fixed;
+		overflow: scroll;
+	}
+	.header {
+		display: flex;
+		align-items: center;
+
+		:nth-child(2) {
+			margin-left: auto;
+			margin-right: 1rem;
+		}
+
+		i {
+			display: none;
+			cursor: pointer;
+		}
+	}
 	.map__analysis__wrapper {
 		display: flex;
 		flex-direction: column;
@@ -184,7 +231,12 @@
 			padding: 0;
 			margin-top: 16px;
 			grid-template-columns: 1fr;
-			height: calc(100vh - 5rem);
+			height: calc(100vh - 8rem);
+		}
+		.header {
+			i {
+				display: block;
+			}
 		}
 	}
 </style>

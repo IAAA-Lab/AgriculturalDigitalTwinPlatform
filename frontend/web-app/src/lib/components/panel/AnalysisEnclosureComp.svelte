@@ -138,7 +138,6 @@
 <style lang="scss">
 	.dropdown__wrapper {
 		position: relative;
-		max-height: 350px;
 		transition: max-height 0.1s ease-in;
 		overflow: hidden;
 		&.collapsed {
@@ -200,13 +199,13 @@
 	}
 
 	@include media('<medium') {
-		.chart {
-			min-width: 300px !important;
-			max-height: 200px !important;
-		}
 		.input__wrapper {
 			flex: 1;
 			align-items: flex-start;
+		}
+
+		button {
+			display: none;
 		}
 	}
 </style>

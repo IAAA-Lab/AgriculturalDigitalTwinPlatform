@@ -105,7 +105,14 @@
 			</div>
 			<h2 class="m-0 mb-16 mt-16">Límite</h2>
 			<div class="limit-input-group">
-				<input type="range" name="limit" min="0" max="200" bind:value={limit} step="10" />
+				<input
+					type="range"
+					name="limit"
+					min="0"
+					max={enclosures.length}
+					bind:value={limit}
+					step="10"
+				/>
 				<span>{limit === 0 ? 'Ilim.' : limit}</span>
 			</div>
 			<button class="button-primary button-xs mt-32" type="button" on:click={() => resetFilters()}>

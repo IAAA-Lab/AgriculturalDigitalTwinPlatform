@@ -13,6 +13,16 @@ canvas {
 	height: 100% !important;
 }
 
+dialog {
+	-webkit-appearance: none;
+	appearance: none;
+	z-index: 10000;
+	border: none;
+	background: transparent;
+	padding: 0;
+	transition: all 0.2s ease-in-out;
+}
+
 // ----------------- LEAFLET -----------------
 
 .leaflet-container {
