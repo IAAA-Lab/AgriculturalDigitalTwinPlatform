@@ -1,19 +1,17 @@
 <script lang="ts">
-	import WeatherCard from '$lib/components/panel/WeatherCard.svelte';
-
 	export let ta: any;
 	export let skyState: any;
 	export let time: any;
 </script>
 
-<WeatherCard>
-	<div slot="body" class="body pl-8 pr-8">
+<div class="card">
+	<div class="body pl-8 pr-8">
 		<span class="text-xs">{time} h</span>
 		<slot name="icon" />
 		<p class="m-0">{ta} °C</p>
 		<span class="text-xxs">{skyState}</span>
 	</div>
-</WeatherCard>
+</div>
 
 <style>
 	.body {

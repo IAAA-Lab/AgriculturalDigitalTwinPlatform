@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import leaflet from 'leaflet';
 	import type { Enclosure } from '$lib/core/Domain';
-	import Card from './Card.svelte';
 	import { getColor } from '$lib/core/functions';
 
 	let mapElement: any;
@@ -47,19 +46,11 @@
 	});
 </script>
 
-<section>
-	<Card height="100%">
-		<div slot="body" bind:this={mapElement} />
-	</Card>
-</section>
+<div class="card" bind:this={mapElement} />
 
 <style lang="scss">
-	section {
+	div {
 		grid-area: map;
-		div {
-			min-height: 200px;
-			height: 100%;
-		}
-		margin-bottom: 1.25rem;
+		min-height: 200px;
 	}
 </style>

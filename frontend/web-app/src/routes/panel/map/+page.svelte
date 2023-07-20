@@ -31,6 +31,7 @@
 	// Dialogs
 	let showFilters = false;
 	let showAnalysis = false;
+	let analysisCollapsed = false;
 
 	// Client side filtering and ordering of enclosures
 	$: {
@@ -144,6 +145,30 @@
 			})
 			.catch((err) => {});
 	};
+
+	// Click outside of the dialog to close it
+	document.addEventListener('click', (e) => {
+		const filtersDialog = document.getElementById('filters-dialog');
+		const analysisDialog = document.getElementById('analysis-dialog');
+		const buttonFilters = document.querySelector('.fi-rr-settings-sliders');
+		const buttonAnalysis = document.querySelector('.fi-rr-chart-simple');
+		if (
+			filtersDialog &&
+			!filtersDialog.contains(e.target as Node) &&
+			buttonFilters &&
+			!buttonFilters.contains(e.target as Node)
+		) {
+			showFilters = false;
+		}
+		if (
+			analysisDialog &&
+			!analysisDialog.contains(e.target as Node) &&
+			buttonAnalysis &&
+			!buttonAnalysis.contains(e.target as Node)
+		) {
+			showAnalysis = false;
+		}
+	});
 </script>
 
 <section class="container-responsive">
@@ -166,10 +191,10 @@
 	</div>
 	<div class="inner__container__group">
 		{#if isInMobile}
-			<dialog open={showFilters}>
+			<dialog open={showFilters} id="filters-dialog" class="card">
 				<Filter {enclosures} bind:checkedCrops bind:checkedLocations bind:orderBy bind:limit />
 			</dialog>
-			<dialog open={showAnalysis}>
+			<dialog open={showAnalysis} id="analysis-dialog" class="card">
 				<AnalysisEnclosureComp listOfEnclosures={filteredEnclosures?.map((e) => e.id)} />
 			</dialog>
 			<Map enclosures={filteredEnclosures} bind:selectedEnclosure bind:distance />
@@ -177,10 +202,20 @@
 				<Search bind:filteredEnclosures bind:selectedEnclosure bind:search />
 			</SearchPopup>
 		{:else}
-			<Filter {enclosures} bind:checkedCrops bind:checkedLocations bind:orderBy bind:limit />
+			<div class="card">
+				<Filter {enclosures} bind:checkedCrops bind:checkedLocations bind:orderBy bind:limit />
+			</div>
 			<div class="map__analysis__wrapper">
 				<Map enclosures={filteredEnclosures} bind:selectedEnclosure bind:distance />
-				<AnalysisEnclosureComp listOfEnclosures={filteredEnclosures?.map((e) => e.id)} />
+				<div class="card analysis" class:collapsed={analysisCollapsed}>
+					<button
+						class="button-xs button-secondary dropdown__close"
+						on:click={() => (analysisCollapsed = !analysisCollapsed)}
+					>
+						<i class="fi fi-rr-angle-down" />
+					</button>
+					<AnalysisEnclosureComp listOfEnclosures={filteredEnclosures?.map((e) => e.id)} />
+				</div>
 			</div>
 			<Search bind:filteredEnclosures bind:selectedEnclosure bind:search />
 		{/if}
@@ -188,9 +223,29 @@
 </section>
 
 <style lang="scss">
+	section {
+		padding: 0 !important;
+	}
+
+	.analysis {
+		position: relative;
+		max-height: 100%;
+		transition: max-height 0.3s ease-in-out;
+		&.collapsed {
+			max-height: 25px;
+		}
+	}
+
+	.dropdown__close {
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		font-size: 0.4rem;
+	}
+
 	dialog {
-		width: 100%;
-		height: 85vh;
+		width: 94%;
+		height: calc(100vh - 5.75rem);
 		bottom: 0;
 		position: fixed;
 		overflow: scroll;
@@ -213,16 +268,17 @@
 		display: flex;
 		flex-direction: column;
 		row-gap: 0.5rem;
-		:global(.card) {
-			flex: 1;
+		.card {
+			height: 550px;
 		}
 	}
 
 	.inner__container__group {
 		display: grid;
 		gap: 0.8rem;
-		height: calc(100vh - 6.3rem);
+		height: calc(100vh - 5.3rem);
 		grid-template-columns: 225px 1fr 400px;
+		grid-template-rows: 1fr;
 		overflow: hidden;
 	}
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Card from '$lib/components/panel/Card.svelte';
 	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import AnalysisYearCompChart from './AnalysisYearCompChart.svelte';
 	import { page } from '$app/stores';
@@ -27,37 +26,41 @@
 	$: idema = $userEnclosures?.find((e) => e.id === selectedEnclosure)?.meteoStation?.idema || '';
 </script>
 
-<section>
-	<Card>
-		<div slot="header" class="header__wrapper">
-			<div>
-				<h2 class="m-0">Comparación de fechas</h2>
-				<p class="m-0">Compara las características de un recinto</p>
-			</div>
-			<div class="header__input__wrapper">
-				<div class="input__wrapper">
-					<label>Recinto</label>
-					<select bind:value={selectedEnclosure}>
-						{#each $userEnclosures as enclosure}
-							<option value={enclosure.id}>{enclosure.id}</option>
-						{/each}
-					</select>
-				</div>
-				<div class="input__wrapper">
-					<label for="date">Días para buscar</label>
-					<input type="number" placeholder="Días" bind:value={limit} min="0" max="365" />
-				</div>
-			</div>
+<section class="card">
+	<div class="header mb-8">
+		<div>
+			<h2 class="m-0">Comparación de fechas</h2>
+			<p class="m-0">Compara las características de un recinto</p>
 		</div>
-		<div slot="body" class="charts__wrapper">
-			{#each startDates as date}
-				<AnalysisYearCompChart enclosures={[selectedEnclosure]} {limit} startDate={date} {idema} />
-			{/each}
+		<div class="input__wrapper">
+			<label>Recinto</label>
+			<select bind:value={selectedEnclosure}>
+				{#each $userEnclosures as enclosure}
+					<option value={enclosure.id}>{enclosure.id}</option>
+				{/each}
+			</select>
 		</div>
-	</Card>
+		<div class="input__wrapper">
+			<label for="date">Días para buscar</label>
+			<input type="number" placeholder="Días" bind:value={limit} min="0" max="365" />
+		</div>
+	</div>
+	<div class="charts__wrapper">
+		{#each startDates as date}
+			<AnalysisYearCompChart enclosures={[selectedEnclosure]} {limit} startDate={date} {idema} />
+		{/each}
+	</div>
 </section>
 
 <style lang="scss">
+	.header {
+		display: flex;
+		flex-wrap: wrap;
+		column-gap: 0.5rem;
+		:nth-child(2) {
+			margin-left: auto;
+		}
+	}
 	.charts__wrapper {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
@@ -87,12 +90,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.1rem;
-	}
-
-	.header__input__wrapper {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
 	}
 
 	@include media('<medium') {

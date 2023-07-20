@@ -4,8 +4,6 @@
 	import { getRangeBarColor, numberWithCommas } from '$lib/core/functions';
 	import 'chartjs-adapter-date-fns';
 	import { es } from 'date-fns/locale';
-	import Card from './Card.svelte';
-	import CardInner from './CardInner.svelte';
 	import Range from '../misc/Range.svelte';
 	import Chart from './Chart.svelte';
 
@@ -19,6 +17,7 @@
 		.split('T')[0];
 	let endDate: string = new Date().toISOString().split('T')[0];
 	let LIMIT: number | undefined = 30;
+	let ndviAvg: number = 0;
 
 	$: {
 		if (startDate && endDate) {
@@ -31,6 +30,7 @@
 			.getNDVI([enclosureId], new Date(startDate), new Date(endDate), LIMIT)
 			.then((ndvi) => {
 				ndviValues = ndvi[0];
+				ndviAvg = ndvi[0].ndvi.reduce((a, b) => a + b?.value, 0) / ndvi[0].ndvi.length;
 				enclosuresService
 					.getHistoricalWeather(
 						idema,
@@ -47,32 +47,26 @@
 			})
 			.catch((error) => {
 				ndviValues = null;
+				ndviAvg = 0;
 			});
 	}
 </script>
 
-<Card>
-	<div slot="header" class="header">
-		<h4 class="m-0">Media</h4>
-	</div>
-	<div slot="body" class="p-8 body">
+<div class="card">
+	<h4 class="m-0">Media</h4>
+	<div class="p-8 body">
 		<div class="date__picker">
 			<input type="date" bind:value={startDate} />
 			<input type="date" bind:value={endDate} />
-			<CardInner class="ndvi__card">
-				<div slot="body" class="range__bar">
-					{@const ndviAvg = ndviValues
-						? ndviValues?.ndvi.reduce((a, b) => a + b?.value, 0) / ndviValues?.ndvi.length
-						: -1}
-					<Range value={ndviAvg} to={1} background={getRangeBarColor(ndviAvg)} />
-					<h3 class="m-0">
-						<strong>{numberWithCommas(ndviAvg)}<strong /></strong>
-					</h3>
-				</div>
-			</CardInner>
+			<div class="card-inner ndvi__card range__bar">
+				<Range value={ndviAvg} to={1} background={getRangeBarColor(ndviAvg)} />
+				<h3 class="m-0">
+					<strong>{numberWithCommas(ndviAvg)}<strong /></strong>
+				</h3>
+			</div>
 		</div>
-		<CardInner class="card__wrapper">
-			<div class="chart__wrapper" slot="body">
+		<div class="card-inner card__wrapper">
+			<div class="chart__wrapper">
 				<Chart
 					data={{
 						data: {
@@ -85,7 +79,7 @@
 									})),
 									label: 'ndvi',
 									fill: true,
-									borderColor: '#fc9b68',
+									borderColor: '#800791',
 									backgroundColor: 'transparent',
 									tension: 0.2,
 									yAxisID: 'y1'
@@ -98,8 +92,8 @@
 									})),
 									label: 'lluvias',
 									fill: true,
-									borderColor: '#blue',
-									backgroundColor: 'blue',
+									borderColor: '#076F91',
+									backgroundColor: '#076F91',
 									tension: 0.2,
 									yAxisID: 'y'
 								}
@@ -146,9 +140,9 @@
 					}}
 				/>
 			</div>
-		</CardInner>
+		</div>
 	</div>
-</Card>
+</div>
 
 <style lang="scss">
 	.body {

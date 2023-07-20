@@ -9,6 +9,7 @@
 <div class="container-responsive">
 	<h1>Análisis</h1>
 	<AnalysisYearComp />
+	<br />
 	<Tables
 		rows={$userEnclosures.map((enclosure, index) => ({
 			color: getColor(index),

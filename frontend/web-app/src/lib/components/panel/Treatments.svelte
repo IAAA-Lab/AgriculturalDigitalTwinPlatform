@@ -1,6 +1,4 @@
 <script lang="ts">
-	import Card from '$lib/components/panel/Card.svelte';
-	import CardInner from '$lib/components/panel/CardInner.svelte';
 	import Chart from '$lib/components/panel/Chart.svelte';
 	import PhytosTable from '$lib/components/panel/PhytosTable.svelte';
 	import { enclosuresService } from '$lib/config/config';
@@ -16,6 +14,7 @@
 	let endDateInput = endDate.toISOString().split('T')[0];
 
 	let treatments: Treatment[] = [];
+	let uniqueProducts: string[] = [];
 
 	$: startDate = new Date(startDateInput);
 	$: endDate = new Date(endDateInput);
@@ -26,7 +25,7 @@
 			.then((activitiesList) => {
 				// Filter activities by activity type = 'TRATAMIENTO FITOSANITARIO'
 				const activities = activitiesList.find((activity) => activity.enclosureId === enclosureId);
-				treatments = activities?.activities
+				const treatmentsList = activities?.activities
 					.filter((activity) => activity.activity === 'TRATAMIENTO FITOSANITARIO')
 					.map((activity) => {
 						return {
@@ -34,41 +33,33 @@
 							...activity.properties
 						};
 					}) as Treatment[];
+				treatments = [...treatmentsList];
+				// Get all unique products
+				uniqueProducts = [...new Set(treatmentsList.map((phyto) => phyto.phytosanitary.name))];
 			})
 			.catch((error) => {
 				treatments = [];
+				uniqueProducts = [];
 			});
 	}
 </script>
 
-<Card>
-	<div slot="header" class="header mb-16">
+<div class="card">
+	<div class="header mb-16">
 		<h2 class="m-0">Tratamientos</h2>
 		<div class="input__dates__wrapper">
 			<input type="date" bind:value={startDateInput} />
 			<input type="date" bind:value={endDateInput} />
 		</div>
 	</div>
-	<div slot="body" class="body p-8">
-		<CardInner>
-			<div slot="body" class="table__inner">
-				<PhytosTable {treatments} />
-			</div>
-		</CardInner>
+	<div class="body p-8">
+		<div class="card-inner table__inner">
+			<PhytosTable {treatments} />
+		</div>
 		<div class="chart__doughnut__line__wrapper">
-			<CardInner class="chart__doughnut__wrapper">
-				<h4 slot="header" class="m-0 mb-16">Dosis aplicada por producto</h4>
-				<div slot="body" class="chart__doughnout">
-					<!-- Sum all unique products dosages to a list -->
-					{@const uniqueProducts = [
-						...new Set(treatments.map((phyto) => phyto.phytosanitary.name))
-					]}
-					{@const productsDosages = uniqueProducts.map((product) => {
-						const productPhytos = treatments.filter(
-							(phyto) => phyto.phytosanitary.name === product
-						);
-						return productPhytos.reduce((acc, curr) => acc + curr.quantity, 0);
-					})}
+			<div class="card-inner chart__doughnut__wrapper">
+				<h4 class="m-0 mb-16">Dosis aplicada por producto</h4>
+				<div class="chart__doughnout">
 					<Chart
 						data={{
 							type: 'doughnut',
@@ -76,7 +67,12 @@
 								datasets: [
 									{
 										label: '',
-										data: productsDosages,
+										data: uniqueProducts.map((product) => {
+											const productPhytos = treatments.filter(
+												(phyto) => phyto.phytosanitary.name === product
+											);
+											return productPhytos.reduce((acc, curr) => acc + curr.quantity, 0);
+										}),
 										// Map each product to a random color
 										backgroundColor: uniqueProducts.map((_, i) => `${getColor(i)}9C`),
 										borderColor: uniqueProducts.map((_, i) => getColor(i)),
@@ -107,9 +103,9 @@
 						}}
 					/>
 				</div>
-			</CardInner>
-			<CardInner class="chart__line__wrapper">
-				<div slot="body" class="chart__line">
+			</div>
+			<div class="card-inner chart__line__wrapper">
+				<div class="chart__line">
 					<Chart
 						data={{
 							type: 'bar',
@@ -119,7 +115,7 @@
 										label: '',
 										data: treatments.map((phyto) => phyto.quantity),
 										fill: false,
-										borderColor: '#2F3030',
+										backgroundColor: '#5FAC45',
 										tension: 0.3,
 										maxBarThickness: 40,
 										borderWidth: 2
@@ -131,24 +127,7 @@
 								elements: {
 									bar: {
 										borderRadius: 6,
-										borderWidth: 0,
-										backgroundColor: function (context) {
-											const chart = context.chart;
-											const { ctx, chartArea } = chart;
-											if (!chartArea) {
-												// This case happens on initial chart load
-												return null;
-											}
-											const gradient = ctx.createLinearGradient(
-												0,
-												chartArea.bottom,
-												0,
-												chartArea.top
-											);
-											gradient.addColorStop(0, '#3fc7f5a0');
-											gradient.addColorStop(0.5, '#2140f5a0');
-											return gradient;
-										}
+										borderWidth: 0
 									}
 								},
 								responsive: true,
@@ -191,10 +170,10 @@
 						}}
 					/>
 				</div>
-			</CardInner>
+			</div>
 		</div>
 	</div>
-</Card>
+</div>
 
 <style lang="scss">
 	.header {

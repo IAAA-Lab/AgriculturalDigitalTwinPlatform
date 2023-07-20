@@ -4,6 +4,17 @@
 
 	export let properties: any = {};
 
+	$: {
+		if (!properties.rainfedOrIrrigated) {
+			properties.rainfedOrIrrigated = '--';
+		}
+		if (properties.rainfedOrIrrigated === 'R') {
+			properties.rainfedOrIrrigated = 'Regadío';
+		} else if (properties.rainfedOrIrrigated === 'S') {
+			properties.rainfedOrIrrigated = 'Secano';
+		}
+	}
+
 	let chars: any = [];
 	if (properties) {
 		chars = [
@@ -18,16 +29,20 @@
 				unit: 'Ha'
 			},
 			{
-				name: 'Nº árboles',
-				value: properties.numberOfTrees
+				name: 'Regadío',
+				value: properties.irrigationCoef
 			},
 			{
-				name: 'Densidad de árboles',
-				value: properties.plantationDensity
+				name: 'Tipo de riego',
+				value: properties.rainfedOrIrrigated
 			},
 			{
 				name: 'Uso SIGPAC',
 				value: properties.parcelUse
+			},
+			{
+				name: 'Pendiente',
+				value: properties.slope
 			}
 		];
 	}

@@ -13,27 +13,24 @@
 </script>
 
 <section class="container-responsive">
-	<h1 class="title pb-16">Recinto#{id} · Mapa</h1>
-	<div class="inner__container">
-		<Map enclosureId={id} />
-		<Stats enclosureId={id} {idema} />
-	</div>
+	<h1 class="title p-0">Recinto#{id} · Mapa</h1>
+	<Map enclosureId={id} />
+	<Stats enclosureId={id} {idema} />
 </section>
 
 <style lang="scss">
 	section {
 		overflow-y: scroll;
-	}
-	.inner__container {
 		display: grid;
 		gap: 0.8rem;
-		grid-template-rows: 1.5fr 400px;
-		height: calc(100vh - 7.1rem);
+		grid-template-rows: 0fr 1.5fr 400px;
+		height: 100%;
 	}
 
 	@include media('<large') {
-		.inner__container {
+		section {
 			height: auto !important;
+			margin-bottom: 0.5rem;
 		}
 	}
 </style>

@@ -10,8 +10,6 @@
 <div class="container-responsive">
 	<h1 class="title pb-16">Recinto#{id} · Cultivos</h1>
 	<CropStats enclosureId={id} />
-	<br />
 	<Treatments enclosureId={id} />
 	<br />
-	<!-- <Fertilizers /> -->
 </div>

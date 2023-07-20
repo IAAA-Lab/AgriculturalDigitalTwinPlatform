@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Enclosure } from '$lib/core/Domain';
-	import Card from './Card.svelte';
 
 	export let enclosures: Enclosure[] = [];
 	export let checkedCrops: string[] = [];
@@ -37,90 +36,88 @@
 	};
 </script>
 
-<Card>
-	<div slot="header" class="header">
-		<h2 class="m-0">Filtros</h2>
-		<button type="button" class="button-xs" on:click={() => resetFilters()}>
-			<i class="fi fi-rr-trash-undo-alt" />
-		</button>
-	</div>
-	<form slot="body">
-		<div style="overflow: scroll;">
-			<h4 class="m-0">Cultivo</h4>
-			{#each showMoreCrops ? uniqueCrops : uniqueCrops.slice(0, 10) as crop}
-				<label class="badge" for={crop}>
+<div class="header">
+	<h2 class="m-0">Filtros</h2>
+	<button type="button" class="button-xs" on:click={() => resetFilters()}>
+		<i class="fi fi-rr-trash-undo-alt" />
+	</button>
+</div>
+<form>
+	<div style="overflow: scroll;">
+		<h4 class="m-0">Cultivo</h4>
+		{#each showMoreCrops ? uniqueCrops : uniqueCrops.slice(0, 10) as crop}
+			<label class="badge" for={crop}>
+				<input
+					hidden
+					type="checkbox"
+					id={crop}
+					name={crop}
+					value={crop}
+					bind:group={checkedCrops}
+				/>{crop}
+			</label>
+		{/each}
+		{#if uniqueCrops.length > 10}
+			<button
+				class="button-secondary"
+				type="button"
+				on:click={() => (showMoreCrops = !showMoreCrops)}
+			>
+				{showMoreCrops ? 'Mostrar menos' : 'Mostrar más'}
+			</button>
+		{/if}
+		<div>
+			<h4 class="m-0 mt-16">Localización</h4>
+			{#each showMoreLocations ? uniqueLocations : uniqueLocations.slice(0, 10) as location}
+				<label class="badge" for={location}>
 					<input
 						hidden
 						type="checkbox"
-						id={crop}
-						name={crop}
-						value={crop}
-						bind:group={checkedCrops}
-					/>{crop}
+						id={location}
+						name={location}
+						value={location}
+						bind:group={checkedLocations}
+					/>{location}
 				</label>
 			{/each}
-			{#if uniqueCrops.length > 10}
+			{#if uniqueLocations.length > 10}
 				<button
 					class="button-secondary"
 					type="button"
-					on:click={() => (showMoreCrops = !showMoreCrops)}
+					on:click={() => (showMoreLocations = !showMoreLocations)}
 				>
-					{showMoreCrops ? 'Mostrar menos' : 'Mostrar más'}
+					{showMoreLocations ? 'Mostrar menos' : 'Mostrar más'}
 				</button>
 			{/if}
-			<div>
-				<h4 class="m-0 mt-16">Localización</h4>
-				{#each showMoreLocations ? uniqueLocations : uniqueLocations.slice(0, 10) as location}
-					<label class="badge" for={location}>
-						<input
-							hidden
-							type="checkbox"
-							id={location}
-							name={location}
-							value={location}
-							bind:group={checkedLocations}
-						/>{location}
-					</label>
-				{/each}
-				{#if uniqueLocations.length > 10}
-					<button
-						class="button-secondary"
-						type="button"
-						on:click={() => (showMoreLocations = !showMoreLocations)}
-					>
-						{showMoreLocations ? 'Mostrar menos' : 'Mostrar más'}
-					</button>
-				{/if}
-			</div>
-			<h2 class="m-0 mb-16 mt-16">Ordenar por</h2>
-			<div class="select-button-group">
-				<select placeholder="Ordenar por..." bind:value={orderBy} bind:this={orderBySelect}>
-					<option selected value={undefined}>Por defecto</option>
-					<option value="crop"> Cultivo </option>
-					<option value="location"> Localización </option>
-					<option value="area"> Área - Descendente </option>
-					<option value="ndviDesc"> NDVI - Descendente </option>
-					<option value="ndviAsc"> NDVI - Ascendente </option>
-				</select>
-			</div>
-			<h2 class="m-0 mb-16 mt-16">Límite</h2>
-			<div class="limit-input-group">
-				<input
-					type="range"
-					name="limit"
-					min="0"
-					max={enclosures.length}
-					bind:value={limit}
-					step="10"
-				/>
-				<span>{limit === 0 ? 'Ilim.' : limit}</span>
-			</div>
-			<button class="button-primary button-xs mt-32" type="button" on:click={() => resetFilters()}>
-				Resetear
-			</button>
 		</div>
-	</form>
-</Card>
+		<h2 class="m-0 mb-16 mt-16">Ordenar por</h2>
+		<div class="select-button-group">
+			<select placeholder="Ordenar por..." bind:value={orderBy} bind:this={orderBySelect}>
+				<option selected value={undefined}>Por defecto</option>
+				<option value="crop"> Cultivo </option>
+				<option value="location"> Localización </option>
+				<option value="area"> Área - Descendente </option>
+				<option value="ndviDesc"> NDVI - Descendente </option>
+				<option value="ndviAsc"> NDVI - Ascendente </option>
+			</select>
+		</div>
+		<h2 class="m-0 mb-16 mt-16">Límite</h2>
+		<div class="limit-input-group">
+			<input
+				type="range"
+				name="limit"
+				min="0"
+				max={enclosures.length}
+				bind:value={limit}
+				step="10"
+			/>
+			<span>{limit === 0 ? 'Ilim.' : limit}</span>
+		</div>
+		<button class="button-primary button-xs mt-32" type="button" on:click={() => resetFilters()}>
+			Resetear
+		</button>
+	</div>
+</form>
 
 <style lang="scss">
 	form {

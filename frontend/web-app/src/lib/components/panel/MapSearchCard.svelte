@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { numberWithCommas, getRangeBarColor } from '$lib/core/functions';
-	import CardInner from './CardInner.svelte';
 	import geojson2svg from 'geojson-to-svg';
 	import Range from '../misc/Range.svelte';
 	import type { NDVI } from '$lib/core/Domain';
@@ -36,51 +35,44 @@
 	$: ndviVal = ndvi?.ndvi.at(-1)?.value;
 </script>
 
-<CardInner>
-	<div slot="body" class="body">
-		{@html icon}
-		<div class="content">
-			<p class="m-0"><strong>{enclosureName}</strong></p>
-			<p class="text-xs mb-4">{location}</p>
-			<div class="card-item">
-				<i class="fi fi-rr-map-marker" />
-				<p class="m-0 pl-8">{numberWithCommas(area)} Ha</p>
-			</div>
-			<div class="card-item">
-				<i class="fi fi-rr-corn" />
-				<slot name="crops" />
-				<p class="text-xs m-0">{cropName}</p>
-			</div>
-			<div class="card-item">
-				<i class="fi fi-rr-heart" />
-				<Range
-					value={ndviVal ?? 0}
-					to={1}
-					height={12}
-					background={getRangeBarColor(ndviVal ?? -1)}
-				/>
-				<p class="m-0">
-					<strong>{numberWithCommas(ndviVal)}</strong>
-				</p>
-			</div>
+<div class="card-inner">
+	{@html icon}
+	<div class="content">
+		<p class="m-0"><strong>{enclosureName}</strong></p>
+		<p class="text-xs mb-4">{location}</p>
+		<div class="card-item">
+			<i class="fi fi-rr-map-marker" />
+			<p class="m-0 pl-8">{numberWithCommas(area)} Ha</p>
 		</div>
-		<a
-			href={`/panel/enclosure/${enclosureId}`}
-			class="button button-xs button-secondary href-enclosure"
-		>
-			<i class="fi fi-rr-redo" />
-		</a>
-		<a
-			href={`/panel/analysis?enclosureId=${enclosureId}`}
-			class="button button-xs button-secondary href-analysis"
-		>
-			<i class="fi fi-rr-stats" />
-		</a>
+		<div class="card-item">
+			<i class="fi fi-rr-corn" />
+			<slot name="crops" />
+			<p class="text-xs m-0">{cropName}</p>
+		</div>
+		<div class="card-item">
+			<i class="fi fi-rr-heart" />
+			<Range value={ndviVal ?? 0} to={1} height={12} background={getRangeBarColor(ndviVal ?? -1)} />
+			<p class="m-0">
+				<strong>{numberWithCommas(ndviVal)}</strong>
+			</p>
+		</div>
 	</div>
-</CardInner>
+	<a
+		href={`/panel/enclosure/${enclosureId}`}
+		class="button button-xs button-secondary href-enclosure"
+	>
+		<i class="fi fi-rr-redo" />
+	</a>
+	<a
+		href={`/panel/analysis?enclosureId=${enclosureId}`}
+		class="button button-xs button-secondary href-analysis"
+	>
+		<i class="fi fi-rr-stats" />
+	</a>
+</div>
 
 <style lang="scss">
-	.body {
+	.card-inner {
 		display: flex;
 		flex-direction: row;
 		justify-content: flex-start;
@@ -90,11 +82,8 @@
 		a {
 			position: absolute;
 			width: auto;
-			top: 0;
-		}
-
-		.href-enclosure {
-			left: 0;
+			top: 3px;
+			left: 3px;
 		}
 
 		.href-analysis {

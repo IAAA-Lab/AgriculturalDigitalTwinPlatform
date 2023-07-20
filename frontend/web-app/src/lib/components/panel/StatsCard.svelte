@@ -1,35 +1,32 @@
 <script lang="ts">
 	import { numberWithCommas } from '$lib/core/functions';
-	import Card from './Card.svelte';
 
 	export let statName = '--';
 	export let statValue: number | string = '--';
 	export let statUnit = '';
 </script>
 
-<Card>
-	<div class="stats-card" slot="body">
-		<div class="stat-icon">
-			<slot />
-		</div>
-		<div class="ml-8 stat-content">
-			<h4 class="m-0">
-				{statName}
-			</h4>
-			<div class="stat-value-unit">
-				<h2 class="m-0 fw-600">
-					{numberWithCommas(statValue)}
-				</h2>
-				<span class="ml-8 text-xs">
-					{statUnit}
-				</span>
-			</div>
+<div class="card">
+	<div class="stat-icon">
+		<slot />
+	</div>
+	<div class="ml-8 stat-content">
+		<h4 class="m-0">
+			{statName}
+		</h4>
+		<div class="stat-value-unit">
+			<h2 class="m-0 fw-600">
+				{numberWithCommas(statValue)}
+			</h2>
+			<span class="ml-8 text-xs">
+				{statUnit}
+			</span>
 		</div>
 	</div>
-</Card>
+</div>
 
 <style lang="scss">
-	.stats-card {
+	.card {
 		display: flex;
 		flex-direction: row;
 		align-items: center;

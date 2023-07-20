@@ -1,8 +1,5 @@
 <script lang="ts">
 	import { numberWithCommas } from '$lib/core/functions';
-	import { es } from 'date-fns/locale';
-	import CardInner from './CardInner.svelte';
-	import CardInnerPrimary from './CardInnerPrimary.svelte';
 	import Chart from './Chart.svelte';
 
 	export let title: string;
@@ -20,13 +17,13 @@
 	$: diffIcon = diff > 0 ? 'up' : 'down';
 </script>
 
-<svelte:component this={primary ? CardInnerPrimary : CardInner}>
-	<div slot="header" class="card-header pt-8 tt-u">
+<div class="card-inner">
+	<div class="card-header pt-8 tt-u">
 		<h4 class="stat-header m-0">
 			{title}
 		</h4>
 	</div>
-	<div slot="body" class="stat-body">
+	<div class="stat-body">
 		<div class="value-unit">
 			<h2 class="m-0 fw-700">{numberWithCommas(value)}</h2>
 			<span class={unit && 'ml-4'}>{unit}</span>
@@ -50,7 +47,7 @@
 								})),
 								label: title,
 								backgroundColor: 'rgba(0, 0, 0, 0)',
-								borderColor: '#1e88e5',
+								borderColor: '#fc9b68',
 								borderWidth: 2,
 								// pointRadius: 0,
 								pointHoverRadius: 5,
@@ -79,7 +76,7 @@
 			/>
 		</div>
 	</div>
-</svelte:component>
+</div>
 
 <style lang="scss">
 	.stat-header {

@@ -2,7 +2,6 @@
 	import { es } from 'date-fns/locale';
 	import Chart from './Chart.svelte';
 	import { enclosuresService } from '$lib/config/config';
-	import CardInner from './CardInner.svelte';
 	import type { HistoricalWeather, NDVI } from '$lib/core/Domain';
 
 	export let startDate: string;
@@ -73,42 +72,40 @@
 	}
 </script>
 
-<CardInner>
-	<div slot="header" class="header">
-		<div class="chart__header">
+<div class="card-inner">
+	<div class="chart__header">
+		<div class="input__wrapper">
+			<label for="date">Fecha de inicio</label>
+			<input type="date" bind:value={startDate} />
+		</div>
+		{#if !limit}
 			<div class="input__wrapper">
-				<label for="date">Fecha de inicio</label>
-				<input type="date" bind:value={startDate} />
+				<label for="date">Fecha de fin</label>
+				<input type="date" bind:value={endDate} />
 			</div>
-			{#if !limit}
-				<div class="input__wrapper">
-					<label for="date">Fecha de fin</label>
-					<input type="date" bind:value={endDate} />
-				</div>
+		{/if}
+		<div class="input__wrapper" style="flex: 1;">
+			{#if activities.length > 0}
+				<label>Actividades</label>
+				<!--NOTE: If I use bind:value, the whole component is re-rendered, I don't know why-->
+				<select
+					value={selectedActivity}
+					on:change={(e) => {
+						selectedActivity = e.target?.value;
+					}}
+				>
+					{#each [...new Set(activities.map((activity) => activity.activity))] as activity}
+						<option value={activity}>{activity}</option>
+					{/each}
+				</select>
 			{/if}
-			<div class="input__wrapper" style="flex: 1;">
-				{#if activities.length > 0}
-					<label>Actividades</label>
-					<!--NOTE: If I use bind:value, the whole component is re-rendered, I don't know why-->
-					<select
-						value={selectedActivity}
-						on:change={(e) => {
-							selectedActivity = e.target?.value;
-						}}
-					>
-						{#each [...new Set(activities.map((activity) => activity.activity))] as activity}
-							<option value={activity}>{activity}</option>
-						{/each}
-					</select>
-				{/if}
-			</div>
 		</div>
 		<button class="button-secondary button-xs" on:click={() => resetZoom()}>
 			<i class="fi fi-rr-expand" />
 		</button>
 	</div>
 
-	<div slot="body" class="chart">
+	<div class="chart">
 		<Chart
 			bind:resetZoom
 			data={{
@@ -268,7 +265,7 @@
 			}}
 		/>
 	</div>
-</CardInner>
+</div>
 
 <style lang="scss">
 	.chart {
@@ -276,17 +273,11 @@
 		max-height: 350px;
 	}
 
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: start;
-	}
-
 	.chart__header {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
-		align-items: center;
+		align-items: start;
 		gap: 1rem;
 		margin-bottom: 1rem;
 		padding: 0 0.5rem;

@@ -4,7 +4,6 @@
 	import { onMount, onDestroy } from 'svelte';
 	import leaflet from 'leaflet';
 	import type { Enclosure } from '$lib/core/Domain';
-	import Card from './Card.svelte';
 	import 'leaflet.markercluster';
 	import { formattedDate, formattedTime, getColor, numberWithCommas } from '$lib/core/functions';
 	import mapStore from '../../../routes/panel/map/store';
@@ -232,16 +231,11 @@
 	};
 </script>
 
-<Card>
-	<svelte:fragment slot="body">
-		<div bind:this={mapElement} />
-	</svelte:fragment>
-</Card>
+<div class="card" bind:this={mapElement} />
 
 <style lang="scss">
-	div {
+	.card {
 		height: 100%;
-		width: 100%;
 	}
 
 	:global(.radius-input) {

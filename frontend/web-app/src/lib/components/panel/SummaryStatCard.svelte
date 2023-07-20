@@ -1,17 +1,13 @@
 <script lang="ts">
 	import { IMAGES_SERVER_URL } from '$lib/config/config';
-	import type { Crop } from '$lib/core/Domain';
 	import { numberWithCommas } from '$lib/core/functions';
-	import CardInner from './CardInner.svelte';
-	import CardInnerPrimary from './CardInnerPrimary.svelte';
 
 	export let title: string;
 	export let value: number;
 	export let unit: string = '';
 	export let diff: number;
 	export let enclosureName: string;
-	export let crops: Crop[];
-	export let primary: boolean = false;
+	export let crops: any[];
 
 	let diffColor: string;
 	let diffIcon: string;
@@ -20,13 +16,13 @@
 	$: diffIcon = diff > 0 ? 'up' : 'down';
 </script>
 
-<svelte:component this={primary ? CardInnerPrimary : CardInner}>
-	<div slot="header" class="card-header pt-8 tt-u">
+<div class="card-inner">
+	<div class="card-header pt-8 tt-u">
 		<h4 class="stat-header m-0">
 			{title}
 		</h4>
 	</div>
-	<div slot="body" class="stat-body">
+	<div class="stat-body">
 		<div class="value-unit">
 			<h2 class="m-0 fw-700">{numberWithCommas(value)}</h2>
 			<span class={unit && 'ml-4'}>{unit}</span>
@@ -40,7 +36,7 @@
 		</div>
 		<span class="text-xxs pt-4 enclosure">{enclosureName}</span>
 	</div>
-</svelte:component>
+</div>
 
 <style lang="scss">
 	.stat-header {

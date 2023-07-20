@@ -2,15 +2,16 @@
 	import WeatherStats from './(sections)/WeatherStats.svelte';
 	import CurrentWeather from './(sections)/CurrentWeather.svelte';
 	import DailyWeather from './(sections)/DailyWeather.svelte';
-	import ForecastWeather from './(sections)/ForecastWeather.svelte';
-	import TempMap from './(sections)/TempMap.svelte';
+
 	import { page } from '$app/stores';
 	import Loading from '$lib/components/misc/Loading.svelte';
 	import { enclosuresService } from '$lib/config/config';
 	import Error from '$lib/components/misc/Error.svelte';
+	import ForecastWeather from './(sections)/ForecastWeather.svelte';
+	import { userEnclosures } from '$lib/config/stores/enclosures';
 
-	let id: string;
-	$: id = $page.params.id;
+	let id: string = $page.params.id;
+	let enclosure = $userEnclosures.find((e) => e.id === $page.params.id);
 </script>
 
 <div class="container">
@@ -22,12 +23,11 @@
 			{@const pred = cw.prediction[0]}
 			<CurrentWeather {cw} />
 			<DailyWeather ta={pred.ta} skyState={pred.skyState} />
-			<WeatherStats pred={cw.prediction[0]} />
+			<WeatherStats {pred} idema={enclosure?.meteoStation.idema} />
 		{:catch error}
 			<Error errorMessage={error.message} />
 		{/await}
 		<ForecastWeather enclosureId={id} />
-		<TempMap />
 	</div>
 </div>
 

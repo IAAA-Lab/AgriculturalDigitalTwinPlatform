@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import { onMount } from 'svelte';
-	import Error from '../misc/Error.svelte';
 	import EnclosureMap from './EnclosureMap.svelte';
+	import type { Enclosure } from '$lib/core/Domain';
 
 	export let enclosureId: string;
 	let enclosure: Enclosure | undefined = undefined;
@@ -12,8 +12,4 @@
 	});
 </script>
 
-{#if !enclosure}
-	<Error />
-{:else}
-	<EnclosureMap {enclosure} />
-{/if}
+<EnclosureMap {enclosure} />
