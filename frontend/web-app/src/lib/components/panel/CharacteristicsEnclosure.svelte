@@ -3,15 +3,16 @@
 	import StatsCard from './StatsCard.svelte';
 
 	export let properties: any = {};
+	let rainfedOrIrrigated;
 
 	$: {
 		if (!properties.rainfedOrIrrigated) {
-			properties.rainfedOrIrrigated = '--';
+			rainfedOrIrrigated = '--';
 		}
 		if (properties.rainfedOrIrrigated === 'R') {
-			properties.rainfedOrIrrigated = 'Regadío';
+			rainfedOrIrrigated = 'Regadío';
 		} else if (properties.rainfedOrIrrigated === 'S') {
-			properties.rainfedOrIrrigated = 'Secano';
+			rainfedOrIrrigated = 'Secano';
 		}
 	}
 
@@ -34,7 +35,7 @@
 			},
 			{
 				name: 'Tipo de riego',
-				value: properties.rainfedOrIrrigated
+				value: rainfedOrIrrigated
 			},
 			{
 				name: 'Uso SIGPAC',

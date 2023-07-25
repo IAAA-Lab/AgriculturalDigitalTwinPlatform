@@ -209,7 +209,7 @@ services:
 # #############################################
 
   prefect-server:
-    image: prefecthq/prefect:2.10.20-python3.11
+    image: prefecthq/prefect:2.11-python3.11
     restart: on-failure
     volumes:
       - prefect:/root/.prefect

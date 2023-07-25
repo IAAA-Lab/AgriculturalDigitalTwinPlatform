@@ -3,8 +3,12 @@
 	import AnalysisYearCompChart from './AnalysisYearCompChart.svelte';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
+	import { IMAGES_SERVER_URL } from '$lib/config/config';
+	import type { Enclosure } from '$lib/core/Domain';
+	import { onCropImageError } from '$lib/core/functions';
 
-	let selectedEnclosure: string;
+	let selectedEnclosureId: string;
+	let selectedEnclosure: Enclosure | undefined;
 	let limit: number = 365;
 	let NUMBER_OF_CHARTS = 4;
 	// string dates list where dates are date - limit
@@ -15,15 +19,14 @@
 		date.setDate(1);
 		date.setDate(date.getDate() - i * limit);
 		return date.toISOString().split('T')[0];
-	});
-	let idema: string;
+	}).sort((a, b) => (a > b ? 1 : -1));
 
 	onMount(() => {
-		selectedEnclosure =
+		selectedEnclosureId =
 			$page.url.searchParams.get('enclosureId') || $userEnclosures?.map((e) => e.id).at(0) || '';
 	});
 
-	$: idema = $userEnclosures?.find((e) => e.id === selectedEnclosure)?.meteoStation?.idema || '';
+	$: selectedEnclosure = $userEnclosures?.find((e) => e.id === selectedEnclosureId);
 </script>
 
 <section class="card">
@@ -32,9 +35,18 @@
 			<h2 class="m-0">Comparación de fechas</h2>
 			<p class="m-0">Compara las características de un recinto</p>
 		</div>
+		<div class="input__wrapper mr-16">
+			<label>{selectedEnclosure?.properties.cropName}</label>
+			<img
+				src={`${IMAGES_SERVER_URL}/${selectedEnclosure?.properties?.cropId}.png`}
+				alt="Análisis"
+				height="40px"
+				on:error={onCropImageError}
+			/>
+		</div>
 		<div class="input__wrapper">
 			<label>Recinto</label>
-			<select bind:value={selectedEnclosure}>
+			<select bind:value={selectedEnclosureId}>
 				{#each $userEnclosures as enclosure}
 					<option value={enclosure.id}>{enclosure.id}</option>
 				{/each}
@@ -47,7 +59,12 @@
 	</div>
 	<div class="charts__wrapper">
 		{#each startDates as date}
-			<AnalysisYearCompChart enclosures={[selectedEnclosure]} {limit} startDate={date} {idema} />
+			<AnalysisYearCompChart
+				enclosures={[selectedEnclosureId]}
+				{limit}
+				startDate={date}
+				idema={selectedEnclosure?.meteoStation.idema}
+			/>
 		{/each}
 	</div>
 </section>

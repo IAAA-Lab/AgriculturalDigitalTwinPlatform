@@ -5,15 +5,8 @@ python3 -m __consumers__.rpc_consumer &
 # Execute direct exchange consumer for event-based etl
 python3 -m __consumers__.direct_exchange_consumer &
 # Init a project where we will deploy our flows
-# prefect project init --recipe local
-# For flows that required not to overload the external API
-# prefect worker start --type process --pool third-party-blocking-work --name default-worker &
+prefect project init --recipe local
 prefect worker start --type process --pool default-work --name default-worker &
-#  Set concurrency limits for work pools
-# prefect work-pool set-concurrency-limit third-party-blocking-work 6
-#  Set concurrency limits for tasks
-# prefect concurrency-limit create agroslab-teledetection 30
-# prefect concurrency-limit create agroslab 50
 sleep 3
 
 # Register blocks

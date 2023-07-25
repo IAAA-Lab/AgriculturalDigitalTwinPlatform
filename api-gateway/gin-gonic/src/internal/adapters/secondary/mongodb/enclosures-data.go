@@ -118,7 +118,7 @@ func (mc *mongodbConn) GetCropStats(enclosureId string, startDate time.Time, end
 		"mocked": bson.M{"$eq": true},
 	}
 	if !startDate.IsZero() && !endDate.IsZero() {
-		filter["date"] = bson.M{"$gte": startDate, "$lte": endDate}
+		filter["plantingDate"] = bson.M{"$gte": startDate, "$lte": endDate}
 	}
 	return GetDocuments[domain.CropStats](mc, CROP_STATS_COLLECTION, filter, nil)
 }

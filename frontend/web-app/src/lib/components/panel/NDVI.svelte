@@ -67,7 +67,7 @@
 								plugins: {
 									title: {
 										display: true,
-										text: 'Últimos 30 días'
+										text: 'Últimos 30 registros'
 									},
 									legend: {
 										display: false

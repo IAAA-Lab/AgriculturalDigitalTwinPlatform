@@ -11,6 +11,7 @@
 
 	let resetZoom: () => void = () => {};
 	let activities: any[] = [];
+	let cropStats: any[] = [];
 	let selectedActivity: string | undefined;
 
 	let endDate: Date;
@@ -48,7 +49,6 @@
 	}
 
 	$: {
-		// If selectedActivity is empty, get all activities
 		if (enclosures) {
 			enclosuresService
 				.getActivities(enclosures, new Date(startDate), new Date(endDate))
@@ -59,6 +59,18 @@
 				})
 				.catch((error) => {
 					activities = [];
+				});
+		}
+	}
+
+	$: {
+		console.log(enclosures);
+		if (enclosures && enclosures.length > 0) {
+			enclosuresService
+				.getCropStats(enclosures[0], new Date(startDate), new Date(endDate))
+				.then((stats) => {
+					cropStats = [...stats];
+					// .sort((a, b) => b.value - a.value);
 				});
 		}
 	}
@@ -151,8 +163,7 @@
 							backgroundColor: weatherValues ? '#076F91' : 'transparent',
 							tension: 0.2,
 							yAxisID: 'y',
-							barPercentage: 4,
-							categoryPercentage: 1
+							barThickness: 5
 						},
 						{
 							type: 'bar',
@@ -164,10 +175,33 @@
 								})),
 							label: selectedActivity || '',
 							fill: true,
-							backgroundColor: selectedActivity ? 'green' : 'transparent',
+							backgroundColor: selectedActivity ? 'black' : 'transparent',
 							yAxisID: 'y2',
-							barPercentage: 1,
-							categoryPercentage: 1
+							barThickness: 3
+						},
+						{
+							type: 'bar',
+							data: cropStats.map((crop) => ({
+								x: crop.plantingDate,
+								y: 1
+							})),
+							label: cropStats.length > 0 ? 'siembra' : '',
+							fill: true,
+							backgroundColor: cropStats.length > 0 ? 'brown' : 'transparent',
+							yAxisID: 'y2',
+							barThickness: 3
+						},
+						{
+							type: 'bar',
+							data: cropStats.map((crop) => ({
+								x: crop.harvestDate,
+								y: 1
+							})),
+							label: cropStats.length > 0 ? 'cosecha' : '',
+							fill: true,
+							backgroundColor: cropStats.length > 0 ? 'green' : 'transparent',
+							yAxisID: 'y2',
+							barThickness: 3
 						}
 					]
 				},

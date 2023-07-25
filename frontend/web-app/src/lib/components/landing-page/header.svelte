@@ -56,7 +56,9 @@
 						</li>
 						{#if $page.url.pathname === '/'}
 							<li>
-								<a class="m-0 fw-700" on:click|preventDefault={scrollIntoView}>Contacto</a>
+								<a class="m-0 fw-700" href="#contact" on:click|preventDefault={scrollIntoView}
+									>Contacto</a
+								>
 							</li>
 						{/if}
 						<li>
