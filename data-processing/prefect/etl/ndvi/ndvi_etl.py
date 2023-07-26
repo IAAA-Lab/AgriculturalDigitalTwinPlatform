@@ -75,16 +75,7 @@ async def ndvi_etl(enclosure_ids_init: list[dict], date_end: str):
             ndvi_req_list.append(
                 {"enclosure_id": enclosure_id["enclosure_id"], "date_init": date_init.strftime("%d-%m-%Y"), "date_end": date_end_block.strftime("%d-%m-%Y")})
             date_init = date_end_block
-    # Run
-    # for nvi_req in ndvi_req_list:
-    #     try:
-    #         ndvi_raw = await extract_ndvi(nvi_req["enclosure_id"], nvi_req["date_init"], nvi_req["date_end"])
-    #         if len(ndvi_raw[0]["respuesta"]) == 0:
-    #             continue
-    #         ndvi_list = await transform_ndvi(ndvi_raw[0], ndvi_raw[1])
-    #         await load_ndvi(ndvi_list)
-    #     except Exception as e:
-    #         print(e)
+
     logger = get_run_logger()
 
     BATCH_SIZE = 20

@@ -43,7 +43,7 @@
 	</button>
 </div>
 <form>
-	<div style="overflow: scroll;">
+	<div style="overflow-y: scroll;">
 		<h4 class="m-0">Cultivo</h4>
 		{#each showMoreCrops ? uniqueCrops : uniqueCrops.slice(0, 10) as crop}
 			<label class="badge" for={crop}>
@@ -124,7 +124,6 @@
 		height: 95%;
 		display: flex;
 		flex-direction: column;
-		overflow: scroll;
 		margin: 0 5px;
 	}
 	button {
