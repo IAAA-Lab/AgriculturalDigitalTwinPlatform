@@ -11,6 +11,7 @@
 	let selectedEnclosure: Enclosure | undefined;
 	let limit: number = 365;
 	let NUMBER_OF_CHARTS = 4;
+	let maxPrecipitation = 0;
 	// string dates list where dates are date - limit
 	let startDates = Array.from({ length: NUMBER_OF_CHARTS }, (_, i) => {
 		// date = beginning of the year
@@ -64,6 +65,7 @@
 				{limit}
 				startDate={date}
 				idema={selectedEnclosure?.meteoStation.idema}
+				bind:maxPrecipitation
 			/>
 		{/each}
 	</div>

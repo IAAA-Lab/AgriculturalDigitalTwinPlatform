@@ -24,6 +24,10 @@ type Enclosure = {
 		name: string;
 		'distance(km)': number;
 	};
+	location: {
+		province: string;
+		ccaa: string;
+	};
 	properties: {
 		ndvi: NDVI | undefined;
 		irrigationCoef: number;

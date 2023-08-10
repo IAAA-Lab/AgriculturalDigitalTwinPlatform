@@ -25,6 +25,8 @@
 	// Filter
 	let checkedCrops: string[] = [];
 	let checkedLocations: string[] = [];
+	let checkedProvinces: string[] = [];
+	let checkedCCAA: string[] = [];
 	let orderBy: string | undefined = undefined;
 	let limit: number = 0;
 	let search: string | undefined = undefined;
@@ -40,6 +42,20 @@
 				// Filter by checked crops
 				if (checkedCrops.length > 0) {
 					return checkedCrops.includes(enclosure.properties.cropName);
+				}
+				return true;
+			})
+			.filter((enclosure) => {
+				// Filter by checked provinces
+				if (checkedProvinces.length > 0) {
+					return checkedProvinces.includes(enclosure.location.province);
+				}
+				return true;
+			})
+			.filter((enclosure) => {
+				// Filter by checked CCAA
+				if (checkedCCAA.length > 0) {
+					return checkedCCAA.includes(enclosure.location.ccaa);
 				}
 				return true;
 			})
@@ -192,21 +208,37 @@
 	<div class="inner__container__group">
 		{#if isInMobile}
 			<dialog open={showFilters} id="filters-dialog" class="card">
-				<Filter {enclosures} bind:checkedCrops bind:checkedLocations bind:orderBy bind:limit />
+				<Filter
+					{enclosures}
+					bind:checkedCrops
+					bind:checkedLocations
+					bind:orderBy
+					bind:limit
+					bind:checkedProvinces
+					bind:checkedCCAA
+				/>
 			</dialog>
 			<dialog open={showAnalysis} id="analysis-dialog" class="card">
 				<AnalysisEnclosureComp listOfEnclosures={filteredEnclosures?.map((e) => e.id)} />
 			</dialog>
-			<Map enclosures={filteredEnclosures} bind:selectedEnclosure bind:distance />
+			<Map bind:enclosures={filteredEnclosures} bind:selectedEnclosure bind:distance />
 			<SearchPopup>
 				<Search bind:filteredEnclosures bind:selectedEnclosure bind:search />
 			</SearchPopup>
 		{:else}
 			<div class="card">
-				<Filter {enclosures} bind:checkedCrops bind:checkedLocations bind:orderBy bind:limit />
+				<Filter
+					{enclosures}
+					bind:checkedCrops
+					bind:checkedLocations
+					bind:orderBy
+					bind:limit
+					bind:checkedProvinces
+					bind:checkedCCAA
+				/>
 			</div>
 			<div class="map__analysis__wrapper">
-				<Map enclosures={filteredEnclosures} bind:selectedEnclosure bind:distance />
+				<Map bind:enclosures={filteredEnclosures} bind:selectedEnclosure bind:distance />
 				<div class="card analysis" class:collapsed={analysisCollapsed}>
 					<button
 						class="button-xs button-secondary dropdown__close"

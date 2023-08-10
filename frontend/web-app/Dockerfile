@@ -1,7 +1,8 @@
 FROM node:18.15.0 as build
 WORKDIR /app
 COPY . .
-RUN yarn
+# For computers with low internet speed
+RUN yarn --network-timeout 1000000
 # Get args
 ARG VITE_PORT
 ARG VITE_API_URL

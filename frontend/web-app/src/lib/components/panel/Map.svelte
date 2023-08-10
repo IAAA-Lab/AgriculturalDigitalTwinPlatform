@@ -94,6 +94,17 @@
 					});
 				});
 			}
+
+			map.on('zoomend', () => {
+				// // Get the enclosures that are visible in the map
+				// const visibleEnclosures = features.getLayers().filter((layer) => {
+				// 	const bounds = layer.getBounds();
+				// 	return map.getBounds().contains(bounds);
+				// });
+				// console.log('visibleEnclosures', visibleEnclosures);
+				// // Set the visible enclosures
+				// enclosures = visibleEnclosures.map((layer) => layer.feature);
+			});
 			// Set mapStore
 			mapStore.set({
 				flyToCoords: (coords: number[][]) => {

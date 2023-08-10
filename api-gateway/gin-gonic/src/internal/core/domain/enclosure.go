@@ -18,6 +18,10 @@ type Enclosure struct {
 		Name     string  `json:"name"`
 		Distance float32 `json:"distance(km)"`
 	} `json:"meteoStation"`
+	Location struct {
+		Province string `json:"province"`
+		CCAA     string `json:"ccaa"`
+	} `json:"location"`
 	Properties struct {
 		IrrigationCoef float64 `json:"irrigationCoef"`
 		// Admisibility      float64 `json:"admisibility"`

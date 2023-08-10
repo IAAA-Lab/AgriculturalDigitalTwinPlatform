@@ -8,6 +8,7 @@
 	export let enclosures: string[] | undefined = undefined;
 	export let limit: number | undefined = undefined;
 	export let idema: string | undefined = undefined;
+	export let maxPrecipitation: number = 0;
 
 	let resetZoom: () => void = () => {};
 	let activities: any[] = [];
@@ -19,7 +20,7 @@
 	let weatherValues: HistoricalWeather[] = [];
 
 	$: {
-		if (enclosures) {
+		if (enclosures && enclosures.length > 0) {
 			enclosuresService
 				.getNDVI(enclosures, new Date(startDate), new Date(endDate), undefined)
 				.then((ndvi) => {
@@ -49,7 +50,7 @@
 	}
 
 	$: {
-		if (enclosures) {
+		if (enclosures && enclosures.length > 0) {
 			enclosuresService
 				.getActivities(enclosures, new Date(startDate), new Date(endDate))
 				.then((activityList) => {
@@ -64,7 +65,6 @@
 	}
 
 	$: {
-		console.log(enclosures);
 		if (enclosures && enclosures.length > 0) {
 			enclosuresService
 				.getCropStats(enclosures[0], new Date(startDate), new Date(endDate))
@@ -81,6 +81,14 @@
 		} else {
 			endDate = new Date(new Date(startDate).setDate(new Date(startDate).getDate() + limit));
 		}
+	}
+
+	$: {
+		const maxPrecipitationCalc = Math.max(...weatherValues.map((w) => w.prec).filter((w) => w));
+		maxPrecipitation =
+			maxPrecipitationCalc > maxPrecipitation
+				? Math.ceil(maxPrecipitationCalc * 1.1)
+				: maxPrecipitation;
 	}
 </script>
 
@@ -177,7 +185,7 @@
 							fill: true,
 							backgroundColor: selectedActivity ? 'black' : 'transparent',
 							yAxisID: 'y2',
-							barThickness: 3
+							barThickness: 1.5
 						},
 						{
 							type: 'bar',
@@ -246,7 +254,9 @@
 							title: {
 								display: true,
 								text: 'Lluvias (mm)'
-							}
+							},
+							min: 0,
+							max: maxPrecipitation
 						},
 						y1: {
 							type: 'linear',

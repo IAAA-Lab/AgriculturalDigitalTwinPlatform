@@ -22,7 +22,7 @@
 		{#each filteredEnclosures as enclosure, i}
 			<a on:click={() => selectEnclosure(enclosure)} href="#">
 				<MapSearchCard
-					location={enclosure.properties.geographicSpot}
+					location={`${enclosure.location.ccaa}, ${enclosure.location.province}`}
 					enclosureName={enclosure.id}
 					area={enclosure.properties.area}
 					geojsonFeature={enclosure}

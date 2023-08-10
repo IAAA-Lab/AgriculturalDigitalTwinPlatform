@@ -6,6 +6,10 @@
 	let showMoreCrops = false;
 	export let checkedLocations: string[] = [];
 	let showMoreLocations = false;
+	export let checkedProvinces: string[] = [];
+	let showMoreProvinces = false;
+	export let checkedCCAA: string[] = [];
+	let showMoreCCAA = false;
 	export let orderBy: string | undefined = undefined;
 	export let limit: number = 0;
 	// inputs refs
@@ -23,6 +27,20 @@
 			enclosures
 				.map((enclosure) => enclosure.properties.geographicSpot)
 				.filter((location) => location.length > 0)
+		)
+	];
+	let uniqueProvinces: string[] = [];
+	$: uniqueProvinces = [
+		...new Set(
+			enclosures
+				.map((enclosure) => enclosure.location.province)
+				.filter((province) => province.length > 0)
+		)
+	];
+	let uniqueCCAA: string[] = [];
+	$: uniqueCCAA = [
+		...new Set(
+			enclosures.map((enclosure) => enclosure.location.ccaa).filter((CCAA) => CCAA.length > 0)
 		)
 	];
 
@@ -67,6 +85,50 @@
 			</button>
 		{/if}
 		<div>
+			<h4 class="m-0 mt-16">Com. autónoma</h4>
+			{#each showMoreCCAA ? uniqueCCAA : uniqueCCAA.slice(0, 10) as ccaa}
+				<label class="badge" for={ccaa}>
+					<input
+						hidden
+						type="checkbox"
+						id={ccaa}
+						name={ccaa}
+						value={ccaa}
+						bind:group={checkedCCAA}
+					/>{ccaa}
+				</label>
+			{/each}
+			{#if uniqueCCAA.length > 10}
+				<button
+					class="button-secondary"
+					type="button"
+					on:click={() => (showMoreCCAA = !showMoreCCAA)}
+				>
+					{showMoreCCAA ? 'Mostrar menos' : 'Mostrar más'}
+				</button>
+			{/if}
+			<h4 class="m-0 mt-16">Provincia</h4>
+			{#each showMoreProvinces ? uniqueProvinces : uniqueProvinces.slice(0, 10) as province}
+				<label class="badge" for={province}>
+					<input
+						hidden
+						type="checkbox"
+						id={province}
+						name={province}
+						value={province}
+						bind:group={checkedProvinces}
+					/>{province}
+				</label>
+			{/each}
+			{#if uniqueProvinces.length > 10}
+				<button
+					class="button-secondary"
+					type="button"
+					on:click={() => (showMoreProvinces = !showMoreProvinces)}
+				>
+					{showMoreProvinces ? 'Mostrar menos' : 'Mostrar más'}
+				</button>
+			{/if}
 			<h4 class="m-0 mt-16">Localización</h4>
 			{#each showMoreLocations ? uniqueLocations : uniqueLocations.slice(0, 10) as location}
 				<label class="badge" for={location}>

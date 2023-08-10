@@ -1,13 +1,19 @@
+import io
+from utils.constants import Constants
+from utils.functions import DB_MinioClient
 from prefect import task, flow, unmapped
 import os
 from datetime import timedelta
 from prefect.tasks import task_input_hash
+import pandas as pd
 from utils.functions import DB_MongoClient
 import requests
 import asyncio
 # Get rid of insecure warning
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+BUCKET_FROM_NAME = Constants.STORAGE_LANDING_ZONE.value
 
 
 @task(retries=2, retry_delay_seconds=3, timeout_seconds=30, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=10), refresh_cache=False)
@@ -66,7 +72,23 @@ def extract_meteorological_station(enclosureId: str):
 
 
 @task
-def join_information(enclosure_geographic_info, crs, enclosure_meteorological_stations, year: int, enclosure_id: str):
+def extract_ccaa_and_province(enclosure_id: str):
+    # Connect to MinIO
+    minio_client = DB_MinioClient().connect()
+    # Fetch objects and filter by metadata
+    data = minio_client.get_object(BUCKET_FROM_NAME, "provinces.xlsx").read()
+    df = pd.read_excel(io.BytesIO(data), engine="openpyxl",
+                       sheet_name="Sheet1", na_values=[''])
+    # Get the province and ccaa
+    province_id = enclosure_id.split("-")[0]
+    province = df.loc[df['Código Provincia'] == int(province_id)]
+    province_name = province["Nombre Provincia"].values[0]
+    ccaa = province["Nombre CCAA"].values[0]
+    return ccaa, province_name
+
+
+@task
+def join_information(enclosure_geographic_info, crs, enclosure_meteorological_stations, year: int, enclosure_id: str, ccaa: str, province: str):
     joined_enclosure = {
         "id": enclosure_id,
         "year": int(year),
@@ -76,6 +98,10 @@ def join_information(enclosure_geographic_info, crs, enclosure_meteorological_st
             "idema": enclosure_meteorological_stations["id"],
             "name": enclosure_meteorological_stations["nombre"],
             "distance(km)": enclosure_meteorological_stations["distancia (km)"],
+        },
+        "location": {
+            "ccaa": ccaa,
+            "province": province,
         },
         "properties": {
             # m2 to ha
@@ -112,8 +138,9 @@ def recintos_etl(year: int, enclosure_ids: list[str]):
             properties = enclosure_geographic_info["properties"]
             enclosure_id = f"{properties['provincia']}-{properties['municipio']}-{properties['agregado']}-{properties['zona']}-{properties['poligono']}-{properties['parcela']}-{properties['recinto']}"
             meteorological_info = extract_meteorological_station(enclosure_id)
+            ccaa, province = extract_ccaa_and_province(enclosure_id)
             joined_enclosure = join_information(
-                enclosure_geographic_info, enclosures_geographic_info["crs"], meteorological_info, year, enclosure_id)
+                enclosure_geographic_info, enclosures_geographic_info["crs"], meteorological_info, year, enclosure_id, ccaa, province)
             joined_enclosures.append(joined_enclosure)
         except Exception as e:
             print(e)
