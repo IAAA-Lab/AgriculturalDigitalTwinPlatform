@@ -11,6 +11,18 @@ FILE_NAME = "FakeCropStats.xlsx"
 BUCKET_FROM_NAME = Constants.STORAGE_LANDING_ZONE.value
 
 
+def generate_random_date(from_date, to_date):
+    if from_date > to_date:
+        to_date = to_date.replace(year=to_date.year + 1)
+    return pd.to_datetime(np.random.randint(from_date.value, to_date.value))
+
+
+def generate_random_number(number):
+    # Format is: from-to
+    from_to = number.split("-")
+    return np.random.randint(int(from_to[0]), int(from_to[1]))
+
+
 @task
 def extract():
     # Connect to MinIO
@@ -24,21 +36,21 @@ def extract():
 def get_unique_enclosure_ids_and_crops_from_db():
     # Connect to MongoDB
     db = DB_MongoClient().connect()
-    # Get unique pairs of enclosure_id and crop_name from Crops collection
-    enclosures_and_crops = db.Crops.aggregate([
+    # Get unique pairs of enclosure_id and crop_id from Crops collection
+    enclosures_and_crops = db.Enclosures.aggregate([
+        # Filter enclosures that doesn't have crops
         {
-            # Choose which not have mocked property
             "$match": {
-                "mocked": {
-                    "$exists": False
+                "properties.cropId": {
+                    "$exists": True
                 }
-            },
+            }
         },
         {
             "$group": {
                 "_id": {
-                    "enclosureId": "$enclosureId",
-                    "cropName": "$cropName"
+                    "enclosureId": "$id",
+                    "cropId": "$properties.cropId"
                 }
             }
         }
@@ -58,8 +70,8 @@ def transform(df: pd.DataFrame, enclosures_and_crops: list):
 
     for enclosure_and_crop in enclosures_and_crops:
         enclosure_id = enclosure_and_crop["_id"]["enclosureId"]
-        crop_name = enclosure_and_crop["_id"]["cropName"]
-        crop = df.loc[df["Cultivo"] == crop_name]
+        crop_id = enclosure_and_crop["_id"]["cropId"]
+        crop = df.loc[df["Cultivo id"] == int(crop_id)]
         if crop.empty:
             continue
         planting_date_raw = crop["Fecha de siembra (avg)"].values[0]
@@ -87,7 +99,7 @@ def transform(df: pd.DataFrame, enclosures_and_crops: list):
 
             crops.append({
                 "enclosureId": enclosure_id,
-                "cropName": crop_name,
+                "cropId": crop_id,
                 "plantingDate": planting_date,
                 "harvestDate": harvest_date,
                 "performance": performance,
