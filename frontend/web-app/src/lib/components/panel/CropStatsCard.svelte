@@ -5,7 +5,7 @@
 	export let title: string;
 	export let value: number;
 	export let unit: string = '';
-	export let diff: number;
+	export let diff: number = 0;
 	export let primary: boolean = false;
 	export let datasets: number[] = [];
 	export let labels: string[] = [];
@@ -13,8 +13,8 @@
 	let diffColor: string;
 	let diffIcon: string;
 
-	$: diffColor = diff > 0 ? 'text-color-success' : 'text-color-error';
-	$: diffIcon = diff > 0 ? 'up' : 'down';
+	$: diffColor = parseFloat(diff) > 0 ? 'text-color-success' : 'text-color-error';
+	$: diffIcon = parseFloat(diff) > 0 ? 'up' : 'down';
 </script>
 
 <div class="card-inner">
