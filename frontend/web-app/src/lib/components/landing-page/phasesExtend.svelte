@@ -49,7 +49,7 @@
 		{
 			title: 'Fase 2',
 			date: '2022',
-			code: 'AEI-010500-2023-182',
+			code: 'AEI-010500-2022b-61',
 			illustration: '/feature-tile-icon-04.svg',
 			stateKey: 'under-construction',
 			state: 'Bajo construcción',
@@ -104,7 +104,7 @@
 		{
 			title: 'Fase 3',
 			date: '2023',
-			code: 'AEI-010500-2022b-61',
+			code: 'AEI-010500-2023-182',
 			illustration: '/feature-tile-icon-01.svg',
 			stateKey: 'under-construction',
 			state: 'Bajo construcción',
