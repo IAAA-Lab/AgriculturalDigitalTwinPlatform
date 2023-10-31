@@ -49,7 +49,7 @@
 		{
 			title: 'Fase 2',
 			date: '2022',
-			code: 'AEI-010500-2022b-61',
+			code: 'AEI-010500-2023-182',
 			illustration: '/feature-tile-icon-04.svg',
 			stateKey: 'under-construction',
 			state: 'Bajo construcción',
@@ -99,6 +99,48 @@
 				{ path: 'campg-logo.png', link: 'https://campag.es/' },
 				{ path: 'pystacil-logo.png', link: 'https://pistacyl.com/' },
 				{ path: 'cetemet-logo.png', link: 'https://cetemet.es/' }
+			]
+		},
+		{
+			title: 'Fase 3',
+			date: '2023',
+			code: 'AEI-010500-2022b-61',
+			illustration: '/feature-tile-icon-01.svg',
+			stateKey: 'under-construction',
+			state: 'Bajo construcción',
+			objectives: [
+				{
+					title: 'Análisis de dependencias',
+					paragraph: 'Establecer las dependencias conocidas y NO conocidas entre explotaciones.'
+				},
+				{
+					title: 'Nueva tecnología y funcionalidades',
+					paragraph:
+						'Disponer de una base tecnológica que soporte estas interacciones y proponer nuevas funcionalidades asociadas.'
+				},
+				{
+					title: 'Nueva implementación',
+					paragraph:
+						'Disponer de una tercera implementación del sistema de información que constituye en gemelo digital.'
+				},
+				{
+					title: 'Tercer demostrador',
+					paragraph:
+						'Contar con un tercer demostrador alimentado con datos de una explotación real que pueda servir de base para el desarrollo de futuros desarrollos de producto o continuación de trabajos de I+D.'
+				}
+			],
+			partners: [
+				{ path: '7edata-logo.png', link: 'https://www.7edata.com/' },
+				{
+					path: 'agrointelligent-logo.webp',
+					link: 'https://www.agrointelligent.com/'
+				},
+				{ path: 'geoslab-logo.png', link: 'https://www.geoslab.com/' },
+				{ path: 'campg-logo.png', link: 'https://campag.es/' },
+				{ path: 'pystacil-logo.png', link: 'https://pistacyl.com/' },
+				{ path: 'cetemet-logo.png', link: 'https://cetemet.es/' },
+				{ path: 'zebra-logo.webp', link: 'https://zebraventures.eu' },
+				{ path: 'smart-city-cluster-logo.svg', link: 'https://smartcitycluster.org' }
 			]
 		}
 	];
