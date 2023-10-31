@@ -132,11 +132,12 @@ services:
     image: nginx:latest
     restart: always
     ports:
-      - "5081:80"
+      - "80:80"
+      - "443:443"
     volumes:
       - ./frontend/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./data/certbot/conf:/etc/letsencrypt:ro
-      - ./data/certbot/www:/var/www/certbot:ro
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
     depends_on:
       - frontend
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
@@ -144,8 +145,8 @@ services:
     image: certbot/certbot
     restart: unless-stopped
     volumes:
-      - ./data/certbot/conf:/etc/letsencrypt:rw
-      - ./data/certbot/www:/var/www/certbot:rw
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 # #############################################

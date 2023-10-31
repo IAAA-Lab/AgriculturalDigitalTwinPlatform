@@ -8,7 +8,7 @@ fi
 domains=(gedefec.es www.gedefec.es)
 rsa_key_size=4096
 data_path="./data/certbot"
-email="735550@unizar.es" # Adding a valid address is strongly recommended
+email="jlagunar@unizar.es" # Adding a valid address is strongly recommended
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
 if [ -d "$data_path" ]; then
@@ -38,8 +38,8 @@ docker-compose -f docker-compose.dev.yml --env-file .env.dev run --rm --entrypoi
 echo
 
 
-echo "### Starting nginx ..."
-docker-compose -f docker-compose.dev.yml --env-file .env.dev up --force-recreate -d frontend
+echo "### Starting system ..."
+docker-compose -f docker-compose.dev.yml --env-file .env.dev up --build -d
 echo
 
 echo "### Deleting dummy certificate for $domains ..."
@@ -76,5 +76,5 @@ docker-compose -f docker-compose.dev.yml --env-file .env.dev run --rm --entrypoi
     --force-renewal" certbot
 echo
 
-echo "### Reloading nginx ..."
-docker-compose -f docker-compose.dev.yml --env-file .env.dev exec frontend nginx -s reload
+echo "### Shutting down system ..."
+docker-compose -f docker-compose.dev.yml --env-file .env.dev down
