@@ -6,43 +6,43 @@ services:
 #      Collect metrics from services        #
 #############################################
 
-  # prometheus:
-  #   image: prom/prometheus:latest
-  #   volumes:
-  #     - ./monitorization/prometheus:/etc/prometheus/
-  #     - prometheus-data:/prometheus
-  #   command:
-  #     - '--config.file=/etc/prometheus/prometheus.yml'
-  #     - '--storage.tsdb.path=/prometheus'
-  #   ports:
-  #     - "9090"
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./monitorization/prometheus:/etc/prometheus/
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9090"
 
 #############################################
 #        Collect logs from services         #
 #############################################
 
-  # loki:
-  #   image: grafana/loki:latest
-  #   ports:
-  #     - "3100"
-  #   volumes:
-  #     # directory must be created first, with uid:gid 10001:10001
-  #     - loki-data:/loki
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100"
+    volumes:
+    # directory must be created first, with uid:gid 10001:10001
+      - loki-data:/loki
 
 #############################################
 #      Centralize all metrics and logs      #
 #############################################
 
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   volumes:
-  #     - ./monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-  #     - grafana-data:/var/lib/grafana
-  #   restart: unless-stopped
-  #   ports:
-  #     - 3010:${GRAFANA_PORT}
-    # depends_on:
-    #   - prometheus
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - ./monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+    ports:
+      - 3010:${GRAFANA_PORT}
+    depends_on:
+      - prometheus
 
 #############################################
 # Services communication and message queue  #
@@ -91,9 +91,6 @@ services:
       - MONGO_URI=${MONGO_URI}
       - MONGO_DB=${MONGO_DB}
       - RABBITMQ_URI=${RABBITMQ_URI}
-      - REDIS_URI=${REDIS_URI}
-      - REDIS_USERNAME=${REDIS_USERNAME}
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
       - FRONTEND_URL=${FRONTEND_URL}
       - MINIO_ENDPOINT=${MINIO_ENDPOINT}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
@@ -157,7 +154,7 @@ services:
       command: mongod --quiet --logpath /dev/null 
 
 # #############################################
-# #    Data lake and Prefect flows storage    #
+# #    Data lake and artifcat storage         #
 # #############################################
 
   minio:
@@ -187,71 +184,16 @@ services:
           condition: service_healthy
 
 # #############################################
-# #            Prefect server storage         #
-# #############################################
-
-  # Had to use postgres because sqlite3 is doesn't support many concurrent connections
-  postgres:
-    build: storage/postgres
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_MULTIPLE_DATABASES: prefect,mlflow
-    ports:
-      - 5432
-    volumes:
-      - ./storage/postgres/data:/var/lib/postgresql/data
-
-# #############################################
 # #      Data ingestion, data processing      # 
-# #      processing and machine learning      #
+# #      simulations, and machine learning    #
 # #############################################
 
-  prefect-server:
-    image: prefecthq/prefect:2.11-python3.11
+  data-pipeline-worker:
+    build: data-pipelines
     restart: on-failure
     volumes:
-      - prefect:/root/.prefect
+      - ./data-pipelines:/opt/data-pipelines
     environment:
-      - PREFECT_LOGGING_LEVEL=WARNING
-      - PREFECT_UI_URL=http://127.0.0.0:4200/api
-      - PREFECT_API_URL=http://127.0.0.1:4200/api
-      - PREFECT_SERVER_API_HOST=0.0.0.0
-      - PREFECT_API_DATABASE_CONNECTION_URL=${PREFECT_API_DATABASE_CONNECTION_URL}
-      - PREFECT_EXPERIMENTAL_ENABLE_WORKSPACE_DASHBOARD=True
-    ports:
-      - 4200:${PREFECT_PORT}
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      mongo:
-        condition: service_started
-      postgres:
-        condition: service_started
-    # Resource limit because it tends to use a lot of memory
-    mem_limit: 512m
-    mem_reservation: 128m
-    cpus: 1.0
-    command: prefect server start
-
-#############################################
-#              Prefect workers              #
-#############################################
-
-  prefect-worker:
-    build: data-processing/prefect
-    restart: on-failure
-    volumes:
-      - ./data-processing/prefect:/opt/prefect
-    environment:
-      - PREFECT_LOGGING_LEVEL=WARNING
-      - PREFECT_API_URL=http://prefect-server:4200/api
-      - PREFECT_MINIO_ACCESS_ROOT=${MINIO_ROOT_USER}
-      - PREFECT_MINIO_SECRET_ROOT=${MINIO_ROOT_PASSWORD}
-      - PREFECT_MINIO_HOST=${MINIO_HOST}
-      - PREFECT_MONGODB_HOST=${MONGO_URI}
-      - PREFECT_MONGODB_DB=${MONGO_INITDB_DATABASE}
       - AGROSLAB_AUTH_TOKEN=${AGROSLAB_AUTH_TOKEN}
       - AGROSLAB_API_URL=${AGROSLAB_API_URL}
       - AGROSLAB_TELEDETECTION_URL=${AGROSLAB_TELEDETECTION_URL}
@@ -259,18 +201,14 @@ services:
       - STORAGE_TRUSTED_ZONE=${MINIO_TRUSTED_ZONE}
       - STORAGE_REFINED_ZONE=${MINIO_REFINED_ZONE}
       - RABBITMQ_URI=${RABBITMQ_URI}
-      - MLFLOW_TRACKING_URI=${POSTGRES_URI_MLFLOW}
-      - MLFLOW_S3_ENDPOINT_URL=http://minio:9000
+      #- MLFLOW_TRACKING_URI=${POSTGRES_URI_MLFLOW}
+      - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
       - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
       - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
     depends_on:
-      prefect-server:
-        condition: service_started
       rabbitmq:
         condition: service_healthy
       mongo:
-        condition: service_started
-      postgres:
         condition: service_started
     # Resource limit because it tends to use a lot of memory
     mem_limit: 2048m
@@ -292,7 +230,7 @@ services:
   #     - minio
   #   environment:
   #     - MLFLOW_TRACKING_URI=${POSTGRES_URI_MLFLOW}
-  #     - MLFLOW_S3_ENDPOINT_URL=http://minio:9000
+  #     - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
   #     - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
   #     - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
   #   command: mlflow server --backend-store-uri ${POSTGRES_URI_MLFLOW} --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
@@ -302,4 +240,6 @@ services:
 
 
 volumes:
-  prefect:
+  prometheus-data:
+  loki-data:
+  grafana-data:
