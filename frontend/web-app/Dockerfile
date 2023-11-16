@@ -1,8 +1,8 @@
-FROM node:18.15.0 as build
+FROM node:18-alpine3.18 as build
 WORKDIR /app
+COPY ./package*.json ./
+RUN npm ci
 COPY . .
-# For computers with low internet speed
-RUN yarn --network-timeout 1000000
 # Get args
 ARG VITE_PORT
 ARG VITE_API_URL
@@ -21,7 +21,7 @@ ENV VITE_EMAIL_SENDER_TEMPLATEID=$VITE_EMAIL_SENDER_TEMPLATEID
 ENV VITE_IV_BLOCK_PASSWD=$VITE_IV_BLOCK_PASSWD
 ENV VITE_KEY_DECRYPT_PASSWD=$VITE_KEY_DECRYPT_PASSWD
 ENV VITE_IMAGES_SERVER_URL=$VITE_IMAGES_SERVER_URL
-RUN yarn build
+RUN npm run build
 
 FROM node:18.15.0 as deply-node
 WORKDIR /app

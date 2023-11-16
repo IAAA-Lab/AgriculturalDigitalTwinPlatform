@@ -64,13 +64,11 @@
 		padding: 10px;
 	}
 
-	.sidebar {
+	:global(.sidebar) {
 		&.collapsed {
-			:global {
-				.sidebar-option-text,
-				h3 {
-					display: none;
-				}
+			.sidebar-option-text,
+			h3 {
+				display: none;
 			}
 		}
 	}

@@ -96,7 +96,6 @@ def transform(data, enclosureId) -> dict:
             "sunset": response.prediccion.dia[0].ocaso,
         }]
     }
-    print(daily_weather)
     return daily_weather
 
 
@@ -108,12 +107,6 @@ def daily_weather(enclosure_id: str) -> dict:
 # ---------------- TEST ----------------
 
 
-def test_daily_weather(enclosure_id: str):
-    data = extract.fn(enclosure_id)
-    processed_data = transform.fn(data, enclosure_id)
-    return processed_data
-
-
 if __name__ == "__main__":
     enclosure_id = "44-254-0-0-11-341-12"
-    test_daily_weather(enclosure_id)
+    daily_weather(enclosure_id)

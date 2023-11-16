@@ -1,0 +1,7 @@
+artifact_location: s3://mlflow/251548911530418462
+creation_time: 1700174593919
+experiment_id: '251548911530418462'
+last_update_time: 1700174619051
+lifecycle_stage: deleted
+name: fgfd
+tags: {}

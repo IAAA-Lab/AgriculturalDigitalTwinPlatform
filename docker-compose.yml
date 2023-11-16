@@ -1,88 +1,77 @@
 version: "3.8"
 
 services:
-
-#############################################
-#      Collect metrics from services        #
-#############################################
+  #############################################
+  #      Collect metrics from services        #
+  #############################################
 
   prometheus:
     image: prom/prometheus:latest
     volumes:
       - ./monitorization/prometheus:/etc/prometheus/
-      - prometheus-data:/prometheus
+      - ./monitorization/prometheus/storage:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
     ports:
       - "9090"
 
-#############################################
-#        Collect logs from services         #
-#############################################
-
-  loki:
-    image: grafana/loki:latest
-    ports:
-      - "3100"
-    volumes:
-    # directory must be created first, with uid:gid 10001:10001
-      - loki-data:/loki
-
-#############################################
-#      Centralize all metrics and logs      #
-#############################################
+  #############################################
+  #      Centralize all metrics and logs      #
+  #############################################
 
   grafana:
     image: grafana/grafana:latest
     volumes:
       - ./monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - grafana-data:/var/lib/grafana
+      - ./monitorization/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./monitorization/grafana/storage:/var/lib/grafana
+      - ./monitorization/grafana/plugins:/var/lib/grafana/plugins
     restart: unless-stopped
     ports:
       - 3010:${GRAFANA_PORT}
     depends_on:
       - prometheus
 
-#############################################
-# Services communication and message queue  #
-#############################################
+  #############################################
+  # Services communication and message queue  #
+  #############################################
 
   rabbitmq:
-      image: rabbitmq:3-management
-      container_name: rabbitmq
-      ports:
-          - 5672:${RABBITMQ_PORT}
-          - 15672:${RABBITMQ_PANEL_PORT}
-      environment:
-          - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-          - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-      healthcheck:
-          test: ["CMD", "rabbitmqctl", "ping"]
-          interval: 10s
-          timeout: 3s
-          retries: 5
-      mem_limit: 1024m
-      mem_reservation: 256m
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - 5672:${RABBITMQ_PORT}
+      - 15672:${RABBITMQ_PANEL_PORT}
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    mem_limit: 1024m
+    mem_reservation: 256m
 
-#############################################
-#              Web app server               #
-#############################################
+  #############################################
+  #              Web app server               #
+  #############################################
 
   gin-gonic:
     build:
       context: ./api-gateway/gin-gonic
       target: local
     ports:
-        - 8080:${GIN_PORT}
+      - 8080:${GIN_PORT}
     volumes:
-        - ./api-gateway/gin-gonic:/app
+      - ./api-gateway/gin-gonic:/app
     restart: always
     depends_on:
-        mongo:
-          condition: service_started
-        rabbitmq:
-          condition: service_healthy
+      mongo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     environment:
       - ENV_MODE=LOCAL
       - JWT_SECRET=${JWT_SECRET}
@@ -101,10 +90,9 @@ services:
     mem_reservation: 128m
     cpus: 0.5
 
-
-#############################################
-#             Digital twin panel            #
-#############################################
+  #############################################
+  #             Digital twin panel            #
+  #############################################
 
   frontend:
     build:
@@ -131,68 +119,70 @@ services:
       - gin-gonic
     command: yarn dev --host
 
-# #############################################
-# #            Digital twin storage           #
-# #############################################
+  # #############################################
+  # #            Digital twin storage           #
+  # #############################################
 
   mongo:
-      image: mongo:6.0.7
-      ports:
-          - 27018:${MONGO_PORT}
-      restart: always
-      volumes:
-          - ./storage/mongodb/mongodata:/data/db
-          - ./storage/mongodb/init_db.js:/docker-entrypoint-initdb.d/init_db.js
-      environment:
-        - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-        - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-        - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
-        - MONGO_FIRST_USER_NAME=${MONGO_FIRST_USER_NAME}
-        - MONGO_FIRST_USER_PASSWORD=${MONGO_FIRST_USER_PASSWORD}
-        - MONGO_FIRST_USER_ROLE=${MONGO_FIRST_USER_ROLE}
-      # To avoid logs in console
-      command: mongod --quiet --logpath /dev/null 
+    image: mongo:6.0.7
+    ports:
+      - 27018:${MONGO_PORT}
+    restart: always
+    volumes:
+      - ./storage/mongodb/mongodata:/data/db
+      - ./storage/mongodb/init_db.js:/docker-entrypoint-initdb.d/init_db.js
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+      - MONGO_FIRST_USER_NAME=${MONGO_FIRST_USER_NAME}
+      - MONGO_FIRST_USER_PASSWORD=${MONGO_FIRST_USER_PASSWORD}
+      - MONGO_FIRST_USER_ROLE=${MONGO_FIRST_USER_ROLE}
+    # To avoid logs in console
+    command: mongod --quiet --logpath /dev/null
 
-# #############################################
-# #    Data lake and artifcat storage         #
-# #############################################
+  # #############################################
+  # #    Data lake and artifcat storage         #
+  # #############################################
 
   minio:
-      image: minio/minio:RELEASE.2023-02-27T18-10-45Z
-      environment:
-          - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-          - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-          - MINIO_URL=${MINIO_URL}
-          - MINIO_NOTIFY_AMQP_ENABLE_primary=on
-          - MINIO_NOTIFY_AMQP_URL_primary=${RABBITMQ_URI}
-          - MINIO_NOTIFY_AMQP_EXCHANGE_primary=storage
-          - MINIO_NOTIFY_AMQP_EXCHANGE_TYPE_primary=direct
-          - MINIO_NOTIFY_AMQP_ROUTING_KEY_primary=trusted
-      entrypoint:
-        - sh
-        - /usr/bin/entrypoint.sh
+    image: minio/minio:RELEASE.2023-02-27T18-10-45Z
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_URL=${MINIO_URL}
+      - MINIO_NOTIFY_AMQP_ENABLE_primary=on
+      - MINIO_NOTIFY_AMQP_URL_primary=${RABBITMQ_URI}
+      - MINIO_NOTIFY_AMQP_EXCHANGE_primary=storage
+      - MINIO_NOTIFY_AMQP_EXCHANGE_TYPE_primary=direct
+      - MINIO_NOTIFY_AMQP_ROUTING_KEY_primary=trusted
+    entrypoint:
+      - sh
+      - /usr/bin/entrypoint.sh
 
-      ports:
-          - 9000:${MINIO_PORT}
-          - 9001:${MINIO_PANEL_PORT}
-      volumes:
-          - ./storage/minio/data:/data
-          - ./storage/minio/entrypoint.sh:/usr/bin/entrypoint.sh
-      restart: always
-      depends_on:
-        rabbitmq:
-          condition: service_healthy
+    ports:
+      - 9000:${MINIO_PORT}
+      - 9001:${MINIO_PANEL_PORT}
+    volumes:
+      - ./storage/minio/data:/data
+      - ./storage/minio/entrypoint.sh:/usr/bin/entrypoint.sh
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
-# #############################################
-# #      Data ingestion, data processing      # 
-# #      simulations, and machine learning    #
-# #############################################
+  # #############################################
+  # #      Data ingestion, data processing      #
+  # #      simulations, and machine learning    #
+  # #############################################
 
   data-pipeline-worker:
     build: data-pipelines
     restart: on-failure
     volumes:
       - ./data-pipelines:/opt/data-pipelines
+    ports:
+      - "9091:9091"
     environment:
       - AGROSLAB_AUTH_TOKEN=${AGROSLAB_AUTH_TOKEN}
       - AGROSLAB_API_URL=${AGROSLAB_API_URL}
@@ -201,10 +191,10 @@ services:
       - STORAGE_TRUSTED_ZONE=${MINIO_TRUSTED_ZONE}
       - STORAGE_REFINED_ZONE=${MINIO_REFINED_ZONE}
       - RABBITMQ_URI=${RABBITMQ_URI}
-      #- MLFLOW_TRACKING_URI=${POSTGRES_URI_MLFLOW}
       - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
       - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
       - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
+    command: python3 -m main
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -214,32 +204,25 @@ services:
     mem_limit: 2048m
     mem_reservation: 512m
     cpus: 1.0
+  #############################################
+  #              MLflow server                #
+  #############################################
 
-#############################################
-#              MLflow server                #
-#############################################
-
-  # mlflow:
-  #   build: data-processing/mlflow
-  #   restart: always
-  #   ports:
-  #     - 5000:5000
-  #     - 5001:5001
-  #   depends_on:
-  #     - postgres
-  #     - minio
-  #   environment:
-  #     - MLFLOW_TRACKING_URI=${POSTGRES_URI_MLFLOW}
-  #     - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
-  #     - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
-  #     - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
-  #   command: mlflow server --backend-store-uri ${POSTGRES_URI_MLFLOW} --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
-  #   mem_limit: 512m
-  #   mem_reservation: 128m
-  #   cpus: 0.5
-
-
-volumes:
-  prometheus-data:
-  loki-data:
-  grafana-data:
+  mlflow:
+    build: mlflow
+    restart: always
+    ports:
+      - 5000:5000
+      - 5001:5001
+    depends_on:
+      - minio
+    environment:
+      - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
+      - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
+      - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./storage/mlflow:/storage
+    command: mlflow server --backend-store-uri file:///storage/runs --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
+    mem_limit: 512m
+    mem_reservation: 128m
+    cpus: 0.5

@@ -8,7 +8,9 @@ from etl.weather.forecast_weather import forecast_weather
 from etl.weather.daily_weather import daily_weather
 import aio_pika
 from aio_pika.abc import AbstractIncomingMessage
+from prometheus_client import Counter
 
+c = Counter('daily_weather', 'pepe')
 
 async def main_rpc_consumer(loop, config):
     connection = await aio_pika.connect_robust(
@@ -36,6 +38,7 @@ async def main_rpc_consumer(loop, config):
 
                         match event_type:
                             case 'daily_weather':
+                                c.inc()
                                 try:
                                     enclosureId = json.loads(
                                         body)['payload']['enclosureId']

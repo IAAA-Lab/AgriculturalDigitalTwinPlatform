@@ -45,7 +45,7 @@
 	}
 
 	@include media('<large') {
-		:global {
+		:global(*) {
 			.sidebar {
 				.sidebar-option-text,
 				h3 {
@@ -55,14 +55,12 @@
 		}
 	}
 
-	.sidebar {
+	:global(.sidebar) {
 		&.collapsed {
-			:global {
-				padding: 0px !important;
-				.sidebar-option-text,
-				h3 {
-					display: none;
-				}
+			padding: 0px !important;
+			.sidebar-option-text,
+			h3 {
+				display: none;
 			}
 		}
 	}

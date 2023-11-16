@@ -2,6 +2,7 @@
 	import { IMAGES_SERVER_URL } from '$lib/config/config';
 	import type { Enclosure } from '$lib/core/Domain';
 	import { getColor, onCropImageError } from '$lib/core/functions';
+	import { onMount } from 'svelte';
 	import mapStore from '../../../routes/panel/map/store';
 	import MapSearchCard from './MapSearchCard.svelte';
 
@@ -18,7 +19,7 @@
 <div class="p-8 card">
 	<input type="search" bind:value={search} placeholder="Buscar..." style="width: 100%;" />
 	<span class="text-xs"><strong>{filteredEnclosures.length} resultados<strong /></strong></span>
-	<div class="enclosures mt-16">
+	<div id="enclosures" class="enclosures mt-16">
 		{#each filteredEnclosures as enclosure, i}
 			<a on:click={() => selectEnclosure(enclosure)} href="#">
 				<MapSearchCard
@@ -29,8 +30,8 @@
 					color={!selectedEnclosure
 						? getColor(i)
 						: selectedEnclosure.id === enclosure.id
-						? 'red'
-						: 'grey'}
+						  ? 'red'
+						  : 'grey'}
 					cropName={enclosure.properties.cropName}
 					ndvi={enclosure.properties.ndvi}
 					enclosureId={enclosure.id}

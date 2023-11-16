@@ -10,6 +10,7 @@
 	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import AnalysisEnclosureComp from '$lib/components/panel/AnalysisEnclosureComp.svelte';
 	import Filter from '$lib/components/panel/Filter.svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	let mediaQueryMobile = window.matchMedia(`(max-width: ${TABLET_WIDTH}px)`);
 	let isInMobile = mediaQueryMobile.matches;
@@ -37,6 +38,7 @@
 
 	// Client side filtering and ordering of enclosures
 	$: {
+		limit = 0;
 		filteredEnclosures = enclosures
 			?.filter((enclosure) => {
 				// Filter by checked crops
@@ -99,7 +101,7 @@
 						return 0;
 				}
 			})
-			.slice(0, limit === 0 ? enclosures.length : limit);
+			.slice(0, 10);
 	}
 
 	$: {
@@ -184,6 +186,26 @@
 		) {
 			showAnalysis = false;
 		}
+	});
+
+	let enclosuresElement: HTMLElement | null = null;
+
+	onMount(() => {
+		enclosuresElement = document.getElementById('enclosures');
+		if (!enclosuresElement) return;
+		enclosuresElement.onscroll = () => {
+			// when scroll reaches the bottom of the element "enclosures", we load more enclosures
+			const { scrollTop, scrollHeight, clientHeight } = enclosuresElement;
+			if (scrollTop + clientHeight >= scrollHeight - 5) {
+				limit += 10;
+				// if (filteredEnclosures?.length === enclosures?.length) return;
+				filteredEnclosures = [...filteredEnclosures, ...enclosures?.slice(limit, limit + 10)];
+			}
+		};
+	});
+
+	onDestroy(() => {
+		enclosuresElement?.removeEventListener('scroll', () => {});
 	});
 </script>
 

@@ -34,4 +34,5 @@
 	<slot />
 {/if}
 
-<style global lang="scss"></style>
+<style global lang="scss">
+</style>
