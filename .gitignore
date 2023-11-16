@@ -7,3 +7,5 @@
 *.env*
 **/**.db
 data
+mlflow/storage/**
+monitorization/**/storage/**

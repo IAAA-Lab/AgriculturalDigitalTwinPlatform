@@ -221,7 +221,7 @@ services:
       - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
       - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
     volumes:
-      - ./storage/mlflow:/storage
+      - ./mlflow/storage:/storage
     command: mlflow server --backend-store-uri file:///storage/runs --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
     mem_limit: 512m
     mem_reservation: 128m
