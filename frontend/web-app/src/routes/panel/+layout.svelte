@@ -43,7 +43,7 @@
 	});
 </script>
 
-<div class="panel">
+<div>
 	{#if loading}
 		<Loading />
 	{:else}

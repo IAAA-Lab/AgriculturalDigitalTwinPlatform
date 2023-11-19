@@ -14,7 +14,7 @@
 
 <style lang="scss">
 	div {
-		@include media('<small') {
+		@include media('<medium') {
 			display: none;
 		}
 		color: color(primary);

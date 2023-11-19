@@ -30,7 +30,7 @@
 		}
 	}
 
-	@include media('>medium') {
+	@include media('<medium') {
 		.footer-bottom {
 			&.space-between {
 				display: flex;
