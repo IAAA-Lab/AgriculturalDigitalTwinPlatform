@@ -16,18 +16,16 @@
 	{#await enclosuresService.getForecastWeather(parcelId)}
 		<Loading />
 	{:then forecast}
-		<div class="p-8 card-inner">
-			{#each forecast.prediction.day as f, i}
-				<ForecastWeatherItem day={f.date} minTa={f.ta.tamin} maxTa={f.ta.tamax}>
-					<svelte:fragment slot="icon">
-						{@html getWeatherIcon(f.skyState[0].description || '')}
-					</svelte:fragment>
-				</ForecastWeatherItem>
-				{#if i < forecast.prediction.day.length - 1}
-					<div class="divider" />
-				{/if}
-			{/each}
-		</div>
+		{#each forecast.prediction.day as f, i}
+			<ForecastWeatherItem day={f.date} minTa={f.ta.tamin} maxTa={f.ta.tamax}>
+				<svelte:fragment slot="icon">
+					{@html getWeatherIcon(f.skyState[0].description || '')}
+				</svelte:fragment>
+			</ForecastWeatherItem>
+			{#if i < forecast.prediction.day.length - 1}
+				<div class="divider" />
+			{/if}
+		{/each}
 	{:catch error}
 		<div>{error.message}</div>
 		<Error />

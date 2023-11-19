@@ -2,22 +2,11 @@
 
 <script lang="ts">
 	import Map from '$lib/components/panel/Map.svelte';
-	import Search from '$lib/components/panel/Search.svelte';
-	import SearchPopup from '$lib/components/panel/SearchPopup.svelte';
 	import { enclosuresService } from '$lib/config/config';
 	import type { Enclosure, NDVI } from '$lib/core/Domain';
-	import { TABLET_WIDTH } from '$lib/config/constants';
 	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import AnalysisEnclosureComp from '$lib/components/panel/AnalysisEnclosureComp.svelte';
 	import Filter from '$lib/components/panel/Filter.svelte';
-	import { onDestroy, onMount } from 'svelte';
-
-	let mediaQueryMobile = window.matchMedia(`(max-width: ${TABLET_WIDTH}px)`);
-	let isInMobile = mediaQueryMobile.matches;
-
-	mediaQueryMobile.addEventListener('change', () => {
-		isInMobile = mediaQueryMobile.matches;
-	});
 
 	let distance: number;
 	let enclosures: Enclosure[] | undefined = undefined;
@@ -164,49 +153,25 @@
 			.catch((err) => {});
 	};
 
-	// Click outside of the dialog to close it
-	document.addEventListener('click', (e) => {
-		const filtersDialog = document.getElementById('filters-dialog');
-		const analysisDialog = document.getElementById('analysis-dialog');
-		const buttonFilters = document.querySelector('.fi-rr-settings-sliders');
-		const buttonAnalysis = document.querySelector('.fi-rr-chart-simple');
-		if (
-			filtersDialog &&
-			!filtersDialog.contains(e.target as Node) &&
-			buttonFilters &&
-			!buttonFilters.contains(e.target as Node)
-		) {
-			showFilters = false;
-		}
-		if (
-			analysisDialog &&
-			!analysisDialog.contains(e.target as Node) &&
-			buttonAnalysis &&
-			!buttonAnalysis.contains(e.target as Node)
-		) {
-			showAnalysis = false;
-		}
-	});
+	// let enclosuresElement: HTMLElement | null = null;
 
-	let enclosuresElement: HTMLElement | null = null;
+	// onMount(() => {
+	// 	enclosuresElement = document.getElementById('enclosures');
+	// 	if (!enclosuresElement) return;
+	// 	enclosuresElement.onscroll = () => {
+	// 		// when scroll reaches the bottom of the element "enclosures", we load more enclosures
+	// 		const { scrollTop, scrollHeight, clientHeight } = enclosuresElement;
+	// 		if (scrollTop + clientHeight >= scrollHeight - 5) {
+	// 			limit += 10;
+	// 			// if (filteredEnclosures?.length === enclosures?.length) return;
+	// 			filteredEnclosures = [...filteredEnclosures, ...enclosures?.slice(limit, limit + 10)];
+	// 		}
+	// 	};
+	// });
 
-	onMount(() => {
-		enclosuresElement = document.getElementById('enclosures');
-		if (!enclosuresElement) return;
-		enclosuresElement.onscroll = () => {
-			// when scroll reaches the bottom of the element "enclosures", we load more enclosures
-			const { scrollTop, scrollHeight, clientHeight } = enclosuresElement;
-			if (scrollTop + clientHeight >= scrollHeight - 5) {
-				limit += 10;
-				// if (filteredEnclosures?.length === enclosures?.length) return;
-				filteredEnclosures = [...filteredEnclosures, ...enclosures?.slice(limit, limit + 10)];
-			}
-		};
-	});
-
-	onDestroy(() => {
-		enclosuresElement?.removeEventListener('scroll', () => {});
-	});
+	// onDestroy(() => {
+	// 	enclosuresElement?.removeEventListener('scroll', () => {});
+	// });
 </script>
 
 <section class="container-responsive">
@@ -228,51 +193,22 @@
 		/>
 	</div>
 	<div class="inner__container__group">
-		{#if isInMobile}
-			<dialog open={showFilters} id="filters-dialog" class="card">
-				<Filter
-					{enclosures}
-					bind:checkedCrops
-					bind:checkedLocations
-					bind:orderBy
-					bind:limit
-					bind:checkedProvinces
-					bind:checkedCCAA
-				/>
-			</dialog>
-			<dialog open={showAnalysis} id="analysis-dialog" class="card">
-				<AnalysisEnclosureComp listOfEnclosures={filteredEnclosures?.map((e) => e.id)} />
-			</dialog>
+		<div class="card">
+			<Filter />
+		</div>
+		<div class="map__analysis__wrapper">
 			<Map bind:enclosures={filteredEnclosures} bind:selectedEnclosure bind:distance />
-			<SearchPopup>
-				<Search bind:filteredEnclosures bind:selectedEnclosure bind:search />
-			</SearchPopup>
-		{:else}
-			<div class="card">
-				<Filter
-					{enclosures}
-					bind:checkedCrops
-					bind:checkedLocations
-					bind:orderBy
-					bind:limit
-					bind:checkedProvinces
-					bind:checkedCCAA
-				/>
+			<div class="card analysis" class:collapsed={analysisCollapsed}>
+				<button
+					class="button-xs button-secondary dropdown__close"
+					on:click={() => (analysisCollapsed = !analysisCollapsed)}
+				>
+					<i class="fi fi-rr-angle-down" />
+				</button>
+				<AnalysisEnclosureComp listOfEnclosures={filteredEnclosures?.map((e) => e.id)} />
 			</div>
-			<div class="map__analysis__wrapper">
-				<Map bind:enclosures={filteredEnclosures} bind:selectedEnclosure bind:distance />
-				<div class="card analysis" class:collapsed={analysisCollapsed}>
-					<button
-						class="button-xs button-secondary dropdown__close"
-						on:click={() => (analysisCollapsed = !analysisCollapsed)}
-					>
-						<i class="fi fi-rr-angle-down" />
-					</button>
-					<AnalysisEnclosureComp listOfEnclosures={filteredEnclosures?.map((e) => e.id)} />
-				</div>
-			</div>
-			<Search bind:filteredEnclosures bind:selectedEnclosure bind:search />
-		{/if}
+		</div>
+		<!-- <Search bind:filteredEnclosures bind:selectedEnclosure bind:search /> -->
 	</div>
 </section>
 

@@ -33,6 +33,3 @@
 {:else}
 	<slot />
 {/if}
-
-<style global lang="scss">
-</style>
