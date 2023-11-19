@@ -14,3 +14,4 @@ mlflow === 2.4.1
 psycopg2-binary === 2.9.6
 boto3 === 1.26.157
 prometheus-client === 0.18.0
+memory-profiler === 0.61.0

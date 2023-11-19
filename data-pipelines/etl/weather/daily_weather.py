@@ -1,7 +1,7 @@
-from datetime import timedelta
 from etl.weather.dto.daily_weather_dto import DailyWeather
 import requests as request
 import os
+from __decorators__.flow_decorator import flow
 # Get rid of insecure warning
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -99,6 +99,7 @@ def transform(data, enclosureId) -> dict:
     return daily_weather
 
 
+@flow
 def daily_weather(enclosure_id: str) -> dict:
     data = extract(enclosure_id)
     processed_data = transform(data, enclosure_id)

@@ -223,6 +223,16 @@ services:
     volumes:
       - ./mlflow/storage:/storage
     command: mlflow server --backend-store-uri file:///storage/runs --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
-    mem_limit: 512m
-    mem_reservation: 128m
     cpus: 0.5
+
+  # cadvisor:
+  #   image: gcr.io/cadvisor/cadvisor:latest
+  #   container_name: cadvisor
+  #   ports:
+  #     - 8081:8081
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:rw
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker/:/var/lib/docker:ro
+  #   restart: always
