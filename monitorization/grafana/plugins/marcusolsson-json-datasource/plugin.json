@@ -1,0 +1,62 @@
+{
+  "$schema": "https://github.com/grafana/grafana/raw/main/docs/sources/developers/plugins/plugin.schema.json",
+  "annotations": true,
+  "dependencies": {
+    "grafanaDependency": "\u003e=8.5.13",
+    "grafanaVersion": "8.5.x",
+    "plugins": []
+  },
+  "id": "marcusolsson-json-datasource",
+  "info": {
+    "author": {
+      "name": "Grafana Labs",
+      "url": "https://grafana.com"
+    },
+    "build": {
+      "time": 1697720454281,
+      "repo": "https://github.com/grafana/grafana-json-datasource",
+      "branch": "main",
+      "hash": "9032ca60c76e247c99dc74cff99aa6ba828a057d",
+      "build": 67
+    },
+    "description": "A data source plugin for loading JSON APIs into Grafana.",
+    "keywords": [
+      "json",
+      "api"
+    ],
+    "links": [
+      {
+        "name": "Documentation",
+        "url": "https://grafana.github.io/grafana-json-datasource"
+      },
+      {
+        "name": "Website",
+        "url": "https://github.com/grafana/grafana-json-datasource"
+      },
+      {
+        "name": "License",
+        "url": "https://github.com/grafana/grafana-json-datasource/blob/main/LICENSE"
+      }
+    ],
+    "logos": {
+      "large": "img/logo.svg",
+      "small": "img/logo.svg"
+    },
+    "screenshots": [
+      {
+        "name": "Explore (Dark)",
+        "path": "img/dark.png"
+      },
+      {
+        "name": "Explore (Light)",
+        "path": "img/light.png"
+      }
+    ],
+    "updated": "2023-10-19",
+    "version": "1.3.8"
+  },
+  "logs": true,
+  "metrics": true,
+  "name": "JSON API",
+  "type": "datasource"
+}

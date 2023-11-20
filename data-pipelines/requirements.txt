@@ -15,3 +15,5 @@ psycopg2-binary === 2.9.6
 boto3 === 1.26.157
 prometheus-client === 0.18.0
 memory-profiler === 0.61.0
+croniter === 2.0.1
+bjoern === 3.2.2

@@ -183,6 +183,7 @@ services:
       - ./data-pipelines:/opt/data-pipelines
     ports:
       - "9091:9091"
+      - "9092:9092"
     environment:
       - AGROSLAB_AUTH_TOKEN=${AGROSLAB_AUTH_TOKEN}
       - AGROSLAB_API_URL=${AGROSLAB_API_URL}
@@ -194,7 +195,9 @@ services:
       - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
       - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
       - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
-    command: python3 -m main
+    entrypoint:
+      - sh
+      - /opt/data-pipelines/entrypoint.sh
     depends_on:
       rabbitmq:
         condition: service_healthy

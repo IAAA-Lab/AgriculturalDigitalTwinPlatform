@@ -6,6 +6,9 @@ WORKDIR /opt/data-pipelines
 
 RUN chmod -R 0644 /opt/data-pipelines
 
+# Install dependencies for bjoern
+RUN apt-get update && apt-get -y install python3-dev libev-dev
+
 RUN pip install --default-timeout=100 --no-cache-dir --upgrade pip && \
   pip install -r requirements.txt
 

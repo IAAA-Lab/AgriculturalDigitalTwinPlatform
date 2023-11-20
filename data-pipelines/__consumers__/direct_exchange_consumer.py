@@ -82,4 +82,6 @@ if __name__ == "__main__":
         'EXCHANGE_NAME': "storage",
         'ROUTING_KEY': "trusted"
     }
-    asyncio.run(main_direct_consumer(config))
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(main_direct_consumer(config))
+    loop.close()

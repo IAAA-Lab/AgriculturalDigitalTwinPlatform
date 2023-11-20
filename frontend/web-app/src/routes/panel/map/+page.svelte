@@ -7,6 +7,7 @@
 	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import AnalysisEnclosureComp from '$lib/components/panel/AnalysisEnclosureComp.svelte';
 	import Filter from '$lib/components/panel/Filter.svelte';
+	import Search from '$lib/components/panel/Search.svelte';
 
 	let distance: number;
 	let enclosures: Enclosure[] | undefined = undefined;
@@ -208,7 +209,7 @@
 				<AnalysisEnclosureComp listOfEnclosures={filteredEnclosures?.map((e) => e.id)} />
 			</div>
 		</div>
-		<!-- <Search bind:filteredEnclosures bind:selectedEnclosure bind:search /> -->
+		<Search bind:filteredEnclosures bind:selectedEnclosure bind:search />
 	</div>
 </section>
 

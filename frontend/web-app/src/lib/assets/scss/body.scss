@@ -3,7 +3,7 @@ html {
 }
 
 body {
-	background-color: black;
+	background-color: rgb(232, 232, 232);
 	margin: 0;
 	padding: 0;
 	-webkit-font-smoothing: antialiased;
@@ -14,10 +14,7 @@ body {
 	z-index: 0;
 }
 
-.leaflet-marker-icon,
-.marker-cluster,
-.marker-cluster-small,
-.leaflet-zoom-animated {
+.leaflet-marker-icon {
 	background: white !important;
 	border-radius: 10px !important;
 	border: 2px solid green !important;
