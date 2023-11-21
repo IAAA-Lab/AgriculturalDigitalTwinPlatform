@@ -4,7 +4,6 @@
 
 	const login = ({ target }: any) => {
 		const { username, password } = target;
-		goto('/panel');
 		userService
 			.login(username.value, password.value)
 			.then((res) => {

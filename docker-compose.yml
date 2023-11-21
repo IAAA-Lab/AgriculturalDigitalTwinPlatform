@@ -38,11 +38,9 @@ services:
   #############################################
 
   rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
+    image: rabbitmq:3.12.9-alpine
     ports:
       - 5672:${RABBITMQ_PORT}
-      - 15672:${RABBITMQ_PANEL_PORT}
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
@@ -176,6 +174,21 @@ services:
   # #      simulations, and machine learning    #
   # #############################################
 
+  prefect:
+    image: prefecthq/prefect:2.14.5-python3.11
+    ports:
+      - 4200:4200
+    volumes:
+      - prefect:/root/.prefect
+    environment:
+      - PREFECT_LOGGING_LEVEL=WARNING
+      - PREFECT_UI_URL=http://127.0.0.0:4200/api
+      - PREFECT_API_URL=http://127.0.0.1:4200/api
+      - PREFECT_SERVER_API_HOST=0.0.0.0
+    depends_on:
+      - rabbitmq
+    command: prefect server start
+
   data-pipeline-worker:
     build: data-pipelines
     restart: on-failure
@@ -195,6 +208,7 @@ services:
       - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
       - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
       - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
+      - PREFECT_API_URL=http://prefect:4200/api
     entrypoint:
       - sh
       - /opt/data-pipelines/entrypoint.sh
@@ -239,3 +253,6 @@ services:
   #     - /sys:/sys:ro
   #     - /var/lib/docker/:/var/lib/docker:ro
   #   restart: always
+
+volumes:
+  prefect:

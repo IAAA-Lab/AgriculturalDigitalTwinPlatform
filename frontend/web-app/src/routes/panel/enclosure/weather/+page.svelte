@@ -10,8 +10,8 @@
 	import ForecastWeather from './(sections)/ForecastWeather.svelte';
 	import { userEnclosures } from '$lib/config/stores/enclosures';
 
-	let id: string = $page.params.id;
-	let enclosure = $userEnclosures.find((e) => e.id === $page.params.id);
+	let id: string = $page.data.id;
+	let enclosure = $userEnclosures.find((e) => e.id === $page.data.id);
 </script>
 
 <div class="container">

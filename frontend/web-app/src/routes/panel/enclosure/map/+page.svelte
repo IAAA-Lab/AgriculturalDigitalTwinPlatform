@@ -7,7 +7,7 @@
 	let id: string;
 	let idema: string;
 	$: {
-		id = $page.params.id;
+		id = $page.data.id;
 		idema = $userEnclosures?.find((e) => e.id === id)?.meteoStation?.idema || '';
 	}
 </script>

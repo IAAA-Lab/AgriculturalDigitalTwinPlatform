@@ -1,7 +1,7 @@
 from etl.weather.dto.daily_weather_dto import DailyWeather
 import requests as request
 import os
-from __decorators__.flow_decorator import flow
+from prefect import flow
 # Get rid of insecure warning
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)

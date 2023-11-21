@@ -1,3 +1,4 @@
+from prefect import flow
 import asyncio
 import os
 from datetime import timedelta
@@ -51,9 +52,9 @@ async def load_ndvi(ndvi_list: list):
     db.NDVI.insert_many(ndvi_list)
 
 
+@flow
 async def ndvi_etl(enclosure_ids_init: list[dict], date_end: str):
     # Date is in format DD-MM-YYYY
-    # enclosure_ids_init: [{"enclosureId": "1", "date_init": "01-01-2020"}]
     # Create new list with dates that goes from year to year for each enclosure till date_end
     ndvi_req_list = []
     for enclosure_id in enclosure_ids_init:
@@ -69,14 +70,15 @@ async def ndvi_etl(enclosure_ids_init: list[dict], date_end: str):
                 {"enclosure_id": enclosure_id["enclosure_id"], "date_init": date_init.strftime("%d-%m-%Y"), "date_end": date_end_block.strftime("%d-%m-%Y")})
             date_init = date_end_block
 
+    print("HOLA2")
     BATCH_SIZE = 20
     client = httpx.AsyncClient(verify=False)
     tasks = []
     for i in range(0, len(ndvi_req_list), BATCH_SIZE):
         batch = ndvi_req_list[i:i+BATCH_SIZE]
         for nvi_req in batch:
-            tasks.append(extract_ndvi.fn(nvi_req["enclosure_id"],
-                                         nvi_req["date_init"], nvi_req["date_end"], client))
+            tasks.append(extract_ndvi(nvi_req["enclosure_id"],
+                                      nvi_req["date_init"], nvi_req["date_end"], client))
         ndvi_raw_list = await asyncio.gather(*tasks, return_exceptions=True)
         await asyncio.sleep(3)
         for ndvi_raw in ndvi_raw_list:
@@ -85,13 +87,15 @@ async def ndvi_etl(enclosure_ids_init: list[dict], date_end: str):
             if len(ndvi_raw[0]["respuesta"]) == 0:
                 continue
             ndvi_list = await transform_ndvi(ndvi_raw[0], ndvi_raw[1])
-            await load_ndvi(ndvi_list)
+            print(ndvi_list)
+            # await load_ndvi(ndvi_list)
         tasks = []
     await client.aclose()
 
 
 # -------------------- TEST --------------------
 if __name__ == "__main__":
-    enclosure_ids_init = [{"enclosure_id": "1", "date_init": "01-01-2020"}]
-    date_end = "01-01-2021"
+    enclosure_ids_init = [{"enclosure_id": "44-254-0-0-11-341-12", "date_init": "01-01-2020"}, {"enclosure_id": "44-254-0-0-11-341-12",
+                                                                                                "date_init": "01-01-2020"}, {"enclosure_id": "44-254-0-0-11-341-12", "date_init": "01-01-2020"}]
+    date_end = "01-01-2023"
     asyncio.run(ndvi_etl(enclosure_ids_init, date_end))

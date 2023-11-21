@@ -13,7 +13,7 @@
 	let enclosure: Enclosure | undefined = undefined;
 
 	$: {
-		id = $page.params.id;
+		id = $page.data.id;
 		enclosure = $userEnclosures?.find((e) => e.id === id);
 		$selectedEnclosure = id;
 	}

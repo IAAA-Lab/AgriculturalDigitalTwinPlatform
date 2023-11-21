@@ -4,7 +4,7 @@
 	import Treatments from '$lib/components/panel/Treatments.svelte';
 
 	let id: string;
-	$: id = $page.params.id;
+	$: id = $page.data.id;
 </script>
 
 <div class="container-responsive">
