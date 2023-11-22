@@ -5,6 +5,7 @@ import os
 # Get rid of insecure warning
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+from prefect import flow
 
 
 def extract(enclosureId: str):
@@ -94,7 +95,7 @@ def transform(data, enclosureId) -> dict:
     }
     return forecast_weather
 
-
+@flow
 def forecast_weather(enclosure_id: str) -> dict:
     data = extract(enclosure_id)
     processed_data = transform(data, enclosure_id)

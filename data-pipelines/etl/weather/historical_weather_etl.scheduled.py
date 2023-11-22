@@ -1,3 +1,4 @@
+from prefect import get_run_logger, flow
 from etl.weather.historical_weather_etl import historical_weather_dt_etl, test_historical_weather_dt_etl
 from utils.functions import DB_MongoClient
 from datetime import datetime
@@ -20,9 +21,10 @@ def extract_last_known_date(meteo_station_id: str):
         return last_known_date["date"]
     return HISTORIC_WEATHER_EXTRACT_FIRST_DATE
 
-
+@flow
 async def historical_weather_scheduled_etl():
-    meteo_station_ids = extract_distinct_meteo_stations_ids.submit().result()
+    logger = get_run_logger()
+    meteo_station_ids = extract_distinct_meteo_stations_ids()
     # Get the last week of data
     dateEnd = datetime.now().strftime("%d-%m-%Y")
     # Run in batches of BATCH_SIZE to avoid overloading the server
@@ -30,13 +32,15 @@ async def historical_weather_scheduled_etl():
     for i in range(0, len(meteo_station_ids), BATCH_SIZE):
         tasks = []
         for meteo_station_id in meteo_station_ids[i:i+BATCH_SIZE]:
-            last_known_date = extract_last_known_date.submit(
-                meteo_station_id).result(raise_on_failure=False)
-            if isinstance(last_known_date, Exception):
-                continue
-            tasks.append(asyncio.create_task(historical_weather_dt_etl(
-                meteo_station_id, last_known_date, dateEnd)))
-        await asyncio.gather(*tasks, return_exceptions=True)
+            try:
+                last_known_date = extract_last_known_date(meteo_station_id)
+            except Exception as e:
+                logger.error(f"Error in meteo_station_id: {meteo_station_id} - {e}")
+                tasks.append(asyncio.create_task(historical_weather_dt_etl(
+                    meteo_station_id, last_known_date, dateEnd)))
+        res = await asyncio.gather(*tasks, return_exceptions=True)
+        if isinstance(res, Exception):
+            logger.error(f"Error in meteo_station_id: {meteo_station_id} between {last_known_date} and {dateEnd} - {res}")
         await asyncio.sleep(1)
 
 

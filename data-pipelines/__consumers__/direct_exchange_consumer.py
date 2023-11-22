@@ -2,6 +2,14 @@
 
 import asyncio
 import json
+
+from etl.__validation__.validate_raw_data_etl import validate_raw_data_etl
+from etl.recintos_cercanos.recintos_almendros_parcels_trusted_etl import recintos_almendros_parcels_trusted_etl
+from etl.recintos_cercanos.recintos_almendros_treatments_trusted_etl import recintos_almendros_treatments_trusted_etl
+from etl.recintos_cercanos.recintos_almendros_treatments_dt_etl import recintos_almendros_treatments_dt_etl
+from etl.recintos_cercanos.recintos_almendros_parcels_dt_etl import recintos_almendros_parcels_dt_etl
+from etl.activities.activities_trusted_etl import activities_trusted_etl
+from etl.activities.activities_dt_etl import activities_dt_etl
 from utils.constants import Constants
 import aio_pika
 from aio_pika.abc import AbstractIncomingMessage
@@ -17,46 +25,39 @@ async def process_message(message: AbstractIncomingMessage) -> None:
         try:
             metadata_type = data['Records'][0]['s3']['object']['userMetadata']['X-Amz-Meta-Type']
         except KeyError:
-            # asyncio.create_task(run_deployment(
-            #     name="validate_raw_data_etl/event-driven", parameters={"file_name": file_name}))
+            validate_raw_data_etl(file_name)
             return
-        match data_lake_zone:
-            case Constants.STORAGE_LANDING_ZONE.value:
-                match metadata_type:
-                    case Constants.METADATA_PARCELS_AND_TREATMENTS.value:
-                        pass
-                        # asyncio.create_task(run_deployment(
-                        #     name="recintos_almendros_parcels_trusted_etl/event-driven", parameters={"file_name": file_name}))
-                        # asyncio.create_task(run_deployment(
-                        #     name="recintos_almendros_treatments_trusted_etl/event-driven", parameters={"file_name": file_name}))
-                    case Constants.METADATA_ACTIVITIES.value:
-                        pass
-                        # asyncio.create_task(run_deployment(
-                        #     name="activities_trusted_etl/event-driven", parameters={"file_name": file_name}))
-                    case _:
-                        print(f'Metadata type not found: {metadata_type}')
+        try:
+            match data_lake_zone:
+                case Constants.STORAGE_LANDING_ZONE.value:
+                    match metadata_type:
+                        case Constants.METADATA_PARCELS_AND_TREATMENTS.value:
+                            recintos_almendros_parcels_trusted_etl(file_name)
+                            recintos_almendros_treatments_trusted_etl(file_name)
+                        case Constants.METADATA_ACTIVITIES.value:
+                            activities_trusted_etl(file_name)
+                        case _:
+                            print(f'Metadata type not found: {metadata_type}')
 
-            case Constants.STORAGE_TRUSTED_ZONE.value:
-                match metadata_type:
-                    # case Constants.METADATA_PARCELS_AND_TREATMENTS_TREATMENTS.value:
-                    #     asyncio.create_task(run_deployment(name="recintos_almendros_treatments_dt_etl/event-driven",
-                    #                                        parameters={"file_name": file_name}))
-                    # case Constants.METADATA_PARCELS_AND_TREATMENTS_PARCELS.value:
-                    #     asyncio.create_task(run_deployment(name="recintos_almendros_parcels_dt_etl/event-driven",
-                    #                                        parameters={"file_name": file_name}))
-                    # case Constants.METADATA_ACTIVITIES.value:
-                    #     asyncio.create_task(run_deployment(
-                    #         name="activities_dt_etl/event-driven", parameters={"file_name": file_name}))
-                    case _:
-                        print(f'Metadata type not found: {metadata_type}')
+                case Constants.STORAGE_TRUSTED_ZONE.value:
+                    match metadata_type:
+                        case Constants.METADATA_PARCELS_AND_TREATMENTS_TREATMENTS.value:
+                            recintos_almendros_treatments_dt_etl(file_name)
+                        case Constants.METADATA_PARCELS_AND_TREATMENTS_PARCELS.value:
+                            recintos_almendros_parcels_dt_etl(file_name)
+                        case Constants.METADATA_ACTIVITIES.value:
+                            activities_dt_etl(file_name)
+                        case _:
+                            print(f'Metadata type not found: {metadata_type}')
 
-            case Constants.STORAGE_REFINED_ZONE.value:
-                # TODO: to implement
-                pass
+                case Constants.STORAGE_REFINED_ZONE.value:
+                    # TODO: to implement
+                    pass
 
-            case _:
-                print(f'Not found data lake zone: {data_lake_zone}')
-
+                case _:
+                    print(f'Not found data lake zone: {data_lake_zone}')
+        except Exception as e:
+            print(e)
 
 async def main_direct_consumer(config):
     connection = await aio_pika.connect_robust(config['AMQP_URL'])

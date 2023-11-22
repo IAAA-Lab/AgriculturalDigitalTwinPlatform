@@ -1,7 +1,7 @@
 import asyncio
 import datetime
 import io
-
+from prefect import flow
 from etl.cultivos_identificadores.cultivos_identificadores_dt_etl import cultivos_identificadores_dt_etl
 from etl.recintos_cercanos.recintos_etl import recintos_etl
 import pandas as pd
@@ -76,7 +76,7 @@ def load(year: int, enclosure_properties: dict):
 
 # ----------------- Flows -----------------
 
-
+@flow
 def recintos_almendros_parcels_dt_etl(file_name: str):
     # Extract
     object = extract_enclosures_properties(file_name)

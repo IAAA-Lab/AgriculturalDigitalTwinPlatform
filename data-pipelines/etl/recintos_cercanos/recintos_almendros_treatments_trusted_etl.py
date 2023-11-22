@@ -4,6 +4,7 @@ import pandas as pd
 from utils.functions import DB_MinioClient
 from utils.constants import Constants
 from etl.__validation__.schemas import recintos_almendros_tratamientos_schema
+from prefect import flow
 
 BUCKET_FROM_NAME = Constants.STORAGE_LANDING_ZONE.value
 BUCKET_TO_NAME = Constants.STORAGE_TRUSTED_ZONE.value
@@ -79,7 +80,7 @@ def load(processed_data: bytes, data_year: int, file_name: str, metadata: str):
     )
     minio_client.remove_object(BUCKET_FROM_NAME, f"invalid/{file_name}.xlsx")
 
-
+@flow
 def recintos_almendros_treatments_trusted_etl(file_name):
     # Get data from MinIO
     raw_data = extract(file_name)

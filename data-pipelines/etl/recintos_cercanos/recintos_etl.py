@@ -2,11 +2,11 @@ import io
 from utils.constants import Constants
 from utils.functions import DB_MinioClient
 import os
-from datetime import timedelta
 import pandas as pd
 from utils.functions import DB_MongoClient
 import requests
 import asyncio
+from prefect import flow
 # Get rid of insecure warning
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -121,7 +121,7 @@ def load_enclosures(enclosures):
     # Create a 2dsphere index for the geometry field
     db.Enclosures.create_index([("geometry", "2dsphere")])
 
-
+@flow
 def recintos_etl(year: int, enclosure_ids: list[str]):
     enclosures_geographic_info = extract_geographic_info(enclosure_ids, year)
     joined_enclosures = []

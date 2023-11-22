@@ -3,6 +3,7 @@ from utils.functions import DB_MongoClient
 from datetime import datetime
 import asyncio
 from datetime import timedelta
+from prefect import flow
 
 NDVI_EXTRACT_FIRST_DATE = "01-01-2020"
 
@@ -26,7 +27,7 @@ def extract_last_known_date(enclosure_id: str):
     # return date + 1 day
     return (last_known_date["date"] + timedelta(days=1)).strftime("%d-%m-%Y")
 
-
+@flow
 async def ndvi_scheduled_etl():
     enclosures_ids = extract_enclosures_ids()
     # Get the last week of data
@@ -42,4 +43,4 @@ async def ndvi_scheduled_etl():
 
 # Test and debug the flow locally
 if __name__ == "__main__":
-    asyncio.run(ndvi_scheduled_etl(return_state=True))
+    asyncio.run(ndvi_scheduled_etl())

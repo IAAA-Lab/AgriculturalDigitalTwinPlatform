@@ -6,11 +6,10 @@ import io
 import pandas as pd
 import pandera as pa
 from typing import Union, Tuple
+from prefect import flow, get_run_logger
 
 BUCKET_FROM_NAME = Constants.STORAGE_LANDING_ZONE.value
 BUCKET_TO_NAME = Constants.STORAGE_LANDING_ZONE.value
-
-
 
 def extract(file_name: str) -> dict:
     # Connect to MinIO
@@ -29,9 +28,11 @@ def extract(file_name: str) -> dict:
 
 
 def validate(df: Union[pd.DataFrame, dict[str, pd.DataFrame]]) -> str:
+    logger = get_run_logger()
     # Experiment all the schemas
     df_validated = None
     metadata = None
+    
     if isinstance(df, dict):
         for sheet_name, sheet_df in df.items():
             df_validated, metadata = check_schema_by_name(sheet_df)
@@ -40,7 +41,8 @@ def validate(df: Union[pd.DataFrame, dict[str, pd.DataFrame]]) -> str:
     else:
         df_validated, metadata = check_schema_by_name(df)
     if df_validated is None:
-        raise ValueError("Unknown schema")
+        logger.error("Invalid schema")
+        return Exception("Invalid schema")
     return metadata
 
 
@@ -68,6 +70,8 @@ def load(raw_data, content_type: str, file_name: str, metadata: str):
 
 
 def load_invalid(raw_data, content_type: str, file_name: str):
+    logger = get_run_logger()
+    logger.error("Invalid data - loading to invalid zone...")
     # Connect to MinIO
     minio_client = DB_MinioClient().connect()
     # Create bucket if it doesn't exist
@@ -88,10 +92,8 @@ def load_invalid(raw_data, content_type: str, file_name: str):
     )
     # Delete file from MinIO
     minio_client.remove_object(BUCKET_FROM_NAME, f"{file_name}.xlsx")
-    # Finish with error
-    raise ValueError("Invalid data")
 
-
+@flow
 def validate_raw_data_etl(file_name: str):
     # Extract
     raw_data = extract(file_name)
@@ -100,8 +102,7 @@ def validate_raw_data_etl(file_name: str):
     data = raw_data["data"]
     raw_data = raw_data["raw_data"]
     # Validate
-    metadata = validate.submit(
-        data).result(raise_on_failure=False)
+    metadata = validate(data)
     if isinstance(metadata, Exception):
         load_invalid(raw_data, file_type, file_name)
         return

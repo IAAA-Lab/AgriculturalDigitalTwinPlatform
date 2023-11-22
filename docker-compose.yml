@@ -40,7 +40,7 @@ services:
   rabbitmq:
     image: rabbitmq:3.12.9-alpine
     ports:
-      - 5672:${RABBITMQ_PORT}
+      - ${RABBITMQ_PORT}
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
@@ -62,6 +62,7 @@ services:
       target: local
     ports:
       - 8080:${GIN_PORT}
+      - "9093:9093"
     volumes:
       - ./api-gateway/gin-gonic:/app
     restart: always
@@ -186,7 +187,8 @@ services:
       - PREFECT_API_URL=http://127.0.0.1:4200/api
       - PREFECT_SERVER_API_HOST=0.0.0.0
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     command: prefect server start
 
   data-pipeline-worker:
@@ -194,9 +196,6 @@ services:
     restart: on-failure
     volumes:
       - ./data-pipelines:/opt/data-pipelines
-    ports:
-      - "9091:9091"
-      - "9092:9092"
     environment:
       - AGROSLAB_AUTH_TOKEN=${AGROSLAB_AUTH_TOKEN}
       - AGROSLAB_API_URL=${AGROSLAB_API_URL}
@@ -209,6 +208,11 @@ services:
       - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
       - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
       - PREFECT_API_URL=http://prefect:4200/api
+      - PREFECT_MINIO_ACCESS_ROOT=${MINIO_ROOT_USER}
+      - PREFECT_MINIO_SECRET_ROOT=${MINIO_ROOT_PASSWORD}
+      - PREFECT_MINIO_HOST=${MINIO_HOST}
+      - PREFECT_MONGODB_HOST=${MONGO_URI}
+      - PREFECT_MONGODB_DB=${MONGO_INITDB_DATABASE}
     entrypoint:
       - sh
       - /opt/data-pipelines/entrypoint.sh
@@ -225,26 +229,26 @@ services:
   #              MLflow server                #
   #############################################
 
-  mlflow:
-    build: mlflow
-    restart: always
-    ports:
-      - 5000:5000
-      - 5001:5001
-    depends_on:
-      - minio
-    environment:
-      - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
-      - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
-      - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
-    volumes:
-      - ./mlflow/storage:/storage
-    command: mlflow server --backend-store-uri file:///storage/runs --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
-    cpus: 0.5
+  # mlflow:
+  #   build: mlflow
+  #   restart: always
+  #   ports:
+  #     - 5000:5000
+  #     - 5001:5001
+  #   depends_on:
+  #     - minio
+  #   environment:
+  #     - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
+  #     - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
+  #     - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
+  #   volumes:
+  #     - ./mlflow/storage:/storage
+  #   command: mlflow server --backend-store-uri file:///storage/runs --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
+  #   cpus: 0.5
 
   # cadvisor:
   #   image: gcr.io/cadvisor/cadvisor:latest
-  #   container_name: cadvisor
+  #   privileged: true
   #   ports:
   #     - 8081:8081
   #   volumes:
@@ -252,6 +256,8 @@ services:
   #     - /var/run:/var/run:rw
   #     - /sys:/sys:ro
   #     - /var/lib/docker/:/var/lib/docker:ro
+  #     - /dev/disk/:/dev/disk:ro
+  #     - /etc/machine-id:/etc/machine-id:ro
   #   restart: always
 
 volumes:

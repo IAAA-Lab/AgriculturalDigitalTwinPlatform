@@ -9,7 +9,7 @@
 	<ul>
 		{#each tabsInner as tab}
 			<li>
-				<a href={tab.path.replace(':id', $selectedEnclosure)}>
+				<a href={`${tab.path}?enclosureId=${$selectedEnclosure}`}>
 					<SidebarOption text={tab.label} selected={tab.regex.test($page.url.pathname)}>
 						{@html tab.icon}
 					</SidebarOption>

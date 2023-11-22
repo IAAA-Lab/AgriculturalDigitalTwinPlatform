@@ -2,7 +2,7 @@ import io
 
 from etl.cultivos_identificadores.cultivos_identificadores_dt_etl import cultivos_identificadores_dt_etl
 from etl.recintos_cercanos.recintos_etl import recintos_etl
-
+from prefect import flow
 from etl.recintos_cercanos.recintos_user_info_etl import recintos_user_info_etl
 from utils.constants import Constants
 import pandas as pd
@@ -90,7 +90,7 @@ def load_crop_info(activities_list):
             db.Enclosures.update_one(
                 {"id": activity["enclosureId"]}, {"$set": {"properties.cropId": activity["cropId"]}})
 
-
+@flow(log_prints=True)
 def recintos_almendros_treatments_dt_etl(file_name: str):
     df = extract(file_name)
     activities = transform(df)
@@ -109,8 +109,7 @@ def recintos_almendros_treatments_dt_etl(file_name: str):
         for userId, activity in activities.items():
             # Get all enclosureIds in the activities block
             enclosureIds = [activity["enclosureId"] for activity in activity]
-            recintos_user_info_etl(
-                userId, date_init, enclosureIds)
+            recintos_user_info_etl(userId, date_init.strftime("%Y-%m-%d"), enclosureIds)
             if date_init.year == 2022:
                 recintos_etl(date_init.year, enclosureIds)
         date_init = date_end_block

@@ -29,25 +29,25 @@ const tabs = [
 const tabsInner = [
 	{
 		label: 'Overview',
-		path: '/panel/enclosure/:id',
+		path: '/panel/enclosure',
 		icon: `<i class="fi fi-rr-location-alt" />`,
 		regex: /\panel\/enclosure\/[^/]+$/
 	},
 	{
 		label: 'Mapa',
-		path: '/panel/enclosure/:id/map',
+		path: '/panel/enclosure/map',
 		icon: `<i class="fi fi-rr-map" />`,
 		regex: /\panel\/enclosure\/.+\/map/
 	},
 	{
 		label: 'Cultivos',
-		path: '/panel/enclosure/:id/crops',
+		path: '/panel/enclosure/crops',
 		icon: `<i class="fi fi-rr-wheat" />`,
 		regex: /\panel\/enclosure\/.+\/crops/
 	},
 	{
 		label: 'Clima',
-		path: '/panel/enclosure/:id/weather',
+		path: '/panel/enclosure/weather',
 		icon: `<i class="fi fi-rr-clouds-sun" />`,
 		regex: /\panel\/enclosure\/.+\/weather/
 	}

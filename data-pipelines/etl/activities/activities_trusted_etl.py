@@ -2,7 +2,7 @@ import io
 import re
 import pandas as pd
 import pandera as pa
-
+from prefect import flow
 from utils.functions import DB_MinioClient
 from utils.constants import Constants
 from etl.__validation__.schemas import activities_schema
@@ -70,7 +70,7 @@ def load(processed_data: bytes, data_year: int, file_name: str, metadata: str):
         length=file.getbuffer().nbytes,
         content_type="application/octet-stream",
         metadata={
-            "source": "PYSTACIL",
+            "source": "PISTACYL",
             "type": metadata,
             "year": data_year,
             "state": "processed"
@@ -78,7 +78,7 @@ def load(processed_data: bytes, data_year: int, file_name: str, metadata: str):
     )
     minio_client.remove_object(BUCKET_FROM_NAME, f"invalid/{file_name}.xlsx")
 
-
+@flow(log_prints=True)
 def activities_trusted_etl(file_name: str):
     # Define flow parameters
     data_year = 2022

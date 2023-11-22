@@ -3,6 +3,7 @@ import io
 import pandas as pd
 from utils.functions import DB_MinioClient, DB_MongoClient
 from utils.constants import Constants
+from prefect import flow
 
 
 FILE_PATH = f"ERP/unknown"
@@ -17,7 +18,6 @@ def extract():
     data = minio_client.get_object(
         BUCKET_FROM_NAME, f"{FILE_PATH}/{FILE_NAME}").read()
     return pd.read_parquet(io.BytesIO(data))
-
 
 
 def transform(df: pd.DataFrame):
@@ -36,7 +36,7 @@ def load(crops: list):
             {"$set": {"properties.cropName": crop["name"]}}
         )
 
-
+@flow
 def cultivos_identificadores_dt_etl():
     df = extract()
     crops = transform(df)

@@ -6,6 +6,7 @@ import requests
 import asyncio
 # Get rid of insecure warning
 import urllib3
+from prefect import flow
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -94,7 +95,7 @@ def load(crops: list[dict], phytosanitaries: list[dict], fertilizers: list[dict]
     if len(fertilizers) > 0:
         db.Activities.insert_many(fertilizers)
 
-
+@flow
 def recintos_user_info_etl(user_id: str, date: str, enclosure_ids: list[str]):
     year = pd.to_datetime(date).year
     crops = extract(user_id, year, enclosure_ids)
@@ -109,4 +110,4 @@ if __name__ == "__main__":
     user_id = "901046400000000010"
     date = "2021-01-01"
     enclosure_ids = ["50-99-0-0-2-204-1"]
-    asyncio.run(recintos_user_info_etl(user_id, date, enclosure_ids))
+    asyncio.run(recintos_user_info_etl.fn(user_id, date, enclosure_ids))

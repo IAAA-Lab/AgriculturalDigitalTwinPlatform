@@ -2,7 +2,7 @@ import io
 import json
 from etl.cultivos_identificadores.cultivos_identificadores_dt_etl import cultivos_identificadores_dt_etl
 import pandas as pd
-
+from prefect import flow
 from etl.recintos_cercanos.recintos_etl import recintos_etl
 from utils.functions import DB_MinioClient, DB_MongoClient
 from utils.constants import Constants
@@ -35,7 +35,7 @@ def load(activities: list):
     # Insert enclosures filtered by id and year
     db.Activities.insert_many(activities)
 
-
+@flow(log_prints=True)
 def activities_dt_etl(file_name: str):
     df = extract(file_name)
     activities = transform(df)
@@ -51,4 +51,4 @@ def activities_dt_etl(file_name: str):
 
 if __name__ == "__main__":
     asyncio.run(activities_dt_etl(
-        "ERP/PYSTACIL/2022/PISTACYL_2019-2020-2021.parquet"))
+        "ERP/PISTACYL/2022/PISTACYL_2019-2020-2021.parquet"))
