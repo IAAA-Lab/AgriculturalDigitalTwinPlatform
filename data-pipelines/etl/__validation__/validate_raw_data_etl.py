@@ -11,7 +11,8 @@ from prefect import flow, get_run_logger
 BUCKET_FROM_NAME = Constants.STORAGE_LANDING_ZONE.value
 BUCKET_TO_NAME = Constants.STORAGE_LANDING_ZONE.value
 
-def extract(file_name: str) -> dict:
+
+async def extract(file_name: str) -> dict:
     # Connect to MinIO
     minio_client = DB_MinioClient().connect()
     # Fetch objects and get metadata
@@ -21,33 +22,31 @@ def extract(file_name: str) -> dict:
     return {
         "name": file_name,
         "file_type": stat.content_type,
-        "data": get_dataframe_by_content_type(io.BytesIO(data), stat.content_type),
+        "data": await get_dataframe_by_content_type(io.BytesIO(data), stat.content_type),
         "raw_data": data,
     }
 
 
-
-def validate(df: Union[pd.DataFrame, dict[str, pd.DataFrame]]) -> str:
+async def validate(df: Union[pd.DataFrame, dict[str, pd.DataFrame]]) -> str:
     logger = get_run_logger()
     # Experiment all the schemas
     df_validated = None
     metadata = None
-    
+
     if isinstance(df, dict):
         for sheet_name, sheet_df in df.items():
-            df_validated, metadata = check_schema_by_name(sheet_df)
+            df_validated, metadata = await check_schema_by_name(sheet_df)
             if df_validated is None:
                 break
     else:
-        df_validated, metadata = check_schema_by_name(df)
+        df_validated, metadata = await check_schema_by_name(df)
     if df_validated is None:
         logger.error("Invalid schema")
         return Exception("Invalid schema")
     return metadata
 
 
-
-def load(raw_data, content_type: str, file_name: str, metadata: str):
+async def load(raw_data, content_type: str, file_name: str, metadata: str):
     # Connect to MinIO
     minio_client = DB_MinioClient().connect()
     # Create bucket if it doesn't exist
@@ -68,8 +67,7 @@ def load(raw_data, content_type: str, file_name: str, metadata: str):
     )
 
 
-
-def load_invalid(raw_data, content_type: str, file_name: str):
+async def load_invalid(raw_data, content_type: str, file_name: str):
     logger = get_run_logger()
     logger.error("Invalid data - loading to invalid zone...")
     # Connect to MinIO
@@ -93,42 +91,43 @@ def load_invalid(raw_data, content_type: str, file_name: str):
     # Delete file from MinIO
     minio_client.remove_object(BUCKET_FROM_NAME, f"{file_name}.xlsx")
 
+
 @flow
-def validate_raw_data_etl(file_name: str):
+async def validate_raw_data_etl(file_name: str):
     # Extract
-    raw_data = extract(file_name)
+    raw_data = await extract(file_name)
     file_name = raw_data["name"]
     file_type = raw_data["file_type"]
     data = raw_data["data"]
     raw_data = raw_data["raw_data"]
     # Validate
-    metadata = validate(data)
+    metadata = await validate(data)
     if isinstance(metadata, Exception):
-        load_invalid(raw_data, file_type, file_name)
+        await load_invalid(raw_data, file_type, file_name)
         return
     # Load
-    load(raw_data, file_type, file_name, metadata)
+    await load(raw_data, file_type, file_name, metadata)
 
 # -------- Helper functions --------
 
 
-def check_schema(df: pd.DataFrame, schema: pa.DataFrameSchema) -> pd.DataFrame:
+async def check_schema(df: pd.DataFrame, schema: pa.DataFrameSchema) -> pd.DataFrame:
     try:
         return schema.validate(df)
     except Exception:
         return None
 
 
-def check_schema_by_name(df: pd.DataFrame) -> Tuple[pd.DataFrame, str]:
-    df_validated = check_schema(df, activities_schema)
+async def check_schema_by_name(df: pd.DataFrame) -> Tuple[pd.DataFrame, str]:
+    df_validated = await check_schema(df, activities_schema)
     if df_validated is not None:
         metadata = Constants.METADATA_ACTIVITIES.value
         return df_validated, metadata
-    df_validated = check_schema(df, recintos_almendros_parcelas_schema)
+    df_validated = await check_schema(df, recintos_almendros_parcelas_schema)
     if df_validated is not None:
         metadata = Constants.METADATA_PARCELS_AND_TREATMENTS.value
         return df_validated, metadata
-    df_validated = check_schema(df, recintos_almendros_tratamientos_schema)
+    df_validated = await check_schema(df, recintos_almendros_tratamientos_schema)
     if df_validated is not None:
         metadata = Constants.METADATA_PARCELS_AND_TREATMENTS.value
         return df_validated, metadata
@@ -136,21 +135,21 @@ def check_schema_by_name(df: pd.DataFrame) -> Tuple[pd.DataFrame, str]:
     return None, None
 
 
-def get_bytes_by_content_type(df: pd.DataFrame, content_type: str) -> bytes:
-    match content_type:
-        case "application/vnd.ms-excel":
-            return df.to_excel()
-        case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-            return df.to_excel()
-        case "text/csv":
-            return df.to_csv()
-        case "application/json":
-            return df.to_json()
-        case _:
-            raise ValueError("Invalid content type")
+# async def get_bytes_by_content_type(df: pd.DataFrame, content_type: str) -> bytes:
+#     match content_type:
+#         case "application/vnd.ms-excel":
+#             return df.to_excel()
+#         case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+#             return df.to_excel()
+#         case "text/csv":
+#             return df.to_csv()
+#         case "application/json":
+#             return df.to_json()
+#         case _:
+#             raise ValueError("Invalid content type")
 
 
-def get_dataframe_by_content_type(file_bytes: bytes, content_type: str) -> Union[pd.DataFrame, dict[str, pd.DataFrame]]:
+async def get_dataframe_by_content_type(file_bytes: bytes, content_type: str) -> Union[pd.DataFrame, dict[str, pd.DataFrame]]:
     match content_type:
         case "application/vnd.ms-excel":
             return pd.read_excel(file_bytes, sheet_name=None, engine="openpyxl", na_values=[''])

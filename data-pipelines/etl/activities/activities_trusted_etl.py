@@ -11,7 +11,7 @@ BUCKET_FROM_NAME = Constants.STORAGE_LANDING_ZONE.value
 BUCKET_TO_NAME = Constants.STORAGE_TRUSTED_ZONE.value
 
 
-def extract(file_name: str) -> dict:
+async def extract(file_name: str) -> dict:
     # Connect to MinIO
     minio_client = DB_MinioClient().connect()
     # Fetch objects and filter by metadata
@@ -28,7 +28,7 @@ def extract(file_name: str) -> dict:
     }
 
 
-def clean(df: pd.DataFrame) -> pd.DataFrame:
+async def clean(df: pd.DataFrame) -> pd.DataFrame:
     # Rename columns
     df = df.rename(columns={
         "FECHA": "date",
@@ -46,16 +46,16 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def validate(df: pd.DataFrame) -> pd.DataFrame:
+async def validate(df: pd.DataFrame) -> pd.DataFrame:
     return activities_schema.validate(df)
 
 
-def transform(df: pd.DataFrame) -> pd.DataFrame:
+async def transform(df: pd.DataFrame) -> pd.DataFrame:
     # Convert to parquet
     return df.to_parquet()
 
 
-def load(processed_data: bytes, data_year: int, file_name: str, metadata: str):
+async def load(processed_data: bytes, data_year: int, file_name: str, metadata: str):
     # Connect to MinIO
     minio_client = DB_MinioClient().connect()
     # Create bucket if it doesn't exist
@@ -78,17 +78,18 @@ def load(processed_data: bytes, data_year: int, file_name: str, metadata: str):
     )
     minio_client.remove_object(BUCKET_FROM_NAME, f"invalid/{file_name}.xlsx")
 
+
 @flow(log_prints=True)
-def activities_trusted_etl(file_name: str):
+async def activities_trusted_etl(file_name: str):
     # Define flow parameters
     data_year = 2022
     # Define flow
-    extracted_data = extract(file_name)
-    validated_data = validate(extracted_data["activities"])
-    cleaned_data = clean(validated_data)
-    transformed_data = transform(cleaned_data)
-    load(transformed_data, data_year,
-         extracted_data["name"], Constants.METADATA_ACTIVITIES.value)
+    extracted_data = await extract(file_name)
+    validated_data = await validate(extracted_data["activities"])
+    cleaned_data = await clean(validated_data)
+    transformed_data = await transform(cleaned_data)
+    await load(transformed_data, data_year,
+               extracted_data["name"], Constants.METADATA_ACTIVITIES.value)
 
 
 if __name__ == "__main__":

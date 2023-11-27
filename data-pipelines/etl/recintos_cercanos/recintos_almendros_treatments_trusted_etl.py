@@ -10,25 +10,28 @@ BUCKET_FROM_NAME = Constants.STORAGE_LANDING_ZONE.value
 BUCKET_TO_NAME = Constants.STORAGE_TRUSTED_ZONE.value
 
 
-def extract(file_name: str) -> dict:
+async def extract(file_name: str) -> dict:
     # Connect to MinIO
     minio_client = DB_MinioClient().connect()
     # Fetch objects and filter by metadata
     data = minio_client.get_object(BUCKET_FROM_NAME, file_name).read()
     stat = minio_client.stat_object(BUCKET_FROM_NAME, file_name)
-    df = pd.read_excel(io.BytesIO(data), engine="openpyxl",
-                       sheet_name="Tratamientos", na_values=[''])
+    try:
+        df = pd.read_excel(io.BytesIO(data), engine="openpyxl",
+                           sheet_name="Tratamientos", na_values=[''])
+    except Exception as e:
+        print(e)
     return {
         "treatments": df,
         "name": re.split(r"\.", file_name)[0]
     }
 
 
-def validate(df: pd.DataFrame):
+async def validate(df: pd.DataFrame):
     return recintos_almendros_tratamientos_schema.validate(df)
 
 
-def clean(df: pd.DataFrame):
+async def clean(df: pd.DataFrame):
     # Change column names
     df.rename(columns={"MovimientoCosecha": "harvestYear", "MovimientoFechaDeInicio": "harvestInitDate", "Producto": "phytosanitaryId", "ProductoNombre": "phytosanitaryName", "Formulado": "phytosanitaryFormula", "TratamientosPlagaEfectosEnPlagasId": "plagueTreatmentEffectsId", "EfectosEnPlagas": "plagueEffects", "TratamientosPlagaMalasHierbasId": "plagueTreatmentWeedsId", "SecUserNombre": "secUserName", "SecUserNIF": "secUserNIF", "SecUserId": "secUserId", "ParcelaProvinciaId": "parcelProvinceId", "ParcelaMunicipioId": "parcelMunicipalityId", "ParcelaPoligono": "parcelPolygonId", "Parcela": "parcelId", "ParcelaRecinto": "parcelEnclosureId",
               "ParcelaParaje": "parcelGeographicSpot", "ParcelaAgregado": "parcelAggregatedId", "ParcelaZona": "parcelZoneId", "ParcelaCosechaCodigoPAC": "cropId", "ParcelaCosechaCultivoPAC": "crop", "Caldo": "broth", "TipoDeDosisId": "doseKind", "TipoDeDosisDetalle": "doseUnit", "MovimientoParcelaSuperficieTratada": "treatedArea", "Cantidad": "phytosanitaryQuantityMovement", "MovimientoPlazoDeSeguridad": "safePeriodMovement", "MovimientoDosis": "doseMovement", "ParcelaSuperficieCultivo": "parcelArea", "ParcelaSuperficieSIGPAC": "parcelAreaSIGPAC", "ParcelaZonaVulnerable": "parcelVulnerableArea", "UsoDeParcelasId": "parcelSIGPACCode"}, inplace=True)
@@ -52,12 +55,12 @@ def clean(df: pd.DataFrame):
     return df, data_year
 
 
-def transform(df: pd.DataFrame):
+async def transform(df: pd.DataFrame):
     # Convert in case of further analysis
     return df.to_parquet()
 
 
-def load(processed_data: bytes, data_year: int, file_name: str, metadata: str):
+async def load(processed_data: bytes, data_year: int, file_name: str, metadata: str):
     # Connect to MinIO
     minio_client = DB_MinioClient().connect()
     # Create bucket if it doesn't exist
@@ -80,21 +83,22 @@ def load(processed_data: bytes, data_year: int, file_name: str, metadata: str):
     )
     minio_client.remove_object(BUCKET_FROM_NAME, f"invalid/{file_name}.xlsx")
 
+
 @flow
-def recintos_almendros_treatments_trusted_etl(file_name):
+async def recintos_almendros_treatments_trusted_etl(file_name):
     # Get data from MinIO
-    raw_data = extract(file_name)
+    raw_data = await extract(file_name)
     treatments = raw_data["treatments"]
     name = raw_data["name"]
     # Validate data
-    data = validate(treatments)
+    data = await validate(treatments)
     # Clean data
-    clean_data, data_year = clean(data)
+    clean_data, data_year = await clean(data)
     # Transform data
-    processed_data = transform(clean_data)
+    processed_data = await transform(clean_data)
     # Load data
-    load(processed_data, data_year,
-         f"{name}_TRATAMIENTOS_{data_year}", Constants.METADATA_PARCELS_AND_TREATMENTS_TREATMENTS.value)
+    await load(processed_data, data_year,
+               f"{name}_TRATAMIENTOS_{data_year}", Constants.METADATA_PARCELS_AND_TREATMENTS_TREATMENTS.value)
 
 
 if __name__ == "__main__":
