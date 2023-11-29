@@ -1,11 +1,11 @@
 import io
 import re
 import pandas as pd
-import pandera as pa
-from prefect import flow
+from prefect import flow, get_run_logger
 from utils.functions import DB_MinioClient
 from utils.constants import Constants
 from etl.__validation__.schemas import activities_schema
+import asyncio
 
 BUCKET_FROM_NAME = Constants.STORAGE_LANDING_ZONE.value
 BUCKET_TO_NAME = Constants.STORAGE_TRUSTED_ZONE.value
@@ -89,11 +89,11 @@ async def activities_trusted_etl(file_name: str):
     cleaned_data = await clean(validated_data)
     transformed_data = await transform(cleaned_data)
     await load(transformed_data, data_year,
-               extracted_data["name"], Constants.METADATA_ACTIVITIES.value)
+            extracted_data["name"], Constants.METADATA_ACTIVITIES.value)
 
 
 if __name__ == "__main__":
     # Define flow parameters
     file_name = "PISTACYL_2019-2020-2021.xlsx"
     # Run flow
-    activities_trusted_etl(file_name)
+    asyncio.run(activities_trusted_etl(file_name))

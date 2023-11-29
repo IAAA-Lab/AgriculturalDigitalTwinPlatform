@@ -47,6 +47,7 @@ body {
 .container-responsive {
 	margin: 0 auto;
 	padding: 0 $container--padding__mobile;
+	max-width: 100%;
 	width: 100%;
 }
 

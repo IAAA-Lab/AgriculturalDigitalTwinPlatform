@@ -5,6 +5,7 @@ from .dto.historical_weather_dto import HistoricalWeatherDTO
 # Get rid of insecure warning
 import requests
 import urllib3
+from prefect import flow, get_run_logger
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -65,8 +66,9 @@ async def load_weather_data(weather_data_list: list):
     if weather_data_list is not None:
         db.Weather.insert_many(weather_data_list)
 
-
+@flow
 async def historical_weather_dt_etl(meteo_station_id: str, date_init: str, date_end: str):
+    logger = get_run_logger()
     # Extract every 3 years
     date_init = pd.to_datetime(date_init, format="%d-%m-%Y")
     date_end = pd.to_datetime(date_end, format="%d-%m-%Y")
@@ -81,7 +83,7 @@ async def historical_weather_dt_etl(meteo_station_id: str, date_init: str, date_
                 weather_data_raw)
             await load_weather_data(weather_data_processed)
         except Exception as e:
-            print(e)
+            logger.error(f"Error in meteo_station_id: {meteo_station_id} between {date_init} and {date_end_block} - {e}")
         date_init = date_end_block
 
 

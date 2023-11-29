@@ -1,0 +1,4 @@
+{
+  "historical-weather-scheduled-etl": "etl/weather/historical_weather_etl_scheduled.py:historical_weather_scheduled_etl",
+  "ndvi-scheduled-etl": "etl/ndvi/ndvi_etl_scheduled.py:ndvi_scheduled_etl"
+}

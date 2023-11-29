@@ -12,7 +12,7 @@ import asyncio
 BUCKET_FROM_NAME = Constants.STORAGE_TRUSTED_ZONE.value
 
 
-def extract(file_name: str) -> dict:
+async def extract(file_name: str) -> dict:
     # Connect to MinIO
     minio_client = DB_MinioClient().connect()
     # Fetch objects and filter by metadata
@@ -20,13 +20,13 @@ def extract(file_name: str) -> dict:
     return pd.read_parquet(io.BytesIO(data))
 
 
-def transform(df: pd.DataFrame) -> list:
+async def transform(df: pd.DataFrame) -> list:
     # Convert to json but maintain date in datetime format
     json_str = df.to_json(orient="records", date_format="iso")
     return json.loads(json_str)
 
 
-def load(activities: list):
+async def load(activities: list):
     # Convert date to datetime
     for activity in activities:
         activity["date"] = pd.to_datetime(activity["date"])
@@ -36,17 +36,17 @@ def load(activities: list):
     db.Activities.insert_many(activities)
 
 @flow(log_prints=True)
-def activities_dt_etl(file_name: str):
-    df = extract(file_name)
-    activities = transform(df)
-    load(activities)
+async def activities_dt_etl(file_name: str):
+    df = await extract(file_name)
+    activities = await transform(df)
+    await load(activities)
     # Get unique enclosures ids
     enclosures_ids = list(set([activity["enclosureId"]
                           for activity in activities]))
     # Run recintos_etl
-    recintos_etl(2022, enclosures_ids)
+    await recintos_etl(2022, enclosures_ids)
     # Asynchronously extract the rest of the information
-    cultivos_identificadores_dt_etl()
+    await cultivos_identificadores_dt_etl()
 
 
 if __name__ == "__main__":

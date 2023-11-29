@@ -12,7 +12,7 @@ BUCKET_FROM_NAME = Constants.STORAGE_TRUSTED_ZONE.value
 
 
 
-def extract():
+async def extract():
     # Connect to MinIO
     minio_client = DB_MinioClient().connect()
     data = minio_client.get_object(
@@ -20,12 +20,12 @@ def extract():
     return pd.read_parquet(io.BytesIO(data))
 
 
-def transform(df: pd.DataFrame):
+async def transform(df: pd.DataFrame):
     return df.to_dict("records")
 
 
 
-def load(crops: list):
+async def load(crops: list):
     # Connect to MongoDB
     db = DB_MongoClient().connect()
 
@@ -37,10 +37,10 @@ def load(crops: list):
         )
 
 @flow
-def cultivos_identificadores_dt_etl():
-    df = extract()
-    crops = transform(df)
-    load(crops)
+async def cultivos_identificadores_dt_etl():
+    df = await extract()
+    crops = await transform(df)
+    await load(crops)
 
 # ------------------ TEST ------------------
 

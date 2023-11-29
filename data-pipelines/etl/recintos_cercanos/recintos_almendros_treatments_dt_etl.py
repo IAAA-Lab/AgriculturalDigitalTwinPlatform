@@ -16,7 +16,7 @@ USER_INFO_FROM_DATE = "01-01-2017"
 USER_INFO_TO_DATE = "01-01-2023"
 
 
-def extract(file_name: str):
+async def extract(file_name: str):
     # Connect to MinIO
     minio_client = DB_MinioClient().connect()
 
@@ -26,7 +26,7 @@ def extract(file_name: str):
     return df
 
 
-def transform(df: pd.DataFrame):
+async def transform(df: pd.DataFrame):
     # Convert to Digital Twin domain
     activities = []
     for row in df.itertuples():
@@ -65,7 +65,7 @@ def transform(df: pd.DataFrame):
     return activities
 
 
-def activities_by_user_id(data: list):
+async def activities_by_user_id(data: list):
     # Group activities by userId and mantain only enclosureId, date and activity columns
     activities_by_user_id = {}
     for activity in data:
@@ -76,13 +76,13 @@ def activities_by_user_id(data: list):
     return activities_by_user_id
 
 
-def load(activities):
+async def load(activities):
     # Connect to MongoDB
     db = DB_MongoClient().connect()
     db.Activities.insert_many(activities)
 
 
-def load_crop_info(activities_list):
+async def load_crop_info(activities_list):
     # Connect to MongoDB
     db = DB_MongoClient().connect()
     for userId, activities in activities_list.items():
@@ -91,32 +91,34 @@ def load_crop_info(activities_list):
                 {"id": activity["enclosureId"]}, {"$set": {"properties.cropId": activity["cropId"]}})
 
 @flow(log_prints=True)
-def recintos_almendros_treatments_dt_etl(file_name: str):
-    df = extract(file_name)
-    activities = transform(df)
-    load(activities)
+async def recintos_almendros_treatments_dt_etl(file_name: str):
+    df = await extract(file_name)
+    activities = await transform(df)
+    await load(activities)
     # ETL for user info, including crops
     date_init = pd.to_datetime(USER_INFO_FROM_DATE, format="%d-%m-%Y")
     date_end = pd.to_datetime(USER_INFO_TO_DATE, format="%d-%m-%Y")
 
     # List of unique tuples (userId, enclosureId)
-    activities = activities_by_user_id(activities)
+    activities = await activities_by_user_id(activities)
 
     while date_init < date_end:
         date_end_block = date_init + timedelta(days=365)
         if date_end_block > date_end:
             date_end_block = date_end
+        tasks = []
         for userId, activity in activities.items():
             # Get all enclosureIds in the activities block
             enclosureIds = [activity["enclosureId"] for activity in activity]
-            recintos_user_info_etl(userId, date_init.strftime("%Y-%m-%d"), enclosureIds)
+            tasks.append(recintos_user_info_etl(userId, date_init.strftime("%Y-%m-%d"), enclosureIds))
             if date_init.year == 2022:
-                recintos_etl(date_init.year, enclosureIds)
+                await recintos_etl(date_init.year, enclosureIds)
+        await asyncio.gather(*tasks, return_exceptions=True)
         date_init = date_end_block
 
-    load_crop_info(activities)
+    await load_crop_info(activities)
     # Asynchronously extract the rest of the information
-    cultivos_identificadores_dt_etl()
+    await cultivos_identificadores_dt_etl()
 
 
 #  ----------- TESTS ------------

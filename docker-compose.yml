@@ -5,33 +5,33 @@ services:
   #      Collect metrics from services        #
   #############################################
 
-  prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - ./monitorization/prometheus:/etc/prometheus/
-      - ./monitorization/prometheus/storage:/prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-    ports:
-      - "9090"
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   volumes:
+  #     - ./monitorization/prometheus:/etc/prometheus/
+  #     - ./monitorization/prometheus/storage:/prometheus
+  #   command:
+  #     - "--config.file=/etc/prometheus/prometheus.yml"
+  #     - "--storage.tsdb.path=/prometheus"
+  #   ports:
+  #     - "9090"
 
   #############################################
   #      Centralize all metrics and logs      #
   #############################################
 
-  grafana:
-    image: grafana/grafana:latest
-    volumes:
-      - ./monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - ./monitorization/grafana/grafana.ini:/etc/grafana/grafana.ini
-      - ./monitorization/grafana/storage:/var/lib/grafana
-      - ./monitorization/grafana/plugins:/var/lib/grafana/plugins
-    restart: unless-stopped
-    ports:
-      - 3010:${GRAFANA_PORT}
-    depends_on:
-      - prometheus
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   volumes:
+  #     - ./monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+  #     - ./monitorization/grafana/grafana.ini:/etc/grafana/grafana.ini
+  #     - ./monitorization/grafana/storage:/var/lib/grafana
+  #     - ./monitorization/grafana/plugins:/var/lib/grafana/plugins
+  #   restart: unless-stopped
+  #   ports:
+  #     - 3010:${GRAFANA_PORT}
+  #   depends_on:
+  #     - prometheus
 
   #############################################
   # Services communication and message queue  #
@@ -171,6 +171,23 @@ services:
         condition: service_healthy
 
   # #############################################
+  # #            Prefect server storage         #
+  # #############################################
+
+  # Had to use postgres because sqlite3 is doesn't support many concurrent connections
+  postgres:
+    image: postgres:14.0
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: prefect
+    ports:
+      - 5432
+    volumes:
+      - ./storage/postgres/data:/var/lib/postgresql/data
+
+  # #############################################
   # #      Data ingestion, data processing      #
   # #      simulations, and machine learning    #
   # #############################################
@@ -186,9 +203,12 @@ services:
       - PREFECT_UI_URL=http://127.0.0.0:4200/api
       - PREFECT_API_URL=http://127.0.0.1:4200/api
       - PREFECT_SERVER_API_HOST=0.0.0.0
+      - PREFECT_API_DATABASE_CONNECTION_URL=${PREFECT_API_DATABASE_CONNECTION_URL}
     depends_on:
       rabbitmq:
         condition: service_healthy
+      postgres:
+        condition: service_started
     command: prefect server start
 
   data-pipeline-worker:
@@ -220,6 +240,8 @@ services:
       rabbitmq:
         condition: service_healthy
       mongo:
+        condition: service_started
+      prefect:
         condition: service_started
     # Resource limit because it tends to use a lot of memory
     mem_limit: 2048m

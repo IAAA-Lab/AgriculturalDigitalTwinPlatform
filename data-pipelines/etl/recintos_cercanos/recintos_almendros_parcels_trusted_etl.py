@@ -16,11 +16,8 @@ async def extract(file_name: str) -> dict:
     # Fetch objects and filter by metadata
     data = minio_client.get_object(BUCKET_FROM_NAME, file_name).read()
     stat = minio_client.stat_object(BUCKET_FROM_NAME, file_name)
-    try:
-        df = pd.read_excel(io.BytesIO(data), engine="openpyxl",
+    df = pd.read_excel(io.BytesIO(data), engine="openpyxl",
                            sheet_name="Parcelas", na_values=[''])
-    except Exception as e:
-        print(e)
     return {
         "parcels": df,
         "name": re.split(r"\.", file_name)[0],

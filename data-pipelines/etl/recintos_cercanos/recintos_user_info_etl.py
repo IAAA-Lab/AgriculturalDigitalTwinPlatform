@@ -10,7 +10,7 @@ from prefect import flow
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-def extract(user_id: str, year: int, enclosure_ids: list[str]) -> dict:
+async def extract(user_id: str, year: int, enclosure_ids: list[str]) -> dict:
 
     AUTH_TOKEN = os.environ.get("AGROSLAB_AUTH_TOKEN")
     AGROSLAB_API_URL = os.environ.get("AGROSLAB_API_URL")
@@ -34,7 +34,7 @@ def extract(user_id: str, year: int, enclosure_ids: list[str]) -> dict:
     return response.json()
 
 
-def transform(crops: dict, date: str):
+async def transform(crops: dict, date: str):
     crops_out = []
     phytosanitaries_out = []
     fertilizers_out = []
@@ -85,7 +85,7 @@ def transform(crops: dict, date: str):
     return crops_out, phytosanitaries_out, fertilizers_out
 
 
-def load(crops: list[dict], phytosanitaries: list[dict], fertilizers: list[dict]):
+async def load(crops: list[dict], phytosanitaries: list[dict], fertilizers: list[dict]):
     # Connect to MongoDB
     db = DB_MongoClient().connect()
     if len(crops) > 0:
@@ -96,12 +96,12 @@ def load(crops: list[dict], phytosanitaries: list[dict], fertilizers: list[dict]
         db.Activities.insert_many(fertilizers)
 
 @flow
-def recintos_user_info_etl(user_id: str, date: str, enclosure_ids: list[str]):
+async def recintos_user_info_etl(user_id: str, date: str, enclosure_ids: list[str]):
     year = pd.to_datetime(date).year
-    crops = extract(user_id, year, enclosure_ids)
-    crops, phytosanitaries, fertilizers = transform(
+    crops = await extract(user_id, year, enclosure_ids)
+    crops, phytosanitaries, fertilizers = await transform(
         crops, date)
-    load(crops, phytosanitaries, fertilizers)
+    await load(crops, phytosanitaries, fertilizers)
 
 # ------------- TEST -------------
 

@@ -14,7 +14,9 @@ from utils.constants import Constants
 import aio_pika
 from aio_pika.abc import AbstractIncomingMessage
 import os
+import nest_asyncio
 
+nest_asyncio.apply()
 
 class RabbitmqConsumer:
     def __init__(self, config):
@@ -44,6 +46,7 @@ class RabbitmqConsumer:
 
 
 async def action(message: AbstractIncomingMessage) -> None:
+    await asyncio.sleep(2)
     data = json.loads(message.body)
     data_lake_zone = data['Records'][0]['s3']['bucket']['name']
     file_name = data['Records'][0]['s3']['object']['key'].replace(
@@ -52,28 +55,29 @@ async def action(message: AbstractIncomingMessage) -> None:
         metadata_type = data['Records'][0]['s3']['object']['userMetadata']['X-Amz-Meta-Type']
     except KeyError:
         print('Metadata type not found')
-        await validate_raw_data_etl(file_name)
+        asyncio.run(validate_raw_data_etl(file_name))
         return
     try:
         match data_lake_zone:
             case Constants.STORAGE_LANDING_ZONE.value:
                 match metadata_type:
                     case Constants.METADATA_PARCELS_AND_TREATMENTS.value:
-                        await asyncio.gather(recintos_almendros_parcels_trusted_etl(
-                            file_name), recintos_almendros_treatments_trusted_etl(file_name), return_exceptions=True)
+                        asyncio.run(recintos_almendros_parcels_trusted_etl(
+                            file_name))
+                        asyncio.run(recintos_almendros_treatments_trusted_etl(file_name))
                     case Constants.METADATA_ACTIVITIES.value:
-                        activities_trusted_etl(file_name)
+                        asyncio.run(activities_trusted_etl(file_name))
                     case _:
                         print(f'Metadata type not found: {metadata_type}')
 
             case Constants.STORAGE_TRUSTED_ZONE.value:
                 match metadata_type:
                     case Constants.METADATA_PARCELS_AND_TREATMENTS_TREATMENTS.value:
-                        recintos_almendros_treatments_dt_etl(file_name)
+                        asyncio.run(recintos_almendros_treatments_dt_etl(file_name))
                     case Constants.METADATA_PARCELS_AND_TREATMENTS_PARCELS.value:
-                        recintos_almendros_parcels_dt_etl(file_name)
+                        asyncio.run(recintos_almendros_parcels_dt_etl(file_name))
                     case Constants.METADATA_ACTIVITIES.value:
-                        activities_dt_etl(file_name)
+                        asyncio.run(activities_dt_etl(file_name))
                     case _:
                         print(f'Metadata type not found: {metadata_type}')
 
@@ -105,6 +109,4 @@ if __name__ == "__main__":
         'EXCHANGE_NAME': "storage",
         'ROUTING_KEY': "trusted"
     }
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main_direct_consumer(config))
-    loop.close()
+    asyncio.run(main_direct_consumer(config))

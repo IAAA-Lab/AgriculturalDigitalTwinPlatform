@@ -5,33 +5,33 @@ services:
   #      Collect metrics from services        #
   #############################################
 
-  prometheus:
-    image: prom/prometheus:latest
-    volumes:
-      - ./monitorization/prometheus:/etc/prometheus/
-      - ./monitorization/prometheus/storage:/prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-    ports:
-      - "9090"
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   volumes:
+  #     - ./monitorization/prometheus:/etc/prometheus/
+  #     - ./monitorization/prometheus/storage:/prometheus
+  #   command:
+  #     - "--config.file=/etc/prometheus/prometheus.yml"
+  #     - "--storage.tsdb.path=/prometheus"
+  #   ports:
+  #     - "9090"
 
-  #############################################
-  #      Centralize all metrics and logs      #
-  #############################################
+  # #############################################
+  # #      Centralize all metrics and logs      #
+  # #############################################
 
-  grafana:
-    image: grafana/grafana:latest
-    volumes:
-      - ./monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - ./monitorization/grafana/grafana.ini:/etc/grafana/grafana.ini
-      - ./monitorization/grafana/storage:/var/lib/grafana
-      - ./monitorization/grafana/plugins:/var/lib/grafana/plugins
-    restart: unless-stopped
-    ports:
-      - 3010:${GRAFANA_PORT}
-    depends_on:
-      - prometheus
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   volumes:
+  #     - ./monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+  #     - ./monitorization/grafana/grafana.ini:/etc/grafana/grafana.ini
+  #     - ./monitorization/grafana/storage:/var/lib/grafana
+  #     - ./monitorization/grafana/plugins:/var/lib/grafana/plugins
+  #   restart: unless-stopped
+  #   ports:
+  #     - 3010:${GRAFANA_PORT}
+  #   depends_on:
+  #     - prometheus
 
   #############################################
   # Services communication and message queue  #
@@ -189,13 +189,27 @@ services:
   # #      simulations, and machine learning    #
   # #############################################
 
+  prefect:
+    image: prefecthq/prefect:2.14.5-python3.11
+    ports:
+      - 4200:4200
+    volumes:
+      - prefect:/root/.prefect
+    environment:
+      - PREFECT_LOGGING_LEVEL=WARNING
+      - PREFECT_UI_URL=http://127.0.0.0:4200/api
+      - PREFECT_API_URL=http://127.0.0.1:4200/api
+      - PREFECT_SERVER_API_HOST=0.0.0.0
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    command: prefect server start
+
   data-pipeline-worker:
     build: data-pipelines
     restart: on-failure
     volumes:
       - ./data-pipelines:/opt/data-pipelines
-    ports:
-      - "9091:9091"
     environment:
       - AGROSLAB_AUTH_TOKEN=${AGROSLAB_AUTH_TOKEN}
       - AGROSLAB_API_URL=${AGROSLAB_API_URL}
@@ -207,11 +221,21 @@ services:
       - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
       - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
       - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
-    command: python3 -m main
+      - PREFECT_API_URL=http://prefect:4200/api
+      - PREFECT_MINIO_ACCESS_ROOT=${MINIO_ROOT_USER}
+      - PREFECT_MINIO_SECRET_ROOT=${MINIO_ROOT_PASSWORD}
+      - PREFECT_MINIO_HOST=${MINIO_HOST}
+      - PREFECT_MONGODB_HOST=${MONGO_URI}
+      - PREFECT_MONGODB_DB=${MONGO_INITDB_DATABASE}
+    entrypoint:
+      - sh
+      - /opt/data-pipelines/entrypoint.sh
     depends_on:
       rabbitmq:
         condition: service_healthy
       mongo:
+        condition: service_started
+      prefect:
         condition: service_started
     # Resource limit because it tends to use a lot of memory
     mem_limit: 2048m
@@ -221,21 +245,21 @@ services:
   #              MLflow server                #
   #############################################
 
-  mlflow:
-    build: mlflow
-    restart: always
-    ports:
-      - 5000:5000
-      - 5001:5001
-    depends_on:
-      - minio
-    environment:
-      - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
-      - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
-      - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
-    volumes:
-      - ./mlflow/storage:/storage
-    command: mlflow server --backend-store-uri file:///storage/runs --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
-    mem_limit: 512m
-    mem_reservation: 128m
-    cpus: 0.5
+  # mlflow:
+  #   build: mlflow
+  #   restart: always
+  #   ports:
+  #     - 5000:5000
+  #     - 5001:5001
+  #   depends_on:
+  #     - minio
+  #   environment:
+  #     - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
+  #     - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
+  #     - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
+  #   volumes:
+  #     - ./mlflow/storage:/storage
+  #   command: mlflow server --backend-store-uri file:///storage/runs --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
+  #   mem_limit: 512m
+  #   mem_reservation: 128m
+  #   cpus: 0.5

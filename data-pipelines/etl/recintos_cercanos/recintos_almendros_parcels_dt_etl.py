@@ -13,7 +13,7 @@ BUCKET_FROM_NAME = Constants.STORAGE_TRUSTED_ZONE.value
 CURRENT_DATE_FORMATTED = datetime.datetime.now().strftime("%d-%m-%Y")
 
 
-def extract_enclosures_properties(file_name: str):
+async def extract_enclosures_properties(file_name: str):
     # Connect to MinIO
     minio_client = DB_MinioClient().connect()
     data = minio_client.get_object(
@@ -26,7 +26,7 @@ def extract_enclosures_properties(file_name: str):
     }
 
 
-def transform_parcelas(df: pd.DataFrame):
+async def transform_parcelas(df: pd.DataFrame):
     # Loop through the rows using intertuples()
     enclosuresProperties = []
     for row in df.itertuples():
@@ -62,7 +62,7 @@ def transform_parcelas(df: pd.DataFrame):
     return enclosuresProperties
 
 
-def load(year: int, enclosure_properties: dict):
+async def load(year: int, enclosure_properties: dict):
     # Connect to MongoDB
     mongo_client = DB_MongoClient().connect()
     # Add the properties to the existing enclosure properties
@@ -77,20 +77,20 @@ def load(year: int, enclosure_properties: dict):
 # ----------------- Flows -----------------
 
 @flow
-def recintos_almendros_parcels_dt_etl(file_name: str):
+async def recintos_almendros_parcels_dt_etl(file_name: str):
     # Extract
-    object = extract_enclosures_properties(file_name)
+    object = await extract_enclosures_properties(file_name)
     dfParcels = object["parcels"]
     year = int(object["year"])
     # Transform
-    enclosuresProperties = transform_parcelas(dfParcels)
-    recintos_etl(year, [enclosureProperties["id"]
+    enclosuresProperties = await transform_parcelas(dfParcels)
+    await recintos_etl(year, [enclosureProperties["id"]
                  for enclosureProperties in enclosuresProperties])
     # Load
     for enclosureProperties in enclosuresProperties:
-        load(year, enclosureProperties)
+        await load(year, enclosureProperties)
     # Asynchronously extract the rest of the information
-    cultivos_identificadores_dt_etl()
+    await cultivos_identificadores_dt_etl()
 
 
 if __name__ == "__main__":
