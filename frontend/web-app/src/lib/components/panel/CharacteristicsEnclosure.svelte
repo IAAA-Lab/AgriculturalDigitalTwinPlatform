@@ -3,7 +3,8 @@
 	import StatsCard from './StatsCard.svelte';
 
 	export let properties: any = {};
-	let rainfedOrIrrigated;
+	let rainfedOrIrrigated: string | undefined = undefined;
+	let chars: any = [];
 
 	$: {
 		if (!properties.rainfedOrIrrigated) {
@@ -14,45 +15,43 @@
 		} else if (properties.rainfedOrIrrigated === 'S') {
 			rainfedOrIrrigated = 'Secano';
 		}
-	}
-
-	let chars: any = [];
-	if (properties) {
-		chars = [
-			{
-				name: 'Área',
-				value: properties.area,
-				unit: 'Ha'
-			},
-			{
-				name: 'Área SIGPAC',
-				value: properties.areaSIGPAC,
-				unit: 'Ha'
-			},
-			{
-				name: 'Regadío',
-				value: properties.irrigationCoef
-			},
-			{
-				name: 'Tipo de riego',
-				value: rainfedOrIrrigated
-			},
-			{
-				name: 'Uso SIGPAC',
-				value: properties.parcelUse
-			},
-			{
-				name: 'Pendiente',
-				value: properties.slope
-			}
-		];
+		if (properties) {
+			chars = [
+				{
+					name: 'Área',
+					value: properties.area,
+					unit: 'Ha'
+				},
+				{
+					name: 'Área SIGPAC',
+					value: properties.areaSIGPAC,
+					unit: 'Ha'
+				},
+				{
+					name: 'Regadío',
+					value: properties.irrigationCoef
+				},
+				{
+					name: 'Tipo de riego',
+					value: rainfedOrIrrigated
+				},
+				{
+					name: 'Uso SIGPAC',
+					value: properties.parcelUse
+				},
+				{
+					name: 'Pendiente',
+					value: properties.slope
+				}
+			];
+		}
 	}
 </script>
 
 <div class="characteristics">
 	{#each chars as c}
 		<div class="characteristics__item">
-			<StatsCard statName={c?.name} statValue={c?.value} statUnit={c?.unit}>
+			<StatsCard statName={c?.name} statValue={c?.value} statUnit={c?.unit || ''}>
 				{@html getIconByCharacteristic(c)}
 			</StatsCard>
 		</div>

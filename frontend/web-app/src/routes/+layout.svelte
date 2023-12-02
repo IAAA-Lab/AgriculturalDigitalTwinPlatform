@@ -8,19 +8,19 @@
 	let loading = true;
 
 	onMount(async () => {
-		// try {
-		// 	const { role } = await userService.getUserCredentials();
+		try {
+			const { role } = await userService.getUserCredentials();
 
-		// 	switch (role) {
-		// 		case Role.AGRARIAN:
-		// 			await goto('/panel');
-		// 			break;
-		// 		default:
-		// 			break;
-		// 	}
-		// } catch (error) {
-		// 	// console.log(error);
-		// }
+			switch (role) {
+				case Role.AGRARIAN:
+					await goto('/panel');
+					break;
+				default:
+					break;
+			}
+		} catch (error) {
+			// console.log(error);
+		}
 		loading = false;
 	});
 </script>
@@ -33,3 +33,5 @@
 {:else}
 	<slot />
 {/if}
+
+<style global lang="scss"></style>

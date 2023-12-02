@@ -29,10 +29,7 @@
 </script>
 
 <div class="header">
-	<div>
-		<h2 class="m-0">Comparación de recintos</h2>
-		<p class="m-0">Compara características de varios recintos</p>
-	</div>
+	<h2 class="m-0">Comparación de recintos</h2>
 	<div class="input__wrapper">
 		<label for="date">Característica</label>
 		<select>
@@ -69,8 +66,8 @@
 				plugins: {
 					legend: {
 						position: 'right',
+						usePointStyle: true,
 						labels: {
-							usePointStyle: true,
 							pointStyle: 'rectRounded',
 							boxWidth: 10,
 							font: {
@@ -113,7 +110,7 @@
 
 <style lang="scss">
 	.card-inner {
-		height: 225px;
+		height: 300px;
 	}
 	input[type='number'] {
 		min-width: 125px;

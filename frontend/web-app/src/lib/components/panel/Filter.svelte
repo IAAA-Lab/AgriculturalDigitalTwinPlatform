@@ -1,99 +1,57 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import type { Enclosure } from '$lib/core/Domain';
 
-	const DEFAULT_FILTERS = {
-		filters: [{}],
-		orderBy: [{}],
-		limit: 0,
-		maxLimit: 0,
-		search: ''
-	};
+	export let enclosures: Enclosure[] = [];
+	export let checkedCrops: string[] = [];
+	let showMoreCrops = false;
+	export let checkedLocations: string[] = [];
+	let showMoreLocations = false;
+	export let checkedProvinces: string[] = [];
+	let showMoreProvinces = false;
+	export let checkedCCAA: string[] = [];
+	let showMoreCCAA = false;
+	export let orderBy: string | undefined = undefined;
+	export let limit: number = 0;
+	// inputs refs
+	let orderBySelect: HTMLSelectElement;
 
-	let filters = DEFAULT_FILTERS;
+	let uniqueCrops: string[] = [];
+	$: uniqueCrops = [
+		...new Set(
+			enclosures.map((enclosure) => enclosure.properties.cropName).filter((crop) => crop.length > 0)
+		)
+	];
+	let uniqueLocations: string[] = [];
+	$: uniqueLocations = [
+		...new Set(
+			enclosures
+				.map((enclosure) => enclosure.properties.geographicSpot)
+				.filter((location) => location.length > 0)
+		)
+	];
+	let uniqueProvinces: string[] = [];
+	$: uniqueProvinces = [
+		...new Set(
+			enclosures
+				.map((enclosure) => enclosure.location.province)
+				.filter((province) => province.length > 0)
+		)
+	];
+	let uniqueCCAA: string[] = [];
+	$: uniqueCCAA = [
+		...new Set(
+			enclosures.map((enclosure) => enclosure.location.ccaa).filter((CCAA) => CCAA.length > 0)
+		)
+	];
 
 	const resetFilters = () => {
-		filters = DEFAULT_FILTERS;
+		checkedCrops = [];
+		checkedLocations = [];
+		orderBy = undefined;
+		limit = 0;
+		// Empty selects
+		orderBySelect.selectedIndex = 0;
 	};
-
-	const fetchFilters = async () => {
-		filters = {
-			filters: [
-				{
-					key: 'cropName',
-					name: 'Cultivo',
-					data: [
-						'Maíz',
-						'Trigo',
-						'Cebada',
-						'Girasol',
-						'Colza',
-						'Remolacha',
-						'Algodón',
-						'Arroz',
-						'Otros'
-					]
-				},
-				{
-					key: 'location.province',
-					name: 'Provincia',
-					data: ['Almería', 'Cádiz', 'Córdoba', 'Granada', 'Huelva', 'Jaén', 'Málaga', 'Sevilla']
-				},
-				{
-					key: 'location.ccaa',
-					name: 'CCAA',
-					data: [
-						'Andalucía',
-						'Aragón',
-						'Asturias',
-						'Baleares',
-						'Canarias',
-						'Cantabria',
-						'Castilla-La Mancha',
-						'Castilla y León',
-						'Cataluña',
-						'Extremadura',
-						'Galicia',
-						'La Rioja',
-						'Madrid',
-						'Murcia',
-						'Navarra',
-						'País Vasco',
-						'Valencia'
-					]
-				},
-				{
-					key: 'properties.geographicSpot',
-					name: 'Localización',
-					data: ['Almería', 'Cádiz', 'Córdoba', 'Granada', 'Huelva', 'Jaén', 'Málaga', 'Sevilla']
-				}
-			],
-			orderBy: [
-				{
-					key: 'cropName',
-					name: 'Cultivo'
-				},
-				{
-					key: 'location.province',
-					name: 'Provincia'
-				},
-				{
-					key: 'location.ccaa',
-					name: 'CCAA'
-				},
-				{
-					key: 'properties.geographicSpot',
-					name: 'Localización'
-				}
-			],
-			limit: 0,
-			maxLimit: 0,
-			search: ''
-		};
-	};
-
-	onMount(async () => {
-		await fetchFilters();
-	});
 </script>
 
 <div class="header">
@@ -104,20 +62,105 @@
 </div>
 <form>
 	<div style="overflow-y: scroll;">
-		{#each filters.filters as filter}
-			<h2 class="m-0 mb-16 mt-16">{filter.name}</h2>
-			<div class="badge-group">
-				<!-- {#each filter.data as data}
-					<span class="badge">{data}</span>
-				{/each} -->
-			</div>
+		<h4 class="m-0">Cultivo</h4>
+		{#each showMoreCrops ? uniqueCrops : uniqueCrops.slice(0, 10) as crop}
+			<label class="badge" for={crop}>
+				<input
+					hidden
+					type="checkbox"
+					id={crop}
+					name={crop}
+					value={crop}
+					bind:group={checkedCrops}
+				/>{crop}
+			</label>
 		{/each}
+		{#if uniqueCrops.length > 10}
+			<button
+				class="button-secondary"
+				type="button"
+				on:click={() => (showMoreCrops = !showMoreCrops)}
+			>
+				{showMoreCrops ? 'Mostrar menos' : 'Mostrar más'}
+			</button>
+		{/if}
+		<div>
+			<h4 class="m-0 mt-16">Com. autónoma</h4>
+			{#each showMoreCCAA ? uniqueCCAA : uniqueCCAA.slice(0, 10) as ccaa}
+				<label class="badge" for={ccaa}>
+					<input
+						hidden
+						type="checkbox"
+						id={ccaa}
+						name={ccaa}
+						value={ccaa}
+						bind:group={checkedCCAA}
+					/>{ccaa}
+				</label>
+			{/each}
+			{#if uniqueCCAA.length > 10}
+				<button
+					class="button-secondary"
+					type="button"
+					on:click={() => (showMoreCCAA = !showMoreCCAA)}
+				>
+					{showMoreCCAA ? 'Mostrar menos' : 'Mostrar más'}
+				</button>
+			{/if}
+			<h4 class="m-0 mt-16">Provincia</h4>
+			{#each showMoreProvinces ? uniqueProvinces : uniqueProvinces.slice(0, 10) as province}
+				<label class="badge" for={province}>
+					<input
+						hidden
+						type="checkbox"
+						id={province}
+						name={province}
+						value={province}
+						bind:group={checkedProvinces}
+					/>{province}
+				</label>
+			{/each}
+			{#if uniqueProvinces.length > 10}
+				<button
+					class="button-secondary"
+					type="button"
+					on:click={() => (showMoreProvinces = !showMoreProvinces)}
+				>
+					{showMoreProvinces ? 'Mostrar menos' : 'Mostrar más'}
+				</button>
+			{/if}
+			<h4 class="m-0 mt-16">Localización</h4>
+			{#each showMoreLocations ? uniqueLocations : uniqueLocations.slice(0, 10) as location}
+				<label class="badge" for={location}>
+					<input
+						hidden
+						type="checkbox"
+						id={location}
+						name={location}
+						value={location}
+						bind:group={checkedLocations}
+					/>{location}
+				</label>
+			{/each}
+			{#if uniqueLocations.length > 10}
+				<button
+					class="button-secondary"
+					type="button"
+					on:click={() => (showMoreLocations = !showMoreLocations)}
+				>
+					{showMoreLocations ? 'Mostrar menos' : 'Mostrar más'}
+				</button>
+			{/if}
+		</div>
 		<h2 class="m-0 mb-16 mt-16">Ordenar por</h2>
 		<div class="select-button-group">
-			<select placeholder="Ordenar por...">
-				{#each filters.orderBy as filter}
-					<option value={filter.key}>{filter.name}</option>
-				{/each}
+			<select placeholder="Ordenar por..." bind:value={orderBy} bind:this={orderBySelect}>
+				<option selected value={undefined}>Por defecto</option>
+				<option value="crop"> Cultivo </option>
+				<option value="location"> Localización </option>
+				<option value="area"> Área - Descendente </option>
+				<option value="ndviDesc"> NDVI - Descendente </option>
+				<option value="ndviAsc"> NDVI - Ascendente </option>
 			</select>
 		</div>
 		<h2 class="m-0 mb-16 mt-16">Límite</h2>
@@ -126,11 +169,11 @@
 				type="range"
 				name="limit"
 				min="0"
-				max={filters['maxLimit']}
-				bind:value={filters['limit']}
+				max={enclosures.length}
+				bind:value={limit}
 				step="10"
 			/>
-			<span>{filters['limit'] === 0 ? 'Ilim.' : filters['limit']}</span>
+			<span>{limit === 0 ? 'Ilim.' : limit}</span>
 		</div>
 		<button class="button-primary button-xs mt-32" type="button" on:click={() => resetFilters()}>
 			Resetear

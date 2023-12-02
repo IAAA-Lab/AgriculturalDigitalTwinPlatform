@@ -3,7 +3,6 @@
 	import Footer from './Footer.svelte';
 	import LogoText from './LogoText.svelte';
 	import SidebarNavBar from './SidebarNavBar.svelte';
-	import SidebarNavBarInner from './SidebarNavBarInner.svelte';
 	import { page } from '$app/stores';
 
 	// Get path without basepath
@@ -16,9 +15,6 @@
 		<LogoText />
 		<SidebarNavBar />
 		<Footer />
-	</aside>
-	<aside class="inner-sidebar" class:active={show}>
-		<SidebarNavBarInner />
 	</aside>
 </div>
 
@@ -35,17 +31,10 @@
 	}
 	aside {
 		margin-left: 10px;
-		&.inner-sidebar {
-			padding-top: 4.7rem;
-			background-color: #ecddd3;
-			padding-right: 20px;
-			padding-left: 10px;
-			height: 100%;
-		}
 	}
 
 	@include media('<large') {
-		:global(*) {
+		:global {
 			.sidebar {
 				.sidebar-option-text,
 				h3 {
@@ -55,19 +44,15 @@
 		}
 	}
 
-	:global(.sidebar) {
+	.sidebar {
 		&.collapsed {
-			padding: 0px !important;
-			.sidebar-option-text,
-			h3 {
-				display: none;
+			:global {
+				padding: 0px !important;
+				.sidebar-option-text,
+				h3 {
+					display: none;
+				}
 			}
-		}
-	}
-
-	.inner-sidebar {
-		&.active {
-			display: none;
 		}
 	}
 </style>

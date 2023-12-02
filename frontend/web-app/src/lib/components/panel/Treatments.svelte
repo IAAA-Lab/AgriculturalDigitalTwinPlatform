@@ -176,6 +176,10 @@
 </div>
 
 <style lang="scss">
+	.card {
+		grid-area: treatments;
+	}
+
 	.header {
 		display: flex;
 		flex-direction: row;

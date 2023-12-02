@@ -3,9 +3,7 @@
 	import Loading from '$lib/components/misc/Loading.svelte';
 	import Header from '$lib/components/panel/Header.svelte';
 	import Sidebar from '$lib/components/panel/Sidebar.svelte';
-	import SidebarMobile from '$lib/components/panel/SidebarMobile.svelte';
 	import { enclosuresService, userService } from '$lib/config/config';
-	import { TABLET_WIDTH } from '$lib/config/constants';
 	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import { Role } from '$lib/core/Domain';
 	import { onMount } from 'svelte';
@@ -34,25 +32,14 @@
 		}
 		loading = false;
 	});
-
-	let mediaQueryMobile = window.matchMedia(`(max-width: ${TABLET_WIDTH}px)`);
-	let isInMobile = mediaQueryMobile.matches;
-
-	mediaQueryMobile.addEventListener('change', () => {
-		isInMobile = mediaQueryMobile.matches;
-	});
 </script>
 
-<div>
+<div class="panel">
 	{#if loading}
 		<Loading />
 	{:else}
 		<Header />
-		{#if isInMobile}
-			<SidebarMobile />
-		{:else}
-			<Sidebar />
-		{/if}
+		<Sidebar />
 		<main class="pl-8 pr-8">
 			<slot />
 		</main>
@@ -75,6 +62,7 @@
 			margin: 0 0.25rem;
 			display: flex;
 			flex-direction: column;
+			align-items: center;
 		}
 	}
 </style>

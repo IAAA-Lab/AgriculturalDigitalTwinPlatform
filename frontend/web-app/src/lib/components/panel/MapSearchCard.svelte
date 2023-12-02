@@ -58,7 +58,7 @@
 		</div>
 	</div>
 	<a
-		href={`/panel/enclosure/?enclosureId=${enclosureId}`}
+		href={`/panel/enclosure/${enclosureId}`}
 		class="button button-xs button-secondary href-enclosure"
 	>
 		<i class="fi fi-rr-redo" />

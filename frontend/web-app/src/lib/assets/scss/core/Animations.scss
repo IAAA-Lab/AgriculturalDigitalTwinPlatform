@@ -1,0 +1,47 @@
+.has-animations {
+	[class*='reveal-'] {
+		opacity: 0;
+		will-change: opacity, transform;
+	}
+
+	.reveal-from-top {
+		transform: translateY(50px);
+	}
+
+	.reveal-from-bottom {
+		transform: translateY(50px);
+	}
+
+	.reveal-from-left {
+		transform: translateX(50px);
+	}
+
+	.reveal-from-right {
+		transform: translateX(50px);
+	}
+
+	.reveal-scale-up {
+		transform: scale(1.5);
+	}
+
+	.reveal-scale-down {
+		transform: scale(1.5);
+	}
+
+	.reveal-rotate-from-left {
+		transform: perspective(1000px) rotateY(180deg);
+	}
+
+	.reveal-rotate-from-right {
+		transform: perspective(1000px) rotateY(180deg);
+	}
+
+	[class*='reveal-'] {
+		transition: opacity 1s, transform 0.5s;
+
+		&.is-revealed {
+			opacity: 1;
+			transform: translate(0);
+		}
+	}
+}

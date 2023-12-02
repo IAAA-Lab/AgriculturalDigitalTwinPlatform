@@ -228,19 +228,14 @@
 								}
 							}
 						},
-						pan: {
-							enabled: true,
-							mode: 'x'
-						},
 						zoom: {
 							zoom: {
-								wheel: {
-									enabled: true
-								},
-								pinch: {
-									enabled: true
-								},
-								mode: 'x'
+								mode: 'x',
+								drag: {
+									enabled: true,
+									borderWidth: 1,
+									backgroundColor: 'rgba(225,225,225,0.3)'
+								}
 							}
 						}
 					},

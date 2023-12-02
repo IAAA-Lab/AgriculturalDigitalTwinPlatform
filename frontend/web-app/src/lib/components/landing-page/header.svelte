@@ -124,6 +124,8 @@
 		a:not(.button) {
 			display: block;
 			cursor: pointer;
+			@include anchor-aspect(header);
+			@include font-weight(header-link);
 		}
 		a.button {
 			// quit the underline
@@ -164,9 +166,7 @@
 				max-height: 0;
 				opacity: 0;
 				overflow: hidden;
-				transition:
-					max-height 0.5s ease-in-out,
-					opacity 0.15s;
+				transition: max-height 0.5s ease-in-out, opacity 0.15s;
 				row-gap: 1rem;
 
 				&.is-active {
@@ -185,6 +185,7 @@
 					a:not(.button) {
 						cursor: pointer;
 						display: inline-flex;
+						@include anchor-aspect(header-mobile);
 						padding: 0.25rem 0 !important;
 					}
 				}

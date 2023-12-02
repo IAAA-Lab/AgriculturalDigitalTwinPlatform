@@ -1,0 +1,525 @@
+html {
+	-webkit-tap-highlight-color: transparent;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	-webkit-font-smoothing: antialiased;
+}
+
+canvas {
+	width: 100% !important;
+	height: 100% !important;
+}
+
+dialog {
+	-webkit-appearance: none;
+	appearance: none;
+	z-index: 10000;
+	border: none;
+	padding: 0;
+}
+
+.card {
+	background: color-bg(card);
+	border: 2px solid color-border(base);
+	border-radius: 10px;
+	padding: 0.4rem;
+	overflow: hidden;
+}
+
+.card-inner {
+	background: #fbfbfb;
+	border: 2px solid #e3e3e3e2;
+	box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.075);
+	border-radius: 7px;
+	padding: 8px;
+}
+
+// ----------------- LEAFLET -----------------
+
+.leaflet-container {
+	border-radius: 6px;
+	z-index: 0;
+}
+
+.leaflet-marker-icon {
+	background: white;
+	border-radius: 10px;
+	border: 2px solid color(primary);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.badge {
+	background: rgba(color(primary), 0.15);
+	border-radius: 10px;
+	padding: 0.25rem 0.5rem;
+	text-align: center;
+	margin: 0.4rem 0;
+	transition: all 0.15s ease-in-out;
+	&:has(input[type='checkbox']:checked) {
+		background: rgba(color(primary), 0.8);
+		color: white;
+		font-weight: bold;
+	}
+}
+
+.panel {
+	body {
+		@include font-size(xs);
+	}
+
+	nav {
+		@include font-size(sm);
+	}
+
+	p,
+	span {
+		@include font-size(xs);
+	}
+
+	h1,
+	.h1 {
+		@include font-size(h2);
+	}
+
+	h2,
+	.h2 {
+		@include font-size(h3);
+	}
+
+	h3,
+	.h3 {
+		@include font-size(h4);
+	}
+
+	h4,
+	.h4 {
+		@include font-size(h5);
+	}
+
+	h5,
+	.h5 {
+		@include font-size(sm);
+	}
+
+	@include media('>medium') {
+		html {
+			@include font-size(xs);
+		}
+
+		h1,
+		.h1 {
+			@include font-size(h2);
+		}
+
+		h2,
+		.h2 {
+			@include font-size(h3);
+		}
+
+		h3,
+		.h3 {
+			@include font-size(h4);
+		}
+
+		h4,
+		.h4 {
+			@include font-size(h5);
+		}
+
+		h5,
+		.h5 {
+			@include font-size(base-desktop);
+		}
+
+		h6,
+		.h6,
+		small,
+		.text-sm {
+			@include font-size(sm);
+			letter-spacing: 0.25px;
+		}
+
+		.text-xs {
+			@include font-size(xs);
+			letter-spacing: 0.25px;
+		}
+
+		.text-xxs {
+			@include font-size(xxs);
+		}
+
+		figcaption {
+			@include font-size(figcap);
+		}
+
+		blockquote {
+			@include font-size(bquote);
+		}
+	}
+
+	select {
+		border: 2px solid color-border(base);
+		border-radius: 0.375rem;
+		padding: 3px 8px;
+		color: color(base);
+		background-color: #fff;
+		background-clip: padding-box;
+		outline: none;
+		appearance: none;
+		transition: all 0.1s ease-in;
+		@include font-size(xs);
+		cursor: pointer;
+
+		&:hover {
+			border-color: color(primary);
+		}
+
+		&:has(option:disabled:checked[hidden]) {
+			color: gray;
+		}
+	}
+
+	input,
+	textarea {
+		padding: 3px 6px;
+		box-sizing: border-box;
+		border-radius: 9px;
+		border: 2px solid color-border(base);
+		background-color: white;
+		transition: all 0.2s ease-in-out;
+		@include font-size(xs);
+
+		&:hover {
+			border: 2px solid color(primary);
+		}
+
+		&:focus {
+			border: 2px solid color(primary);
+			outline: none;
+		}
+	}
+
+	a {
+		text-decoration: none;
+		color: inherit;
+		transition: all 0.2s ease-in-out;
+	}
+
+	input[type='date'] {
+		padding: 1px 3px;
+	}
+
+	label {
+		@include font-size(xxs);
+	}
+
+	table {
+		border-collapse: collapse;
+		width: 100%;
+		border: 1px solid #e5e7eb;
+		border-radius: 0.375rem;
+		overflow: hidden;
+		box-shadow: 0 0.5px 3px #e5e7eb;
+		white-space: nowrap;
+
+		th {
+			padding: 0.25rem;
+			text-align: left;
+			border-bottom: 2px solid #e5e7eb;
+			background-color: #f3f4f6;
+			color: #4b5563;
+			@include font-size(xs);
+		}
+
+		td {
+			padding: 0.15rem;
+		}
+
+		tr {
+			border-bottom: 1.5px solid #bdbfc2;
+			@include font-size(xs);
+			text-align: left;
+		}
+	}
+
+	input[type='range'] {
+		-webkit-appearance: none;
+		appearance: none;
+		height: 20px;
+		border-radius: 5px;
+		background: #d3d3d3;
+		outline: none;
+		opacity: 0.7;
+		-webkit-transition: 0.2s;
+		transition: opacity 0.2s;
+		// Make circle smaller
+		&::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background: color(primary);
+			cursor: pointer;
+		}
+	}
+
+	input[type='checkbox'] {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 20px;
+		height: 20px;
+		border-radius: 5px;
+		background: #d3d3d3;
+		outline: none;
+		-webkit-transition: 0.2s;
+		transition: opacity 0.2s;
+
+		// Checked state
+		&:checked {
+			background: rgba(color(primary), 0.75);
+		}
+	}
+
+	button,
+	.button {
+		display: inline-flex;
+		border: 2px solid gray;
+		border-radius: 7px;
+		outline: inherit;
+		letter-spacing: inherit;
+		text-align: center;
+		white-space: nowrap;
+		transition: background 0.15s ease;
+		text-decoration: none !important;
+		cursor: pointer;
+		@include font-size(xs);
+		padding: 0.15rem 0.75rem 0.1rem 0.75rem;
+		background: white;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.button-primary {
+		@include font-size(base);
+		@include font-weight(button);
+		color: color(button-light);
+		background-color: color-bg(button-light);
+		color: whitesmoke;
+		border: none;
+		background: color(primary);
+	}
+
+	.button-xs {
+		@include font-size(xxs);
+		padding: 0.15rem 0.4rem;
+	}
+
+	.button-secondary {
+		border: 2px solid color(secondary);
+		@include font-weight(button);
+		@include font-size(xxs);
+		color: color(button);
+		background: #ffffff;
+	}
+}
+
+.landing {
+	body {
+		background: linear-gradient(to bottom, rgb(255, 255, 255), rgba(color(primary), 0.15));
+	}
+
+	h1,
+	.h1 {
+		@include font-size(h1);
+	}
+
+	h2,
+	.h2 {
+		@include font-size(h2);
+	}
+
+	h3,
+	.h3 {
+		@include font-size(h3);
+	}
+
+	h4,
+	.h4 {
+		@include font-size(h4);
+	}
+
+	h5,
+	.h5 {
+		@include font-size(base);
+	}
+
+	@include media('>medium') {
+		html {
+			@include font-size(base);
+		}
+
+		h1,
+		.h1 {
+			@include font-size(h1-desktop);
+		}
+
+		h2,
+		.h2 {
+			@include font-size(h2-desktop);
+		}
+
+		h3,
+		.h3 {
+			@include font-size(h3-desktop);
+		}
+
+		h4,
+		.h4 {
+			@include font-size(h4-desktop);
+		}
+
+		h5,
+		.h5 {
+			@include font-size(base-desktop);
+		}
+
+		h6,
+		.h6,
+		small,
+		.text-sm {
+			@include font-size(sm-desktop);
+			letter-spacing: 0.25px;
+		}
+
+		.text-xs {
+			@include font-size(xs-desktop);
+			letter-spacing: 0.25px;
+		}
+
+		.text-xxs {
+			@include font-size(xxs-desktop);
+		}
+
+		figcaption {
+			@include font-size(figcap-desktop);
+		}
+
+		blockquote {
+			@include font-size(bquote-desktop);
+		}
+	}
+
+	select {
+		border: 2px solid color-border(base);
+		border-radius: 0.375rem;
+		padding: 3px 8px;
+		color: color(base);
+		background-color: #fff;
+		background-clip: padding-box;
+		outline: none;
+		appearance: none;
+		transition: all 0.1s ease-in;
+		@extend .text-xs;
+		cursor: pointer;
+
+		&:hover {
+			border-color: color(primary);
+		}
+	}
+
+	input,
+	textarea {
+		padding: 3px 6px;
+		box-sizing: border-box;
+		border-radius: 9px;
+		border: 2px solid color-border(base);
+		background-color: white;
+		transition: all 0.2s ease-in-out;
+		@include font-size(xs);
+
+		&:hover {
+			border: 2px solid color(primary);
+		}
+
+		&:focus {
+			border: 2px solid color(primary);
+			outline: none;
+		}
+	}
+
+	input[type='date'] {
+		padding: 1px 3px;
+	}
+
+	label {
+		@include font-size(xs);
+	}
+
+	table {
+		border-collapse: collapse;
+		width: 100%;
+		border: 1px solid #e5e7eb;
+		border-radius: 0.375rem;
+		overflow: hidden;
+		box-shadow: 0 0.5px 3px #e5e7eb;
+		white-space: nowrap;
+
+		th {
+			padding: 0.25rem;
+			text-align: left;
+			border-bottom: 2px solid #e5e7eb;
+			background-color: #f3f4f6;
+			color: #4b5563;
+		}
+
+		td {
+			padding: 0.3rem;
+			text-align: left;
+			border-bottom: 1px solid #e5e7eb;
+			@include font-size(base);
+		}
+	}
+
+	button {
+		display: inline-flex;
+		border-radius: 7px;
+		outline: inherit;
+		letter-spacing: inherit;
+		text-align: center;
+		white-space: nowrap;
+		transition: background 0.15s ease;
+		padding: 0.4rem 1.25rem;
+		text-decoration: none !important;
+		cursor: pointer;
+	}
+
+	.button-primary {
+		@include font-size(base);
+		@include font-weight(button);
+		color: color(button-light);
+		background-color: color-bg(button-light);
+		color: whitesmoke;
+		border: none;
+		background: color(primary);
+	}
+
+	.button-xs {
+		@include font-size(xs);
+		padding: 0.15rem 0.2rem;
+	}
+
+	.button-secondary {
+		border: 2px solid color(secondary);
+		@include font-weight(button);
+		@include font-size(xxs);
+		color: color(button);
+		background: #ffffff;
+	}
+}

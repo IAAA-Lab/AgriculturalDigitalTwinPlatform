@@ -9,7 +9,7 @@
 		{#each tabs as tab}
 			<li>
 				<a href={tab.path}>
-					<SidebarOption text={tab.label} selected={$page.url.pathname === tab.path}>
+					<SidebarOption selected={$page.url.pathname === tab.path}>
 						{@html tab.icon}
 					</SidebarOption>
 				</a>

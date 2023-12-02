@@ -6,7 +6,7 @@
 	import type { Enclosure } from '$lib/core/Domain';
 	import 'leaflet.markercluster';
 	import { formattedDate, formattedTime, getColor, numberWithCommas } from '$lib/core/functions';
-	import mapStore from '../../../routes/panel/map/store';
+	import mapStore from '../../../routes/panel/(map)/store';
 	import '$lib/components/panel/Leaflet.Control.Custom';
 
 	let map: leaflet.Map;
@@ -14,7 +14,6 @@
 	let i = 0;
 	export let enclosures: Enclosure[] | undefined;
 	export let distance = 100;
-	export let selectedEnclosure: Enclosure | undefined;
 
 	$: {
 		// Update map markers
@@ -36,8 +35,8 @@
 			const features = leaflet.geoJSON(geojsonFeatures, {
 				style: (feature) => {
 					return {
-						fillColor: selectedEnclosure
-							? feature?.id === selectedEnclosure?.id
+						fillColor: $mapStore.selectedEnclosure
+							? feature?.id === $mapStore.selectedEnclosure?.id
 								? 'red'
 								: 'grey'
 							: getColor(i++),
@@ -52,7 +51,7 @@
 
 			let points: leaflet.LatLngBoundsExpression;
 
-			if (!selectedEnclosure) {
+			if (!$mapStore.selectedEnclosure) {
 				// If all enclosures are shown, we need to cluster them to see them better
 				const markers = leaflet.markerClusterGroup().addTo(map);
 				markers.addLayer(features);
@@ -65,7 +64,7 @@
 				map.fitBounds(points);
 				featuresMap.eachLayer((layer) => {
 					// Add tooltip
-					if (selectedEnclosure?.id === layer.feature.id) return;
+					if ($mapStore.selectedEnclosure?.id === layer.feature.id) return;
 					layer.bindTooltip(
 						layer.feature?.properties?.activities
 							?.map((activity) => tooltipContent(activity))
@@ -107,6 +106,7 @@
 			});
 			// Set mapStore
 			mapStore.set({
+				selectedEnclosure: $mapStore.selectedEnclosure,
 				flyToCoords: (coords: number[][]) => {
 					coords = coords.map((coord) => [coord[1], coord[0]]);
 					map.fitBounds(coords);
@@ -193,7 +193,11 @@
 					'</button>',
 				events: {
 					click: function (data) {
-						selectedEnclosure = undefined;
+						mapStore.set({
+							flyToCoords: $mapStore.flyToCoords,
+							centerMap: $mapStore.centerMap,
+							selectedEnclosure: undefined
+						});
 					}
 				}
 			})
@@ -247,6 +251,7 @@
 <style lang="scss">
 	.card {
 		height: 100%;
+		padding: 0;
 	}
 
 	:global(.radius-input) {

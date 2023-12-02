@@ -48,7 +48,7 @@
 	}
 
 	@include media('<large') {
-		:global(*) {
+		:global {
 			header {
 				h1,
 				.user-options {

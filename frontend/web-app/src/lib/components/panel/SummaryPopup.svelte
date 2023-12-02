@@ -40,7 +40,7 @@
 </div>
 
 <style lang="scss">
-	:global(*) {
+	:global {
 		.pane {
 			overflow: hidden !important;
 			.destroy-button {

@@ -82,7 +82,7 @@
 		text-align: center;
 	}
 
-	:global(*) {
+	:global {
 		.filepond--drop-label {
 			color: #262728 !important;
 		}

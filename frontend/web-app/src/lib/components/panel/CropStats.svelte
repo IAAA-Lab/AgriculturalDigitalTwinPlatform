@@ -95,6 +95,10 @@
 </section>
 
 <style lang="scss">
+	section {
+		grid-area: crop-stats;
+		height: 100%;
+	}
 	.crop__stats__wrapper {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
