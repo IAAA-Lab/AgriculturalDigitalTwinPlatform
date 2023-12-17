@@ -43,78 +43,56 @@
 						weight: 2,
 						opacity: 1,
 						color: 'black',
-						fillOpacity: 0.7,
+						fillOpacity: 0.2,
 						pane: 'markerPane'
 					};
+				},
+				onEachFeature: (feature, layer) => {
+					if ($mapStore.selectedEnclosure)
+						layer.bindTooltip(
+							layer.feature?.properties?.activities
+								?.map((activity) => tooltipContent(activity))
+								?.join('<br>'),
+							{
+								permanent: true
+							}
+						);
+					layer.on('click', (e) => {
+						// Set selected enclosure
+						mapStore.set({
+							flyToCoords: $mapStore.flyToCoords,
+							selectedEnclosure: feature as Enclosure
+						});
+					});
 				}
 			});
-
-			let points: leaflet.LatLngBoundsExpression;
-
-			if (!$mapStore.selectedEnclosure) {
-				// If all enclosures are shown, we need to cluster them to see them better
+			if (enclosures.length > 20) {
 				const markers = leaflet.markerClusterGroup().addTo(map);
 				markers.addLayer(features);
-				points = markers.getBounds();
-				map.fitBounds(points);
-			} else {
-				// If only one enclosure is shown, we show all the available enclosures at once
-				const featuresMap = features.addTo(map);
-				points = features.getBounds();
-				map.fitBounds(points);
-				featuresMap.eachLayer((layer) => {
-					// Add tooltip
-					if ($mapStore.selectedEnclosure?.id === layer.feature.id) return;
-					layer.bindTooltip(
-						layer.feature?.properties?.activities
-							?.map((activity) => tooltipContent(activity))
-							?.join('<br>'),
-						{
-							permanent: true
-						}
-					);
-					layer.on('click', (e) => {
-						e.target.setStyle({
-							fillOpacity: e.target.options.fillOpacity === 0.7 ? 0.3 : 0.7
+				map.fitBounds(markers.getBounds());
+				map.eachLayer((layer) => {
+					if (layer instanceof leaflet.Control.Layers) {
+						// Update function center map
+						layer._container.querySelector('.leaflet-center').addEventListener('click', () => {
+							console.log('center');
+							map.fitBounds(markers.getBounds());
 						});
-						// Toogle tooltip
-						if (e.target.getTooltip()) {
-							e.target.unbindTooltip();
-						} else {
-							e.target.bindTooltip(
-								e.target.feature?.properties?.activities
-									?.map((activity) => tooltipContent(activity))
-									?.join('<br>'),
-								{
-									permanent: true
-								}
-							);
-						}
-					});
+					}
+				});
+			} else {
+				features.addTo(map);
+				map.fitBounds(features.getBounds());
+
+				map.eachLayer((layer) => {
+					if (layer instanceof leaflet.Control.Layers) {
+						// Update function center map
+						layer._container.querySelector('.leaflet-center').addEventListener('click', () => {
+							console.log('center');
+							map.fitBounds(features.getBounds());
+						});
+					}
 				});
 			}
-
-			map.on('zoomend', () => {
-				// // Get the enclosures that are visible in the map
-				// const visibleEnclosures = features.getLayers().filter((layer) => {
-				// 	const bounds = layer.getBounds();
-				// 	return map.getBounds().contains(bounds);
-				// });
-				// console.log('visibleEnclosures', visibleEnclosures);
-				// // Set the visible enclosures
-				// enclosures = visibleEnclosures.map((layer) => layer.feature);
-			});
-			// Set mapStore
-			mapStore.set({
-				selectedEnclosure: $mapStore.selectedEnclosure,
-				flyToCoords: (coords: number[][]) => {
-					coords = coords.map((coord) => [coord[1], coord[0]]);
-					map.fitBounds(coords);
-				},
-				centerMap: () => {
-					map.fitBounds(points);
-				}
-			});
 		}
 	}
 
@@ -124,6 +102,8 @@
 			layers: 'IGNBaseTodo',
 			format: 'image/png',
 			transparent: true,
+			// Spain crs
+			crs: leaflet.CRS.EPSG4326,
 			attribution: 'IGN'
 		});
 
@@ -145,9 +125,22 @@
 			}
 		);
 
+		const wmsSentinel2 = leaflet.tileLayer.wms(
+			'https://services.sentinel-hub.com/ogc/wms/981976b3-d724-45bb-856b-08d4d9c99848',
+			{
+				layers: 'NDVI',
+				format: 'image/png',
+				transparent: true,
+				opacity: 0.85,
+				attribution: 'Sentinel Hub',
+				crs: leaflet.CRS.EPSG4326
+			}
+		);
+
 		const baseMaps = {
 			IGN: ign,
-			OSM: osm
+			OSM: osm,
+			'Sentinel 2': wmsSentinel2
 		};
 
 		const overlayMaps = {
@@ -174,11 +167,14 @@
 				position: 'topright',
 				content:
 					'<button type="button" class="leaflet-center">' +
-					'    <i class="fi fi-rr-home-location"></i>' +
+					'    <i class="fi fi-rr-trash-undo-alt"></i>' +
 					'</button>',
 				events: {
-					click: function (data) {
-						$mapStore.centerMap();
+					click: function () {
+						mapStore.set({
+							flyToCoords: $mapStore.flyToCoords,
+							selectedEnclosure: undefined
+						});
 					}
 				}
 			})
@@ -189,15 +185,11 @@
 				position: 'topright',
 				content:
 					'<button type="button" class="leaflet-center">' +
-					'    <i class="fi fi-rr-trash-undo-alt"></i>' +
+					'    <i class="fi fi-rr-home-location"></i>' +
 					'</button>',
 				events: {
-					click: function (data) {
-						mapStore.set({
-							flyToCoords: $mapStore.flyToCoords,
-							centerMap: $mapStore.centerMap,
-							selectedEnclosure: undefined
-						});
+					click: function () {
+						// map.fitBounds(markers.getBounds());
 					}
 				}
 			})
@@ -221,9 +213,7 @@
 	});
 
 	onDestroy(async () => {
-		if (map) {
-			map.remove();
-		}
+		map.remove();
 	});
 
 	const tooltipContent = (activity) => {

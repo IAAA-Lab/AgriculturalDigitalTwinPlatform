@@ -1,21 +1,24 @@
 <script lang="ts">
-	import { es } from 'date-fns/locale';
-	import Chart from './Chart.svelte';
 	import { enclosuresService } from '$lib/config/config';
 	import type { HistoricalWeather, NDVI } from '$lib/core/Domain';
+	import { es } from 'date-fns/locale';
+	import Chart from './Chart.svelte';
 
 	export let startDate: string;
+	export let endDate: string = new Date().toISOString().split('T')[0];
 	export let enclosures: string[] | undefined = undefined;
 	export let limit: number | undefined = undefined;
 	export let idema: string | undefined = undefined;
 	export let maxPrecipitation: number = 0;
-
+	export let selectedDate: string | undefined = undefined;
+	export let minDate: number = 0;
 	let resetZoom: () => void = () => {};
+
+	let clickedPoint: any = null;
 	let activities: any[] = [];
 	let cropStats: any[] = [];
 	let selectedActivity: string | undefined;
 
-	let endDate: Date;
 	let ndviValues: NDVI | null = null;
 	let weatherValues: HistoricalWeather[] = [];
 
@@ -77,9 +80,11 @@
 
 	$: {
 		if (!limit) {
-			endDate = new Date();
+			endDate = new Date().toISOString().split('T')[0];
 		} else {
-			endDate = new Date(new Date(startDate).setDate(new Date(startDate).getDate() + limit));
+			endDate = new Date(new Date(startDate).setDate(new Date(startDate).getDate() + limit))
+				.toISOString()
+				.split('T')[0];
 		}
 	}
 
@@ -90,19 +95,17 @@
 				? Math.ceil(maxPrecipitationCalc * 1.1)
 				: maxPrecipitation;
 	}
+
+	$: {
+		selectedDate = clickedPoint?.value?.x.split('T')[0];
+	}
 </script>
 
-<div class="card-inner">
+<div class="wrapper">
 	<div class="chart__header">
-		<div class="input__wrapper">
-			<label for="date">Fecha de inicio</label>
-			<input type="date" bind:value={startDate} />
-		</div>
+		<input type="date" bind:value={startDate} />
 		{#if !limit}
-			<div class="input__wrapper">
-				<label for="date">Fecha de fin</label>
-				<input type="date" bind:value={endDate} />
-			</div>
+			<input type="date" bind:value={endDate} />
 		{/if}
 		<div class="input__wrapper" style="flex: 1;">
 			{#if activities.length > 0}
@@ -128,6 +131,7 @@
 	<div class="chart">
 		<Chart
 			bind:resetZoom
+			bind:clickedPoint
 			data={{
 				data: {
 					datasets: [
@@ -215,7 +219,6 @@
 				},
 				options: {
 					animation: false,
-
 					plugins: {
 						legend: {
 							position: 'top',
@@ -236,10 +239,13 @@
 									borderWidth: 1,
 									backgroundColor: 'rgba(225,225,225,0.3)'
 								}
+								// onZoomComplete: ({ chart }) => {
+								// 	minDate = chart.scales.x.min;
+								// 	maxDate = chart.scales.x.max;
+								// }
 							}
 						}
 					},
-					responsive: true,
 					maintainAspectRatio: false,
 					scales: {
 						y: {
@@ -307,11 +313,6 @@
 </div>
 
 <style lang="scss">
-	.chart {
-		min-height: 300px;
-		max-height: 350px;
-	}
-
 	.chart__header {
 		display: flex;
 		flex-wrap: wrap;
@@ -330,5 +331,16 @@
 
 	select {
 		width: 100%;
+	}
+
+	.chart {
+		flex: 1;
+		height: 85%;
+	}
+
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
 	}
 </style>

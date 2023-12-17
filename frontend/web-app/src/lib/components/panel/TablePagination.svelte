@@ -4,9 +4,9 @@
 	export let rows: any = [];
 	export let columns: any = [];
 	export let length: number = 0;
+	export let limit: number = 12;
 
-	const LIMIT = 12;
-	let pages = Math.ceil(rows.length / LIMIT);
+	let pages = Math.ceil(rows.length / limit);
 	let currentPage = 1;
 	let search = '';
 	let filteredRows: any = [];
@@ -15,21 +15,24 @@
 		if (search === '') {
 			filteredRows = rows;
 		}
-		filteredRows = rows.filter((row: any) => {
-			return row.id.toLowerCase().includes(search.toLowerCase());
-		});
+		// filteredRows = rows.filter((row: any) => {
+		// 	return row.id.toLowerCase().includes(search.toLowerCase());
+		// });
 	}
 
 	$: {
-		pages = Math.ceil(filteredRows.length / LIMIT);
+		pages = Math.ceil(filteredRows.length / limit);
 		currentPage = 1;
 	}
 </script>
 
-<div class="card">
-	<Table rows={filteredRows.slice((currentPage - 1) * LIMIT, currentPage * LIMIT)} {columns} />
+<section>
+	<Table rows={filteredRows.slice((currentPage - 1) * limit, currentPage * limit)} {columns} />
 	<div class="bottom">
-		<span class="text-xs">Mostrando {filteredRows.length} de {length}</span>
+		<span class="text-xs"
+			>{currentPage * limit - limit + 1} - {currentPage * limit} de {filteredRows.length}
+			resultados</span
+		>
 		<input type="search" placeholder="Buscar..." bind:value={search} />
 		<div class="pagination">
 			{#if pages > 3}
@@ -58,16 +61,12 @@
 			{/if}
 		</div>
 	</div>
-</div>
+</section>
 
 <style lang="scss">
-	.card {
-		position: relative;
-		height: 96.5%;
-		display: flex;
-		flex-direction: column;
+	section {
+		width: 100%;
 	}
-
 	.bottom {
 		position: absolute;
 		// Center down the pagination

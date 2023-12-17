@@ -1,7 +1,7 @@
 from etl.weather.dto.daily_weather_dto import DailyWeather
 import requests as request
 import os
-from prefect import flow
+from prefect import flow, get_run_logger
 # Get rid of insecure warning
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -101,7 +101,12 @@ def transform(data, enclosureId) -> dict:
 
 @flow
 def daily_weather(enclosure_id: str) -> dict:
+    logger = get_run_logger()
     data = extract(enclosure_id)
+    # if data has error property, log it and return None
+    if "error" in data:
+        logger.error(data["error"])
+        return None
     processed_data = transform(data, enclosure_id)
     return processed_data
 

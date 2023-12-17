@@ -23,10 +23,6 @@ ENV VITE_KEY_DECRYPT_PASSWD=$VITE_KEY_DECRYPT_PASSWD
 ENV VITE_IMAGES_SERVER_URL=$VITE_IMAGES_SERVER_URL
 RUN yarn build
 
-FROM node:18-alpine3.18 as deply-node
-WORKDIR /app
-RUN rm -rf ./*
-COPY --from=build /app/package.json .
-COPY --from=build /app/build .
-RUN yarn --prod
-CMD ["node", "index.js"]
+FROM nginx:1.21.3-alpine as prod
+COPY --from=build /app/build /usr/share/nginx/html
+CMD ["nginx", "-g", "daemon off;"]

@@ -46,6 +46,7 @@
 		"@sveltejs/adapter-static": "^2.0.3",
 		"axios": "^1.1.3",
 		"chart.js": "^4.2.1",
+		"chartjs-plugin-labels": "^1.1.0",
 		"crypto-js": "^4.1.1",
 		"cupertino-pane": "^1.3.13",
 		"jwt-decode": "^3.1.2",

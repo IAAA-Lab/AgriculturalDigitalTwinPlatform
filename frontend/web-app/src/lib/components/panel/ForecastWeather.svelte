@@ -36,18 +36,12 @@
 	section {
 		grid-area: forecast-weather;
 		overflow: hidden;
-		min-width: 200px;
-	}
-
-	.card-inner {
-		display: flex;
-		flex-direction: column;
-		row-gap: 0.1rem;
-		overflow-x: scroll;
+		min-width: 500px;
+		max-width: 600px;
+		max-height: 230px;
 	}
 
 	.divider {
-		width: 100%;
 		height: 1px;
 		background-color: rgb(195, 195, 195);
 	}

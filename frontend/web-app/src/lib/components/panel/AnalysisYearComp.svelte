@@ -12,6 +12,8 @@
 	let limit: number = 365;
 	let NUMBER_OF_CHARTS = 4;
 	let maxPrecipitation = 0;
+	let minDate = 0;
+	let maxDate = 0;
 	// string dates list where dates are date - limit
 	let startDates = Array.from({ length: NUMBER_OF_CHARTS }, (_, i) => {
 		// date = beginning of the year
@@ -60,13 +62,17 @@
 	</div>
 	<div class="charts__wrapper">
 		{#each startDates as date}
-			<AnalysisYearCompChart
-				enclosures={[selectedEnclosureId]}
-				{limit}
-				startDate={date}
-				idema={selectedEnclosure?.meteoStation.idema}
-				bind:maxPrecipitation
-			/>
+			<div class="card-inner">
+				<AnalysisYearCompChart
+					enclosures={[selectedEnclosureId]}
+					{limit}
+					startDate={date}
+					idema={selectedEnclosure?.meteoStation.idema}
+					bind:maxPrecipitation
+					bind:minDate
+					bind:maxDate
+				/>
+			</div>
 		{/each}
 	</div>
 </section>
@@ -109,6 +115,10 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.1rem;
+	}
+
+	.card-inner {
+		max-height: 450px;
 	}
 
 	@include media('<medium') {

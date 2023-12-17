@@ -3,6 +3,7 @@
 	import mapStore from '../../../routes/panel/(map)/store';
 
 	export let row: any;
+	export let col: any;
 
 	let icon = '';
 
@@ -26,9 +27,8 @@
 		type="checkbox"
 		on:change={() => {
 			mapStore.set({
-				selectedEnclosure: row,
-				flyToCoords: $mapStore.flyToCoords,
-				centerMap: $mapStore.centerMap
+				selectedEnclosure: row.geojsonFeature,
+				flyToCoords: $mapStore.flyToCoords
 			});
 		}}
 	/>

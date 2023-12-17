@@ -36,14 +36,8 @@
 			<option value="ndvi">NDVI</option>
 		</select>
 	</div>
-	<div class="input__wrapper">
-		<label for="date">Fecha de inicio</label>
-		<input type="date" bind:value={startDate} />
-	</div>
-	<div class="input__wrapper">
-		<label for="date">Fecha de fin</label>
-		<input type="date" bind:value={endDate} />
-	</div>
+	<input type="date" bind:value={startDate} />
+	<input type="date" bind:value={endDate} />
 </div>
 <div class="card-inner">
 	<Chart

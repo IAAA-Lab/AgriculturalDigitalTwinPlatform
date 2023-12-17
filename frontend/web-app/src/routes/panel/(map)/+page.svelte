@@ -1,20 +1,22 @@
 <svelte:options immutable />
 
 <script lang="ts">
-	import Map from '$lib/components/panel/Map.svelte';
-	import { enclosuresService } from '$lib/config/config';
-	import type { Enclosure, NDVI } from '$lib/core/Domain';
-	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import Filter from '$lib/components/panel/Filter.svelte';
-	import { getColor, numberWithCommas } from '$lib/core/functions';
 	import FirstColTable from '$lib/components/panel/FirstColTable.svelte';
+	import Map from '$lib/components/panel/Map.svelte';
+	import NdviColTable from '$lib/components/panel/NDVIColTable.svelte';
 	import TablePagination from '$lib/components/panel/TablePagination.svelte';
+	import WeatherTabMap from '$lib/components/panel/WeatherTabMap.svelte';
+	import { enclosuresService } from '$lib/config/config';
+	import { userEnclosures } from '$lib/config/stores/enclosures';
+	import type { Enclosure } from '$lib/core/Domain';
+	import { getColor, numberWithCommas } from '$lib/core/functions';
+	import { onMount } from 'svelte';
 	import mapStore from './store';
 
 	let distance: number;
-	let enclosures: Enclosure[] | undefined = undefined;
+	let enclosures: Enclosure[] | undefined = $userEnclosures;
 	let filteredEnclosures: Enclosure[] | undefined = undefined;
-	let selectedEnclosure: Enclosure | undefined = undefined;
 	// Filter
 	let checkedCrops: string[] = [];
 	let checkedLocations: string[] = [];
@@ -25,11 +27,13 @@
 	let search: string | undefined = undefined;
 	// Dialogs
 	let showFilters = false;
-
-	$: {
-		console.log($mapStore);
-		selectedEnclosure = $mapStore.selectedEnclosure;
-	}
+	// Toolbars
+	const navOptions = {
+		GENERAL: 1,
+		WEATHER: 2,
+		PHYTOSANITARIES: 3
+	};
+	let selectedNavOption = navOptions.GENERAL;
 
 	// Client side filtering and ordering of enclosures
 	$: {
@@ -99,8 +103,7 @@
 	}
 
 	$: {
-		// When a enclosure is not selected, we need to get all the enclosures
-		if (!selectedEnclosure) {
+		if (!$mapStore.selectedEnclosure) {
 			enclosures = $userEnclosures;
 			getNDVI($userEnclosures.map((e) => e.id));
 		}
@@ -108,9 +111,9 @@
 
 	$: {
 		// When distance changes, we need to search for the neighbors of the selected enclosure
-		if (distance && selectedEnclosure) {
+		if (distance && $mapStore.selectedEnclosure) {
 			enclosuresService
-				.getEnclosureNeighbors(selectedEnclosure.id, distance)
+				.getEnclosureNeighbors($mapStore.selectedEnclosure.id, distance)
 				.then((enclosuresRes) => {
 					enclosures = [...enclosuresRes];
 					getNDVI([...enclosuresRes].map((e) => e.id));
@@ -158,12 +161,14 @@
 			.catch((err) => {});
 	};
 
-	// Click outside of the dialog to close it
-	document.addEventListener('click', (e) => {
-		const filtersDialog = document.getElementById('filters-dialog');
-		if (filtersDialog && !filtersDialog.contains(e.target as Node)) {
-			showFilters = false;
-		}
+	onMount(() => {
+		// Click outside of the dialog to close it
+		document.addEventListener('click', (e) => {
+			const filtersDialog = document.getElementById('filters-dialog');
+			if (filtersDialog && !filtersDialog.contains(e.target as Node)) {
+				showFilters = false;
+			}
+		});
 	});
 </script>
 
@@ -181,77 +186,94 @@
 		/>
 	</div>
 	<div class="map" style="grid-area: map; position: relative">
-		<div class="map-stats">
-			<div class="card crops"></div>
-			<div class="card location"></div>
-		</div>
-		<Map bind:enclosures={filteredEnclosures} bind:distance />
+		{#if filteredEnclosures}
+			<Map bind:enclosures={filteredEnclosures} bind:distance />
+		{/if}
 	</div>
-	<div class="analysis" style="grid-area: analysis">
-		<!-- <AnalysisEnclosureComp listOfEnclosures={filteredEnclosures?.map((e) => e.id)} /> -->
-		<TablePagination
-			length={10}
-			rows={filteredEnclosures?.map((enclosure, index) => ({
-				color: getColor(index),
-				id: enclosure.id,
-				geojsonFeature: enclosure,
-				area: enclosure.properties.area,
-				slope: enclosure.properties.slope,
-				irrigationCoef: enclosure.properties.irrigationCoef,
-				usedArea: enclosure.properties.areaSIGPAC,
-				ndvi: enclosure.properties.ndvi,
-				cropName: enclosure.properties.cropName
-			}))}
-			columns={[
-				{
-					key: 'enclosureId',
-					title: 'Recinto',
-					sortable: true,
-					value: (v) => {
-						return {
-							enclosureId: v.id,
-							geojsonFeature: v.geojsonFeature,
-							color: v.color
-						};
+	<nav class="tools-bar" style="grid-area: tools-bar">
+		<i class="fi fi-rr-table-layout" on:click={() => (selectedNavOption = navOptions.GENERAL)} />
+		<i class="fi fi-rr-cloud-sun" on:click={() => (selectedNavOption = navOptions.WEATHER)} />
+		<!-- <i
+			class="fi fi-rr-bacteria"
+			on:click={() => (selectedNavOption = navOptions.PHYTOSANITARIES)}
+		/> -->
+	</nav>
+	<div class="card analysis" style="grid-area: analysis">
+		{#if selectedNavOption === navOptions.GENERAL}
+			<TablePagination
+				length={10}
+				rows={filteredEnclosures?.map((enclosure, index) => ({
+					color: getColor(index),
+					id: enclosure.id,
+					geojsonFeature: enclosure,
+					area: enclosure.properties.area,
+					slope: enclosure.properties.slope,
+					irrigationCoef: enclosure.properties.irrigationCoef,
+					usedArea: enclosure.properties.areaSIGPAC,
+					cropName: enclosure.properties.cropName,
+					ndvi: enclosure.properties.ndvi?.ndvi?.at(0)?.value
+				}))}
+				columns={[
+					{
+						key: 'enclosureId',
+						title: 'Recinto',
+						sortable: true,
+						value: (v) => {
+							return {
+								enclosureId: v.id,
+								geojsonFeature: v.geojsonFeature,
+								color: v.color
+							};
+						},
+						renderComponent: FirstColTable
 					},
-					renderComponent: FirstColTable
-				},
-				{
-					key: 'cultivo',
-					title: 'Cultivo',
-					value: (v) => v.cropName || 'N/A',
-					sortable: true
-				},
-				{
-					key: 'area',
-					title: 'Área (Ha)',
-					value: (v) => numberWithCommas(v.area),
-					sortable: true
-				},
-				{
-					key: 'areaSIGPAC',
-					title: 'Área SIGPAC (Ha)',
-					value: (v) => numberWithCommas(v.usedArea),
-					sortable: true
-				},
-				{ key: 'slope', title: 'Pendiente (%)', value: (v) => v.slope },
-				{
-					key: 'irrigationCoef',
-					title: 'Coef. de regadío (%)',
-					value: (v) => v.irrigationCoef
-				},
-				{
-					key: 'ndvi',
-					title: 'NDVI',
-					value: (v) => numberWithCommas(v.ndvi?.ndvi?.at(-1)?.value),
-					sortable: true
-				}
-			]}
-		/>
+					{
+						key: 'cultivo',
+						title: 'Cultivo',
+						value: (v) => v.cropName || 'N/A',
+						sortable: true
+					},
+					{
+						key: 'area',
+						title: 'Área (Ha)',
+						value: (v) => numberWithCommas(v.area),
+						sortable: true
+					},
+					{
+						key: 'areaSIGPAC',
+						title: 'Área SIGPAC (Ha)',
+						value: (v) => numberWithCommas(v.usedArea),
+						sortable: true
+					},
+					{ key: 'slope', title: 'Pendiente (%)', value: (v) => v.slope },
+					{
+						key: 'irrigationCoef',
+						title: 'Coef. de regadío (%)',
+						value: (v) => v.irrigationCoef
+					},
+					{
+						key: 'ndvi',
+						title: 'NDVI',
+						sortable: true,
+						renderComponent: NdviColTable
+					}
+				]}
+			/>
+		{:else if selectedNavOption === navOptions.WEATHER}
+			<WeatherTabMap enclosureIds={filteredEnclosures?.map((e) => e.id)} />
+		{/if}
+		<!-- {:else if selectedNavOption === navOptions.PHYTOSANITARIES}
+			<PhytosanitariesTabMap enclosureIds={filteredEnclosures?.map((e) => e.id)} />
+		{/if} -->
 	</div>
 </section>
 
 <style lang="scss">
+	nav {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
 	section {
 		display: grid;
 		gap: 0.8rem;
@@ -259,8 +281,8 @@
 		grid-template-columns: auto 1fr auto;
 		grid-template-rows: 1.25fr 1fr;
 		grid-template-areas:
-			'filter map'
-			'filter analysis';
+			'filter map tools-bar'
+			'filter analysis analysis';
 		overflow: hidden;
 	}
 	.analysis {
@@ -269,6 +291,9 @@
 		height: 100%;
 	}
 
+	.card {
+		height: 96%;
+	}
 	dialog {
 		width: 94%;
 		height: calc(100vh - 6rem);
@@ -287,16 +312,6 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.5rem;
-	}
-
-	.map-stats {
-		position: absolute;
-		z-index: 1000000000;
-		bottom: 10px;
-		left: 10px;
-		display: flex;
-		flex-direction: column;
 		gap: 0.5rem;
 	}
 </style>

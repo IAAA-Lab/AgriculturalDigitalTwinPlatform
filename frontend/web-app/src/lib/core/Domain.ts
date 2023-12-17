@@ -239,25 +239,16 @@ type genericState = {
 
 type windState = {
 	direction: string;
-	speed: number;
+	speed: any;
 	period: string;
 	value?: number;
 };
 
 export type {
-	User,
-	Enclosure,
-	Fertilizer,
-	Treatment,
-	NDVI,
-	FarmHolder,
-	FarmHolderId,
-	ForecastWeather,
-	DailyWeather,
-	Prediction,
-	HistoricalWeather,
 	Activity,
-	CropStats
+	CropStats, DailyWeather, Enclosure, FarmHolder,
+	FarmHolderId, Fertilizer, ForecastWeather, HistoricalWeather, NDVI, Prediction, Treatment, User
 };
 
-export { Role };
+	export { Role };
+

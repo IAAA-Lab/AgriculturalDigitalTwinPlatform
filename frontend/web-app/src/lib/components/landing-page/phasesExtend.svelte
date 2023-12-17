@@ -131,10 +131,6 @@
 			],
 			partners: [
 				{ path: '7edata-logo.png', link: 'https://www.7edata.com/' },
-				{
-					path: 'agrointelligent-logo.webp',
-					link: 'https://www.agrointelligent.com/'
-				},
 				{ path: 'geoslab-logo.png', link: 'https://www.geoslab.com/' },
 				{ path: 'campg-logo.png', link: 'https://campag.es/' },
 				{ path: 'pystacil-logo.png', link: 'https://pistacyl.com/' },

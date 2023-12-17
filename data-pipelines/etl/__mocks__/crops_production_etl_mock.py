@@ -120,7 +120,6 @@ def load(crops: list):
     db.Crops.insert_many(crops)
 
 
-(name="crops_production_etl_mock")
 def crops_production_etl_mock():
     df = extract()
     enclosures_and_crops = get_unique_enclosure_ids_and_crops_from_db()

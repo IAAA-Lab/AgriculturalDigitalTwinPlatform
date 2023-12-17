@@ -45,6 +45,7 @@
 		justify-content: space-between;
 		row-gap: 0.25rem;
 		overflow: visible !important;
+		max-width: 100px;
 	}
 
 	span {

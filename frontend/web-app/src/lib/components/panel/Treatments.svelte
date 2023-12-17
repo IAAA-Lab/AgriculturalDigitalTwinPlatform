@@ -2,10 +2,11 @@
 	import Chart from '$lib/components/panel/Chart.svelte';
 	import PhytosTable from '$lib/components/panel/PhytosTable.svelte';
 	import { enclosuresService } from '$lib/config/config';
+	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import type { Treatment } from '$lib/core/Domain';
 	import { getColor } from '$lib/core/functions';
 
-	export let enclosureId: string;
+	let enclosureId: string;
 
 	let endDate = new Date();
 	// endDate - 4 years
@@ -48,6 +49,11 @@
 	<div class="header mb-16">
 		<h2 class="m-0">Tratamientos</h2>
 		<div class="input__dates__wrapper">
+			<select bind:value={enclosureId}>
+				{#each $userEnclosures as enclosure}
+					<option value={enclosure.id}>{enclosure.id}</option>
+				{/each}
+			</select>
 			<input type="date" bind:value={startDateInput} />
 			<input type="date" bind:value={endDateInput} />
 		</div>
