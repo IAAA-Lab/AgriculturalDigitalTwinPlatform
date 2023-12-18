@@ -4,8 +4,7 @@ from utils.functions import DB_MongoClient
 from datetime import datetime
 import asyncio
 
-HISTORIC_WEATHER_EXTRACT_FIRST_DATE = "01-01-2018"
-
+HISTORIC_WEATHER_EXTRACT_FIRST_DATE = datetime(2018, 1, 1)
 
 async def extract_distinct_meteo_stations_ids():
     mongo_client = DB_MongoClient().connect()

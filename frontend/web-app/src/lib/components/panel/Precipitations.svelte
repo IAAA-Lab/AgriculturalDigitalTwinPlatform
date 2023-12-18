@@ -9,7 +9,7 @@
 
 <div class="card">
 	<i class="fi fi-rr-cloud-showers-heavy" />
-	<p class="m-0">Precipitaciones (Últimos 7 días)</p>
+	<p class="m-0">Precipitaciones (Últimos 30 días)</p>
 	<div class="chart">
 		<Chart
 			data={{

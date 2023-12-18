@@ -1,79 +1,76 @@
 version: "3.8"
 
 services:
-
-#############################################
-#      Collect metrics from services        #
-#############################################
+  #############################################
+  #      Collect metrics from services        #
+  #############################################
 
   # prometheus:
   #   image: prom/prometheus:latest
   #   volumes:
   #     - ./monitorization/prometheus:/etc/prometheus/
-  #     - prometheus-data:/prometheus
+  #     - ./monitorization/prometheus/storage:/prometheus
   #   command:
-  #     - '--config.file=/etc/prometheus/prometheus.yml'
-  #     - '--storage.tsdb.path=/prometheus'
+  #     - "--config.file=/etc/prometheus/prometheus.yml"
+  #     - "--storage.tsdb.path=/prometheus"
   #   ports:
   #     - "9090"
 
-#############################################
-#        Collect logs from services         #
-#############################################
-
-  # loki:
-  #   image: grafana/loki:latest
-  #   ports:
-  #     - "3100"
-  #   volumes:
-  #     # directory must be created first, with uid:gid 10001:10001
-  #     - loki-data:/loki
-
-#############################################
-#      Centralize all metrics and logs      #
-#############################################
+  # #############################################
+  # #      Centralize all metrics and logs      #
+  # #############################################
 
   # grafana:
   #   image: grafana/grafana:latest
   #   volumes:
   #     - ./monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-  #     - grafana-data:/var/lib/grafana
+  #     - ./monitorization/grafana/grafana.ini:/etc/grafana/grafana.ini
+  #     - ./monitorization/grafana/storage:/var/lib/grafana
+  #     - ./monitorization/grafana/plugins:/var/lib/grafana/plugins
   #   restart: unless-stopped
   #   ports:
   #     - 3010:${GRAFANA_PORT}
-    # depends_on:
-    #   - prometheus
+  #   depends_on:
+  #     - prometheus
 
-#############################################
-# Services communication and message queue  #
-#############################################
+  #############################################
+  # Services communication and message queue  #
+  #############################################
 
   rabbitmq:
-      image: rabbitmq:3-management
-      container_name: rabbitmq
-      ports:
-          - 5672:${RABBITMQ_PORT}
-          - 15672:${RABBITMQ_PANEL_PORT}
-      environment:
-          - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-          - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    image: rabbitmq:3.12.9-alpine
+    container_name: rabbitmq
+    ports:
+      - ${RABBITMQ_PORT}
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    mem_limit: 1024m
+    mem_reservation: 256m
 
-#############################################
-#              Web app server               #
-#############################################
+  #############################################
+  #              Web app server               #
+  #############################################
 
   gin-gonic:
     build:
       context: ./api-gateway/gin-gonic
       target: development
     ports:
-        - 8080:${GIN_PORT}
+      - 8080:${GIN_PORT}
     volumes:
-        - ./api-gateway/gin-gonic:/app
+      - ./api-gateway/gin-gonic:/app
     restart: always
     depends_on:
-        - 'mongo'
-        - 'rabbitmq'
+      mongo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     environment:
       - ENV_MODE=LOCAL
       - JWT_SECRET=${JWT_SECRET}
@@ -82,35 +79,19 @@ services:
       - MONGO_URI=${MONGO_URI}
       - MONGO_DB=${MONGO_DB}
       - RABBITMQ_URI=${RABBITMQ_URI}
-      - REDIS_URI=${REDIS_URI}
-      - REDIS_USERNAME=${REDIS_USERNAME}
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
       - FRONTEND_URL=${FRONTEND_URL}
       - MINIO_ENDPOINT=${MINIO_ENDPOINT}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
-      - MINIO_LANDING_BUCKET_NAME=${MINIO_LANDING_BUCKET_NAME}
-      - MINIO_IMAGES_BUCKET_NAME=${MINIO_IMAGES_BUCKET_NAME}
+      - MINIO_LANDING_ZONE=${MINIO_LANDING_ZONE}
+    # Resources limits in case it consumes too much
+    mem_limit: 512m
+    mem_reservation: 128m
+    cpus: 0.5
 
-#############################################
-#               Redis server                #
-#############################################
-
-  # redis:
-  #   image: redis:7
-  #   ports:
-  #     - 6379:${REDIS_PORT}
-  #   # user and password
-  #   command: bash -c "redis-server --requirepass $REDIS_PASSWORD --appendonly yes"
-  #   volumes:
-  #     - ./storage/redis/data:/data
-  #   restart: always
-
-
-# #############################################
-# #                 Frontend                  #
-# #############################################
-
+  #############################################
+  #             Digital twin panel            #
+  #############################################
 
   frontend:
     build:
@@ -123,117 +104,177 @@ services:
         - VITE_EMAIL_SENDER_TEMPLATEID=${VITE_EMAIL_SENDER_TEMPLATEID}
         - VITE_IV_BLOCK_PASSWD=${VITE_IV_BLOCK_PASSWD}
         - VITE_KEY_DECRYPT_PASSWD=${VITE_KEY_DECRYPT_PASSWD}
-        - VITE_IMAGES_SERVER_URL=${SVELTE_IMAGES_SERVER_URL}
-
-    restart: always
-    ports:
-      - 3000:${VITE_PORT}
-    depends_on:
-      - gin-gonic
-
-  nginx:
-    image: nginx:latest
+        - VITE_IMAGES_SERVER_URL=${VITE_IMAGES_SERVER_URL}
+      target: prod
     restart: always
     ports:
       - "80:80"
+      - "443:443"
+    depends_on:
+      - gin-gonic
     volumes:
       - ./frontend/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./data/certbot/conf:/etc/letsencrypt:ro
-      - ./data/certbot/www:/var/www/certbot:ro
-    depends_on:
-      - frontend
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-  # certbot:
-  #   image: certbot/certbot
-  #   restart: unless-stopped
-  #   volumes:
-  #     - ./data/certbot/conf:/etc/letsencrypt:rw
-  #     - ./data/certbot/www:/var/www/certbot:rw
-  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
-
-# #############################################
-# #            Digital twin storage           #
-# #############################################
+  # #############################################
+  # #            Digital twin storage           #
+  # #############################################
 
   mongo:
-      build: storage/mongodb
-      ports:
-          - 27018:${MONGO_PORT}
-      restart: always
-      volumes:
-          - ./storage/mongodb/mongodata:/data/db
-          - ./storage/mongodb/init_db.js:/docker-entrypoint-initdb.d/init_db.js
-      environment:
-        - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-        - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-        - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
-        - MONGO_FIRST_USER_NAME=${MONGO_FIRST_USER_NAME}
-        - MONGO_FIRST_USER_PASSWORD=${MONGO_FIRST_USER_PASSWORD}
-        - MONGO_FIRST_USER_ROLE=${MONGO_FIRST_USER_ROLE}
+    image: mongo:6.0.7
+    ports:
+      - 27018:${MONGO_PORT}
+    restart: always
+    volumes:
+      - ./storage/mongodb/mongodata:/data/db
+      - ./storage/mongodb/init_db.js:/docker-entrypoint-initdb.d/init_db.js
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+      - MONGO_FIRST_USER_NAME=${MONGO_FIRST_USER_NAME}
+      - MONGO_FIRST_USER_PASSWORD=${MONGO_FIRST_USER_PASSWORD}
+      - MONGO_FIRST_USER_ROLE=${MONGO_FIRST_USER_ROLE}
+    # To avoid logs in console
+    command: mongod --quiet --logpath /dev/null
 
-# #############################################
-# #    Data lake and Prefect flows storage    #
-# #############################################
+  # #############################################
+  # #    Data lake and artifcat storage         #
+  # #############################################
 
   minio:
-      image: minio/minio:RELEASE.2023-02-27T18-10-45Z
-      environment:
-          MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-          MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      entrypoint: /bin/bash 
-      command: "-c 'mkdir -p /data/prefect-flows && sleep 10 && minio server /data --console-address :9001'"
-      ports:
-          - 9000:${MINIO_PORT}
-          - 9001:${MINIO_PANEL_PORT}
-      volumes:
-          - ./storage/minio/data:/data
+    image: minio/minio:RELEASE.2023-02-27T18-10-45Z
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_URL=${MINIO_URL}
+      - MINIO_NOTIFY_AMQP_ENABLE_primary=on
+      - MINIO_NOTIFY_AMQP_URL_primary=${RABBITMQ_URI}
+      - MINIO_NOTIFY_AMQP_EXCHANGE_primary=storage
+      - MINIO_NOTIFY_AMQP_EXCHANGE_TYPE_primary=direct
+      - MINIO_NOTIFY_AMQP_ROUTING_KEY_primary=trusted
+    entrypoint:
+      - sh
+      - /usr/bin/entrypoint.sh
 
-# #############################################
-# #        Database for Prefect Server        #
-# #############################################
+    ports:
+      - 9000:${MINIO_PORT}
+      - 9001:${MINIO_PANEL_PORT}
+    volumes:
+      - ./storage/minio/data:/data
+      - ./storage/minio/entrypoint.sh:/usr/bin/entrypoint.sh
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
+  # #############################################
+  # #            Prefect server storage         #
+  # #############################################
+
+  # Had to use postgres because sqlite3 is doesn't support many concurrent connections
   postgres:
-    image: postgres:15.2-alpine
+    image: postgres:14.0
     restart: always
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: prefect
     ports:
-      - 5432:${POSTGRES_PORT}
-    volumes: 
+      - 5432
+    volumes:
       - ./storage/postgres/data:/var/lib/postgresql/data
 
-# #############################################
-# #      Data ingestion, data processing      # 
-# #      processing and machine learning      #
-# #############################################
+  # #############################################
+  # #      Data ingestion, data processing      #
+  # #      simulations, and machine learning    #
+  # #############################################
 
-  prefect-server:
-    build: data-processing/prefect
-    restart: on-failure
+  prefect:
+    image: prefecthq/prefect:2.14.5-python3.11
+    ports:
+      - 4200:4200
     volumes:
       - prefect:/root/.prefect
-      - ./data-processing/prefect/flows:/opt/prefect/flows
     environment:
-      - PREFECT_API_URL=${PREFECT_API_URL}
+      - PREFECT_LOGGING_LEVEL=WARNING
+      - PREFECT_UI_URL=http://127.0.0.0:4200/api
+      - PREFECT_API_URL=http://127.0.0.1:4200/api
+      - PREFECT_SERVER_API_HOST=0.0.0.0
       - PREFECT_API_DATABASE_CONNECTION_URL=${PREFECT_API_DATABASE_CONNECTION_URL}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_started
+    command: prefect server start
+
+  data-pipeline-worker:
+    build: data-pipelines
+    restart: on-failure
+    volumes:
+      - ./data-pipelines:/opt/data-pipelines
+    environment:
+      - AGROSLAB_AUTH_TOKEN=${AGROSLAB_AUTH_TOKEN}
+      - AGROSLAB_API_URL=${AGROSLAB_API_URL}
+      - AGROSLAB_TELEDETECTION_URL=${AGROSLAB_TELEDETECTION_URL}
+      - STORAGE_LANDING_ZONE=${MINIO_LANDING_ZONE}
+      - STORAGE_TRUSTED_ZONE=${MINIO_TRUSTED_ZONE}
+      - STORAGE_REFINED_ZONE=${MINIO_REFINED_ZONE}
+      - RABBITMQ_URI=${RABBITMQ_URI}
+      - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
+      - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
+      - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
+      - PREFECT_API_URL=http://prefect:4200/api
       - PREFECT_MINIO_ACCESS_ROOT=${MINIO_ROOT_USER}
       - PREFECT_MINIO_SECRET_ROOT=${MINIO_ROOT_PASSWORD}
       - PREFECT_MINIO_HOST=${MINIO_HOST}
       - PREFECT_MONGODB_HOST=${MONGO_URI}
       - PREFECT_MONGODB_DB=${MONGO_INITDB_DATABASE}
-      - AGROSLAB_AUTH_TOKEN=${AGROSLAB_AUTH_TOKEN}
-      - AGROSLAB_API_URL=${AGROSLAB_API_URL}
-      - AGROSLAB_TELEDETECTION_URL=${AGROSLAB_TELEDETECTION_URL}
-    ports:
-      - 4200:${PREFECT_PORT}
+    entrypoint:
+      - sh
+      - /opt/data-pipelines/entrypoint.sh
     depends_on:
-      - postgres
-      - rabbitmq
-      - mongo
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      prefect:
+        condition: service_started
+    # Resource limit because it tends to use a lot of memory
+    mem_limit: 2048m
+    mem_reservation: 512m
+    cpus: 1.0
+  #############################################
+  #              MLflow server                #
+  #############################################
 
+  # mlflow:
+  #   build: mlflow
+  #   restart: always
+  #   ports:
+  #     - 5000:5000
+  #     - 5001:5001
+  #   depends_on:
+  #     - minio
+  #   environment:
+  #     - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
+  #     - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
+  #     - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
+  #   volumes:
+  #     - ./mlflow/storage:/storage
+  #   command: mlflow server --backend-store-uri file:///storage/runs --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
+  #   mem_limit: 512m
+  #   mem_reservation: 128m
+  #   cpus: 0.5
 
 volumes:
   prefect:
