@@ -3,7 +3,8 @@ FROM golang:latest as local
 #  https://harrk.dev/live-reloading-a-go-application-with-docker/
 ENV PROJECT_DIR=/app \
   GO111MODULE=on \
-  CGO_ENABLED=0
+  CGO_ENABLED=0 \
+  DISPLAY=:0.0
 
 WORKDIR /app
 RUN mkdir "/build"
