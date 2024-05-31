@@ -1,0 +1,30 @@
+# # https://www.youtube.com/watch?v=EA2Pco3EvpU
+
+# input:
+#   label: "mqtt_test"
+#   mqtt:
+#     urls: ["test.mosquitto.org:1883"]
+#     topics: ["#"]
+#     client_id: ""
+#     connect_timeout: 30s
+#     auto_replay_nacks: true
+
+# pipeline:
+#   threads: 4
+#   processors:
+#     # Match message containing "Terhunbung" 
+#     - label: "filter"
+#       bloblang: |
+#         root = this
+#         root = match this {
+#           this == "Terhunbung" => this
+#           _ => deleted()
+#         }
+
+# output:
+#   label: "stdout"
+#   stdout: {}
+
+
+# # output:
+# #   stdout: {}

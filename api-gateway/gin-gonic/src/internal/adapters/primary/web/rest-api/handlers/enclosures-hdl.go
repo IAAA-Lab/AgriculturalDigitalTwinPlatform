@@ -51,9 +51,7 @@ func (hdl *EnclosuresHTTPHandler) GetEnclosures(c *gin.Context) {
 		return
 	}
 	// Don't cache this endpoint when something fails
-	if err == nil {
-		c.Writer.Header().Set("Cache-Control", "public, max-age=1800")
-	}
+	c.Writer.Header().Set("Cache-Control", "public, max-age=1800")
 	c.JSON(200, enclosures)
 }
 
@@ -224,9 +222,7 @@ func (hdl *EnclosuresHTTPHandler) GetForecastWeather(c *gin.Context) {
 		return
 	}
 	// Don't cache this endpoint when something fails
-	if err == nil {
-		c.Writer.Header().Set("Cache-Control", "public, max-age=1800")
-	}
+	c.Writer.Header().Set("Cache-Control", "public, max-age=1800")
 	c.JSON(200, forecastWeather)
 }
 
@@ -271,9 +267,7 @@ func (hdl *EnclosuresHTTPHandler) GetHistoricalWeather(c *gin.Context) {
 		return
 	}
 	// Don't cache this endpoint when something fails
-	if err == nil {
-		c.Writer.Header().Set("Cache-Control", "public, max-age=1800")
-	}
+	c.Writer.Header().Set("Cache-Control", "public, max-age=1800")
 	c.JSON(200, historicalWeather)
 }
 
@@ -313,8 +307,6 @@ func (hdl *EnclosuresHTTPHandler) GetNDVI(c *gin.Context) {
 		return
 	}
 	// Don't cache this endpoint when something fails
-	if err == nil {
-		c.Writer.Header().Set("Cache-Control", "public, max-age=1800")
-	}
+	c.Writer.Header().Set("Cache-Control", "public, max-age=1800")
 	c.JSON(200, ndvi)
 }

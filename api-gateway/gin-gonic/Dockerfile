@@ -9,8 +9,8 @@ ENV PROJECT_DIR=/app \
 WORKDIR /app
 RUN mkdir "/build"
 COPY . .
-RUN go get github.com/githubnemo/CompileDaemon
-RUN go install github.com/githubnemo/CompileDaemon
+# RUN go get github.com/githubnemo/CompileDaemon@latest
+RUN go install github.com/githubnemo/CompileDaemon@latest
 # RUN sleep 10
 ENTRYPOINT CompileDaemon -build="go build -C src/cmd -o /build/app" -command="/build/app"
 

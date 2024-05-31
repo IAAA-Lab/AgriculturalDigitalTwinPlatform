@@ -2,58 +2,35 @@ version: "3.8"
 
 services:
   #############################################
-  #      Collect metrics from services        #
+  #         Monitoring and logging            #
   #############################################
 
-  # prometheus:
-  #   image: prom/prometheus:latest
-  #   volumes:
-  #     - ./monitorization/prometheus:/etc/prometheus/
-  #     - ./monitorization/prometheus/storage:/prometheus
-  #   command:
-  #     - "--config.file=/etc/prometheus/prometheus.yml"
-  #     - "--storage.tsdb.path=/prometheus"
-  #   ports:
-  #     - "9090"
-
-  #############################################
-  #      Centralize all metrics and logs      #
-  #############################################
-
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   volumes:
-  #     - ./monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-  #     - ./monitorization/grafana/grafana.ini:/etc/grafana/grafana.ini
-  #     - ./monitorization/grafana/storage:/var/lib/grafana
-  #     - ./monitorization/grafana/plugins:/var/lib/grafana/plugins
-  #   restart: unless-stopped
-  #   ports:
-  #     - 3010:${GRAFANA_PORT}
-  #   depends_on:
-  #     - prometheus
-
-  #############################################
-  # Services communication and message queue  #
-  #############################################
-
-  rabbitmq:
-    image: rabbitmq:3.12.9-alpine
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./monitorization/prometheus:/etc/prometheus/
+      - ./monitorization/prometheus/storage:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
     ports:
-      - ${RABBITMQ_PORT}
-    environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-    healthcheck:
-      test: ["CMD", "rabbitmqctl", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-    mem_limit: 1024m
-    mem_reservation: 256m
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - ./monitorization/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./monitorization/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./monitorization/grafana/storage:/var/lib/grafana
+      - ./monitorization/grafana/plugins:/var/lib/grafana/plugins
+    restart: unless-stopped
+    ports:
+      - 3010:${GRAFANA_PORT}
+    depends_on:
+      - prometheus
 
   #############################################
-  #              Web app server               #
+  #              Data gateway                 #
   #############################################
 
   gin-gonic:
@@ -69,8 +46,6 @@ services:
     depends_on:
       mongo:
         condition: service_started
-      rabbitmq:
-        condition: service_healthy
     environment:
       - ENV_MODE=LOCAL
       - JWT_SECRET=${JWT_SECRET}
@@ -78,7 +53,6 @@ services:
       - IV_BLOCK_PASSWD=${IV_BLOCK_PASSWD}
       - MONGO_URI=${MONGO_URI}
       - MONGO_DB=${MONGO_DB}
-      - RABBITMQ_URI=${RABBITMQ_URI}
       - FRONTEND_URL=${FRONTEND_URL}
       - MINIO_ENDPOINT=${MINIO_ENDPOINT}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
@@ -87,7 +61,7 @@ services:
     # Resources limits in case it consumes too much
     mem_limit: 512m
     mem_reservation: 128m
-    cpus: 0.5
+    cpus: 1
 
   #############################################
   #             Digital twin panel            #
@@ -118,9 +92,9 @@ services:
       - gin-gonic
     command: yarn dev --host
 
-  # #############################################
-  # #            Digital twin storage           #
-  # #############################################
+  ##############################################
+  #             Digital twin storage           #
+  ##############################################
 
   mongo:
     image: mongo:6.0.7
@@ -140,9 +114,9 @@ services:
     # To avoid logs in console
     command: mongod --quiet --logpath /dev/null
 
-  # #############################################
-  # #    Data lake and artifcat storage         #
-  # #############################################
+  ##############################################
+  #                Data lake                   #
+  ##############################################
 
   minio:
     image: minio/minio:RELEASE.2023-02-27T18-10-45Z
@@ -150,11 +124,6 @@ services:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
       - MINIO_URL=${MINIO_URL}
-      - MINIO_NOTIFY_AMQP_ENABLE_primary=on
-      - MINIO_NOTIFY_AMQP_URL_primary=${RABBITMQ_URI}
-      - MINIO_NOTIFY_AMQP_EXCHANGE_primary=storage
-      - MINIO_NOTIFY_AMQP_EXCHANGE_TYPE_primary=direct
-      - MINIO_NOTIFY_AMQP_ROUTING_KEY_primary=trusted
     entrypoint:
       - sh
       - /usr/bin/entrypoint.sh
@@ -166,121 +135,115 @@ services:
       - ./storage/minio/data:/data
       - ./storage/minio/entrypoint.sh:/usr/bin/entrypoint.sh
     restart: always
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
 
-  # #############################################
-  # #            Prefect server storage         #
-  # #############################################
+  #############################################
+  #            Temporal server                #
+  #############################################
 
-  # Had to use postgres because sqlite3 is doesn't support many concurrent connections
-  postgres:
-    image: postgres:14.0
-    restart: always
+  postgresql:
     environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_DB: prefect
-    ports:
+      POSTGRES_PASSWORD: temporal
+      POSTGRES_USER: temporal
+    image: postgres:${POSTGRESQL_VERSION}
+    expose:
       - 5432
     volumes:
       - ./storage/postgres/data:/var/lib/postgresql/data
 
-  # #############################################
-  # #      Data ingestion, data processing      #
-  # #      simulations, and machine learning    #
-  # #############################################
-
-  prefect:
-    image: prefecthq/prefect:2.14.5-python3.11
-    ports:
-      - 4200:4200
-    volumes:
-      - prefect:/root/.prefect
-    environment:
-      - PREFECT_LOGGING_LEVEL=WARNING
-      - PREFECT_UI_URL=http://127.0.0.0:4200/api
-      - PREFECT_API_URL=http://127.0.0.1:4200/api
-      - PREFECT_SERVER_API_HOST=0.0.0.0
-      - PREFECT_API_DATABASE_CONNECTION_URL=${PREFECT_API_DATABASE_CONNECTION_URL}
+  temporal:
+    container_name: temporal
     depends_on:
-      rabbitmq:
-        condition: service_healthy
-      postgres:
-        condition: service_started
-    command: prefect server start
-
-  data-pipeline-worker:
-    build: data-pipelines
-    restart: on-failure
-    volumes:
-      - ./data-pipelines:/opt/data-pipelines
+      - postgresql
     environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=temporal
+      - POSTGRES_SEEDS=postgresql
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development-sql.yaml
+      - TEMPORAL_CSRF_COOKIE_INSECURE=true # Required for the UI to send signals to the workflows
+      # - AWS_ACCESS_KEY_ID = ${MINIO_ROOT_USER}
+      # - AWS_SECRET_ACCESS_KEY = ${MINIO_ROOT_PASSWORD}
+      - PROMETHEUS_ENDPOINT=0.0.0.0:8000
+    image: temporalio/auto-setup:${TEMPORAL_VERSION}
+    ports:
+      - 7233:7233
+    labels:
+      kompose.volume.type: configMap
+    volumes:
+      - ./temporal/dynamicconfig:/etc/temporal/config/dynamicconfig
+    cpus: "2"
+    mem_limit: "1G"
+  # temporal-admin-tools:
+  #   container_name: temporal-admin-tools
+  #   depends_on:
+  #     - temporal
+  #   environment:
+  #     - TEMPORAL_ADDRESS=temporal:7233
+  #     - TEMPORAL_CLI_ADDRESS=temporal:7233
+  #   image: temporalio/admin-tools:${TEMPORAL_VERSION}
+  #   stdin_open: true
+  #   tty: true
+  temporal-ui:
+    container_name: temporal-ui
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+      - TEMPORAL_CSRF_COOKIE_INSECURE=true
+      - TEMPORAL_UI_PORT=8085
+    image: temporalio/ui:${TEMPORAL_UI_VERSION}
+    ports:
+      - 8085:8085
+
+  temporal-worker:
+    container_name: temporal-worker
+    build: ./temporal
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
       - AGROSLAB_AUTH_TOKEN=${AGROSLAB_AUTH_TOKEN}
       - AGROSLAB_API_URL=${AGROSLAB_API_URL}
-      - AGROSLAB_TELEDETECTION_URL=${AGROSLAB_TELEDETECTION_URL}
-      - STORAGE_LANDING_ZONE=${MINIO_LANDING_ZONE}
-      - STORAGE_TRUSTED_ZONE=${MINIO_TRUSTED_ZONE}
-      - STORAGE_REFINED_ZONE=${MINIO_REFINED_ZONE}
-      - RABBITMQ_URI=${RABBITMQ_URI}
-      - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
-      - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
-      - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
-      - PREFECT_API_URL=http://prefect:4200/api
-      - PREFECT_MINIO_ACCESS_ROOT=${MINIO_ROOT_USER}
-      - PREFECT_MINIO_SECRET_ROOT=${MINIO_ROOT_PASSWORD}
-      - PREFECT_MINIO_HOST=${MINIO_HOST}
-      - PREFECT_MONGODB_HOST=${MONGO_URI}
-      - PREFECT_MONGODB_DB=${MONGO_INITDB_DATABASE}
-    entrypoint:
-      - sh
-      - /opt/data-pipelines/entrypoint.sh
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      mongo:
-        condition: service_started
-      prefect:
-        condition: service_started
-    # Resource limit because it tends to use a lot of memory
-    mem_limit: 2048m
-    mem_reservation: 512m
-    cpus: 1.0
+      - MONGO_URI=${MONGO_URI}
+      - MONGO_DB=${MONGO_DB}
+    volumes:
+      - ./temporal/workflows:/etc/temporal/workflows
+      - ./temporal/entrypoint.sh:/etc/temporal/entrypoint.sh
+    entrypoint: /etc/temporal/entrypoint.sh
+    cpus: "2"
+    mem_limit: "2G"
+
   #############################################
   #              MLflow server                #
   #############################################
 
-  # mlflow:
-  #   build: mlflow
-  #   restart: always
-  #   ports:
-  #     - 5000:5000
-  #     - 5001:5001
-  #   depends_on:
-  #     - minio
-  #   environment:
-  #     - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
-  #     - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
-  #     - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
-  #   volumes:
-  #     - ./mlflow/storage:/storage
-  #   command: mlflow server --backend-store-uri file:///storage/runs --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
-  #   cpus: 0.5
+  mlflow:
+    build: mlflow
+    restart: always
+    ports:
+      - 5000:5000
+      - 5001:5001
+    depends_on:
+      - minio
+    environment:
+      - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
+      - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
+      - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./mlflow/storage:/storage
+    command: mlflow server --backend-store-uri file:///storage/runs --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
+    cpus: "0.5"
+    mem_limit: "256M"
 
-  # cadvisor:
-  #   image: gcr.io/cadvisor/cadvisor:latest
-  #   privileged: true
-  #   ports:
-  #     - 8081:8081
-  #   volumes:
-  #     - /:/rootfs:ro
-  #     - /var/run:/var/run:rw
-  #     - /sys:/sys:ro
-  #     - /var/lib/docker/:/var/lib/docker:ro
-  #     - /dev/disk/:/dev/disk:ro
-  #     - /etc/machine-id:/etc/machine-id:ro
-  #   restart: always
+  #############################################
+  #              Benthos server               #
+  #############################################
 
-volumes:
-  prefect:
+  benthos:
+    image: ghcr.io/benthosdev/benthos:latest
+    ports:
+      - 4195:4195
+    volumes:
+      - ./benthos/config.yaml:/benthos.yaml

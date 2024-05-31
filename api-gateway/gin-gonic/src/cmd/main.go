@@ -6,8 +6,8 @@ import (
 	"digital-twin/main-server/src/internal/adapters/primary/web/rest-api/middleware"
 	"digital-twin/main-server/src/internal/adapters/secondary/minio"
 	"digital-twin/main-server/src/internal/adapters/secondary/mongodb"
-	"digital-twin/main-server/src/internal/adapters/secondary/rabbitmq"
 	"digital-twin/main-server/src/internal/adapters/secondary/redis"
+	"digital-twin/main-server/src/internal/adapters/secondary/temporal"
 	"digital-twin/main-server/src/internal/core/domain"
 	"digital-twin/main-server/src/internal/core/services"
 
@@ -46,7 +46,6 @@ func setupRouter() *gin.Engine {
 
 	mongoUri := os.Getenv("MONGO_URI")
 	mongoDb := os.Getenv("MONGO_DB")
-	rabbitMQURI := os.Getenv("RABBITMQ_URI")
 	redisUri := os.Getenv("REDIS_URI")
 	redisUsername := os.Getenv("REDIS_USERNAME")
 	redisPassword := os.Getenv("REDIS_PASSWORD")
@@ -55,15 +54,17 @@ func setupRouter() *gin.Engine {
 	minioEndpoint := os.Getenv("MINIO_ENDPOINT")
 	minioAccessKey := os.Getenv("MINIO_ACCESS_KEY")
 	minioSecretAccessKey := os.Getenv("MINIO_SECRET_KEY")
+	temporalEndpoint := os.Getenv("TEMPORAL_ENDPOINT")
 
 	cacherepository := redis.NewRedisConn(redisUri, redisUsername, redisPassword)
 	mongodbRepository := mongodb.NewMongodbConn(mongoUri, mongoDb, 10)
 	minioRepository := minio.NewMinioConn(minioEndpoint, minioAccessKey, minioSecretAccessKey, false)
-	rabbitMQRepository := rabbitmq.NewRabbitMQConn(rabbitMQURI)
+	// rabbitMQRepository := rabbitmq.NewRabbitMQConn(rabbitMQURI)
+	temporalRepository := temporal.NewTemporalConn(temporalEndpoint)
 
 	authService := services.NewAuthService(cacherepository)
 	usersService := services.NewUsersService(mongodbRepository)
-	enclosuresService := services.NewEnclosuresService(mongodbRepository, rabbitMQRepository)
+	enclosuresService := services.NewEnclosuresService(mongodbRepository, temporalRepository)
 	fileDumpService := services.NewFileDumpService(minioRepository)
 
 	encryptionMiddleware := middleware.InitEncryptionMiddleware(ivKey, encKey)

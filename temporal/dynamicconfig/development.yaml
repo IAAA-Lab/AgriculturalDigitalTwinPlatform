@@ -1,0 +1,24 @@
+# archival:
+#   history:
+#     state: "enabled"
+#     enableRead: true
+#     provider:
+#       s3store:
+#         region: "eu-west-1"
+#         logLevel: 0
+#   visibility:
+#     state: "enabled"
+#     enableRead: true
+#     provider:
+#       s3store:
+#         region: "eu-west-1"
+#         logLevel: 0
+
+# namespaceDefaults:
+#   archival:
+#     history:
+#       state: "enabled"
+#       URI: "s3://temporal-archival"
+#     visibility:
+#       state: "enabled"
+#       URI: "s3://temporal-archival"
