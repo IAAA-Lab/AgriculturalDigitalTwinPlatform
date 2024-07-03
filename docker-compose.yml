@@ -223,7 +223,7 @@ services:
     build: mlflow
     restart: always
     ports:
-      - 5000:5000
+      - 5002:5002
       - 5001:5001
     depends_on:
       - minio
