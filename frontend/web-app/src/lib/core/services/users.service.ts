@@ -35,8 +35,8 @@ class UserService implements IUserService {
 		this.userRepository.setAuthorizationHeader(`Bearer ${jwtRaw}`);
 		user.set(this.extractTokenInfo(jwtRaw));
 	}
-	async getEnclosureIds(userId: string): Promise<string[]> {
-		return await this.userRepository.getEnclosureIds(userId);
+	async getDigitalTwinIds(userId: string): Promise<string[]> {
+		return await this.userRepository.getDigitalTwinIds(userId);
 	}
 
 	extractTokenInfo(rawToken: string): User {

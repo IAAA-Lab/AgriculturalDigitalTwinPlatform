@@ -9,14 +9,14 @@ import (
 	"github.com/minio/minio-go/v7"
 )
 
-func (mc *MinioConn) UploadFile(file []byte, fileName string, bucket string, path string) error {
+func (mc *MinioConn) UploadFile(file []byte, fileName string, bucket string, path string, metadata map[string]string) error {
 	ctx := context.Background()
 	err := mc.client.MakeBucket(ctx, bucket, minio.MakeBucketOptions{})
 	if err != nil {
 		// Check to see if we already own this bucket (which happens if you run this twice)
 		exists, errBucketExists := mc.client.BucketExists(ctx, bucket)
 		if errBucketExists == nil && exists {
-			log.Printf("Bucket exists")
+			log.Printf("We already own %s\n", bucket)
 		} else {
 			log.Fatalln(err)
 		}
@@ -25,7 +25,8 @@ func (mc *MinioConn) UploadFile(file []byte, fileName string, bucket string, pat
 	}
 	content_type := mimetype.Detect(file).String()
 	_, err = mc.client.PutObject(ctx, bucket, path+"/"+fileName, bytes.NewReader(file), int64(len(file)), minio.PutObjectOptions{
-		ContentType: content_type,
+		ContentType:  content_type,
+		UserMetadata: metadata,
 	})
 	if err != nil {
 		return err

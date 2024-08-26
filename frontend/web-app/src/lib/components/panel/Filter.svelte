@@ -18,14 +18,16 @@
 	let uniqueCrops: string[] = [];
 	$: uniqueCrops = [
 		...new Set(
-			enclosures.map((enclosure) => enclosure.properties.cropName).filter((crop) => crop.length > 0)
+			enclosures
+				.map((enclosure) => enclosure.properties.crop.name)
+				.filter((crop) => crop.length > 0)
 		)
 	];
 	let uniqueLocations: string[] = [];
 	$: uniqueLocations = [
 		...new Set(
 			enclosures
-				.map((enclosure) => enclosure.properties.geographicSpot)
+				.map((enclosure) => enclosure.properties.location.geographicSpot)
 				.filter((location) => location.length > 0)
 		)
 	];
@@ -33,14 +35,16 @@
 	$: uniqueProvinces = [
 		...new Set(
 			enclosures
-				.map((enclosure) => enclosure.location.province)
+				.map((enclosure) => enclosure.properties.location.province)
 				.filter((province) => province.length > 0)
 		)
 	];
 	let uniqueCCAA: string[] = [];
 	$: uniqueCCAA = [
 		...new Set(
-			enclosures.map((enclosure) => enclosure.location.ccaa).filter((CCAA) => CCAA.length > 0)
+			enclosures
+				.map((enclosure) => enclosure.properties.location.ccaa)
+				.filter((CCAA) => CCAA.length > 0)
 		)
 	];
 

@@ -11,7 +11,7 @@ type User = {
 	role: string;
 };
 
-type Enclosure = {
+type DigitalTwin = {
 	id: string;
 	year: number;
 	type: string;
@@ -19,38 +19,41 @@ type Enclosure = {
 		type: string;
 		coordinates: number[][];
 	};
-	meteoStation: {
-		idema: string;
-		name: string;
-		'distance(km)': number;
-	};
-	location: {
-		province: string;
-		ccaa: string;
-	};
 	properties: {
+		userId: string;
+		meteoStation: {
+			idema: string;
+			name: string;
+			'distance(km)': number;
+		};
+		location: {
+			ccaa: string;
+			province: string;
+			city: string;
+			geographicSpot: string;
+		};
 		ndvi: NDVI | undefined;
 		irrigationCoef: number;
 		admisibility: number;
-		geographicSpot: string;
-		cropId: string;
-		cropName: string;
+		crop: {
+			id: string;
+			name: string;
+			varietyId: string;
+			variety: string;
+		};
 		areaSIGPAC: number;
 		area: number;
-		varietyId: string;
 		rainfedOrIrrigated: string;
-		tenureRegimeId: string;
-		plantationYear: number;
-		numberOfTrees: number;
-		plantationDensity: number;
+		// tenureRegimeId: string;
+		// plantationDensity: number;
 		vulnerableArea: boolean;
-		specificZones: boolean;
+		// specificZones: boolean;
 		parcelUse: string;
 		slope: number;
-		uhc: number;
-		uhcDescription: string;
-		zepaZone: boolean;
-		sieZone: boolean;
+		// uhc: number;
+		// uhcDescription: string;
+		// zepaZone: boolean;
+		// sieZone: boolean;
 	};
 };
 
@@ -94,12 +97,9 @@ type Treatment = {
 };
 
 type Activity = {
-	enclosureId: string;
-	activities: {
-		date: Date;
-		activity: string;
-		properties: object;
-	}[];
+	date: Date;
+	activity: string;
+	yield?: number;
 };
 
 type NDVI = {
@@ -244,11 +244,35 @@ type windState = {
 	value?: number;
 };
 
-export type {
-	Activity,
-	CropStats, DailyWeather, Enclosure, FarmHolder,
-	FarmHolderId, Fertilizer, ForecastWeather, HistoricalWeather, NDVI, Prediction, Treatment, User
+type YieldPrediction = {
+	date: Date;
+	yield: number;
 };
 
-	export { Role };
+type SimulationInfo = {
+	simulationId: string;
+	timestamp: Date;
+	startDate: Date;
+	endDate: Date;
+	numTrees: number;
+};
 
+export type {
+	Activity,
+	CropStats,
+	DailyWeather,
+	DigitalTwin,
+	FarmHolder,
+	FarmHolderId,
+	Fertilizer,
+	ForecastWeather,
+	HistoricalWeather,
+	NDVI,
+	Prediction,
+	Treatment,
+	User,
+	YieldPrediction,
+	SimulationInfo
+};
+
+export { Role };

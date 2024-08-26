@@ -4,11 +4,11 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { IMAGES_SERVER_URL } from '$lib/config/config';
-	import type { Enclosure } from '$lib/core/Domain';
 	import { onCropImageError } from '$lib/core/functions';
+	import type { DigitalTwin } from '$lib/core/Domain';
 
 	let selectedEnclosureId: string;
-	let selectedEnclosure: Enclosure | undefined;
+	let selectedEnclosure: DigitalTwin | undefined;
 	let limit: number = 365;
 	let NUMBER_OF_CHARTS = 4;
 	let maxPrecipitation = 0;
@@ -29,7 +29,9 @@
 			$page.url.searchParams.get('enclosureId') || $userEnclosures?.map((e) => e.id).at(0) || '';
 	});
 
-	$: selectedEnclosure = $userEnclosures?.find((e) => e.id === selectedEnclosureId);
+	$: {
+		selectedEnclosure = $userEnclosures?.find((e) => e.id === selectedEnclosureId);
+	}
 </script>
 
 <section class="card">
@@ -39,9 +41,9 @@
 			<p class="m-0">Compara las características de un recinto</p>
 		</div>
 		<div class="input__wrapper mr-16">
-			<label>{selectedEnclosure?.properties.cropName}</label>
+			<label>{selectedEnclosure?.properties?.crop?.name}</label>
 			<img
-				src={`${IMAGES_SERVER_URL}/${selectedEnclosure?.properties?.cropId}.png`}
+				src={`${IMAGES_SERVER_URL}/${selectedEnclosure?.properties?.crop?.id}.png`}
 				alt="Análisis"
 				height="40px"
 				on:error={onCropImageError}
@@ -64,10 +66,10 @@
 		{#each startDates as date}
 			<div class="card-inner">
 				<AnalysisYearCompChart
-					enclosures={[selectedEnclosureId]}
+					digitalTwins={[selectedEnclosureId]}
 					{limit}
 					startDate={date}
-					idema={selectedEnclosure?.meteoStation.idema}
+					idema={selectedEnclosure?.properties?.meteoStation?.idema}
 					bind:maxPrecipitation
 					bind:minDate
 					bind:maxDate

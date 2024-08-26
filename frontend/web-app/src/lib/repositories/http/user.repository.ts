@@ -72,7 +72,7 @@ class HttpUserRepository implements IUserRepository {
 			});
 	}
 
-	async getEnclosureIds(userId: string): Promise<string[]> {
+	async getDigitalTwinIds(userId: string): Promise<string[]> {
 		return this.http
 			.get<string[]>(`users/${userId}/enclosures`, {
 				withCredentials: true

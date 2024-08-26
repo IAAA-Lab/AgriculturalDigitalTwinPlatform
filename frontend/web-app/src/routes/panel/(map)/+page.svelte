@@ -7,16 +7,16 @@
 	import NdviColTable from '$lib/components/panel/NDVIColTable.svelte';
 	import TablePagination from '$lib/components/panel/TablePagination.svelte';
 	import WeatherTabMap from '$lib/components/panel/WeatherTabMap.svelte';
-	import { enclosuresService } from '$lib/config/config';
+	import { digitalTwinsService } from '$lib/config/config';
 	import { userEnclosures } from '$lib/config/stores/enclosures';
-	import type { Enclosure } from '$lib/core/Domain';
+	import type { DigitalTwin } from '$lib/core/Domain';
 	import { getColor, numberWithCommas } from '$lib/core/functions';
 	import { onMount } from 'svelte';
 	import mapStore from './store';
 
 	let distance: number;
-	let enclosures: Enclosure[] | undefined = $userEnclosures;
-	let filteredEnclosures: Enclosure[] | undefined = undefined;
+	let digitalTwins: DigitalTwin[] | undefined = $userEnclosures;
+	let filteredEnclosures: DigitalTwin[] | undefined = undefined;
 	// Filter
 	let checkedCrops: string[] = [];
 	let checkedLocations: string[] = [];
@@ -37,32 +37,32 @@
 
 	// Client side filtering and ordering of enclosures
 	$: {
-		filteredEnclosures = enclosures
+		filteredEnclosures = digitalTwins
 			?.filter((enclosure) => {
 				// Filter by checked crops
 				if (checkedCrops.length > 0) {
-					return checkedCrops.includes(enclosure.properties.cropName);
+					return checkedCrops.includes(enclosure.properties.crop.name);
 				}
 				return true;
 			})
 			.filter((enclosure) => {
 				// Filter by checked provinces
 				if (checkedProvinces.length > 0) {
-					return checkedProvinces.includes(enclosure.location.province);
+					return checkedProvinces.includes(enclosure.properties.location.province);
 				}
 				return true;
 			})
 			.filter((enclosure) => {
 				// Filter by checked CCAA
 				if (checkedCCAA.length > 0) {
-					return checkedCCAA.includes(enclosure.location.ccaa);
+					return checkedCCAA.includes(enclosure.properties.location.ccaa);
 				}
 				return true;
 			})
 			.filter((enclosure) => {
 				// Filter by checked locations
 				if (checkedLocations.length > 0) {
-					return checkedLocations.includes(enclosure.properties.geographicSpot);
+					return checkedLocations.includes(enclosure.properties.location.geographicSpot);
 				}
 				return true;
 			})
@@ -71,8 +71,10 @@
 				if (search) {
 					return (
 						enclosure.id.toLowerCase().includes(search.toLowerCase()) ||
-						enclosure.properties.cropName.toLowerCase().includes(search.toLowerCase()) ||
-						enclosure.properties.geographicSpot.toLowerCase().includes(search.toLowerCase())
+						enclosure.properties.crop.name.toLowerCase().includes(search.toLowerCase()) ||
+						enclosure.properties.location.geographicSpot
+							.toLowerCase()
+							.includes(search.toLowerCase())
 					);
 				}
 				return true;
@@ -82,9 +84,11 @@
 					case 'area':
 						return b.properties.area - a.properties.area;
 					case 'crop':
-						return a.properties.cropName.localeCompare(b.properties.cropName);
+						return a.properties.crop.name.localeCompare(b.properties.crop.name);
 					case 'location':
-						return a.properties.geographicSpot.localeCompare(b.properties.geographicSpot);
+						return a.properties.location.geographicSpot.localeCompare(
+							b.properties.location.geographicSpot
+						);
 					case 'ndviAsc':
 						if (!a.properties.ndvi || !b.properties.ndvi) {
 							return 0;
@@ -99,37 +103,37 @@
 						return 0;
 				}
 			})
-			.slice(0, limit === 0 ? enclosures.length : limit);
+			.slice(0, limit === 0 ? digitalTwins.length : limit);
 	}
 
 	$: {
 		if (!$mapStore.selectedEnclosure) {
-			enclosures = $userEnclosures;
-			getNDVI($userEnclosures.map((e) => e.id));
+			digitalTwins = $userEnclosures;
+			getNDVI($userEnclosures.map((e) => getNDVI(e.id)));
 		}
 	}
 
 	$: {
 		// When distance changes, we need to search for the neighbors of the selected enclosure
 		if (distance && $mapStore.selectedEnclosure) {
-			enclosuresService
-				.getEnclosureNeighbors($mapStore.selectedEnclosure.id, distance)
+			digitalTwinsService
+				.getDigitalTwinNeighbors($mapStore.selectedEnclosure.id, distance)
 				.then((enclosuresRes) => {
-					enclosures = [...enclosuresRes];
+					digitalTwins = [...enclosuresRes];
 					getNDVI([...enclosuresRes].map((e) => e.id));
 					getActivities([...enclosuresRes].map((e) => e.id));
 				})
 				.catch((err) => {
-					enclosures = undefined;
+					digitalTwins = undefined;
 				});
 		}
 	}
 
-	const getNDVI = (enclosureIds: string[]) => {
-		enclosuresService
-			.getNDVI(enclosureIds, undefined, undefined, 1)
+	const getNDVI = (enclosureId: string) => {
+		digitalTwinsService
+			.getNDVI(enclosureId, undefined, undefined, 1)
 			.then((res) => {
-				enclosures = enclosures?.map((enclosure) => {
+				digitalTwins = digitalTwins?.map((enclosure) => {
 					const ndvi = res.find((ndvi) => ndvi.enclosureId === enclosure.id);
 					return {
 						...enclosure,
@@ -144,10 +148,10 @@
 	};
 
 	const getActivities = (enclosureIds: string[]) => {
-		enclosuresService
+		digitalTwinsService
 			.getActivities(enclosureIds, undefined, undefined, 1)
 			.then((res) => {
-				enclosures = enclosures?.map((enclosure) => {
+				digitalTwins = digitalTwins?.map((enclosure) => {
 					const activities = res.find((activity) => activity.enclosureId === enclosure.id);
 					return {
 						...enclosure,
@@ -172,100 +176,106 @@
 	});
 </script>
 
+<!-- If there is no enclosures -->
 <h1 class="mt-0">Mapa</h1>
-<section class="container-responsive">
-	<div class="card filter" style="grid-area: filter">
-		<Filter
-			{enclosures}
-			bind:checkedCrops
-			bind:checkedLocations
-			bind:orderBy
-			bind:limit
-			bind:checkedProvinces
-			bind:checkedCCAA
-		/>
-	</div>
-	<div class="map" style="grid-area: map; position: relative">
-		{#if filteredEnclosures}
-			<Map bind:enclosures={filteredEnclosures} bind:distance />
-		{/if}
-	</div>
-	<nav class="tools-bar" style="grid-area: tools-bar">
-		<i class="fi fi-rr-table-layout" on:click={() => (selectedNavOption = navOptions.GENERAL)} />
-		<i class="fi fi-rr-cloud-sun" on:click={() => (selectedNavOption = navOptions.WEATHER)} />
-		<!-- <i
+<section class="no-enclosures">
+	{#if !digitalTwins || digitalTwins.length === 0}
+		<p>No hay recintos disponibles</p>
+		<button on:click={() => (location.href = '/panel/add-digital-twin')}>Añadir recintos</button>
+	{:else}
+		<div class="card filter" style="grid-area: filter">
+			<Filter
+				enclosures={digitalTwins}
+				bind:checkedCrops
+				bind:checkedLocations
+				bind:orderBy
+				bind:limit
+				bind:checkedProvinces
+				bind:checkedCCAA
+			/>
+		</div>
+		<div class="map" style="grid-area: map; position: relative">
+			{#if filteredEnclosures}
+				<Map bind:enclosures={filteredEnclosures} bind:distance />
+			{/if}
+		</div>
+		<nav class="tools-bar" style="grid-area: tools-bar">
+			<i class="fi fi-rr-table-layout" on:click={() => (selectedNavOption = navOptions.GENERAL)} />
+			<i class="fi fi-rr-cloud-sun" on:click={() => (selectedNavOption = navOptions.WEATHER)} />
+			<!-- <i
 			class="fi fi-rr-bacteria"
 			on:click={() => (selectedNavOption = navOptions.PHYTOSANITARIES)}
 		/> -->
-	</nav>
-	<div class="card analysis" style="grid-area: analysis">
-		{#if selectedNavOption === navOptions.GENERAL}
-			<TablePagination
-				length={10}
-				rows={filteredEnclosures?.map((enclosure, index) => ({
-					color: getColor(index),
-					id: enclosure.id,
-					geojsonFeature: enclosure,
-					area: enclosure.properties.area,
-					slope: enclosure.properties.slope,
-					irrigationCoef: enclosure.properties.irrigationCoef,
-					usedArea: enclosure.properties.areaSIGPAC,
-					cropName: enclosure.properties.cropName,
-					ndvi: enclosure.properties.ndvi?.ndvi?.at(0)?.value
-				}))}
-				columns={[
-					{
-						key: 'enclosureId',
-						title: 'Recinto',
-						sortable: true,
-						value: (v) => {
-							return {
-								enclosureId: v.id,
-								geojsonFeature: v.geojsonFeature,
-								color: v.color
-							};
+		</nav>
+		<div class="card analysis" style="grid-area: analysis">
+			{#if selectedNavOption === navOptions.GENERAL}
+				<TablePagination
+					length={10}
+					rows={filteredEnclosures?.map((enclosure, index) => ({
+						color: getColor(index),
+						id: enclosure.id,
+						geojsonFeature: enclosure,
+						area: enclosure.properties.area,
+						slope: enclosure.properties.slope,
+						irrigationCoef: enclosure.properties.irrigationCoef,
+						usedArea: enclosure.properties.areaSIGPAC,
+						cropName: enclosure.properties.cropName,
+						ndvi: enclosure.properties.ndvi?.ndvi?.at(0)?.value
+					}))}
+					columns={[
+						{
+							key: 'enclosureId',
+							title: 'Recinto',
+							sortable: true,
+							value: (v) => {
+								return {
+									enclosureId: v.id,
+									geojsonFeature: v.geojsonFeature,
+									color: v.color
+								};
+							},
+							renderComponent: FirstColTable
 						},
-						renderComponent: FirstColTable
-					},
-					{
-						key: 'cultivo',
-						title: 'Cultivo',
-						value: (v) => v.cropName || 'N/A',
-						sortable: true
-					},
-					{
-						key: 'area',
-						title: 'Área (Ha)',
-						value: (v) => numberWithCommas(v.area),
-						sortable: true
-					},
-					{
-						key: 'areaSIGPAC',
-						title: 'Área SIGPAC (Ha)',
-						value: (v) => numberWithCommas(v.usedArea),
-						sortable: true
-					},
-					{ key: 'slope', title: 'Pendiente (%)', value: (v) => v.slope },
-					{
-						key: 'irrigationCoef',
-						title: 'Coef. de regadío (%)',
-						value: (v) => v.irrigationCoef
-					},
-					{
-						key: 'ndvi',
-						title: 'NDVI',
-						sortable: true,
-						renderComponent: NdviColTable
-					}
-				]}
-			/>
-		{:else if selectedNavOption === navOptions.WEATHER}
-			<WeatherTabMap enclosureIds={filteredEnclosures?.map((e) => e.id)} />
-		{/if}
-		<!-- {:else if selectedNavOption === navOptions.PHYTOSANITARIES}
+						{
+							key: 'cultivo',
+							title: 'Cultivo',
+							value: (v) => v.cropName || 'N/A',
+							sortable: true
+						},
+						{
+							key: 'area',
+							title: 'Área (Ha)',
+							value: (v) => numberWithCommas(v.area),
+							sortable: true
+						},
+						{
+							key: 'areaSIGPAC',
+							title: 'Área SIGPAC (Ha)',
+							value: (v) => numberWithCommas(v.usedArea),
+							sortable: true
+						},
+						{ key: 'slope', title: 'Pendiente (%)', value: (v) => v.slope },
+						{
+							key: 'irrigationCoef',
+							title: 'Coef. de regadío (%)',
+							value: (v) => v.irrigationCoef
+						},
+						{
+							key: 'ndvi',
+							title: 'NDVI',
+							sortable: true,
+							renderComponent: NdviColTable
+						}
+					]}
+				/>
+			{:else if selectedNavOption === navOptions.WEATHER}
+				<WeatherTabMap enclosureIds={filteredEnclosures?.map((e) => e.id)} />
+			{/if}
+			<!-- {:else if selectedNavOption === navOptions.PHYTOSANITARIES}
 			<PhytosanitariesTabMap enclosureIds={filteredEnclosures?.map((e) => e.id)} />
 		{/if} -->
-	</div>
+		</div>
+	{/if}
 </section>
 
 <style lang="scss">
@@ -275,6 +285,7 @@
 		gap: 0.5rem;
 	}
 	section {
+		width: 100%;
 		display: grid;
 		gap: 0.8rem;
 		height: calc(100vh - 6rem);
@@ -293,6 +304,10 @@
 
 	.card {
 		height: 96%;
+	}
+
+	.map {
+		width: 100%;
 	}
 	dialog {
 		width: 94%;

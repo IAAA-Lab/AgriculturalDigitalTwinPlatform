@@ -18,6 +18,10 @@ echo "setting mc alias"
 # Set an alias for mc client
 mc alias set minio $MINIO_URL $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
 echo "adding event notifications"
+# Add temporal webhook notification when a json, csv or xlsx file is uploaded to these buckets
+mc event add minio/landing-zone arn:minio:sqs::landing:webhook --event put
+mc event add minio/trusted-zone arn:minio:sqs::trusted:webhook --event put
+mc event add minio/refined-zone arn:minio:sqs::refined:webhook --event put
 # Add event amqp notification when a json, csv or xlsx file is uploaded to these buckets
 # mc event add minio/landing-zone arn:minio:sqs::primary:amqp --event put --suffix .json --suffix .csv --suffix .xlsx
 # mc event add minio/trusted-zone arn:minio:sqs::primary:amqp --event put --suffix .json --suffix .parquet

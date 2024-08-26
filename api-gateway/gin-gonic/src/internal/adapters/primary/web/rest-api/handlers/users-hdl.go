@@ -8,12 +8,12 @@ import (
 )
 
 type UsersHTTPHandler struct {
-	usersService      ports.UsersService
-	enclosuresService ports.EnclosuresService
+	usersService        ports.UsersService
+	digitalTwinsService ports.DigitalTwinsService
 }
 
-func NewUsersHTTPHandler(usersService ports.UsersService, enclosuresService ports.EnclosuresService) *UsersHTTPHandler {
-	return &UsersHTTPHandler{usersService: usersService, enclosuresService: enclosuresService}
+func NewUsersHTTPHandler(usersService ports.UsersService, digitalTwinsService ports.DigitalTwinsService) *UsersHTTPHandler {
+	return &UsersHTTPHandler{usersService: usersService, digitalTwinsService: digitalTwinsService}
 }
 
 // @Summary Authorize user
@@ -110,7 +110,7 @@ func (hdl *UsersHTTPHandler) FetchEnclosuresByUserId(c *gin.Context) {
 	}
 
 	if user.Role == domain.ROLE_ADMIN {
-		enclosureIds, err := hdl.enclosuresService.FetchAllEnclosureIds()
+		enclosureIds, err := hdl.digitalTwinsService.FetchAllDigitalTwinsIds()
 		if err != nil {
 			c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 			return

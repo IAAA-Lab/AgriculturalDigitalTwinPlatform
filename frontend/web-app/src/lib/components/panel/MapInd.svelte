@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import leaflet from 'leaflet';
-	import type { Enclosure } from '$lib/core/Domain';
+	import type { DigitalTwin } from '$lib/core/Domain';
 	import { getColor } from '$lib/core/functions';
 
 	let mapElement: any;
@@ -15,58 +15,61 @@
 			startDate = new Date(new Date(endDate).setDate(new Date(endDate).getDate() - 7))
 				.toISOString()
 				.split('T')[0];
-			console.log(startDate, endDate);
 		}
 	}
 
-	export let enclosure: Enclosure;
+	export let digitalTwin: DigitalTwin;
 
 	$: {
 		if (map) {
-			// Remove previous markers
-			map.eachLayer((layer) => {
-				if (layer instanceof leaflet.GeoJSON) {
-					map.removeLayer(layer);
-				}
-				if (layer instanceof leaflet.TileLayer) {
-					map.removeLayer(layer);
-				}
-			});
-			const features = leaflet
-				.geoJSON(enclosure.geometry as any, {
-					style: (feature) => {
-						return {
-							fillColor: getColor(i++),
-							weight: 4,
-							opacity: 1,
-							color: 'black',
-							fillOpacity: 0.05,
-							pane: 'markerPane'
-						};
+			try {
+				// Remove previous markers
+				map.eachLayer((layer) => {
+					if (layer instanceof leaflet.GeoJSON) {
+						map.removeLayer(layer);
 					}
-				})
-				.addTo(map);
-
-			leaflet.tileLayer
-				.wms(
-					`https://services.sentinel-hub.com/ogc/wms/981976b3-d724-45bb-856b-08d4d9c99848?time=${startDate}/${endDate}&CRS=EPSG:4326&FORMAT=image/png&layers=NDVI&transparent=TRUE`,
-					{
-						layers: 'NDVI',
-						format: 'image/png',
-						transparent: true,
-						opacity: 0.85,
-						attribution: 'Sentinel Hub',
-						crs: leaflet.CRS.EPSG4326
+					if (layer instanceof leaflet.TileLayer) {
+						map.removeLayer(layer);
 					}
-				)
-				.addTo(map);
+				});
+				const features = leaflet
+					.geoJSON(digitalTwin.geometry as any, {
+						style: (feature) => {
+							return {
+								fillColor: getColor(i++),
+								weight: 4,
+								opacity: 1,
+								color: 'black',
+								fillOpacity: 0.05,
+								pane: 'markerPane'
+							};
+						}
+					})
+					.addTo(map);
 
-			// Fits map to all features present automatically
-			map.fitBounds(features.getBounds()).setMaxZoom(17).setMinZoom(16);
-			// Set dragging to false
-			map.dragging.disable();
-			// Disable mouse wheel zoom
-			map.scrollWheelZoom.disable();
+				leaflet.tileLayer
+					.wms(
+						`https://services.sentinel-hub.com/ogc/wms/981976b3-d724-45bb-856b-08d4d9c99848?time=${startDate}/${endDate}&CRS=EPSG:4326&FORMAT=image/png&layers=NDVI&transparent=TRUE`,
+						{
+							layers: 'NDVI',
+							format: 'image/png',
+							transparent: true,
+							opacity: 0.85,
+							attribution: 'Sentinel Hub',
+							crs: leaflet.CRS.EPSG4326
+						}
+					)
+					.addTo(map);
+
+				// Fits map to all features present automatically
+				map.fitBounds(features.getBounds()).setMaxZoom(17).setMinZoom(16);
+				// Set dragging to false
+				map.dragging.disable();
+				// Disable mouse wheel zoom
+				map.scrollWheelZoom.disable();
+			} catch (error) {
+				console.log('Error setting map bounds');
+			}
 		}
 	}
 
@@ -82,8 +85,7 @@
 
 <style lang="scss">
 	div {
-		grid-area: map;
-		min-width: 400px;
+		width: 100%;
 		height: 100%;
 	}
 </style>

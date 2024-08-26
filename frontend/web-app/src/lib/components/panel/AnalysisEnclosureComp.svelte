@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { enclosuresService } from '$lib/config/config';
+	import { digitalTwinsService } from '$lib/config/config';
 	import { getColor } from '$lib/core/functions';
 	import { es } from 'date-fns/locale';
 	import Chart from './Chart.svelte';
@@ -14,7 +14,7 @@
 	let ndvi: NDVI[] = [];
 
 	$: {
-		enclosuresService
+		digitalTwinsService
 			.getNDVI(
 				listOfEnclosures.slice(0, MAX_ENCLOSURES),
 				new Date(startDate),

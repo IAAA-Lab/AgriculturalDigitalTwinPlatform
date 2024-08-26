@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { enclosuresService } from '$lib/config/config';
+	import { digitalTwinsService } from '$lib/config/config';
 	import type { HistoricalWeather, NDVI } from '$lib/core/Domain';
 	import { es } from 'date-fns/locale';
 	import Chart from './Chart.svelte';
 
 	export let startDate: string;
+	// end date = end of current year
 	export let endDate: string = new Date().toISOString().split('T')[0];
-	export let enclosures: string[] | undefined = undefined;
+	export let digitalTwins: string[] | undefined = undefined;
 	export let limit: number | undefined = undefined;
 	export let idema: string | undefined = undefined;
 	export let maxPrecipitation: number = 0;
@@ -16,16 +17,16 @@
 
 	let clickedPoint: any = null;
 	let activities: any[] = [];
-	let cropStats: any[] = [];
 	let selectedActivity: string | undefined;
 
 	let ndviValues: NDVI | null = null;
 	let weatherValues: HistoricalWeather[] = [];
+	let yieldPredictions: any[] = [];
 
 	$: {
-		if (enclosures && enclosures.length > 0) {
-			enclosuresService
-				.getNDVI(enclosures, new Date(startDate), new Date(endDate), undefined)
+		if (digitalTwins && digitalTwins.length > 0) {
+			digitalTwinsService
+				.getNDVI(digitalTwins?.at(0) || '', new Date(startDate), new Date(endDate), undefined)
 				.then((ndvi) => {
 					ndviValues = ndvi[0];
 				})
@@ -37,8 +38,8 @@
 
 	$: {
 		if (idema) {
-			enclosuresService
-				.getHistoricalWeather(idema, new Date(startDate), new Date(endDate), [
+			digitalTwinsService
+				.getHistoricalWeather(digitalTwins?.at(0) || '', new Date(startDate), new Date(endDate), [
 					'date',
 					'prec',
 					'tmed'
@@ -53,13 +54,12 @@
 	}
 
 	$: {
-		if (enclosures && enclosures.length > 0) {
-			enclosuresService
-				.getActivities(enclosures, new Date(startDate), new Date(endDate))
+		if (digitalTwins && digitalTwins.length > 0) {
+			digitalTwinsService
+				.getActivities(digitalTwins?.at(0) || '', undefined, new Date(startDate), new Date(endDate))
 				.then((activityList) => {
-					const activitiesFlat = [...activityList.flatMap((activity) => activity.activities)];
-					selectedActivity = activitiesFlat.at(0)?.activity;
-					activities = activitiesFlat;
+					selectedActivity = activityList.at(0)?.activity;
+					activities = activityList;
 				})
 				.catch((error) => {
 					activities = [];
@@ -68,20 +68,20 @@
 	}
 
 	$: {
-		if (enclosures && enclosures.length > 0) {
-			enclosuresService
-				.getCropStats(enclosures[0], new Date(startDate), new Date(endDate))
-				.then((stats) => {
-					cropStats = [...stats];
-					// .sort((a, b) => b.value - a.value);
+		if (digitalTwins && digitalTwins.length > 0) {
+			digitalTwinsService
+				.getYieldPredictions(digitalTwins?.at(0) || '', new Date(startDate), new Date(endDate))
+				.then((yieldPredictionsResp) => {
+					yieldPredictions = yieldPredictionsResp;
+				})
+				.catch((error) => {
+					yieldPredictions = [];
 				});
 		}
 	}
 
 	$: {
-		if (!limit) {
-			endDate = new Date().toISOString().split('T')[0];
-		} else {
+		if (limit) {
 			endDate = new Date(new Date(startDate).setDate(new Date(startDate).getDate() + limit))
 				.toISOString()
 				.split('T')[0];
@@ -89,7 +89,7 @@
 	}
 
 	$: {
-		const maxPrecipitationCalc = Math.max(...weatherValues.map((w) => w.prec).filter((w) => w));
+		const maxPrecipitationCalc = Math.max(...weatherValues?.map((w) => w.prec).filter((w) => w));
 		maxPrecipitation =
 			maxPrecipitationCalc > maxPrecipitation
 				? Math.ceil(maxPrecipitationCalc * 1.1)
@@ -117,7 +117,7 @@
 						selectedActivity = e.target?.value;
 					}}
 				>
-					{#each [...new Set(activities.map((activity) => activity.activity))] as activity}
+					{#each [...new Set(activities?.map((activity) => activity.activity))] as activity}
 						<option value={activity}>{activity}</option>
 					{/each}
 				</select>
@@ -137,7 +137,7 @@
 					datasets: [
 						{
 							type: 'line',
-							data: ndviValues?.ndvi.map((ndvi) => ({
+							data: ndviValues?.ndvi?.map((ndvi) => ({
 								x: ndvi.date,
 								y: ndvi.value
 							})),
@@ -181,39 +181,27 @@
 							type: 'bar',
 							data: activities
 								.filter((activity) => activity.activity === selectedActivity)
-								.map((activity) => ({
+								?.map((activity) => ({
 									x: activity.date,
 									y: 1
 								})),
 							label: selectedActivity || '',
 							fill: true,
-							backgroundColor: selectedActivity ? 'black' : 'transparent',
+							backgroundColor: selectedActivity ? 'green' : 'transparent',
 							yAxisID: 'y2',
 							barThickness: 1.5
 						},
 						{
 							type: 'bar',
-							data: cropStats.map((crop) => ({
-								x: crop.plantingDate,
+							data: yieldPredictions?.map((yieldPrediction) => ({
+								x: yieldPrediction.date,
 								y: 1
 							})),
-							label: cropStats.length > 0 ? 'siembra' : '',
+							label: yieldPredictions?.length > 0 ? 'Mejor momento cosechar' : '',
 							fill: true,
-							backgroundColor: cropStats.length > 0 ? 'brown' : 'transparent',
+							backgroundColor: yieldPredictions?.length > 0 ? 'orange' : 'transparent',
 							yAxisID: 'y2',
-							barThickness: 3
-						},
-						{
-							type: 'bar',
-							data: cropStats.map((crop) => ({
-								x: crop.harvestDate,
-								y: 1
-							})),
-							label: cropStats.length > 0 ? 'cosecha' : '',
-							fill: true,
-							backgroundColor: cropStats.length > 0 ? 'green' : 'transparent',
-							yAxisID: 'y2',
-							barThickness: 3
+							barThickness: 2
 						}
 					]
 				},

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Chart from '$lib/components/panel/Chart.svelte';
 	import PhytosTable from '$lib/components/panel/PhytosTable.svelte';
-	import { enclosuresService } from '$lib/config/config';
+	import { digitalTwinsService } from '$lib/config/config';
 	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import type { Treatment } from '$lib/core/Domain';
 	import { getColor } from '$lib/core/functions';
@@ -21,7 +21,7 @@
 	$: endDate = new Date(endDateInput);
 
 	$: {
-		enclosuresService
+		digitalTwinsService
 			.getActivities([enclosureId], startDate, endDate)
 			.then((activitiesList) => {
 				// Filter activities by activity type = 'TRATAMIENTO FITOSANITARIO'

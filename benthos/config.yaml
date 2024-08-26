@@ -1,30 +1,52 @@
-# # https://www.youtube.com/watch?v=EA2Pco3EvpU
+# https://www.youtube.com/watch?v=EA2Pco3EvpU
 
-# input:
-#   label: "mqtt_test"
-#   mqtt:
-#     urls: ["test.mosquitto.org:1883"]
-#     topics: ["#"]
-#     client_id: ""
-#     connect_timeout: 30s
-#     auto_replay_nacks: true
+input:
+  label: "mqtt_test"
+  mqtt:
+    urls: ["test.mosquitto.org:1883"]
+    topics: ["#"]
+    client_id: ""
+    connect_timeout: 30s
+    auto_replay_nacks: false # if false, rejected messages are deleted, improving back pressure
+    qos: 0
 
-# pipeline:
-#   threads: 4
-#   processors:
-#     # Match message containing "Terhunbung" 
-#     - label: "filter"
-#       bloblang: |
-#         root = this
-#         root = match this {
-#           this == "Terhunbung" => this
-#           _ => deleted()
-#         }
+pipeline:
+  threads: 4
+  processors:
+    # Filter numbers
+    - label: "filter"
+      bloblang: |
+        root = if this.number().catch(null) != null && this.number() < 25 && this.number() > 22 {
+          this
+        } else {
+          deleted()
+        }
+output:
+  label: "mongodb_output"
+  mongodb:
+    url: "${MONGO_URI}" # No default (required)
+    database: "47-96-0-0-5-20-1" # No default (required)
+    collection: "Sensors" # No default (required)
+    operation: insert-one
+    write_concern:
+      w: majority
+      j: false
+      # w_timeout: 5000s
+    document_map: |
+      root.type = "temperature"
+      root.value = this
+      root.unit = "C"
+      root.timestamp = now()
+    # filter_map: ""
+    # hint_map: ""
+    # upsert: false
+    max_in_flight: 2
+    batching:
+      count: 500
+      # byte_size: 0
+      period: "1m"
+      # check: ""
+
 
 # output:
-#   label: "stdout"
 #   stdout: {}
-
-
-# # output:
-# #   stdout: {}

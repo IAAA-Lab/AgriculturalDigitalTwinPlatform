@@ -14,20 +14,29 @@ type UsersService interface {
 	FetchUserByEmail(email string) (domain.User, error)
 	DeleteUser(id string) error
 	PostNewUser(user domain.User) error
-	PostEnclosure(email string, enclosureIds []string) error
+	PostEnclosure(email string, digitalTwinIds []string) error
 }
 
-type EnclosuresService interface {
-	GetForecastWeather(enclosureId string) (domain.ForecastWeather, error)
-	GetDailyWeather(enclosureId string) (domain.DailyWeather, error)
-	GetHistoricalWeather(enclosureId string, startDate time.Time, endDate time.Time, fields []string) ([]domain.HistoricalWeather, error)
-	GetEnclosures(enclosureIds []string, year int16) ([]domain.Enclosure, error)
-	GetEnclosuresInRadius(enclosureId string, radius float64, year int16) ([]domain.Enclosure, error)
-	GetNDVI(enclosureIds []string, startDate time.Time, endDate time.Time, limit int) ([]domain.NDVI, error)
-	GetFarmHolder(id domain.FarmHolderId) (domain.FarmHolder, error)
-	GetActivities(enclosureIds []string, startDate time.Time, endDate time.Time, Limit int) ([]domain.Activity, error)
-	FetchAllEnclosureIds() ([]string, error)
-	GetCropStats(enclosureId string, startDate time.Time, endDate time.Time) ([]domain.CropStats, error)
+type DigitalTwinsService interface {
+	GetForecastWeather(digitalTwinId string) (domain.ForecastWeather, error)
+	GetDailyWeather(digitalTwinId string) (domain.DailyWeather, error)
+	GetHistoricalWeather(digitalTwinId string, startDate time.Time, endDate time.Time, fields []string) ([]domain.HistoricalWeather, error)
+	CreateNewDigitalTwin(enclosure domain.DigitalTwin) error
+	GetDigitalTwins(digitalTwinIds []string, year int16) ([]domain.DigitalTwin, error)
+	GetDigitalTwinsInRadius(digitalTwinId string, radius float64, year int16) ([]domain.DigitalTwin, error)
+	GetNDVI(digitalTwinId string, startDate time.Time, endDate time.Time, limit int) ([]domain.NDVI, error)
+	GetActivities(digitalTwinId string, activityType string, startDate time.Time, endDate time.Time, Limit int) ([]domain.Activity, error)
+	FetchAllDigitalTwinsIds() ([]string, error)
+	GetPrediction(digitalTwin string, predictionType string, startDate time.Time, endDate time.Time) ([]domain.Prediction, error)
+	GetSensorData(digitalTwin string, sensorType string, startDate time.Time, endDate time.Time) ([]domain.SensorData, error)
+	SetNewActivities(digitalTwinId string, FileName string, fromBucket string) error
+	SetNewYield(digitalTwinId string, FileName string, fromBucket string) error
+	StartSimulation(digitalTwin string, startDate time.Time, endDate time.Time, numTrees int) (string, error)
+	GetSimulations(digitalTwin string) ([]domain.Simulation, error)
+	StopSimulation(digitalTwin string, simulationId string) error
+	ResumeSimulation(digitalTwin string, simulationId string) error
+	SimulationSpeed(digitalTwin string, simulationId string, speed float32) error
+	DeleteSimulation(digitalTwin string, simulationId string) error
 }
 
 type JWTService interface {
@@ -45,5 +54,5 @@ type APIKeyService interface {
 
 type StorageService interface {
 	GetFile(fileName string, bucket string, path string) ([]byte, error)
-	UploadFile(file []byte, fileName string, bucket string, path string) error
+	UploadFile(file []byte, fileName string, bucket string, path string, metadata map[string]string) error
 }

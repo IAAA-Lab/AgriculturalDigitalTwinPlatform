@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { enclosuresService } from '$lib/config/config';
+	import { digitalTwinsService } from '$lib/config/config';
 	import { getColor } from '$lib/core/functions';
 	import Chart from './Chart.svelte';
 	import TablePagination from './TablePagination.svelte';
@@ -14,7 +14,7 @@
 	let phytoSanitaries: any[] = [];
 
 	$: {
-		enclosuresService
+		digitalTwinsService
 			.getActivities(enclosureIds, new Date(startDate), new Date(endDate), undefined)
 			.then((phytosanitariesList) => {
 				const phytos = phytosanitariesList

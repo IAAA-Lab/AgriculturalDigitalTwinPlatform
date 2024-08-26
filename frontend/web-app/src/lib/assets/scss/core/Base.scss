@@ -26,7 +26,7 @@ dialog {
 	border: 2px solid color-border(base);
 	border-radius: 10px;
 	padding: 0.4rem;
-	overflow: hidden;
+	// overflow: hidden;
 }
 
 .card-inner {
@@ -327,6 +327,46 @@ dialog {
 		@include font-size(xxs);
 		color: color(button);
 		background: #ffffff;
+	}
+
+	.button-group {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: space-between;
+
+		button {
+			margin: 0;
+			border-radius: 0;
+
+			&:first-child {
+				border-radius: 7px 0 0 7px;
+			}
+
+			&:last-child {
+				border-left: none;
+				border-radius: 0 7px 7px 0;
+			}
+
+			&:not(:first-child):not(:last-child) {
+				border-left: none;
+			}
+
+			&.selected {
+				background: color(primary);
+				color: white;
+			}
+		}
+	}
+
+	pre {
+		background: transparent !important;
+		margin: 0 !important;
+		padding-top: 0 !important;
+	}
+
+	code {
+		background: transparent !important;
 	}
 }
 

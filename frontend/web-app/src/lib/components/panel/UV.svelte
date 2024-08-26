@@ -12,7 +12,6 @@
 
 <style lang="scss">
 	.card {
-		grid-area: uv;
 		display: flex;
 		flex-direction: column;
 		row-gap: 0.5rem;

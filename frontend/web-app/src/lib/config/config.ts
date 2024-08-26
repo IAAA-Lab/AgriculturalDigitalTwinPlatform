@@ -1,11 +1,10 @@
 import axios from 'axios';
-import EnclosuresService from '$lib/core/services/enclosures.service';
 import UserService from '$lib/core/services/users.service';
-import HttpParcelsRepository from '$lib/repositories/http/parcel.repository';
+import HttpDigitalTwinsRepository from '$lib/repositories/http/digitalTwins.repository';
 import HttpUserRepository from '$lib/repositories/http/user.repository';
+import DigitalTwinsService from '$lib/core/services/digitalTwin.service';
 
-const IMAGES_SERVER_URL =
-	(import.meta.env.VITE_IMAGES_SERVER_URL as string);
+const IMAGES_SERVER_URL = import.meta.env.VITE_IMAGES_SERVER_URL as string;
 const API_URL = (import.meta.env.VITE_API_URL as string) || 'http://localhost:8080';
 const IV_BLOCK_PASSWD = import.meta.env.VITE_IV_BLOCK_PASSWD;
 const KEY_DECRYPT_PASSWD = import.meta.env.VITE_KEY_DECRYPT_PASSWD;
@@ -23,8 +22,8 @@ const axiosInstance = axios.create({
 
 // --------- Dependency injection ------------
 // Parcels use cases
-const parcelsRepository = new HttpParcelsRepository(axiosInstance);
-const enclosuresService = new EnclosuresService(parcelsRepository);
+const digitalTwinsRepository = new HttpDigitalTwinsRepository(axiosInstance);
+const digitalTwinsService = new DigitalTwinsService(digitalTwinsRepository);
 
 // User use cases
 const userRepository = new HttpUserRepository(axiosInstance);
@@ -52,7 +51,7 @@ axiosInstance.interceptors.response.use(
 );
 
 export {
-	enclosuresService,
+	digitalTwinsService,
 	userService,
 	IMAGES_SERVER_URL,
 	EMAIL_SENDER_PUB_KEY,

@@ -48,9 +48,5 @@
 		display: flex;
 		justify-content: center;
 		align-items: flex-start;
-
-		.card {
-			max-width: 300px;
-		}
 	}
 </style>

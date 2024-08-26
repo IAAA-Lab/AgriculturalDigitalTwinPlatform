@@ -3,7 +3,7 @@
 	import Loading from '$lib/components/misc/Loading.svelte';
 	import Header from '$lib/components/panel/Header.svelte';
 	import Sidebar from '$lib/components/panel/Sidebar.svelte';
-	import { enclosuresService, userService } from '$lib/config/config';
+	import { digitalTwinsService, userService } from '$lib/config/config';
 	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import { Role } from '$lib/core/Domain';
 	import { onMount } from 'svelte';
@@ -16,8 +16,8 @@
 			switch (role) {
 				case Role.ADMIN:
 				case Role.AGRARIAN:
-					const enclosureIds = await userService.getEnclosureIds(id ?? '');
-					const enclosures = await enclosuresService.getEnclosures(enclosureIds);
+					const enclosureIds = await userService.getDigitalTwinIds(id ?? '');
+					const enclosures = await digitalTwinsService.getDigitalTwins(enclosureIds);
 					$userEnclosures = JSON.parse(JSON.stringify(enclosures));
 					if (!location.pathname.startsWith('/panel'))
 						await goto('/panel/map', { replaceState: true });

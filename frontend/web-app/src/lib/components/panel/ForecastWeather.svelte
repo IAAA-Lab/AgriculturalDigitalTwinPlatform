@@ -1,19 +1,19 @@
 <script lang="ts">
 	import Error from '$lib/components/misc/Error.svelte';
 	import Loading from '$lib/components/misc/Loading.svelte';
-	import { enclosuresService } from '$lib/config/config';
+	import { digitalTwinsService } from '$lib/config/config';
 	import { getWeatherIcon } from '$lib/core/functions';
 	import ForecastWeatherItem from './ForecastWeatherItem.svelte';
 
-	export let enclosureId: String;
-	let aux = enclosureId.split('-');
+	export let digitalTwinId: String;
+	let aux = digitalTwinId.split('-');
 	aux.pop();
 	const parcelId = aux.join('-');
 </script>
 
 <section class="card">
 	<h3 class="m-0 mb-8">Previsión (7 días)</h3>
-	{#await enclosuresService.getForecastWeather(parcelId)}
+	{#await digitalTwinsService.getForecastWeather(parcelId)}
 		<Loading />
 	{:then forecast}
 		{#each forecast.prediction.day as f, i}

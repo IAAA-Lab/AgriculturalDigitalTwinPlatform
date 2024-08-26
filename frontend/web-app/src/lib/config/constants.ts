@@ -20,6 +20,11 @@ const tabs = [
 		label: 'Configuración',
 		path: '/panel/settings',
 		icon: `<i class="fi fi-rr-settings" />`
+	},
+	{
+		label: 'Añadir nuevo gemelo digital',
+		path: '/panel/add-digital-twin',
+		icon: `<i class="fi fi-rr-plus" />`
 	}
 ];
 

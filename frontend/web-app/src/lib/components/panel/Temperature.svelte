@@ -4,6 +4,8 @@
 	import Chart from './Chart.svelte';
 
 	export let pred: Prediction;
+
+	const hourOfDay = new Date().getHours();
 </script>
 
 <div class="card">
@@ -18,6 +20,7 @@
 					datasets: [
 						{
 							type: 'line',
+							order: 2,
 							data: pred?.ta.map((t) => ({
 								x: t.period,
 								y: t.value
@@ -37,6 +40,21 @@
 							borderWidth: 3,
 							borderColor: '#2F3030',
 							tension: 0.2
+						},
+						{
+							// Vertical line on current hour
+							type: 'bar',
+							backgroundColor: '#2F3030',
+							borderWidth: 1,
+							borderColor: '#2F3030',
+							barThickness: 2,
+							order: 1,
+							data: [
+								{
+									x: hourOfDay + '',
+									y: 50
+								}
+							]
 						}
 					]
 				},
@@ -84,13 +102,7 @@
 		grid-area: temperature;
 		display: flex;
 		flex-direction: column;
-		justify-self: end;
-		width: 70%;
-
-		.chart {
-			flex: 1;
-			height: 65%;
-		}
+		// justify-self: end;
 	}
 
 	.temp__min__max {

@@ -16,6 +16,6 @@ func (s *fileDumpService) GetFile(fileName string, bucket string, path string) (
 	return s.storageRepository.GetFile(fileName, bucket, path)
 }
 
-func (srv *fileDumpService) UploadFile(file []byte, fileName string, bucket string, path string) error {
-	return srv.storageRepository.UploadFile(file, fileName, bucket, path)
+func (srv *fileDumpService) UploadFile(file []byte, fileName string, bucket string, path string, metadata map[string]string) error {
+	return srv.storageRepository.UploadFile(file, fileName, bucket, path, metadata)
 }

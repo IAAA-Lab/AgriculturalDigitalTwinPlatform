@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { es } from 'date-fns/locale';
 	import Chart from './Chart.svelte';
-	import { enclosuresService } from '$lib/config/config';
+	import { digitalTwinsService } from '$lib/config/config';
 	import type { NDVI } from '$lib/core/Domain';
 
 	export let enclosureIds: string[] = [];
@@ -15,7 +15,7 @@
 
 	$: {
 		if (enclosureIds && enclosureIds.length > 0) {
-			enclosuresService
+			digitalTwinsService
 				.getNDVI(enclosureIds, new Date(startDate), new Date(endDate), undefined)
 				.then((ndvi) => {
 					ndviList = ndvi;

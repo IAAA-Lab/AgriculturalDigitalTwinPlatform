@@ -4,6 +4,7 @@ import (
 	"digital-twin/main-server/docs"
 	"digital-twin/main-server/src/internal/adapters/primary/web/rest-api/handlers"
 	"digital-twin/main-server/src/internal/adapters/primary/web/rest-api/middleware"
+	weebhooks "digital-twin/main-server/src/internal/adapters/primary/web/rest-api/webhooks"
 	"digital-twin/main-server/src/internal/adapters/secondary/minio"
 	"digital-twin/main-server/src/internal/adapters/secondary/mongodb"
 	"digital-twin/main-server/src/internal/adapters/secondary/redis"
@@ -13,7 +14,6 @@ import (
 
 	"os"
 
-	"github.com/dvwright/xss-mw"
 	"github.com/gin-gonic/gin"
 	"github.com/penglongli/gin-metrics/ginmetrics"
 	swaggerFiles "github.com/swaggo/files"
@@ -24,7 +24,7 @@ func CorsConfig() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", os.Getenv("FRONTEND_URL"))
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With, HX-Request, HX-Trigger, HX-Trigger-Name, HX-Target, HX-Prompt, HX-Current-URL")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, Origin, Cache-Control, X-Requested-With, Sec-WebSocket-Protocol, Sec-WebSocket-Version, Sec-WebSocket-Extensions")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, PATCH, DELETE")
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)
@@ -45,7 +45,6 @@ func setUpMonitoring(r *gin.Engine) *gin.Engine {
 func setupRouter() *gin.Engine {
 
 	mongoUri := os.Getenv("MONGO_URI")
-	mongoDb := os.Getenv("MONGO_DB")
 	redisUri := os.Getenv("REDIS_URI")
 	redisUsername := os.Getenv("REDIS_USERNAME")
 	redisPassword := os.Getenv("REDIS_PASSWORD")
@@ -57,22 +56,23 @@ func setupRouter() *gin.Engine {
 	temporalEndpoint := os.Getenv("TEMPORAL_ENDPOINT")
 
 	cacherepository := redis.NewRedisConn(redisUri, redisUsername, redisPassword)
-	mongodbRepository := mongodb.NewMongodbConn(mongoUri, mongoDb, 10)
+	mongodbRepository := mongodb.NewMongodbConn(mongoUri, 10)
 	minioRepository := minio.NewMinioConn(minioEndpoint, minioAccessKey, minioSecretAccessKey, false)
 	// rabbitMQRepository := rabbitmq.NewRabbitMQConn(rabbitMQURI)
 	temporalRepository := temporal.NewTemporalConn(temporalEndpoint)
 
 	authService := services.NewAuthService(cacherepository)
 	usersService := services.NewUsersService(mongodbRepository)
-	enclosuresService := services.NewEnclosuresService(mongodbRepository, temporalRepository)
+	digitalTwinsService := services.NewDigitalTwinsService(mongodbRepository, temporalRepository)
 	fileDumpService := services.NewFileDumpService(minioRepository)
 
 	encryptionMiddleware := middleware.InitEncryptionMiddleware(ivKey, encKey)
 	JWTMiddleware := middleware.InitJwtMiddleware(authService, usersService, os.Getenv("ENV_MODE"))
 
-	usersHandler := handlers.NewUsersHTTPHandler(usersService, enclosuresService)
-	enclosuresHandler := handlers.NewEnclosuresHTTPHandler(enclosuresService)
+	usersHandler := handlers.NewUsersHTTPHandler(usersService, digitalTwinsService)
+	enclosuresHandler := handlers.NewDigitalTwinsHTTPHandler(digitalTwinsService)
 	filesHandler := handlers.NewFilesHTTPHandler(fileDumpService)
+	temporalWeebhookHandler := weebhooks.NewHTTPWebhookHandler(digitalTwinsService)
 
 	r := gin.Default()
 	m := ginmetrics.GetMonitor()
@@ -80,17 +80,12 @@ func setupRouter() *gin.Engine {
 	m.Use(r)
 	r.SetTrustedProxies([]string{"localhost"})
 	r.Use(CorsConfig())
-	var xssMdlwr xss.XssMw
-	r.Use(xssMdlwr.RemoveXss())
+	// var xssMdlwr xss.XssMw
+	// r.Use(xssMdlwr.RemoveXss())
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(200, "pong")
 	})
-
-	// ---- private access
-	r.POST("/internal/files/upload", JWTMiddleware.AuthorizeJWT([]string{domain.ROLE_ADMIN, domain.ROLE_PRIVATE_ACCESS}), filesHandler.UploadFiles)
-	// For large file upload (default is 32 MB)
-	// r.MaxMultipartMemory = 8 << 20
 
 	// ---- Auth
 	authGroup := r.Group("/auth")
@@ -114,11 +109,32 @@ func setupRouter() *gin.Engine {
 	agrarianGroup.GET("/weather/daily", enclosuresHandler.GetDailyWeather)
 	agrarianGroup.GET("/weather/forecast", enclosuresHandler.GetForecastWeather)
 	agrarianGroup.GET("/weather/historical", enclosuresHandler.GetHistoricalWeather)
-	agrarianGroup.POST("/enclosures", enclosuresHandler.GetEnclosures)
-	agrarianGroup.GET("/enclosures/:id/neighbours", enclosuresHandler.GetEnclosuresInRadius)
+	agrarianGroup.POST("/enclosures", enclosuresHandler.GetDigitalTwins)
+	agrarianGroup.POST("/enclosures/new", enclosuresHandler.CreateNewDigitalTwin)
+	agrarianGroup.GET("/enclosures/:id/neighbours", enclosuresHandler.GetDigitalTwinsInRadius)
 	agrarianGroup.POST("/ndvi", enclosuresHandler.GetNDVI)
 	agrarianGroup.POST("/activities", enclosuresHandler.GetActivities)
-	agrarianGroup.GET("/crop-stats", enclosuresHandler.GetCropStats)
+
+	agrarianGroup.POST("/enclosures/:id/predictions", enclosuresHandler.GetPrediction)
+
+	agrarianGroup.POST("/enclosures/:id/files/activities", filesHandler.UploadActivitiesFiles)
+	agrarianGroup.POST("/enclosures/:id/files/yield", filesHandler.UploadYieldFiles)
+
+	agrarianGroup.POST("/enclosures/:id/simulations/start", enclosuresHandler.StartSimulation)
+	// agrarianGroup.POST("/enclosures/:id/simulations/resume", enclosuresHandler.ResumeSimulation)
+	agrarianGroup.POST("/enclosures/:id/simulations/stop", enclosuresHandler.StopSimulation)
+	agrarianGroup.POST("/enclosures/:id/simulations/speed", enclosuresHandler.SimulationSpeed)
+	agrarianGroup.GET("/enclosures/:id/simulations", enclosuresHandler.GetSimulations)
+	agrarianGroup.DELETE("/enclosures/:id/simulations/:simulationId", enclosuresHandler.DeleteSimulation)
+	r.GET("/enclosures/simulations/status/ws", enclosuresHandler.GetSimulationStatus)
+	r.GET("/enclosures/:id/sensor-stream", enclosuresHandler.GetSensorStreamData)
+
+	// For large file upload (default is 32 MB)
+	// r.MaxMultipartMemory = 8 << 20
+
+	// ---- Temporal webhook
+	r.POST("/temporal-webhook/landing", temporalWeebhookHandler.HandleWebhookLanding)
+	r.POST("/temporal-webhook/trusted", temporalWeebhookHandler.HandleWebhookTrusted)
 
 	return r
 }

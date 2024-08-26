@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"digital-twin/main-server/src/internal/core/ports"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
@@ -36,7 +37,8 @@ type FileIn struct {
 // @Failure 400 {object} Error "Bad request"
 // @Failure 500 {object} Error "Internal server error"
 // @Router /files/images [post]
-func (hdl *FilesHTTPHandler) UploadFiles(c *gin.Context) {
+func (hdl *FilesHTTPHandler) UploadActivitiesFiles(c *gin.Context) {
+	digitalTwinId := c.Param("id")
 	form, err := c.MultipartForm()
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"message": err.Error()})
@@ -53,7 +55,36 @@ func (hdl *FilesHTTPHandler) UploadFiles(c *gin.Context) {
 		defer file.Close()
 		buf := new(bytes.Buffer)
 		io.Copy(buf, file)
-		err = hdl.storageService.UploadFile(buf.Bytes(), fileIn.Filename, landingBucket, "")
+		err = hdl.storageService.UploadFile(buf.Bytes(), fileIn.Filename, landingBucket, digitalTwinId,
+			map[string]string{"digital-twin-id": digitalTwinId, "type": "activity"})
+		if err != nil {
+			c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+			return
+		}
+	}
+}
+
+func (hdl *FilesHTTPHandler) UploadYieldFiles(c *gin.Context) {
+	digitalTwinId := c.Param("id")
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{"message": err.Error()})
+		return
+	}
+	files := form.File["files"]
+	landingBucket := os.Getenv("MINIO_LANDING_ZONE")
+	for _, fileIn := range files {
+		file, err := fileIn.Open()
+		if err != nil {
+			c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+			return
+		}
+		defer file.Close()
+		buf := new(bytes.Buffer)
+		io.Copy(buf, file)
+		fmt.Println("Uploading file", digitalTwinId)
+		err = hdl.storageService.UploadFile(buf.Bytes(), fileIn.Filename, landingBucket, digitalTwinId,
+			map[string]string{"digital-twin-id": digitalTwinId, "type": "yield"})
 		if err != nil {
 			c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
 			return

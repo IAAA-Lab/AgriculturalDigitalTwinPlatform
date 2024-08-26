@@ -26,7 +26,6 @@
 
 <style>
 	.card {
-		grid-area: wind;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;

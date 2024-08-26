@@ -3,7 +3,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import leaflet from 'leaflet';
-	import type { Enclosure } from '$lib/core/Domain';
+	import type { DigitalTwin } from '$lib/core/Domain';
 	import 'leaflet.markercluster';
 	import { formattedDate, formattedTime, getColor, numberWithCommas } from '$lib/core/functions';
 	import mapStore from '../../../routes/panel/(map)/store';
@@ -12,7 +12,7 @@
 	let map: leaflet.Map;
 	let mapElement: any;
 	let i = 0;
-	export let enclosures: Enclosure[] | undefined;
+	export let enclosures: DigitalTwin[] | undefined;
 	export let distance = 100;
 
 	$: {
@@ -61,7 +61,7 @@
 						// Set selected enclosure
 						mapStore.set({
 							flyToCoords: $mapStore.flyToCoords,
-							selectedEnclosure: feature as Enclosure
+							selectedEnclosure: feature as DigitalTwin
 						});
 					});
 				}
