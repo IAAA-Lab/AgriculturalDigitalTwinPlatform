@@ -9,8 +9,7 @@ from common.functions import DB_MongoClient, DB_MinioClient
 from common.constants import Constants
 from dataclasses import dataclass
 import io
-import json
-from datetime import datetime, timedelta
+from datetime import timedelta
 from temporalio.client import Client
 from temporalio.worker import Worker
 from temporalio.common import RetryPolicy

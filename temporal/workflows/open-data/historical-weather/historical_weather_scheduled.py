@@ -6,7 +6,6 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from common.functions import DB_MongoClient
 from dataclasses import dataclass
-
 from historical_weather import HistoricalWeatherWorkflow, Input_Run as HistoricalWeatherInputRun, create_sequences, extract, transform, load
 from datetime import datetime, timedelta
 from temporalio.client import Client
@@ -47,12 +46,16 @@ class HistoricalWeatherScheduleWorkflow:
         meteo_station_ids = await workflow.execute_activity(extract_distinct_meteo_stations_ids,
                                                             start_to_close_timeout=timedelta(seconds=10),
                                                             retry_policy=RetryPolicy(maximum_attempts=2))
-        # # Run in batches of BATCH_SIZE to avoid overloading the server
+        # Run in batches of BATCH_SIZE to avoid overloading the server
         for meteo_station_id in meteo_station_ids:
             try:
-                last_known_date = await workflow.execute_activity(extract_last_known_date, Input_Extract_Date(meteo_station_id["digital_twin_ids"][0]),
+                last_known_date = HISTORIC_WEATHER_EXTRACT_FIRST_DATE.strftime("%d-%m-%Y")
+                for digital_twin_id in meteo_station_id["digital_twin_ids"]:
+                    last_known_date_tmp = await workflow.execute_activity(extract_last_known_date, Input_Extract_Date(digital_twin_id),
                                                                     start_to_close_timeout=timedelta(seconds=10),
                                                                     retry_policy=RetryPolicy(maximum_attempts=2))
+                    if datetime.strptime(last_known_date_tmp, "%d-%m-%Y") < datetime.strptime(last_known_date, "%d-%m-%Y"):
+                        last_known_date = last_known_date_tmp
                 await workflow.execute_child_workflow(HistoricalWeatherWorkflow, HistoricalWeatherInputRun(meteo_station_id["meteo_station_id"],
                                                                 meteo_station_id["digital_twin_ids"], last_known_date, date_end),
                                                                 id=f"historical-weather-workflow-{meteo_station_id['meteo_station_id']}",

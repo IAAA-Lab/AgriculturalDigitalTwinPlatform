@@ -59,7 +59,6 @@
 
 	onDestroy(() => {
 		ws?.close();
-		handleStopSimulation();
 	});
 
 	const handleStartSimulation = () => {

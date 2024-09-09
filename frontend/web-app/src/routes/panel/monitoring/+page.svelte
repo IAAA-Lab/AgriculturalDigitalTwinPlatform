@@ -18,6 +18,7 @@
 	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import type { DigitalTwin } from '$lib/core/Domain';
 	import { onCropImageError } from '$lib/core/functions';
+	import Notifications from '../../../lib/components/panel/Notifications.svelte';
 
 	let digitalTwinId: string | undefined =
 		$page.url.searchParams.get('digitalTwinId') || $userEnclosures.at(0)?.id;

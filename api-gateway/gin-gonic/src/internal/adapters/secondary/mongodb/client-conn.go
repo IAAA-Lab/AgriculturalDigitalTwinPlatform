@@ -2,7 +2,6 @@ package mongodb
 
 import (
 	"context"
-	"fmt"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -31,7 +30,6 @@ const (
 
 func NewMongodbConn(dbUrl string, timeout int) *mongodbConn {
 	mongoClient, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(dbUrl))
-	fmt.Println("errrrrrrrrrrroooooorr: ", err)
 	if err != nil {
 		panic(err)
 	}

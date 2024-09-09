@@ -7,6 +7,7 @@
 	import { userEnclosures } from '$lib/config/stores/enclosures';
 	import { Role } from '$lib/core/Domain';
 	import { onMount } from 'svelte';
+	import Notifications from '../../lib/components/panel/Notifications.svelte';
 
 	let loading = true;
 
@@ -35,6 +36,7 @@
 </script>
 
 <div class="panel">
+	<Notifications digitalTwinId="-" />
 	{#if loading}
 		<Loading />
 	{:else}

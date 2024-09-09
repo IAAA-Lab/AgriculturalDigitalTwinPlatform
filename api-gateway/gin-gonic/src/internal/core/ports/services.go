@@ -37,6 +37,7 @@ type DigitalTwinsService interface {
 	ResumeSimulation(digitalTwin string, simulationId string) error
 	SimulationSpeed(digitalTwin string, simulationId string, speed float32) error
 	DeleteSimulation(digitalTwin string, simulationId string) error
+	HandleNotifications(digitalTwinId string, notificationType string, value interface{}) error
 }
 
 type JWTService interface {

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
+	import { formattedTime } from '../../core/functions';
 
 	export let digitalTwinId: string;
 	let eventSource: EventSource | undefined = undefined;
@@ -7,7 +8,8 @@
 	let humidity: any = undefined;
 	let pH: any = undefined;
 
-	onMount(() => {
+	$: {
+		eventSource?.close();
 		// Websocket connection
 		eventSource = new EventSource(
 			`http://localhost:8080/enclosures/${digitalTwinId}/sensor-stream`
@@ -27,7 +29,7 @@
 					break;
 			}
 		};
-	});
+	}
 
 	onDestroy(() => {
 		eventSource?.close();
@@ -37,17 +39,17 @@
 <div class="list">
 	<div class="card">
 		<h3 class="m-0">Temperatura</h3>
-		<span>{temperature?.timestamp || '--'}</span>
-		<h1 class="m-0">{temperature?.value || '--'} {temperature?.unit || '--'}</h1>
+		<span>{formattedTime(temperature?.timestamp) || '--'}</span>
+		<h1 class="m-0">{Math.round(temperature?.value) || '--'} {temperature?.unit || '--'}</h1>
 	</div>
 	<div class="card">
 		<h3 class="m-0">Humedad</h3>
-		<span>{humidity?.timestamp || '--'}</span>
+		<span>{formattedTime(humidity?.timestamp) || '--'}</span>
 		<h1 class="m-0">{humidity?.value || '--'} {humidity?.unit || '--'}</h1>
 	</div>
 	<div class="card">
-		<h3 class="m-0">Temperatura</h3>
-		<span>{pH?.timestamp || '--'}</span>
+		<h3 class="m-0">pH</h3>
+		<span>{formattedTime(pH?.timestamp) || '--'}</span>
 		<h1 class="m-0">{pH?.value || '--'} {pH?.unit || '--'}</h1>
 	</div>
 </div>

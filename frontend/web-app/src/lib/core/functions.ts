@@ -204,6 +204,7 @@ const getWeatherIcon = (description: string) => {
 };
 
 const formattedTime = (time: string) => {
+	if (!time) return undefined
 	return time.split('T')[0];
 };
 

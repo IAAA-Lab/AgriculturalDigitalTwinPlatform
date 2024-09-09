@@ -118,3 +118,7 @@ func (srv *digitalTwinsService) DeleteSimulation(digitalTwinId string, simulatio
 	}
 	return srv.persistence.DeleteSimulation(digitalTwinId, simulationId)
 }
+
+func (srv *digitalTwinsService) HandleNotifications(digitalTwinId string, notificationType string, value interface{}) error {
+	return srv.workflows.HandleNotifications(digitalTwinId, notificationType, value)
+}

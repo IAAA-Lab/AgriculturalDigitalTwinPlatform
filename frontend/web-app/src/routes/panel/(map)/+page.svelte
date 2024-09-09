@@ -134,14 +134,16 @@
 			.getNDVI(enclosureId, undefined, undefined, 1)
 			.then((res) => {
 				digitalTwins = digitalTwins?.map((enclosure) => {
-					const ndvi = res.find((ndvi) => ndvi.enclosureId === enclosure.id);
-					return {
-						...enclosure,
-						properties: {
-							...enclosure.properties,
-							ndvi: ndvi
-						}
-					};
+					if (enclosureId === enclosure.id) {
+						return {
+							...enclosure,
+							properties: {
+								...enclosure.properties,
+								ndvi: res?.at(0)?.ndvi?.at(0)?.value
+							}
+						};
+					}
+					return enclosure;
 				});
 			})
 			.catch((err) => {});
@@ -178,10 +180,11 @@
 
 <!-- If there is no enclosures -->
 <h1 class="mt-0">Mapa</h1>
-<section class="no-enclosures">
+<section>
 	{#if !digitalTwins || digitalTwins.length === 0}
-		<p>No hay recintos disponibles</p>
-		<button on:click={() => (location.href = '/panel/add-digital-twin')}>Añadir recintos</button>
+		<button style="height: 100px;" on:click={() => (location.href = '/panel/add-digital-twin')}
+			>No hay recintos. Añadir recintos</button
+		>
 	{:else}
 		<div class="card filter" style="grid-area: filter">
 			<Filter
@@ -220,7 +223,7 @@
 						irrigationCoef: enclosure.properties.irrigationCoef,
 						usedArea: enclosure.properties.areaSIGPAC,
 						cropName: enclosure.properties.cropName,
-						ndvi: enclosure.properties.ndvi?.ndvi?.at(0)?.value
+						ndvi: enclosure.properties.ndvi
 					}))}
 					columns={[
 						{

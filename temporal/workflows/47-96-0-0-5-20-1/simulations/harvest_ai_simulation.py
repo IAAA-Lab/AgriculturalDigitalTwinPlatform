@@ -146,8 +146,8 @@ def update(digital_twin: dict, time: dict, weather: dict):
     if digital_twin["sun_hours"] > 100 and digital_twin["cold_hours"] > 100 and digital_twin["prec_accumulated"] > 100:
         digital_twin["crop_stage"] = "Mature"
     if digital_twin["crop_stage"] == "Mature":
-        digital_twin.harvest = {
-            "date": str(time),
+        digital_twin["harvest"] = {
+            "date": f"{time['year']}-{time['month']}-{time['day']} {time['hour']}:00:00",
             "numTrees": digital_twin["num_trees"],
             "affectedTrees": digital_twin["affected_trees"],
             "deadTrees": digital_twin["dead_trees"],
@@ -247,7 +247,7 @@ async def run_simulation(input: InputNextStage):
     update(digital_twin, time, weather)
     # Check if there has been a new harvest
     if digital_twin["harvest"] is not None:
-        await load_result(InputLoadResult(digital_twin.harvest, input.simulation_id, input.digital_twin_id))
+        await load_result(InputLoadResult(digital_twin["harvest"], input.simulation_id, input.digital_twin_id))
         digital_twin["harvest"] = None
     # Check if simulation has ended
     if pd.to_datetime(str(time["day"]) + "/" + str(time["month"]) + "/" + str(time["year"])) > pd.to_datetime(digital_twin["end_date"]):
@@ -382,7 +382,6 @@ class HarvestAiSimulationWorkflow:
 
     @workflow.signal
     async def speed(self, speed: float) -> None:
-        print(speed, flush=True)
         if (speed == 0):
             self.hour_duration = math.inf
             return
@@ -405,7 +404,7 @@ class HarvestAiSimulationWorkflow:
         self.weather = Weather(0, 0, 0, "N", 0)
         self.plagues = []
         while True:
-            self.digital_twin, self.weather, self.time, self.plagues, over = await workflow.execute_local_activity(run_simulation, InputNextStage(self.time, self.digital_twin, self.plagues, self.weather, simulation_id, input.digital_twin_id),
+            self.digital_twin, self.weather, self.time, self.plagues, over = await workflow.execute_activity(run_simulation, InputNextStage(self.time, self.digital_twin, self.plagues, self.weather, simulation_id, input.digital_twin_id),
                                         start_to_close_timeout=timedelta(hours=3),
                                         retry_policy=RetryPolicy(maximum_attempts=1, backoff_coefficient=1))
             self.time["hour_duration"] = self.hour_duration

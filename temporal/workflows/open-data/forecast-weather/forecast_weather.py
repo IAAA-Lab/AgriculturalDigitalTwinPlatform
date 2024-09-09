@@ -16,7 +16,7 @@ with workflow.unsafe.imports_passed_through():
 class Input_Extract:
     enclosureId: str
 
-@activity.defn()
+@activity.defn(name="extract_forecast_weather")
 async def extract(input: Input_Extract) -> list[dict]:
     AUTH_TOKEN = os.environ.get("AGROSLAB_AUTH_TOKEN")
     AGROSLAB_API_URL = os.environ.get("AGROSLAB_API_URL")
@@ -37,9 +37,9 @@ async def extract(input: Input_Extract) -> list[dict]:
     headers = {
         'Authorization': AUTH_TOKEN,
     }
-
-    async with CachedSession(cache=SQLiteBackend()) as session: # Works if activity is local
-        # async with aiohttp.ClientSession() as session:
+    import aiohttp
+    # async with CachedSession(cache=SQLiteBackend()) as session: # Works if activity is local
+    async with aiohttp.ClientSession() as session:
         async with session.post(AGROSLAB_API_URL, json=body, headers=headers, ssl=False) as resp:
             if resp.status != 200:
                 raise  Exception(f"Status code: {resp.status} - {input.enclosureId} -> Response: {await resp.text()}")
@@ -118,8 +118,8 @@ class Input_Run:
 class ForecastWeatherWorkflow:
     @workflow.run
     async def run(self, input: Input_Run) -> dict:
-        raw_data = await workflow.execute_local_activity(extract, Input_Extract(input.enclosure_id), start_to_close_timeout=timedelta(seconds=15), retry_policy=RetryPolicy(maximum_attempts=2, backoff_coefficient=2))
-        data = await workflow.execute_local_activity(transform, Input_Transform(raw_data, input.enclosure_id), start_to_close_timeout=timedelta(seconds=5), retry_policy=RetryPolicy(maximum_attempts=1, backoff_coefficient=1))
+        raw_data = await workflow.execute_activity(extract, Input_Extract(input.enclosure_id), start_to_close_timeout=timedelta(seconds=15), retry_policy=RetryPolicy(maximum_attempts=2, backoff_coefficient=2))
+        data = await workflow.execute_activity(transform, Input_Transform(raw_data, input.enclosure_id), start_to_close_timeout=timedelta(seconds=5), retry_policy=RetryPolicy(maximum_attempts=1, backoff_coefficient=1))
         return data
     
 async def main(enclosure_id):

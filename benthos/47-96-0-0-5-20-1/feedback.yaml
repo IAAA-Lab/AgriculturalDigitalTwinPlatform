@@ -1,0 +1,38 @@
+input:
+  label: "feedback"
+  http_server:
+    address: ":8056"
+    path: /47-96-0-0-5-20-1/feedback
+    allowed_verbs:
+      - POST
+    timeout: 5s
+    rate_limit: ""
+    # cors:
+    #   enabled: true
+    #   allowed_origins: ["http://localhost:3000"]
+
+pipeline:
+  threads: 2
+  processors:
+    # # Check headers for api key
+    # - label: check_api_key
+    #   bloblang: |
+    #     root = this
+    #     if this.header("Authorization") != "PEPE" {
+    #       root = deleted()
+    #     }
+
+    - switch:
+        - check: this.type == "water"
+          # TODO: SEND TO ACTUATOR
+          processors:
+            - log:
+                level: INFO
+                message: 'value: ${!json("value")}, type: ${!json("type")}'
+
+# If everything good, send a sync response
+output:
+  sync_response: {}
+
+  processors:
+    - bloblang: 'root = "value %v of type %s sent correctly".format(this.value, this.type)'

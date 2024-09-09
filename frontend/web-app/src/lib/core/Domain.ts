@@ -257,6 +257,14 @@ type SimulationInfo = {
 	numTrees: number;
 };
 
+type Notifications = {
+	type: string;
+	value: any;
+	timestamp: Date;
+	digitalTwinId: string;
+	importance: string;
+};
+
 export type {
 	Activity,
 	CropStats,

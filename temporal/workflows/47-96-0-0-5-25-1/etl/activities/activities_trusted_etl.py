@@ -121,7 +121,6 @@ class ActivitiesTrustedWorkflow():
         activities, file_name, metadata = await workflow.execute_activity(extract, Input_Extract(input.digital_twin_id, input.file_name),
                                                          start_to_close_timeout=timedelta(seconds=15),
                                             retry_policy=RetryPolicy(maximum_attempts=2, backoff_coefficient=2))
-        print(activities)
         validated_data = await workflow.execute_activity(validate, Input_Validate(activities),
                                                             start_to_close_timeout=timedelta(seconds=15),
                                                             retry_policy=RetryPolicy(maximum_attempts=2, backoff_coefficient=2))

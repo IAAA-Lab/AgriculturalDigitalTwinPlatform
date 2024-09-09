@@ -7,48 +7,6 @@
 	export let title = 'Suba sus documentos';
 	export let url = '/internal/files/upload';
 
-	onMount(() => {
-		FilePond.registerPlugin(FilePondPluginFileValidateType);
-
-		const pond = FilePond.create(document.querySelector('input[type="file"]') as HTMLInputElement, {
-			allowMultiple: true,
-			instantUpload: false,
-			allowRevert: false,
-			server: {
-				url: API_URL,
-				process: {
-					url: url,
-					withCredentials: true
-				},
-				headers: {
-					Authorization: `${axiosInstance.defaults.headers.common['Authorization']}`
-				}
-			},
-			acceptedFileTypes: [
-				'application/pdf',
-				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-				'application/vnd.ms-excel',
-				'.csv',
-				'application/json'
-			],
-			fileValidateTypeLabelExpectedTypes: 'Sólo se permiten .xlsx, .csv, .pdf o .json',
-			labelFileTypeNotAllowed: 'No se permite este tipo de archivo',
-			labelIdle:
-				"Arrastra y suelta tus archivos o <span class='filepond--label-action'> Busca archivos </span>",
-			labelFileLoading: 'Cargando...',
-			labelFileLoadError: 'Error al cargar',
-			labelFileProcessing: 'Subiendo...',
-			labelFileProcessingComplete: 'Subido',
-			labelTapToCancel: 'Pulsa para cancelar'
-		});
-		// // Check if the filepond element is already in the DOM
-		// if (document?.body?.contains(pond.element)) {
-		// 	// If so, remove it
-		// 	document?.body?.removeChild(pond.element as Node);
-		// }
-		// document?.body?.appendChild(pond.element as Node);
-	});
-
 	$: {
 		FilePond.registerPlugin(FilePondPluginFileValidateType);
 

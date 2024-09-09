@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -19,9 +20,19 @@ func (mc *mongodbConn) CreateNewDigitalTwin(digitalTwin domain.DigitalTwin) erro
 	if err != nil {
 		return err
 	}
+	// First set geo index
+	indexModel := mongo.IndexModel{
+		Keys: bson.D{{"geometry", "2dsphere"}},
+	}
+	_, err = mc.client.Database("common").Collection(DIGITAL_TWINS_COLLECTION).Indexes().CreateOne(ctx, indexModel)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
 	// Insert in common database
 	_, err = mc.client.Database("common").Collection(DIGITAL_TWINS_COLLECTION).InsertOne(ctx, digitalTwin)
-	return nil
+	fmt.Println(err)
+	return err
 }
 
 func (mc *mongodbConn) GetDigitalTwins(digitalTwinIds []string, year int16) ([]domain.DigitalTwin, error) {

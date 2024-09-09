@@ -1,0 +1,42 @@
+# https://www.youtube.com/watch?v=EA2Pco3EvpU
+
+input:
+  label: "mqtt_test"
+  mqtt:
+    urls: ["test.mosquitto.org:1883"]
+    topics: ["#"]
+    client_id: ""
+    connect_timeout: 30s
+    auto_replay_nacks: false # if false, rejected messages are deleted, improving back pressure
+    qos: 0
+
+pipeline:
+  threads: 4
+  processors:
+    # Filter numbers
+    - label: "filter"
+      bloblang: |
+        root = if this.number().catch(null) != null && this.number() > 61.5 && this.number() < 62 {
+          this
+        } else {
+          deleted()
+        }
+    - label: build_body
+      mapping: |
+        root.type = "water"
+        root.value = this.number()
+        root.timestamp = now()
+        root.digitalTwinId = "47-96-0-0-5-20-1"
+
+output:
+  label: gin_webhook
+  http_client:
+    url: "http://gin-gonic:8080/temporal-webhook/notifications"
+    verb: POST
+    headers: {}
+    timeout: 10s
+    max_in_flight: 64
+    batching:
+      count: 1
+    # auto_replay_nacks: false
+    retries: 0

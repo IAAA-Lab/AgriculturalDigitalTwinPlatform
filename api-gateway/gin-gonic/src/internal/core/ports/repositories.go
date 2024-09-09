@@ -44,6 +44,7 @@ type DigitalTwinsWorkflows interface {
 	StopSimulation(digitalTwin string, simulationId string) error
 	ResumeSimulation(digitalTwin string, simulationId string) error
 	SimulationSpeed(digitalTwin string, simulationId string, speed float32) error
+	HandleNotifications(digitalTwinId string, notificationType string, value interface{}) error
 }
 
 // ---- Adapter specific interfaces ----

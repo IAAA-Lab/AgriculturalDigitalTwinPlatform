@@ -1,10 +1,10 @@
 openpyxl === 3.1.2
-pymongo === 4.3.3
+pymongo === 4.8.0
 minio === 7.2.7
-pandas === 2.0.2
+pandas === 2.2.2
 pyarrow === 12.0.0
-keras === 3.0.0
-tensorflow === 2.16.1
+keras === 2.14.0
+tensorflow === 2.14.1
 aiohttp === 3.9.5
 temporalio === 1.6.0
 aiohttp_client_cache === 0.11.0
@@ -12,3 +12,6 @@ aiosqlite === 0.20.0
 jsonschema === 4.22.0
 pandera === 0.20.3
 simpy === 4.1.1
+scikit-learn === 1.5.0
+mlflow === 2.16.0
+boto3 === 1.35.12

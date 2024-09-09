@@ -128,6 +128,7 @@ func setupRouter() *gin.Engine {
 	agrarianGroup.DELETE("/enclosures/:id/simulations/:simulationId", enclosuresHandler.DeleteSimulation)
 	r.GET("/enclosures/simulations/status/ws", enclosuresHandler.GetSimulationStatus)
 	r.GET("/enclosures/:id/sensor-stream", enclosuresHandler.GetSensorStreamData)
+	r.GET("/enclosures/:id/notifications", enclosuresHandler.GetNotifications)
 
 	// For large file upload (default is 32 MB)
 	// r.MaxMultipartMemory = 8 << 20
@@ -135,6 +136,7 @@ func setupRouter() *gin.Engine {
 	// ---- Temporal webhook
 	r.POST("/temporal-webhook/landing", temporalWeebhookHandler.HandleWebhookLanding)
 	r.POST("/temporal-webhook/trusted", temporalWeebhookHandler.HandleWebhookTrusted)
+	r.POST("/temporal-webhook/notifications", temporalWeebhookHandler.HandleWebhookNotifications)
 
 	return r
 }

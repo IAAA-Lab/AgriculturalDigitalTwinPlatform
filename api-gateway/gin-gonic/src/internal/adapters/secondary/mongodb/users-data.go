@@ -4,7 +4,6 @@ import (
 	"context"
 	"digital-twin/main-server/src/internal/core/domain"
 	"digital-twin/main-server/src/pkg/apperrors"
-	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -26,7 +25,6 @@ func (mc *mongodbConn) FetchUserByEmail(email string) (domain.User, error) {
 	defer cancel()
 	err := mc.client.Database("common").Collection(USERS_COLLECTION).FindOne(ctx, filter).Decode(&user)
 	if err != nil {
-		fmt.Println("error_coinca", err)
 		return domain.User{}, apperrors.ErrNotFound
 	}
 	return user, nil

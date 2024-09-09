@@ -197,7 +197,10 @@
 								x: yieldPrediction.date,
 								y: 1
 							})),
-							label: yieldPredictions?.length > 0 ? 'Mejor momento cosechar' : '',
+							label:
+								yieldPredictions?.length > 0
+									? `Mejor momento cosecha (${yieldPredictions[0].yield} kg)`
+									: '',
 							fill: true,
 							backgroundColor: yieldPredictions?.length > 0 ? 'orange' : 'transparent',
 							yAxisID: 'y2',

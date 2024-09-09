@@ -130,8 +130,10 @@ func (r *temporalConn) CreateNewDigitalTwinNamespace(digitalTwinId string) error
 		Namespace:                        digitalTwinId,
 		WorkflowExecutionRetentionPeriod: durationpb.New(time.Duration(3 * time.Hour)),
 	})
-	if err.Error() == "Namespace already exists." {
-		return nil
+	if err != nil {
+		if err.Error() == "Namespace already exists." {
+			return nil
+		}
 	}
 	return err
 }
@@ -274,5 +276,27 @@ func (r *temporalConn) StopSimulation(digitalTwinId string, simulationId string)
 func (r *temporalConn) SimulationSpeed(digitalTwinId string, simulationId string, speed float32) error {
 	err := r.GetClient(digitalTwinId).SignalWorkflow(context.Background(), "simulation_"+simulationId, "", "speed", speed)
 	fmt.Println(err)
+	return err
+}
+
+func (r *temporalConn) HandleNotifications(digitalTwinId string, notificationType string, value interface{}) error {
+	workflowOptions := client.StartWorkflowOptions{
+		ID:        "digital-twin-notifications-task-queue-water" + uuid.Must(uuid.NewV4()).String(),
+		TaskQueue: "digital-twin-notifications-task-queue",
+		RetryPolicy: &temporal.RetryPolicy{
+			MaximumAttempts: 1,
+		},
+	}
+	type Input struct {
+		DigitalTwinId    string      `json:"digital_twin_id"`
+		Value            interface{} `json:"value"`
+		NotificationType string      `json:"type"`
+	}
+	input := Input{
+		DigitalTwinId:    digitalTwinId,
+		Value:            value,
+		NotificationType: notificationType,
+	}
+	_, err := r.GetClient("open-data").ExecuteWorkflow(context.Background(), workflowOptions, "DigitalTwinNotificationsWorkflow", input)
 	return err
 }

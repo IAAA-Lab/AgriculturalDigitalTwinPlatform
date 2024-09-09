@@ -29,7 +29,7 @@ class Input_Extract:
 async def extract(input: Input_Extract) -> list[dict]:
     from aiohttp_client_cache import CachedSession, SQLiteBackend
     AUTH_TOKEN = os.environ.get("AGROSLAB_AUTH_TOKEN")
-    AGROSLAB_API_URL = os.environ.get("AGROSLAB_API_URL", "http://agroslab.geoslab.com/AgroslabHttpServlet/AgroslabHttpServlet")
+    AGROSLAB_API_URL = os.environ.get("AGROSLAB_API_URL")
     body = {
         "operation": "aemetclimatologiadiaria",
         # Date format: DD-MM-YYYY

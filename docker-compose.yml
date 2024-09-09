@@ -104,6 +104,7 @@ services:
     volumes:
       - ./storage/mongodb/mongodata:/data/db
       - ./storage/mongodb/init_db.js:/docker-entrypoint-initdb.d/init_db.js
+      - ./storage/mongodb/init_rs.sh:/data/init_rs.sh
       - ./storage/mongodb/mongo-keyfile.key:/data/mongo-keyfile.key
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
@@ -162,7 +163,7 @@ services:
       - 5432
     volumes:
       - ./storage/postgres/data:/var/lib/postgresql/data
-    command: postgres -c 'max_connections=200'
+    command: postgres -c 'max_connections=5000'
 
   temporal:
     container_name: temporal
@@ -243,6 +244,7 @@ services:
     restart: always
     ports:
       - 5000:5000
+      - 5001:5001
     depends_on:
       - minio
     environment:
@@ -263,7 +265,9 @@ services:
     image: ghcr.io/benthosdev/benthos:latest
     ports:
       - 4195:4195
+      - 8056:8056 # Feedback port for digital twins feedback
     environment:
       - MONGO_URI=${MONGO_URI}
     volumes:
-      - ./benthos/config.yaml:/benthos.yaml
+      - ./benthos/:/workflows
+    entrypoint: /workflows/entrypoint.sh

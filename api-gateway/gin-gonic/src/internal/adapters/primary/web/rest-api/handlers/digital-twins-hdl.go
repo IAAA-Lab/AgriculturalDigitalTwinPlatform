@@ -708,6 +708,8 @@ func (hdl *DigitalTwinsHTTPHandler) GetSimulations(c *gin.Context) {
 	c.JSON(200, simulations)
 }
 
+// -----------------------------------------------------------------------
+
 // @Summary Get Simulations
 // @Description Get Simulations
 // @Tags Enclosures
@@ -727,4 +729,41 @@ func (hdl *DigitalTwinsHTTPHandler) DeleteSimulation(c *gin.Context) {
 		return
 	}
 	c.JSON(200, "simulation deleted correctly")
+}
+
+// -----------------------------------------------------------------------
+type GetNotificationsIn struct {
+	DigitalTwinId string `form:"digitalTwinId" binding:"required"`
+}
+
+func (hdl *DigitalTwinsHTTPHandler) GetNotifications(c *gin.Context) {
+	_ = c.Param("id")
+	dataChan := make(chan any)
+	mongoClient, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(os.Getenv("MONGO_URI")))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer mongoClient.Disconnect(context.Background())
+	collection := mongoClient.Database("common").Collection("Notifications")
+	// options: only when "status" array changes
+	options := options.ChangeStream()
+	changeStream, err := collection.Watch(context.Background(), bson.D{}, options)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	go func() {
+		for changeStream.Next(context.Background()) {
+			var data map[string]interface{}
+			changeStream.Decode(&data)
+			dataChan <- data["fullDocument"]
+		}
+	}()
+	c.Stream(func(w io.Writer) bool {
+		// Stream message to client from message channel
+		msg := <-dataChan
+		c.SSEvent("message", msg)
+		return true
+	})
 }

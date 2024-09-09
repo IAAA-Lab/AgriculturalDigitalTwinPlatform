@@ -96,3 +96,33 @@ func (h *HTTPWebhookHandler) HandleWebhookTrusted(c *gin.Context) {
 		}
 	}
 }
+
+type WebhookDataNotification struct {
+	Type          string      `json:"type"`
+	DigitalTwinId string      `json:"digitalTwinId"`
+	Value         interface{} `json:"value"`
+}
+
+func (h *HTTPWebhookHandler) HandleWebhookNotifications(c *gin.Context) {
+	var data WebhookDataNotification
+	err := json.NewDecoder(c.Request.Body).Decode(&data)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// Get user metadata
+	notificationType := data.Type
+	digitalTwinId := data.DigitalTwinId
+	value := data.Value
+	// Send response
+	// Execute enrichment data workflow
+	err = h.digitalTwinsService.HandleNotifications(digitalTwinId, notificationType, value)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"message": "Webhook received successfully",
+	})
+}

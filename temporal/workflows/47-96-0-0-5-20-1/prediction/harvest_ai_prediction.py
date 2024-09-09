@@ -1,7 +1,6 @@
 from datetime import timedelta
 import logging
 import math
-import numpy as np
 from dataclasses import dataclass
 from temporalio import workflow, activity
 from temporalio.client import Client
@@ -18,7 +17,7 @@ async def get_model():
   import mlflow
   # Get last run id
   # mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
-  mlflow.set_tracking_uri("http://localhost:5000")
+  mlflow.set_tracking_uri("http://mlflow:5000")
   run_id = mlflow.search_runs(experiment_names=["Yield"]).iloc[0].run_id
   # Load model
   model = mlflow.pyfunc.load_model(f"runs:/{run_id}/yield_model")
@@ -27,7 +26,8 @@ async def get_model():
 @activity.defn()
 async def get_data() -> list[dict]:
   from pymongo import MongoClient
-  client = MongoClient("mongodb://Hd763nd4873hd3jh:idYtR65bja_56GGVdgd_df87Yh3@localhost:27018/?authMechanism=DEFAULT&authSource=admin")
+  import os
+  client = MongoClient(os.getenv("MONGO_URI"))
   database = client["47-96-0-0-5-20-1"]
   # Merge information from different collections
   # Weather
@@ -112,7 +112,7 @@ async def train_model(input: Input_TrainModel) -> None:
       #     "n_estimators": model.n_estimators,
       #     "max_depth": model.max_depth
       # })
-      mlflow.log_metric("mean_squared_error", mean_squared_error(y_test['yield'].ravel(), y_pred[:,0]))
+      mlflow.log_metric("mean_squared_error", mean_squared_error(y_test['yield'].to_numpy(), y_pred[:,0]))
       # mlflow.sklearn.save_model(model, "model")
       mlflow.sklearn.log_model(sk_model=model,
                               artifact_path="yield_model",
@@ -137,7 +137,8 @@ class Input_Load:
 @activity.defn()
 async def load_prediction(input: Input_Load) -> None:
   from pymongo import MongoClient
-  client = MongoClient("mongodb://Hd763nd4873hd3jh:idYtR65bja_56GGVdgd_df87Yh3@localhost:27018/?authMechanism=DEFAULT&authSource=admin")
+  import os
+  client = MongoClient(os.getenv("MONGO_URI"))
   database = client["47-96-0-0-5-20-1"]
   # Convert prediction date to pd.Timestamp
   prediction_date = pd.Timestamp(input.prediction_date)
