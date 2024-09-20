@@ -254,3 +254,13 @@ type Simulation struct {
 	NumTrees     int                 `json:"numTrees"`
 	Results      []SimulationResults `json:"results"`
 }
+
+type Command struct {
+	Timestamp time.Time
+	Type      string        `json:"type"`
+	Value     interface{}   `json:"value"`
+	Unit      string        `json:"unit"`
+	Action    string        `json:"action"`
+	Duration  time.Duration `json:"duration"`
+	Automated bool          `json:"automated"`
+}

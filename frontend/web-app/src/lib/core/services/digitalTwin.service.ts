@@ -82,6 +82,9 @@ class DigitalTwinsService implements IDigitalTwinsService {
 	deleteSimulation(digitalTwinId: string, simulationId: string) {
 		return this.parcelsRepository.deleteSimulation(digitalTwinId, simulationId);
 	}
+	getCommands(digitalTwinId: string) {
+		return this.parcelsRepository.getCommands(digitalTwinId);
+	}
 }
 
 export default DigitalTwinsService;

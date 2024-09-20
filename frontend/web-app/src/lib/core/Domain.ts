@@ -265,6 +265,16 @@ type Notifications = {
 	importance: string;
 };
 
+type Command = {
+	type: string;
+	value: any;
+	timestamp: Date;
+	unit: string;
+	automated: boolean;
+	action: string;
+	duration: number;
+};
+
 export type {
 	Activity,
 	CropStats,
@@ -280,7 +290,9 @@ export type {
 	Treatment,
 	User,
 	YieldPrediction,
-	SimulationInfo
+	SimulationInfo,
+	Notifications,
+	Command,
 };
 
 export { Role };

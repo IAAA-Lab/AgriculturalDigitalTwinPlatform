@@ -767,3 +767,26 @@ func (hdl *DigitalTwinsHTTPHandler) GetNotifications(c *gin.Context) {
 		return true
 	})
 }
+
+// -----------------------------------------------------------------------
+
+// @Summary Get Commands
+// @Description Get Commands
+// @Tags Enclosures
+// @Accept  json
+// @Produce  json
+// @Param digitalTwinId query string true "Digital Twin Id"
+// @Success 200 {object} string
+// @Failure 400 {object} apperrors.Error
+// @Failure 500 {object} apperrors.Error
+// @Router /enclosures/:id/commands [get]
+
+func (hdl *DigitalTwinsHTTPHandler) GetCommands(c *gin.Context) {
+	digitalTwinId := c.Param("id")
+	commands, err := hdl.digitalTwinsService.GetCommands(digitalTwinId)
+	if err != nil {
+		c.AbortWithStatusJSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	c.JSON(200, commands)
+}

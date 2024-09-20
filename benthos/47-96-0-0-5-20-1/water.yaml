@@ -16,27 +16,40 @@ pipeline:
     # Filter numbers
     - label: "filter"
       bloblang: |
-        root = if this.number().catch(null) != null && this.number() > 61.5 && this.number() < 62 {
+        root = if this.number().catch(null) != null && this.number() > 61 && this.number() < 62 {
           this
         } else {
           deleted()
         }
-    - label: build_body
-      mapping: |
-        root.type = "water"
-        root.value = this.number()
-        root.timestamp = now()
-        root.digitalTwinId = "47-96-0-0-5-20-1"
 
 output:
-  label: gin_webhook
-  http_client:
-    url: "http://gin-gonic:8080/temporal-webhook/notifications"
-    verb: POST
-    headers: {}
-    timeout: 10s
-    max_in_flight: 64
+  label: "mongodb_output"
+  mongodb:
+    url: "${MONGO_URI}" # No default (required)
+    database: "47-96-0-0-5-20-1" # No default (required)
+    collection: "Sensors" # No default (required)
+    operation: insert-one
+    write_concern:
+      w: majority
+      j: false
+      # w_timeout: 5000s
+    document_map: |
+      root.type = "water"
+      root.unit = "mm"
+      root.value = this.number()
+      root.timestamp = now()
+      root.sensorId = "x"
+      root.sensorName = "y"
+      root.digitalTwinId = "47-96-0-0-5-20-1"
+      root.threat = if this.number() > 61.5 && this.number() < 62 { "high" } else { "low" }
+    # filter_map: ""
+    # hint_map: ""
+    # upsert: false
+    max_in_flight: 2
     batching:
       count: 1
-    # auto_replay_nacks: false
-    retries: 0
+      # byte_size: 0
+      # period: "1m"
+      # check: ""
+# output:
+#   stdout: {}

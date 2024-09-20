@@ -26,6 +26,7 @@ const (
 	USERS_COLLECTION               = "Users"
 	SIMULATIONS_RESULTS_COLLECTION = "SimulationResults"
 	SIMULATIONS_COLLECTION         = "Simulations"
+	COMMANDS_COLLECTION            = "Commands"
 )
 
 func NewMongodbConn(dbUrl string, timeout int) *mongodbConn {

@@ -16,6 +16,11 @@ const tabs = [
 		path: '/panel/simulations',
 		icon: `<i class="fi fi-rr-chart-network" />`
 	},
+	{	
+		label: "Actividades",
+		path: '/panel/activities',
+		icon: `<i class="fi fi-rr-clock" />`
+	},
 	{
 		label: 'Configuración',
 		path: '/panel/settings',

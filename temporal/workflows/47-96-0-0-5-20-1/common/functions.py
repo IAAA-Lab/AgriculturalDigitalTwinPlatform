@@ -27,7 +27,7 @@ class DB_MinioClient(DB_Client):
 class DB_MongoClient(DB_Client):
     def __init__(self, host=None, db=None):
         self.MONGODB_HOST = os.environ.get(
-            "MONGO_URI", "mongodb://Hd763nd4873hd3jh:idYtR65bja_56GGVdgd_df87Yh3@localhost:27018/?authMechanism=DEFAULT&authSource=admin") if host is None else host
+            "MONGO_URI", "mongodb://Hd763nd4873hd3jh:idYtR65bja_56GGVdgd_df87Yh3@localhost:27017/?authSource=admin&directConnection=true") if host is None else host
 
     def connect(self, db=None):
         from pymongo import MongoClient

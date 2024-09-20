@@ -289,3 +289,27 @@ func (mc *mongodbConn) DeleteSimulation(digitalTwinId string, simulationId strin
 	_, err = mc.client.Database(digitalTwinId).Collection(SIMULATIONS_RESULTS_COLLECTION).DeleteOne(ctx, filter)
 	return err
 }
+
+func (mc *mongodbConn) GetCommands(digitalTwinId string) ([]domain.Command, error) {
+	pipeline := []bson.M{
+		{
+			"$limit": 10,
+		},
+		{
+			"$sort": bson.M{
+				"timestamp": -1,
+			},
+		},
+	}
+	var ctx, cancel = context.WithTimeout(context.Background(), time.Duration(mc.timeout)*time.Second)
+	defer cancel()
+	var results []domain.Command
+	cursor, err := mc.client.Database(digitalTwinId).Collection(COMMANDS_COLLECTION).Aggregate(ctx, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	if err = cursor.All(ctx, &results); err != nil {
+		return nil, err
+	}
+	return results, nil
+}

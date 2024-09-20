@@ -5,6 +5,7 @@
 	import type { DigitalTwin, SimulationInfo } from '$lib/core/Domain';
 	import { onCropImageError } from '$lib/core/functions';
 	import { onMount } from 'svelte';
+	import { formattedTime } from '../../../lib/core/functions';
 
 	let digitalTwinId: string | undefined =
 		$page.url.searchParams.get('digitalTwinId') || $userEnclosures.at(0)?.id;
@@ -43,9 +44,12 @@
 						class="card"
 						href="simulations/{digitalTwin.id}?simulationId={simulation.simulationId}"
 					>
-						<h3>Id: {simulation.simulationId}</h3>
-						<p>Inicio: {simulation.startDate}</p>
-						<p>Fin: {simulation.endDate}</p>
+						<h3 class="m-0">Id: {simulation.simulationId}</h3>
+						<span
+							><strong>Inicio</strong>: {formattedTime(simulation.startDate)} -
+							<strong>Finaliza</strong>: {formattedTime(simulation.endDate)}</span
+						>
+						<p class="m-0"><strong>Número árboles</strong>: {simulation.numTrees}</p>
 					</a>
 				{/each}
 			{:catch error}

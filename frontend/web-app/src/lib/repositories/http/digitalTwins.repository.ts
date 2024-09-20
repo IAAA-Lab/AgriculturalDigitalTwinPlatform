@@ -7,7 +7,8 @@ import type {
 	CropStats,
 	DigitalTwin,
 	YieldPrediction,
-	SimulationInfo
+	SimulationInfo,
+	Command
 } from '$lib/core/Domain';
 import { ServerError } from '$lib/core/Exceptions';
 import type { IParcelsRepository } from '$lib/core/ports/Repository';
@@ -353,6 +354,21 @@ class HttpDigitalTwinsRepository implements IParcelsRepository {
 					return response.data;
 				}
 				throw new ServerError('Error al obtener la simulación');
+			})
+			.catch((e) => {
+				throw new ServerError(e);
+			});
+	}
+	async getCommands(digitalTwinId: string): Promise<Command[]> {
+		return this.http
+			.get<Command[]>(`enclosures/${digitalTwinId}/commands`, {
+				withCredentials: true
+			})
+			.then((response) => {
+				if (response.status === 200) {
+					return response.data;
+				}
+				throw new ServerError('Error al obtener los comandos');
 			})
 			.catch((e) => {
 				throw new ServerError(e);

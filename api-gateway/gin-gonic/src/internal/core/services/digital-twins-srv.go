@@ -122,3 +122,7 @@ func (srv *digitalTwinsService) DeleteSimulation(digitalTwinId string, simulatio
 func (srv *digitalTwinsService) HandleNotifications(digitalTwinId string, notificationType string, value interface{}) error {
 	return srv.workflows.HandleNotifications(digitalTwinId, notificationType, value)
 }
+
+func (srv *digitalTwinsService) GetCommands(digitalTwinId string) ([]domain.Command, error) {
+	return srv.persistence.GetCommands(digitalTwinId)
+}

@@ -28,7 +28,7 @@ pipeline:
           processors:
             - log:
                 level: INFO
-                message: 'value: ${!json("value")}, type: ${!json("type")}'
+                message: 'value: ${!json("value")}, type: ${!json("type")}, action: ${!json("action")}, duration: ${!json("duration")}'
 
 # If everything good, send a sync response
 output:

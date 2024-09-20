@@ -145,7 +145,7 @@ This is for a local non-production use, where these workflows may not be in the 
 We are going to register a namespace for the open data processing:
 
 ```bash
-docker exec -it temporal temporal operator namespace create --namespace open-data-d --address temporal:7233
+docker exec -it temporal temporal operator namespace create --namespace open-data --address temporal:7233
 ```
 
 To register the workflows, we need to run the workers, which are registered in the corresponding namespace. Right now, there is no authentication or security, but, in a production environment, every namespace should be protected and temporal has JWT authentication and claimers regarding the namespace. The following script is to register the workers and each one is an independent process (`temporal/entrypoint.sh`). We created a docker container in which we allocated some resources to run the workers. The following script is to run the workers for each digital twin and it should be executed in the temporal-worker container:
@@ -274,7 +274,7 @@ In this case, we have several example files to upload under `example-data` folde
 
 Now that files are processed using temporal workflows, [Minio Events](https://min.io/docs/minio/linux/administration/monitoring/publish-events-to-webhook.html) and gin-gonic webhooks to receive the events, information is in the digital twin database.
 
-The minio events must be configured and, in this case, are configure in the `storage/minio/entrypoint.sh` file.
+The minio events must be configured and, in this case, are configured in the `storage/minio/entrypoint.sh` file.
 
 ```bash
 # Set an alias for mc client
@@ -425,12 +425,18 @@ If the danger is evaluated as serious, it also sends feedback to the physical as
 
 ![alt text](<Screenshot 2024-09-06 at 14.41.17.png>)
 
+As we said, if it is serious, the workflow sends a message to a REST Api in Benthos and it will redirect it to the physical asset. In this case, as example, we log the value and the type of the notification in the Benthos stdout. In this case, we send a feedback to stop the irrigation system for 12 hours.
+
+![alt text](<feedback.png>)
+
 Then, as the notification is saved in MongoDB, from the frontend, we can use SSE events to read it in real time, using gin-gonic and MongoDB Change Streams. Here we have a screenshot when the notification is showed in the top left.
 
 ![alt text](<Screenshot 2024-09-06 at 10.47.25.png>)
 
 
-### Build a predictive model and register them
+
+
+### Build a predictive model and register it
 
 First, we need to test the model offline using the digital twin data we have. We are going to use a Jupyter notebook to test it. The created notebook is located under `temporal/workflows/47-96-0-0-5-20-1/ml-training/harvest-ai-model.ipynb`. In this case we are going to test it in the digital twin `45-96-0-0-5-20-1`. After we added the activities and yield data to that digital twin database, we can extract it along with the weather data already ingested.
 
@@ -505,12 +511,18 @@ with mlflow.start_run():
 run_id
 ```
 
+Now the model is registered in the model registry and we can see it in the Mlflow web ui in `http://localhost:5000/`:
+
+![img](<mlflow-model-info.png>)
+
 We are left with the `run_id` that we can use to serve the model. We can serve it using the MLflow server. This is in case we want to use it to simulate predictions:
 
 
 ```bash
 MLFLOW_TRACKING_URI=http://mlflow:5000 MLFLOW_S3_ENDPOINT_URL=http://minio:9000 AWS_ACCESS_KEY_ID=minio AWS_SECRET_ACCESS_KEY=minio123  mlflow models serve -m runs:/<run_id>/yield_model -p 5001 -h 0.0.0.0 --no-conda
 ```
+
+If the following warning is present, it means that some of the versions of python or packages are different from the model saved in the model registry. Try to use the same versions as the compiled model.
 
 ```bash
 2024/07/23 12:35:36 INFO mlflow.models.flavor_backend_registry: Selected backend for flavor 'python_function'

@@ -30,6 +30,7 @@ type DigitalTwinsRepository interface {
 	GetSensorData(digitalTwin string, sensorType string, startDate time.Time, endDate time.Time) ([]domain.SensorData, error)
 	GetSimulations(digitalTwin string) ([]domain.Simulation, error)
 	DeleteSimulation(digitalTwin string, simulationId string) error
+	GetCommands(digitalTwin string) ([]domain.Command, error)
 }
 
 type DigitalTwinsWorkflows interface {

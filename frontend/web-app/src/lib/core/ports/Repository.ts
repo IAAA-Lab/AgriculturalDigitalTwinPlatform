@@ -1,5 +1,6 @@
 import type {
 	Activity,
+	Command,
 	CropStats,
 	DailyWeather,
 	DigitalTwin,
@@ -48,6 +49,7 @@ interface IDigitalTwinsRepository {
 	stopSimulation(digitalTwinId: string, simulationId: string): Promise<void>;
 	speedSimulation(digitalTwinId: string, simulationId: string, speed: number): Promise<void>;
 	deleteSimulation(digitalTwinId: string, simulationId: string): Promise<void>;
+	getCommands(digitalTwinId: string): Promise<Command[]>;
 }
 interface IUserRepository {
 	validateLogin(): Promise<string | null>;

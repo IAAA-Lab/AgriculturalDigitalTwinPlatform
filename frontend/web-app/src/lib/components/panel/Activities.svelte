@@ -1,12 +1,12 @@
 <script lang="ts">
 	import Chart from '$lib/components/panel/Chart.svelte';
-	import PhytosTable from '$lib/components/panel/PhytosTable.svelte';
+	import ActivitiesTable from '$lib/components/panel/ActivitiesTable.svelte';
 	import { digitalTwinsService } from '$lib/config/config';
 	import { userEnclosures } from '$lib/config/stores/enclosures';
-	import type { Treatment } from '$lib/core/Domain';
 	import { getColor } from '$lib/core/functions';
+	import type { Activity } from '../../core/Domain';
 
-	let enclosureId: string;
+	export let digitalTwinId: string;
 
 	let endDate = new Date();
 	// endDate - 4 years
@@ -14,57 +14,53 @@
 	let startDateInput = startDate.toISOString().split('T')[0];
 	let endDateInput = endDate.toISOString().split('T')[0];
 
-	let treatments: Treatment[] = [];
-	let uniqueProducts: string[] = [];
+	let activities: Activity[] = [];
+	let selectedActivityType = '---- todas ----';
+	let uniqueActivities: string[] = [];
 
 	$: startDate = new Date(startDateInput);
 	$: endDate = new Date(endDateInput);
 
 	$: {
 		digitalTwinsService
-			.getActivities([enclosureId], startDate, endDate)
+			.getActivities(digitalTwinId, undefined, startDate, endDate)
 			.then((activitiesList) => {
-				// Filter activities by activity type = 'TRATAMIENTO FITOSANITARIO'
-				const activities = activitiesList.find((activity) => activity.enclosureId === enclosureId);
-				const treatmentsList = activities?.activities
-					.filter((activity) => activity.activity === 'TRATAMIENTO FITOSANITARIO')
-					.map((activity) => {
-						return {
-							date: activity.date,
-							...activity.properties
-						};
-					}) as Treatment[];
-				treatments = [...treatmentsList];
+				activities = activitiesList;
 				// Get all unique products
-				uniqueProducts = [...new Set(treatmentsList.map((phyto) => phyto.phytosanitary.name))];
+				uniqueActivities = [...new Set(activitiesList.map((activity) => activity.activity))];
 			})
 			.catch((error) => {
-				treatments = [];
-				uniqueProducts = [];
+				activities = [];
+				uniqueActivities = [];
 			});
 	}
 </script>
 
 <div class="card">
+	<h1>Actividades</h1>
 	<div class="header mb-16">
-		<h2 class="m-0">Tratamientos</h2>
+		<select bind:value={selectedActivityType}>
+			<option value="---- todas ----">---- todas ----</option>
+			{#each [...new Set(activities.map((activity) => activity.activity))] as activityType}
+				<option value={activityType}>{activityType}</option>
+			{/each}
+		</select>
 		<div class="input__dates__wrapper">
-			<select bind:value={enclosureId}>
-				{#each $userEnclosures as enclosure}
-					<option value={enclosure.id}>{enclosure.id}</option>
-				{/each}
-			</select>
 			<input type="date" bind:value={startDateInput} />
 			<input type="date" bind:value={endDateInput} />
 		</div>
 	</div>
 	<div class="body p-8">
 		<div class="card-inner table__inner">
-			<PhytosTable {treatments} />
+			<ActivitiesTable
+				activities={selectedActivityType === '---- todas ----'
+					? activities
+					: activities.filter((activity) => activity.activity === selectedActivityType)}
+			/>
 		</div>
 		<div class="chart__doughnut__line__wrapper">
 			<div class="card-inner chart__doughnut__wrapper">
-				<h4 class="m-0 mb-16">Dosis aplicada por producto</h4>
+				<h4 class="m-0 mb-16">Número de actividades</h4>
 				<div class="chart__doughnout">
 					<Chart
 						data={{
@@ -73,19 +69,17 @@
 								datasets: [
 									{
 										label: '',
-										data: uniqueProducts.map((product) => {
-											const productPhytos = treatments.filter(
-												(phyto) => phyto.phytosanitary.name === product
-											);
-											return productPhytos.reduce((acc, curr) => acc + curr.quantity, 0);
-										}),
+										// Count number of activities for each type
+										data: uniqueActivities.map(
+											(activity) => activities.filter((a) => a.activity === activity).length
+										),
 										// Map each product to a random color
-										backgroundColor: uniqueProducts.map((_, i) => `${getColor(i)}9C`),
-										borderColor: uniqueProducts.map((_, i) => getColor(i)),
+										backgroundColor: uniqueActivities.map((_, i) => `${getColor(i)}9C`),
+										borderColor: uniqueActivities.map((_, i) => getColor(i)),
 										borderWidth: 1
 									}
 								],
-								labels: uniqueProducts
+								labels: uniqueActivities
 							},
 							options: {
 								cutout: '70%',
@@ -119,15 +113,22 @@
 								datasets: [
 									{
 										label: '',
-										data: treatments.map((phyto) => phyto.quantity),
+										data: activities
+											.filter((activity) => activity.activity === selectedActivityType)
+											.map((phyto) => {
+												return {
+													x: phyto.date.toString().split('T')[0],
+													y: 1
+												};
+											}),
 										fill: false,
 										backgroundColor: '#5FAC45',
-										tension: 0.3,
-										maxBarThickness: 40,
-										borderWidth: 2
+										tension: 0,
+										maxBarThickness: 5,
+										borderWidth: 0
 									}
 								],
-								labels: treatments.map((phyto) => phyto.date.toString().split('T')[0])
+								labels: activities.map((phyto) => phyto.date.toString().split('T')[0])
 							},
 							options: {
 								elements: {
@@ -144,7 +145,7 @@
 									},
 									title: {
 										display: true,
-										text: 'Dosis aplicada por fecha',
+										text: 'Histórico de actividades',
 										font: {
 											size: 16,
 											weight: 'bold'
@@ -164,7 +165,7 @@
 										},
 										title: {
 											display: true,
-											text: 'Dosis (L/ha)',
+											text: 'Unidades',
 											font: {
 												size: 14,
 												weight: 'bold'
@@ -183,7 +184,7 @@
 
 <style lang="scss">
 	.card {
-		grid-area: treatments;
+		grid-area: activities;
 	}
 
 	.header {
