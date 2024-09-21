@@ -2,15 +2,28 @@
 
 ## What is a Digital Twin?
 
+A digital twin is a virtual representation of an object or system designed to reflect a physical object accurately. It spans the object's lifecycle, is updated from real-time data and uses simulation, machine learning and reasoning to help make decisions. (<https://www.ibm.com/topics/what-is-a-digital-twin>)
 
 ## What is this project about?
 
+In this project, we are going to create a digital twin for agricultural exploitations, especifically for nuts. We are going to use the following technologies:
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Temporal](https://docs.temporal.io/)
+- [MongoDB](https://www.mongodb.com/)
+- [Gin](https://github.com/gin-gonic/gin)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Minio](https://min.io/)
+- [Benthos](https://github.com/benthosdev/benthos)
+- [Mlflow](https://mlflow.org/)
+- [Sveltekit](https://svelte.dev/)
+- [Nginx](https://nginx.org/)
 
 ## Architecture
 
 The architecture of the project is the following:
 
-![Architecture](arch_tech.png)
+![Architecture](./docs/images/arch_tech.png)
 
 ## Deployment
 
@@ -58,20 +71,7 @@ docker-compose -f docker-compose.prod.yml -p digital-twin-prod --env-file .env.p
 
 Secrets, for the moment, are stored in its respective env file (`.env`, `.env.dev`, `.env.prod`), but it is not a good practice. It is better to store them in a secret manager, like [Vault](https://www.vaultproject.io/). In the future, it will be implemented. This files are injected to its respective container through the `docker-compose.yml` files.
 
-## Future work (or not)
-
-- <https://blog.min.io/lakehouse-architecture-iceberg-minio/>
-- <https://www.arecadata.com/high-performance-open-source-data-lakehouse-at-home/>
-
-
 ## Guide for example project
-
-### Requirements
-
-- [Temporal CLI](https://docs.temporal.io/cli)
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
-- 
 
 ### Before starting
 
@@ -187,23 +187,23 @@ With the user we have created, we can login at `http://localhost:3000/login`. A 
 
 Once we made login, we need to create some digital twins. We are going to create two, in order to see the interaction between them two. Digital twins are basic **GeoJSON objects**.
 
-![alt text](<Screenshot 2024-09-02 at 22.48.37.png>)
+![alt text](<./docs/images/Screenshot 2024-09-02 at 22.48.37.png>)
 
 We press the button to create a new digital twin. After that, we fill the form with a new GeoJSON object. If the object is correct, a polygon on the right map will appear. We are going to create the two digital twins.
 
-![alt text](<Screenshot 2024-09-02 at 22.50.44.png>)
+![alt text](<./docs/images/Screenshot 2024-09-02 at 22.50.44.png>)
 
 Then, we will be redirected to the map page, where we will see the created digital twins. In this page, we can filter and sort the digital twins based on its properties. If it doesn't load, reload the page.
 
-![alt text](<Screenshot 2024-09-02 at 22.51.47.png>)
+![alt text](<./docs/images/Screenshot 2024-09-02 at 22.51.47.png>)
 
 We can visit the monitoring and the analysis page to see that they are still empty:
 
-![alt tdxt](<Screenshot 2024-09-02 at 22.52.51.png>)
+![alt tdxt](<./docs/images/Screenshot 2024-09-02 at 22.52.51.png>)
 
 However, daily and forecast weather information is already available because, when the digital twin is created, a meteorological station id is added to the properties. It is used every day in a Temporal workflow to do a ETL process to recover the information in real time.
 
-![a](<Screenshot 2024-09-02 at 22.53.12.png>)
+![a](<./docs/images/Screenshot 2024-09-02 at 22.53.12.png>)
 
 
 Now, we are going to add some more information to the digital twins, including ndvi, weather and activities that affect the holdings.
@@ -212,9 +212,9 @@ Now, we are going to add some more information to the digital twins, including n
 
 Let's create a schedule to ingest ndvi and historical weather data every Sunday at 00:00. We can do it through the CLI or the UI. This will take every digital twin in the platform and execute the ingestion for each one of them. The following images are from the UI:
 
-![alt text](<Screen Shot 2024-07-16 at 16.16.42.png>)
+![alt text](<./docs/images/Screen Shot 2024-07-16 at 16.16.42.png>)
 
-![alt text](<Screen Shot 2024-07-16 at 16.16.50.png>)
+![alt text](<./docs/images/Screen Shot 2024-07-16 at 16.16.50.png>)
 
 The following temporal CLI commands are the equivalent to the UI actions:
 
@@ -240,7 +240,7 @@ docker exec -it temporal temporal schedule create \
     --address temporal:7233
 ```
 
-![alt text](<Screen Shot 2024-07-16 at 11.16.50.png>)
+![alt text](<./docs/images/Screen Shot 2024-07-16 at 11.16.50.png>)
 
 Now that the schedules are created, we can execute them on demand. We are going to execute it now in order to see all the historical data.
 In this case, ndvi endpoint is slow and it is going to take a while, several minutes, up to 30 minutes.
@@ -252,13 +252,13 @@ docker exec -it temporal temporal schedule trigger --namespace open-data --sched
 
 Or we can trigger it using the UI:
 
-![alt text](<Screen Shot 2024-07-16 at 11.40.09.png>)
+![alt text](<./docs/images/Screen Shot 2024-07-16 at 11.40.09.png>)
 
 We need to wait some minutes for them to execute in the background. After that, we can see the information in the app:
 
-![alt text](<Screenshot 2024-09-02 at 22.53.27.png>)
+![alt text](<./docs/images/Screenshot 2024-09-02 at 22.53.27.png>)
 
-![alt text](<Screenshot 2024-09-02 at 23.18.44.png>)
+![alt text](<./docs/images/Screenshot 2024-09-02 at 23.18.44.png>)
 
 ### Add files to ingest
 
@@ -266,11 +266,11 @@ Now, to complete the context of the holding, we are going to add some activities
 
 To do that, we are going to use the file form in the Monitoring page to upload them:
 
-![alt text](<Screenshot 2024-09-04 at 10.22.38.png>)
+![alt text](<./docs/images/Screenshot 2024-09-04 at 10.22.38.png>)
 
 In this case, we have several example files to upload under `example-data` folder. We are going to ingest files of `47-96-0-0-5-20-1` in this guide. Files are `FakeHarvest-1.json` and `FakeActivities-1.xlsx`. First one contains yield information historic and second one contains activities historic of the digital twin.
 
-![alt text](<Screenshot 2024-09-05 at 11.48.31.png>)
+![alt text](<./docs/images/Screenshot 2024-09-05 at 11.48.31.png>)
 
 Now that files are processed using temporal workflows, [Minio Events](https://min.io/docs/minio/linux/administration/monitoring/publish-events-to-webhook.html) and gin-gonic webhooks to receive the events, information is in the digital twin database.
 
@@ -288,7 +288,7 @@ mc event add minio/refined-zone arn:minio:sqs::refined:webhook --event put
 
 We can see they are active in the Minio UI (<http://localhost:9001>) as `online`.
 
-![alt text](<Screenshot 2024-09-05 at 17.20.20.png>)
+![alt text](<./docs/images/Screenshot 2024-09-05 at 17.20.20.png>)
 
 We can see that there are three stages in the ETL process. First, the files are stored in the landing zone and the landing event is dispatched. The gin-gonic webhook receives the event and it executes the temporal workflow, where it will be processed and stored in the trusted zone. Finally, another temporal workflow is executed, where it will be convert to the corresponding digital twin domain and stored in the digital twin database, in MongoDB. The refined zone is the last bucket where the information is for third party use (not implemented yet).
 
@@ -296,11 +296,11 @@ We can see that there are three stages in the ETL process. First, the files are 
 
 Now, Analysis page is showing the activities information of that digital twin as verticals bars, where the event is taken place.
 
-![alt text](<Screenshot 2024-09-04 at 10.23.03.png>)
+![alt text](<./docs/images/Screenshot 2024-09-04 at 10.23.03.png>)
 
 Moreover, in the Monitoring page, we can see the production and yield over the time, and our digital twin is ready to build a machine learning model in order to predict the yield.
 
-![alt text](<Screenshot 2024-09-04 at 10.43.51.png>)
+![alt text](<./docs/images/Screenshot 2024-09-04 at 10.43.51.png>)
 
 ### Add a streaming source and connect with frontend
 
@@ -357,10 +357,10 @@ output:
 
 Now, data is being added in real time to MongoDB, in the database of the corresponding digital twin. Now, to read that information in real-time, we are going to combine [MongoDB Change Streams](https://www.mongodb.com/docs/manual/changeStreams/) and [SSE Events](https://go-gin.onrender.com/room/hn). In a gin REST endpoint, inside `api-gateway/gin-gonic`, we can create a real time endpoint to read the data from the frontend in the Monitoring page. Bellow is the UI component that shows the data, in this case, the temperature.
 
-![alt text](<Screenshot 2024-09-05 at 12.04.44.png>)
+![alt text](<./docs/images/Screenshot 2024-09-05 at 12.04.44.png>)
 
 
-### Fake a flooding in a digital twin
+### Detect a flooding in a digital twin and send notifications
 
 Now, to test the digital twins communication, we are going to fake some notifications. We are going to leverage the mqtt server to do it. In this case, when "rain" is between 60 and 65 mm, we are going to execute a temporal workflow that will process that value and tell if the quantity is worth the warning to near digital twins.
 
@@ -415,26 +415,27 @@ As we see, to not overflow the system, we get only values between 61.5 and 62. T
 
 If we go to <localhost:8085/namespaces/open-data/workflows>, we can see all the executed notification workflows in the Temporal server. The following image shows the completed workflows.
 
-![alt text](<Screenshot 2024-09-06 at 10.50.13.png>)
+![alt text](<./docs/images/Screenshot 2024-09-06 at 10.50.13.png>)
 
 If we click on the first one, we can see the inner information of the workflow. For instance, we have the event history, in which we have the result of each stage. In this case, first the danger is evaluated, second we get the nearest digital twin ids and finally, we save the notification in the `common` database for each digital twin.
 
 If the danger is evaluated as serious, it also sends feedback to the physical asset automatically. In this case, as we do not have any physical asset, we have nothing to do. But the natural behavior is to send the command to Benthos and it will transform it to the endpoint of the physical asset (SCADA, API, Kafka, etc). Bellow we have two event history cases where the notification importance is serious and mid.
 
-![alt text](<Screenshot 2024-09-06 at 14.40.29.png>)
+![alt text](<./docs/images/Screenshot 2024-09-06 at 14.40.29.png>)
 
-![alt text](<Screenshot 2024-09-06 at 14.41.17.png>)
+![alt text](<./docs/images/Screenshot 2024-09-06 at 14.41.17.png>)
 
 As we said, if it is serious, the workflow sends a message to a REST Api in Benthos and it will redirect it to the physical asset. In this case, as example, we log the value and the type of the notification in the Benthos stdout. In this case, we send a feedback to stop the irrigation system for 12 hours.
 
-![alt text](<feedback.png>)
+![alt text](<./docs/images/feedback.png>)
 
-Then, as the notification is saved in MongoDB, from the frontend, we can use SSE events to read it in real time, using gin-gonic and MongoDB Change Streams. Here we have a screenshot when the notification is showed in the top left.
+Then, as the notification is saved in MongoDB, from the frontend, we can use SSE events to read it in real time, using gin-gonic and MongoDB Change Streams. Here we have a ./docs/images/screenshot when the notification is showed in the top left.
 
-![alt text](<Screenshot 2024-09-06 at 10.47.25.png>)
+![alt text](<./docs/images/Screenshot 2024-09-06 at 10.47.25.png>)
 
+Notifications and commands can be found in the Activities page, where commands are differentiated as automatic (system-initiated) or manual (user-initiated) commands, with status tracking. In this page, there are also the activity data, such as yield, prunes or irrigation time.
 
-
+![alt text](<./docs/images/activities.png>)
 
 ### Build a predictive model and register it
 
@@ -442,7 +443,7 @@ First, we need to test the model offline using the digital twin data we have. We
 
 We merge the data and group it by year and impute the missing values just for testing purposes. We are left with this simple tabular data:
 
-![img](<Screenshot 2024-09-04 at 11.05.04.png>)
+![img](<./docs/images/Screenshot 2024-09-04 at 11.05.04.png>)
 
 Then, we are going to train our model. In this case we are using a Random Forest Regressor that predicts the yield, the day and the month.
 
@@ -563,7 +564,7 @@ docker exec -it temporal temporal schedule create \
 
 The schedule can be seen in the temporal UI in the `Schedules` tab in the left.
 
-![alt text](<Screenshot 2024-09-05 at 12.07.34.png>)
+![alt text](<./docs/images/Screenshot 2024-09-05 at 12.07.34.png>)
 
 Now that the schedule is created, we can execute it on demand if we want to see which predictions are going to be made.
 
@@ -573,15 +574,15 @@ docker exec -it temporal temporal schedule trigger --namespace '47-96-0-0-5-20-1
 
 This workflow can be monitored and traced from the temporal UI. The next image is the prediction executed from the UI manually, and we can see the stages of the workflow, all green because they were executed correctly.
 
-![alt text](<Screenshot 2024-09-05 at 14.20.47.png>)
+![alt text](<./docs/images/Screenshot 2024-09-05 at 14.20.47.png>)
 
 In each stage, we can click and seen inputs, outputs and errors. In this case, in the `load_prediction` stage we can see the input is an object with the prediction yield and the date and there is no output.
 
-![alt text](<Screenshot 2024-09-05 at 17.09.29.png>)
+![alt text](<./docs/images/Screenshot 2024-09-05 at 17.09.29.png>)
 
 Now, we can see the predictions in the web app, in the Monitoring page. The vertical yellow line is the yield prediction, which marks the best moment to harvest and which will be the yield. In this case, the best moment is the 25th of September and it will give 562.41 kg.
 
-![alt text](<Screenshot 2024-09-05 at 14.39.57.png>)
+![alt text](<./docs/images/Screenshot 2024-09-05 at 14.39.57.png>)
 
 This will be executed, in this case every week, depending on the schedule, and it will be adjusted progressively. Moreover, when the model makes the prediction, it will be **retrained** with the new data ingested, in order to be up to date.
 
@@ -591,7 +592,7 @@ We can also build custom simulations in every digital twin using temporalio work
 
 To create a new simulation, we have to go to the Simulations page and select the corresponding digital twin. Then, click the button "New simulation".
 
-![alt text](<Screenshot 2024-09-05 at 14.42.20.png>)
+![alt text](<./docs/images/Screenshot 2024-09-05 at 14.42.20.png>)
 
 Now, we can start the simulation. In this case, to see the simulation state in real time, MongoDB ChangeStreams will also be used. The temporalio workflow will start the simulation and send the data to MongoDB in every step.
 
@@ -640,11 +641,11 @@ For the moment, it is show as a json object.
 
 Once the simulation progresses, it will be showing some results, including alive trees, affected ones and yield. Yield will be plotted in a bar chart as an example. The pie chart is another example of a possible metric. We can also see an image of some trees which is another example of a future 2D map of the digital twin in the simulation.
 
-![alt text](<Screenshot 2024-09-05 at 16.56.36.png>)
+![alt text](<./docs/images/Screenshot 2024-09-05 at 16.56.36.png>)
 
 After some simulations, we can see the list of simulations that have been or are running. Simulations will be running in the background if we do not pause or stop them.
 
-![alt text](<Screenshot 2024-09-05 at 16.40.29.png>)
+![alt text](<./docs/images/Screenshot 2024-09-05 at 16.40.29.png>)
 
 Temporal workflows can be seen in its UI, and they can be also pause and stop from its UI.
 
