@@ -205,7 +205,6 @@ However, daily and forecast weather information is already available because, wh
 
 ![a](<./docs/images/Screenshot 2024-09-02 at 22.53.12.png>)
 
-
 Now, we are going to add some more information to the digital twins, including ndvi, weather and activities that affect the holdings.
 
 ### Schedule data ingestion and execute it on demand
