@@ -6,7 +6,8 @@
 **.sqlite
 *.log
 # *.env*
-**/**.db
+**.key
+**.db
 data
 mlflow/storage/**
 monitorization/**/storage/**

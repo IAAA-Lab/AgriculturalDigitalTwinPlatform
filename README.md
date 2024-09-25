@@ -40,7 +40,7 @@ Actually it has been tested in MacOS, but it should work in Linux and Windows as
 To execute it if not using the dev environment, you need to execute the following command:
 
 ```bash
-docker-compose up --build -p digital-twin-local
+docker compose -p digital-twin-local up --build
 ```
 
 #### golang cli
@@ -110,7 +110,7 @@ openssl rand -base64 756 > storage/mongodb/mongo-keyfile.key
 chmod 400 storage/mongodb/mongo-keyfile.key
 ```
 
-And then, once we have done the `docker compose up --build` and the MongoDB instance is running, we make it a replica set with one replica only. For that, we create a bash script file with the following information:
+And then, we have to deploy only the mongo service with `docker compose -p digital-twin-local up --build mongo` and, once the MongoDB instance is running, we make it a replica set with one replica only. For that, we create a bash script file with the following information:
 
 ```bash
 #!/bin/bash
@@ -126,13 +126,15 @@ rs.status();
 EOF
 ```
 
-Here, we authenticate to the mongo shell and initiate a new mongo replica. To execute it, we simple execute the script inside de mongo container:
+Here, we authenticate to the mongo shell and initiate a new mongo replica. To execute it, we simple execute the script inside de mongo container (we have to wait around 30-60 seconds for the replica set to be ready):
 
 ```bash
-docker exec -it temporal-mongo-1 /data/init_rs.sh
+docker exec -it digital-twin-local-mongo-1 /data/init_rs.sh
 ```
 
-Now, in order to have a user to navigate the web app, we need to create one. We created some REST endpoints for the user management in gin-gonic, inside the api-gateway. And to make it easier, a golang client is provided to execute in the terminal. We need an email, password and the roll of the user. To test the user freely, we set role to admin. The cli can be executed with the `project-cli.sh`.
+Now, we can get the gin-gonic container ready also, in order to create a user using `docker compose -p digital-twin-local up --build gin-gonic`.
+
+Now, in order to have a user to navigate the web app, we need to create one. We created some REST endpoints for the user management in gin-gonic, inside the api-gateway. And to make it easier, a golang client is provided to execute in the terminal. We need an email, password and the roll of the user. To test the user freely, we set role to admin. The cli can be executed with the `project-cli.sh`. Might take up to a minute to execute if gin-gonic is not ready.
 
 ```bash
 ./project-cli.sh u c --email <email> --password <password> --role admin
@@ -142,10 +144,12 @@ Each folder corresponds to a digital twin and the open data etl is a folder for 
 
 This is for a local non-production use, where these workflows may not be in the host machine, they can be made in other local machines and then register both workflows and workers in the Temporal server. In this case, we are going to use the Temporal CLI to register the workflows and workers. In Temporal, a feature called namespaces exists, and we are using it to separate the workflows and workers of each digital twin. The namespace is the same as the digital twin identifier.
 
-We are going to register a namespace for the open data processing:
+We are going to register a namespace for the open data processing and for the two digital twins we are using, but first, we are going to execute the temporal service using `docker compose -p digital-twin-local up --build temporal`.
 
 ```bash
 docker exec -it temporal temporal operator namespace create --namespace open-data --address temporal:7233
+docker exec -it temporal temporal operator namespace create --namespace 47-96-0-0-5-25-1 --address temporal:7233
+docker exec -it temporal temporal operator namespace create --namespace 47-96-0-0-5-20-1 --address temporal:7233
 ```
 
 To register the workflows, we need to run the workers, which are registered in the corresponding namespace. Right now, there is no authentication or security, but, in a production environment, every namespace should be protected and temporal has JWT authentication and claimers regarding the namespace. The following script is to register the workers and each one is an independent process (`temporal/entrypoint.sh`). We created a docker container in which we allocated some resources to run the workers. The following script is to run the workers for each digital twin and it should be executed in the temporal-worker container:
@@ -175,17 +179,26 @@ To ensure that all websockets work, at least in my case, is to stop the nginx se
 
 ```bash
 sudo nginx -s stop
+or
+sudo systemctl stop nginx
+```
+
+Now, before getting into the rest of the guide, we need to do:
+
+```bash
+docker compose -p digital-twin-local down
+docker compose -p digital-twin-local up --build
 ```
 
 ### Login
 
-With the user we have created, we can login at `http://localhost:3000/login`. A JWT token is returned and will be used to keep the user logged in for a while.
+With the user we have created, we can login at `http://localhost:3000/panel/login`. A JWT token is returned and will be used to keep the user logged in for a while.
 
 ### Create two new digital twins
 
 >**IMPORTANT**: You need to create the workflow for ingesting static digital twin information and register the corresponding workflow. In this case, the workflow is under `temporal/workflows/<digital_twin_id>/etl/static-info`.
 
-Once we made login, we need to create some digital twins. We are going to create two, in order to see the interaction between them two. Digital twins are basic **GeoJSON objects**.
+Once we made login, we need to create some digital twins. We are going to create two, in order to see the interaction between them two. Digital twins are basic **GeoJSON objects**. This geojson objects can be copied from `example-data/<digital_twin_id>/geojson.json`.
 
 ![alt text](<./docs/images/Screenshot 2024-09-02 at 22.48.37.png>)
 
@@ -253,7 +266,7 @@ Or we can trigger it using the UI:
 
 ![alt text](<./docs/images/Screen Shot 2024-07-16 at 11.40.09.png>)
 
-We need to wait some minutes for them to execute in the background. After that, we can see the information in the app:
+We need to wait some minutes for them to execute in the background (maybe like 5-7 minutes, it is because it depends on a external slow API). After that, we can see the information in the app:
 
 ![alt text](<./docs/images/Screenshot 2024-09-02 at 22.53.27.png>)
 
@@ -438,7 +451,7 @@ Notifications and commands can be found in the Activities page, where commands a
 
 ### Build a predictive model and register it
 
-First, we need to test the model offline using the digital twin data we have. We are going to use a Jupyter notebook to test it. The created notebook is located under `temporal/workflows/47-96-0-0-5-20-1/ml-training/harvest-ai-model.ipynb`. In this case we are going to test it in the digital twin `45-96-0-0-5-20-1`. After we added the activities and yield data to that digital twin database, we can extract it along with the weather data already ingested.
+First, we need to test the model offline using the digital twin data we have. We are going to use a Jupyter notebook to test it. The created notebook is located under `temporal/workflows/47-96-0-0-5-20-1/ml-training/harvest-ai-model.ipynb`. There is also a `requirements.txt` to install the dependencies in case an environment is needed. In this case we are going to test it in the digital twin `45-96-0-0-5-20-1`. After we added the activities and yield data to that digital twin database, we can extract it along with the weather data already ingested.
 
 We merge the data and group it by year and impute the missing values just for testing purposes. We are left with this simple tabular data:
 

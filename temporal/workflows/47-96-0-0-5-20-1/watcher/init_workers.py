@@ -9,7 +9,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 async def main():
-    temporal_uri = os.environ.get("TEMPORAL_ADDRESS", "temporal:7233")
+    temporal_uri = os.environ.get("TEMPORAL_ADDRESS", "localhost:7233")
     client = await Client.connect(temporal_uri, namespace="47-96-0-0-5-20-1")
     worker = Worker(client,
                     workflow_task_executor=ThreadPoolExecutor(max_workers=200),

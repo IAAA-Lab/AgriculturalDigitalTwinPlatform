@@ -6,11 +6,12 @@
 
 	export let title = 'Suba sus documentos';
 	export let url = '/internal/files/upload';
+	let pond: FilePond.FilePond;
 
-	$: {
+	onMount(() => {
 		FilePond.registerPlugin(FilePondPluginFileValidateType);
 
-		const pond = FilePond.create(document.querySelector('input[type="file"]') as HTMLInputElement, {
+		pond = FilePond.create(document.querySelector('input[type="file"]') as HTMLInputElement, {
 			allowMultiple: true,
 			instantUpload: false,
 			allowRevert: false,
@@ -41,12 +42,23 @@
 			labelFileProcessingComplete: 'Subido',
 			labelTapToCancel: 'Pulsa para cancelar'
 		});
-		// // Check if the filepond element is already in the DOM
-		// if (document?.body?.contains(pond.element)) {
-		// 	// If so, remove it
-		// 	document?.body?.removeChild(pond.element as Node);
-		// }
-		// document?.body?.appendChild(pond.element as Node);
+	});
+
+	$: {
+		if (pond) {
+			pond.setOptions({
+				server: {
+					url: API_URL,
+					process: {
+						url: url,
+						withCredentials: true
+					},
+					headers: {
+						Authorization: `${axiosInstance.defaults.headers.common['Authorization']}`
+					}
+				}
+			});
+		}
 	}
 </script>
 
