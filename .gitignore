@@ -5,7 +5,7 @@
 **/postgres/data/**
 **.sqlite
 *.log
-# *.env*
+*.env*
 **.key
 **.db
 data
