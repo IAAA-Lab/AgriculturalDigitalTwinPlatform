@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   #############################################
-  #      Collect metrics from services        #
+  #         Monitoring and logging            #
   #############################################
 
   # prometheus:
@@ -14,11 +14,7 @@ services:
   #     - "--config.file=/etc/prometheus/prometheus.yml"
   #     - "--storage.tsdb.path=/prometheus"
   #   ports:
-  #     - "9090"
-
-  # #############################################
-  # #      Centralize all metrics and logs      #
-  # #############################################
+  #     - 9090:9090
 
   # grafana:
   #   image: grafana/grafana:latest
@@ -34,27 +30,7 @@ services:
   #     - prometheus
 
   #############################################
-  # Services communication and message queue  #
-  #############################################
-
-  rabbitmq:
-    image: rabbitmq:3.12.9-alpine
-    container_name: rabbitmq
-    ports:
-      - ${RABBITMQ_PORT}
-    environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-    healthcheck:
-      test: ["CMD", "rabbitmqctl", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-    mem_limit: 1024m
-    mem_reservation: 256m
-
-  #############################################
-  #              Web app server               #
+  #              Data gateway                 #
   #############################################
 
   gin-gonic:
@@ -63,14 +39,12 @@ services:
       target: development
     ports:
       - 8080:${GIN_PORT}
+      - "9093:9093"
     volumes:
       - ./api-gateway/gin-gonic:/app
     restart: always
     depends_on:
-      mongo:
-        condition: service_started
-      rabbitmq:
-        condition: service_healthy
+      - mongo
     environment:
       - ENV_MODE=LOCAL
       - JWT_SECRET=${JWT_SECRET}
@@ -78,16 +52,15 @@ services:
       - IV_BLOCK_PASSWD=${IV_BLOCK_PASSWD}
       - MONGO_URI=${MONGO_URI}
       - MONGO_DB=${MONGO_DB}
-      - RABBITMQ_URI=${RABBITMQ_URI}
       - FRONTEND_URL=${FRONTEND_URL}
       - MINIO_ENDPOINT=${MINIO_ENDPOINT}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
       - MINIO_LANDING_ZONE=${MINIO_LANDING_ZONE}
     # Resources limits in case it consumes too much
-    mem_limit: 512m
-    mem_reservation: 128m
-    cpus: 0.5
+    # mem_limit: 512m
+    # mem_reservation: 128m
+    # cpus: 1
 
   #############################################
   #             Digital twin panel            #
@@ -108,47 +81,44 @@ services:
       target: prod
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
+      - "5081:80"
     depends_on:
       - gin-gonic
     volumes:
-      - ./frontend/nginx/dev.nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-  # certbot:
-  #   image: certbot/certbot
-  #   restart: unless-stopped
-  #   volumes:
-  #     - ./data/certbot/conf:/etc/letsencrypt
-  #     - ./data/certbot/www:/var/www/certbot
-  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+      - ./frontend/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
-  # #############################################
-  # #            Digital twin storage           #
-  # #############################################
+  ##############################################
+  #             Digital twin storage           #
+  ##############################################
 
   mongo:
-    image: mongo:6.0.7
+    image: mongo:7.0
     ports:
-      - 27018:${MONGO_PORT}
+      - 27017:${MONGO_PORT}
     restart: always
     volumes:
       - ./storage/mongodb/mongodata:/data/db
-      - ./storage/mongodb/init_db.js:/docker-entrypoint-initdb.d/init_db.js
+      - ./storage/mongodb/init_rs.sh:/data/init_rs.sh
+      - ./storage/mongodb/mongo-keyfile.key:/data/mongo-keyfile.key
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
       - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
-      - MONGO_FIRST_USER_NAME=${MONGO_FIRST_USER_NAME}
-      - MONGO_FIRST_USER_PASSWORD=${MONGO_FIRST_USER_PASSWORD}
-      - MONGO_FIRST_USER_ROLE=${MONGO_FIRST_USER_ROLE}
-    # To avoid logs in console
-    command: mongod --quiet --logpath /dev/null
+      - MONGO_PORT=${MONGO_PORT}
+    command: --replSet rs0 --keyFile /data/mongo-keyfile.key --auth --bind_ip_all --port 27017 --quiet --logpath /dev/null
 
-  # #############################################
-  # #    Data lake and artifcat storage         #
-  # #############################################
+  ##############################################
+  #                Data lake                   #
+  ##############################################
 
   minio:
     image: minio/minio:RELEASE.2023-02-27T18-10-45Z
@@ -156,15 +126,15 @@ services:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
       - MINIO_URL=${MINIO_URL}
-      - MINIO_NOTIFY_AMQP_ENABLE_primary=on
-      - MINIO_NOTIFY_AMQP_URL_primary=${RABBITMQ_URI}
-      - MINIO_NOTIFY_AMQP_EXCHANGE_primary=storage
-      - MINIO_NOTIFY_AMQP_EXCHANGE_TYPE_primary=direct
-      - MINIO_NOTIFY_AMQP_ROUTING_KEY_primary=trusted
+      - MINIO_NOTIFY_WEBHOOK_ENABLE_landing=on
+      - MINIO_NOTIFY_WEBHOOK_ENDPOINT_landing=http://gin-gonic:8080/temporal-webhook/landing
+      - MINIO_NOTIFY_WEBHOOK_ENABLE_trusted=on
+      - MINIO_NOTIFY_WEBHOOK_ENDPOINT_trusted=http://gin-gonic:8080/temporal-webhook/trusted
+      - MINIO_NOTIFY_WEBHOOK_ENABLE_refined=on
+      - MINIO_NOTIFY_WEBHOOK_ENDPOINT_refined=http://gin-gonic:8080/temporal-webhook/refined
     entrypoint:
       - sh
       - /usr/bin/entrypoint.sh
-
     ports:
       - 9000:${MINIO_PORT}
       - 9001:${MINIO_PANEL_PORT}
@@ -173,86 +143,93 @@ services:
       - ./storage/minio/entrypoint.sh:/usr/bin/entrypoint.sh
     restart: always
     depends_on:
-      rabbitmq:
-        condition: service_healthy
+      - gin-gonic
 
-  # #############################################
-  # #            Prefect server storage         #
-  # #############################################
+  #############################################
+  #            Temporal server                #
+  #############################################
 
-  # Had to use postgres because sqlite3 is doesn't support many concurrent connections
-  postgres:
-    image: postgres:14.0
-    restart: always
+  postgresql:
     environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_DB: prefect
+      POSTGRES_PASSWORD: temporal
+      POSTGRES_USER: temporal
+    image: postgres:13
     ports:
       - 5432
     volumes:
       - ./storage/postgres/data:/var/lib/postgresql/data
+    command: postgres -c 'max_connections=5000'
 
-  # #############################################
-  # #      Data ingestion, data processing      #
-  # #      simulations, and machine learning    #
-  # #############################################
-
-  prefect:
-    image: prefecthq/prefect:2.14.5-python3.11
-    ports:
-      - 4200:4200
-    volumes:
-      - prefect:/root/.prefect
-    environment:
-      - PREFECT_LOGGING_LEVEL=WARNING
-      - PREFECT_UI_URL=http://127.0.0.0:4200/api
-      - PREFECT_API_URL=http://127.0.0.1:4200/api
-      - PREFECT_SERVER_API_HOST=0.0.0.0
-      - PREFECT_API_DATABASE_CONNECTION_URL=${PREFECT_API_DATABASE_CONNECTION_URL}
+  temporal:
+    container_name: temporal
+    image: temporalio/auto-setup:1.24.2
     depends_on:
-      rabbitmq:
-        condition: service_healthy
-      postgres:
-        condition: service_started
-    command: prefect server start
-
-  data-pipeline-worker:
-    build: data-pipelines
-    restart: on-failure
-    volumes:
-      - ./data-pipelines:/opt/data-pipelines
+      - postgresql
     environment:
+      - TEMPORAL_CLI_ADDRESS=temporal:7233
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=temporal
+      - POSTGRES_SEEDS=postgresql
+      - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development-sql.yaml
+      - TEMPORAL_CSRF_COOKIE_INSECURE=true # Required for the UI to send signals to the workflows
+      # - AWS_ACCESS_KEY_ID = ${MINIO_ROOT_USER}
+      # - AWS_SECRET_ACCESS_KEY = ${MINIO_ROOT_PASSWORD}
+      - PROMETHEUS_ENDPOINT=0.0.0.0:8000
+    ports:
+      - 7233:7233
+    volumes:
+      - ./temporal/dynamicconfig:/etc/temporal/config/dynamicconfig
+    # cpus: "2"
+    # mem_limit: "1G"
+  # temporal-admin-tools:
+  #   container_name: temporal-admin-tools
+  #   depends_on:
+  #     - temporal
+  #   environment:
+  #     - TEMPORAL_ADDRESS=temporal:7233
+  #     - TEMPORAL_CLI_ADDRESS=temporal:7233
+  #   image: temporalio/admin-tools:${TEMPORAL_VERSION}
+  #   stdin_open: true
+  #   tty: true
+  temporal-ui:
+    container_name: temporal-ui
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+      - TEMPORAL_CSRF_COOKIE_INSECURE=true
+      - TEMPORAL_UI_PORT=8085
+    image: temporalio/ui:2.29.1
+    ports:
+      - 8085:8085
+
+  temporal-worker:
+    container_name: temporal-worker
+    build: ./temporal
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
       - AGROSLAB_AUTH_TOKEN=${AGROSLAB_AUTH_TOKEN}
       - AGROSLAB_API_URL=${AGROSLAB_API_URL}
       - AGROSLAB_TELEDETECTION_URL=${AGROSLAB_TELEDETECTION_URL}
-      - STORAGE_LANDING_ZONE=${MINIO_LANDING_ZONE}
-      - STORAGE_TRUSTED_ZONE=${MINIO_TRUSTED_ZONE}
-      - STORAGE_REFINED_ZONE=${MINIO_REFINED_ZONE}
-      - RABBITMQ_URI=${RABBITMQ_URI}
+      - MONGO_URI=${MONGO_URI}
+      - MONGO_DB=${MONGO_DB}
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
       - MLFLOW_S3_ENDPOINT_URL=${MINIO_URL}
-      - AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER}
-      - AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD}
-      - PREFECT_API_URL=http://prefect:4200/api
-      - PREFECT_MINIO_ACCESS_ROOT=${MINIO_ROOT_USER}
-      - PREFECT_MINIO_SECRET_ROOT=${MINIO_ROOT_PASSWORD}
-      - PREFECT_MINIO_HOST=${MINIO_HOST}
-      - PREFECT_MONGODB_HOST=${MONGO_URI}
-      - PREFECT_MONGODB_DB=${MONGO_INITDB_DATABASE}
-    entrypoint:
-      - sh
-      - /opt/data-pipelines/entrypoint.sh
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      mongo:
-        condition: service_started
-      prefect:
-        condition: service_started
-    # Resource limit because it tends to use a lot of memory
-    mem_limit: 2048m
-    mem_reservation: 512m
-    cpus: 1.0
+      - AWS_ACCESS_KEY_ID=${MINIO_ACCESS_KEY}
+      - AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_KEY}
+      - MINIO_HOST=${MINIO_ENDPOINT}
+    volumes:
+      - ./temporal/workflows:/etc/temporal/workflows
+      - ./temporal/entrypoint.sh:/etc/temporal/entrypoint.sh
+    entrypoint: /etc/temporal/entrypoint.sh
+    # cpus: "2"
+    # mem_limit: "2G"
+
   #############################################
   #              MLflow server                #
   #############################################
@@ -272,9 +249,20 @@ services:
   #   volumes:
   #     - ./mlflow/storage:/storage
   #   command: mlflow server --backend-store-uri file:///storage/runs --default-artifact-root s3://mlflow/ --serve-artifacts --host 0.0.0.0
-  #   mem_limit: 512m
-  #   mem_reservation: 128m
-  #   cpus: 0.5
+  #   # cpus: "0.5"
+  #   mem_limit: "512M"
 
-volumes:
-  prefect:
+  #############################################
+  #              Benthos server               #
+  #############################################
+
+  # benthos:
+  #   image: ghcr.io/benthosdev/benthos:latest
+  #   ports:
+  #     - 4195:4195
+  #     - 8056:8056 # Feedback port for digital twins feedback
+  #   environment:
+  #     - MONGO_URI=${MONGO_URI}
+  #   volumes:
+  #     - ./benthos/:/workflows
+  #   entrypoint: /workflows/entrypoint.sh

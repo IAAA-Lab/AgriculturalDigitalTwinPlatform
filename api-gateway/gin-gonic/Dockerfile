@@ -14,9 +14,9 @@ RUN go install github.com/githubnemo/CompileDaemon@latest
 # RUN sleep 10
 ENTRYPOINT CompileDaemon -build="go build -C src/cmd -o /build/app" -command="/build/app"
 
-FROM golang:alpine as development
+FROM golang:latest as development
 
-RUN apk add --update git curl bash
+# RUN apk add --update git curl bash
 COPY . /app
 WORKDIR /app
 COPY go.mod go.sum ./
