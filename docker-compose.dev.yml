@@ -114,7 +114,10 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
       - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
       - MONGO_PORT=${MONGO_PORT}
-    command: --replSet rs0 --keyFile /data/mongo-keyfile.key --auth --bind_ip_all --port 27017 --quiet --logpath /dev/null
+    entrypoint: >
+      /bin/bash -c '
+        chmod 400 /data/mongo-keyfile.key &&
+        mongod --replSet rs0 --keyFile /data/mongo-keyfile.key --auth --bind_ip_all --port 27017'
 
   ##############################################
   #                Data lake                   #
