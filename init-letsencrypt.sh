@@ -30,7 +30,7 @@ fi
 echo "### Creating dummy certificate for $domains ..."
 path="/etc/letsencrypt/live/$domains"
 mkdir -p "$data_path/conf/live/$domains"
-docker-compose -f docker-compose.prod.yml -p digital-twin-prod --env-file .env.prod run --rm --entrypoint "\
+docker-compose -f docker-compose.dev.yml -p digital-twin-dev --env-file .env.dev run --rm --entrypoint "\
   openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
     -keyout '$path/privkey.pem' \
     -out '$path/fullchain.pem' \
@@ -39,11 +39,11 @@ echo
 
 
 echo "### Starting system ..."
-# docker-compose -f docker-compose.prod.yml -p digital-twin-prod --env-file .env.prod up --build -d
+docker-compose -f docker-compose.dev.yml -p digital-twin-dev --env-file .env.dev up --build -d
 echo
 
 echo "### Deleting dummy certificate for $domains ..."
-docker-compose -f docker-compose.prod.yml -p digital-twin-prod --env-file .env.prod run --rm --entrypoint "\
+docker-compose -f docker-compose.dev.yml -p digital-twin-dev --env-file .env.dev run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/live/$domains && \
   rm -Rf /etc/letsencrypt/archive/$domains && \
   rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
@@ -66,7 +66,7 @@ esac
 # Enable staging mode if needed
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
-docker-compose -f docker-compose.prod.yml -p digital-twin-prod --env-file .env.prod run --rm --entrypoint "\
+docker-compose -f docker-compose.dev.yml -p digital-twin-dev --env-file .env.dev run --rm --entrypoint "\
   certbot certonly --webroot -w /var/www/certbot \
     $staging_arg \
     $email_arg \
@@ -77,4 +77,4 @@ docker-compose -f docker-compose.prod.yml -p digital-twin-prod --env-file .env.p
 echo
 
 echo "### Shutting down system ..."
-docker-compose -f docker-compose.prod.yml -p digital-twin-prod --env-file .env.prod down
+docker-compose -f docker-compose.dev.yml -p digital-twin-dev --env-file .env.dev down

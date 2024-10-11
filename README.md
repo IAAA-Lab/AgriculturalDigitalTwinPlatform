@@ -132,6 +132,12 @@ Here, we authenticate to the mongo shell and initiate a new mongo replica. To ex
 docker exec -it digital-twin-local-mongo-1 /data/init_rs.sh
 ```
 
+If we want to access to the database through `MongoDB Compass`, we can access using the following connection string:
+
+```
+mongodb://<user>:<password>@<host>:<port>/?authSource=admin&directConnection=true
+```
+
 Now, we can get the gin-gonic container ready also, in order to create a user using `docker compose -p digital-twin-local up --build gin-gonic`.
 
 Now, in order to have a user to navigate the web app, we need to create one. We created some REST endpoints for the user management in gin-gonic, inside the api-gateway. And to make it easier, a golang client is provided to execute in the terminal. We need an email, password and the roll of the user. To test the user freely, we set role to admin. The cli can be executed with the `project-cli.sh`. Might take up to a minute to execute if gin-gonic is not ready.

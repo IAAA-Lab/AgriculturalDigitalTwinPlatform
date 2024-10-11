@@ -114,15 +114,21 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
       - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
       - MONGO_PORT=${MONGO_PORT}
-    entrypoint: >
-      /bin/bash -c '
-        chmod 400 /data/mongo-keyfile.key &&
-        mongod --replSet rs0 --keyFile /data/mongo-keyfile.key --auth --bind_ip_all --port 27017'
+    # I had to do this entrypoint workaround because, otherwise it would
+    # not execute the original docker-entrypoint.sh for some reason
+    entrypoint:
+      - bash
+      - -c
+      - |
+          chmod 400 /data/mongo-keyfile.key
+          chown 999:999 /data/mongo-keyfile.key
+          exec docker-entrypoint.sh $$@     
+    command: mongod --bind_ip_all --replSet rs0 --keyFile /data/mongo-keyfile.key --quiet --logpath /dev/null
 
   ##############################################
   #                Data lake                   #
   ##############################################
-
+# sudo rm -R storage/mongodb/mongodata
   minio:
     image: minio/minio:RELEASE.2023-02-27T18-10-45Z
     environment:
