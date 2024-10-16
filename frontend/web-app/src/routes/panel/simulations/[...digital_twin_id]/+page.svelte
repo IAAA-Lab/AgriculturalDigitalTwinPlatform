@@ -8,6 +8,7 @@
 	import simulation_example_img from '$lib/assets/simulation-example.jpg';
 	import { onDestroy, onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { API_WS_URL } from '../../../../lib/config/config';
 
 	let simulationId: string | null = $page.url.searchParams.get('simulationId');
 	let digitalTwinId: string | undefined = $page.url.pathname.split('/').at(-1);
@@ -34,7 +35,7 @@
 			simulationPaused = false;
 		}
 		// Websocket connection
-		ws = new WebSocket('ws://localhost:8080/enclosures/simulations/status/ws');
+		ws = new WebSocket(`${API_WS_URL}/enclosures/simulations/status/ws`);
 		ws.onopen = () => {
 			if (simulationId && digitalTwinId) {
 				ws!.send(JSON.stringify({ digitalTwinId, simulationId }));

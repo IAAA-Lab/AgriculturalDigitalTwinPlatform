@@ -532,7 +532,7 @@ run_id
 
 Now the model is registered in the model registry and we can see it in the Mlflow web ui in `http://localhost:5000/`:
 
-![img](<mlflow-model-info.png>)
+![img](<./docs/images/mlflow-model-info.png>)
 
 We are left with the `run_id` that we can use to serve the model. We can serve it using the MLflow server. This is in case we want to use it to simulate predictions:
 

@@ -6,6 +6,7 @@ import DigitalTwinsService from '$lib/core/services/digitalTwin.service';
 
 const IMAGES_SERVER_URL = import.meta.env.VITE_IMAGES_SERVER_URL as string;
 const API_URL = (import.meta.env.VITE_API_URL as string) || 'http://localhost:8080';
+const API_WS_URL = (import.meta.env.VITE_API_WS_URL as string) || 'ws://localhost:8080';
 const IV_BLOCK_PASSWD = import.meta.env.VITE_IV_BLOCK_PASSWD;
 const KEY_DECRYPT_PASSWD = import.meta.env.VITE_KEY_DECRYPT_PASSWD;
 const EMAIL_SENDER_PUB_KEY = import.meta.env.VITE_EMAIL_SENDER_PUBKEY;
@@ -58,6 +59,7 @@ export {
 	EMAIL_SENDER_SERVICEID,
 	EMAIL_SENDER_TEMPLATEID,
 	API_URL,
+	API_WS_URL,
 	IV_BLOCK_PASSWD,
 	KEY_DECRYPT_PASSWD,
 	axiosInstance

@@ -74,6 +74,7 @@ services:
       args:
         - VITE_PORT=${VITE_PORT}
         - VITE_API_URL=${VITE_API_URL}
+        - VITE_API_WS_URL=${VITE_API_WS_URL}
         - VITE_EMAIL_SENDER_PUBKEY=${VITE_EMAIL_SENDER_PUBKEY}
         - VITE_EMAIL_SENDER_SERVICEID=${VITE_EMAIL_SENDER_SERVICEID}
         - VITE_EMAIL_SENDER_TEMPLATEID=${VITE_EMAIL_SENDER_TEMPLATEID}
@@ -113,6 +114,7 @@ services:
       - MONGO_FIRST_USER_NAME=${MONGO_FIRST_USER_NAME}
       - MONGO_FIRST_USER_PASSWORD=${MONGO_FIRST_USER_PASSWORD}
       - MONGO_FIRST_USER_ROLE=${MONGO_FIRST_USER_ROLE}
+      - MONGO_PORT=${MONGO_PORT}
     # healthcheck:
     #   test: echo "try { rs.status() } catch (err) { rs.initiate()" | mongosh --port 27017 -u ${MONGO_INITDB_ROOT_USERNAME} -p ${MONGO_INITDB_ROOT_PASSWORD} --authenticationDatabase ${MONGO_INITDB_DATABASE}
     #   interval: 3600s
