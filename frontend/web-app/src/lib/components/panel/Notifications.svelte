@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
+	import { API_URL } from '../../../lib/config/config';
 
 	let eventSource: EventSource | undefined = undefined;
 	export let digitalTwinId: string;
@@ -7,7 +8,7 @@
 
 	onMount(() => {
 		eventSource = new EventSource(
-			`http://localhost:8080/enclosures/${digitalTwinId}/notifications`
+			`${API_URL}/enclosures/${digitalTwinId}/notifications`
 		);
 
 		eventSource.onerror = function (event) {

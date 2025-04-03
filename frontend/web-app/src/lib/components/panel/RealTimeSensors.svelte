@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { formattedTime } from '../../core/functions';
+	import { API_URL } from '../../../lib/config/config';
 
 	export let digitalTwinId: string;
 	let eventSource: EventSource | undefined = undefined;
@@ -12,7 +13,7 @@
 		eventSource?.close();
 		// Websocket connection
 		eventSource = new EventSource(
-			`http://localhost:8080/enclosures/${digitalTwinId}/sensor-stream`
+			`${API_URL}/enclosures/${digitalTwinId}/sensor-stream`
 		);
 		eventSource.onmessage = function (event) {
 			const data = JSON.parse(event.data);
