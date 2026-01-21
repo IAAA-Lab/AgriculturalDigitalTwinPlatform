@@ -106,7 +106,7 @@ services:
       - ./storage/mongodb/mongodata:/data/db
       - ./storage/mongodb/init_db.js:/docker-entrypoint-initdb.d/init_db.js
       - ./storage/mongodb/init_rs.sh:/data/init_rs.sh
-      - ./storage/mongodb/mongo-keyfile.key:/data/mongo-keyfile.key
+      - ./storage/mongodb/mongo-keyfile.key:/tmp/mongo-keyfile-host.key:ro
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
@@ -115,13 +115,14 @@ services:
       - MONGO_FIRST_USER_PASSWORD=${MONGO_FIRST_USER_PASSWORD}
       - MONGO_FIRST_USER_ROLE=${MONGO_FIRST_USER_ROLE}
       - MONGO_PORT=${MONGO_PORT}
-    # healthcheck:
-    #   test: echo "try { rs.status() } catch (err) { rs.initiate()" | mongosh --port 27017 -u ${MONGO_INITDB_ROOT_USERNAME} -p ${MONGO_INITDB_ROOT_PASSWORD} --authenticationDatabase ${MONGO_INITDB_DATABASE}
-    #   interval: 3600s
-    #   timeout: 15s
-    #   start_period: 15s
-    #   retries: 10
-    command: mongod --replSet rs0 --keyFile /data/mongo-keyfile.key --bind_ip_all --port 27017 --quiet --logpath /dev/null
+    entrypoint:
+      - bash
+      - -c
+      - |
+        cp /tmp/mongo-keyfile-host.key /data/mongo-keyfile.key
+        chmod 400 /data/mongo-keyfile.key
+        chown mongodb:mongodb /data/mongo-keyfile.key
+        exec docker-entrypoint.sh mongod --replSet rs0 --keyFile /data/mongo-keyfile.key --bind_ip_all --port 27017 --quiet --logpath /dev/null
 
   ##############################################
   #                Data lake                   #
