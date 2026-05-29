@@ -1,4 +1,5 @@
 # Digital Twin for agrarian exploitations
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15697049.svg)](https://doi.org/10.5281/zenodo.15697049)
 
 ## What is a Digital Twin?
