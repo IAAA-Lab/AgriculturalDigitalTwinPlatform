@@ -1,6 +1,24 @@
 # Digital Twin for agrarian exploitations
 
+[![Read the published paper here](https://www.sciencedirect.com/eu-west-1/prod/21531b317eb1c8eefd555238ff6b701d209b19a9/image/elsevier-non-solus.svg)](https://www.sciencedirect.com/science/article/pii/S0166361525001125?via%3Dihub)
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15697049.svg)](https://doi.org/10.5281/zenodo.15697049)
+
+```bibtex
+@article{LAGUNA2025104347,
+    title = {A platform to support the fast development of digital twins for agricultural holdings},
+    journal = {Computers in Industry},
+    volume = {172},
+    pages = {104347},
+    year = {2025},
+    issn = {0166-3615},
+    doi = {https://doi.org/10.1016/j.compind.2025.104347},
+    url = {https://www.sciencedirect.com/science/article/pii/S0166361525001125},
+    author = {Jorge Laguna and Mario E. Suaza-Medina and Rubén Béjar and Javier Lacasta and F. Javier Zarazaga-Soria},
+    keywords = {Digital twin, Open-field agriculture, Platform, Machine learning, Smart farming},
+    abstract = {Industry 4.0 has advanced in agriculture through Smart Agriculture initiatives, yet open-field farming lags in the adoption of digital twins. Although digital twins have transformed manufacturing since 2011, their application in open-field farming remains limited by environmental variability, data scarcity, and financial constraints. This paper addresses four gaps: the lack of affordable platforms for small farms that dominate European agriculture; the need to manage agricultural complexity through data-driven models rather than the physical modelling approaches prevalent in non-agricultural sectors; the absence of open sources solutions adapted to agriculture’s slower innovation pace; the breach between technology and farmers. The platform features innovations in data workflow integration, open data incorporation, a cost-effective shared warehouse, and scalable data pipelines. To validate the proposed platform, a case study with two example digital twins mirroring two fields is conducted. This implementation ran efficiently on modest hardware (2 vCPUs, 4GB RAM). It achieved an average CPU usage of 60%, RAM usage of 2.5 GB, and a deployment time of around one minute. This helps lowering adoption barriers for small holdings and bridging the gap between basic monitoring and complex future systems.}
+}
+```
 
 ## What is a Digital Twin?
 
